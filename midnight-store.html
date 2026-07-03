@@ -1554,7 +1554,7 @@ body {
             <circle cx="350" cy="70" r="1.5" fill="#3d2f24"/>
             <line class="clock-min" x1="350" y1="70" x2="350" y2="52" stroke="#3d2f24" stroke-width="1.5"/>
             <line x1="350" y1="70" x2="362" y2="70" stroke="#3d2f24" stroke-width="1.5"/>
-            <text x="350" y="115" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">02 : 00</text>
+            <text class="clock-time" x="350" y="115" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">01 : 47</text>
             <!-- Milk cabinet -->
             <rect x="40" y="170" width="120" height="180" fill="#c9b48a" opacity="0.35" stroke="#3d2f24" stroke-width="1.5"/>
             <line x1="40" y1="230" x2="160" y2="230" stroke="#3d2f24" stroke-width="0.8"/>
@@ -1672,7 +1672,7 @@ body {
   <!-- ========== Ending Screen ========== -->
   <div id="ending-screen" class="screen hidden">
     <div class="ending-content">
-      <div class="ending-time">03 : 00 AM</div>
+      <div class="ending-time" id="ending-time">03 : 00 AM</div>
       <h2 class="ending-title" id="ending-title">而这个夜晚，终究是被谁温柔地接住了</h2>
       <div class="ending-text" id="ending-text"></div>
       <button class="paper-btn" id="ending-restart">再 次 推 开 那 扇 门</button>
@@ -2488,6 +2488,7 @@ const state = {
   cpProgress: {}, // { cpId: Set of chars who've contributed }
   notebookRecord: {}, // { cpId: { char: chosen text } }
   observedObjects: new Set(), // hs strings player clicked to observe
+  beatsCompleted: 0, // total beats completed across all characters (drives clock)
   world: {},      // world flags — who did what at what tier
   dialogueOpen: false,
   notebookOpen: false
@@ -2919,6 +2920,9 @@ function closeBeat() {
     }
   }
 
+  state.beatsCompleted = (state.beatsCompleted || 0) + 1;
+  updateClockUI();
+
   // Save state after every beat close
   saveState();
 
@@ -3174,7 +3178,10 @@ function buildEndingLines(w) {
 }
 
 function showEnding() {
+  updateClockUI();
   clearSave();
+  const endTimeEl = document.getElementById('ending-time');
+  if (endTimeEl) endTimeEl.textContent = formatGameTime() + ' AM';
   const wrap = $('ending-text');
   wrap.innerHTML = '';
   const lines = buildEndingLines(state.world);
@@ -3210,7 +3217,8 @@ function saveState() {
       ),
       world: state.world || {},
       notebookRecord: state.notebookRecord || {},
-      observedObjects: Array.from(state.observedObjects || [])
+      observedObjects: Array.from(state.observedObjects || []),
+      beatsCompleted: state.beatsCompleted || 0
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(s));
   } catch (e) {}
@@ -3236,6 +3244,7 @@ function loadState() {
     state.world = s.world || {};
     state.notebookRecord = s.notebookRecord || {};
     state.observedObjects = new Set(s.observedObjects || []);
+    state.beatsCompleted = s.beatsCompleted || 0;
     return true;
   } catch (e) { return false; }
 }
@@ -3982,6 +3991,37 @@ function initObjClicks() {
   updateCardDots();
 }
 
+
+// Game clock — advances 2.5 min per beat completed
+const START_MINUTES = 107;      // 01:47
+const MIN_PER_BEAT = 2.5;
+
+function currentGameMinutes() {
+  return START_MINUTES + Math.round((state.beatsCompleted || 0) * MIN_PER_BEAT);
+}
+
+function formatGameTime() {
+  const m = currentGameMinutes();
+  const h = Math.floor(m / 60) % 24;
+  const min = m % 60;
+  return String(h).padStart(2, '0') + ' : ' + String(min).padStart(2, '0');
+}
+
+function updateClockUI() {
+  const min = currentGameMinutes();
+  const displayMin = min % 60;
+  const rotation = displayMin * 6; // 6 degrees per minute
+  // Update all clock texts (should only be one — in card 4)
+  document.querySelectorAll('.clock-time').forEach(el => {
+    el.textContent = formatGameTime();
+  });
+  // Update minute hand rotation
+  document.querySelectorAll('.clock-min').forEach(el => {
+    el.style.animation = 'none'; // stop auto-rotation
+    el.style.transform = 'rotate(' + rotation + 'deg)';
+  });
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -3997,6 +4037,7 @@ function bindEvents() {
   if (continueBtn) {
     continueBtn.addEventListener('click', () => {
       if (loadState()) {
+        updateClockUI();
         showScreen('game-screen');
         // If loaded state indicates all done, jump to ending
         if (state.completed.size >= CHAR_ORDER.length) {
@@ -4064,6 +4105,7 @@ function init() {
   initCardNav();
   initObjClicks();
   refreshSaveUI();
+  updateClockUI();
   render();
 }
 
