@@ -721,29 +721,52 @@ const ANSWERS = [
   "台风", "秘密", "星星", "大海", "故乡",
   "雨伞", "电影", "母亲", "深夜", "时光",
   "初恋", "老屋", "梦", "灯塔", "萤火虫",
+  "沉默", "勇气", "自由", "命运", "缘分",
+  "冬天", "秋天", "日出", "月圆", "钢琴",
+  "火锅", "饺子", "红酒", "散步", "写作",
+  "相遇", "告别", "重逢", "远方", "灵感",
 ];
 
 // ============ Game state ============
 let answer = "";
-let guesses = [];  // array of { word, sim, rank }
+let guesses = [];  // array of { word, sim, rank, isHint? }
 let guessedSet = new Set();
 let won = false;
+let hintsUsed = 0;
+
+// Common category tags for hint display
+const CATEGORY_TAGS = ['自然','人造','生物','情感','时间','色彩','关系','抽象','身体','天体','天气','食物','家居','建筑','植物','动物','交通','声音'];
+function dominantCategory(word) {
+  const tags = WORDS[word] || [];
+  for (const cat of CATEGORY_TAGS) if (tags.includes(cat)) return cat;
+  return tags[0] || '?';
+}
 
 // ============ DOM ============
 const answerBlanks = document.getElementById('answerBlanks');
+const answerCat = document.getElementById('answerCat');
 const guessInput = document.getElementById('guessInput');
 const submitBtn = document.getElementById('submitBtn');
+const hintBtn = document.getElementById('hintBtn');
 const giveUpBtn = document.getElementById('giveUpBtn');
 const messageEl = document.getElementById('message');
 const latestEl = document.getElementById('latest');
 const latestRowEl = document.getElementById('latestRow');
 const historyEl = document.getElementById('history');
 const guessCountEl = document.getElementById('guessCount');
+const hintCountEl = document.getElementById('hintCount');
 const winModal = document.getElementById('winModal');
 const winAnswer = document.getElementById('winAnswer');
 const winStats = document.getElementById('winStats');
 const againBtn = document.getElementById('againBtn');
 const homeBtn = document.getElementById('homeBtn');
+const shareBtn = document.getElementById('shareBtn');
+const giveUpModal = document.getElementById('giveUpModal');
+const revealAnswer = document.getElementById('revealAnswer');
+const revealStats = document.getElementById('revealStats');
+const revealTop5 = document.getElementById('revealTop5');
+const revealAgainBtn = document.getElementById('revealAgainBtn');
+const revealHomeBtn = document.getElementById('revealHomeBtn');
 
 // ============ Similarity ============
 function similarity(w1, w2) {
@@ -795,9 +818,10 @@ function renderRow(g, isLatest = false) {
   const color = tempColor(g.sim);
   const hotClass = g.sim >= 0.85 ? ' hot' : '';
   const pct = (g.sim * 100).toFixed(1) + '%';
+  const hintMark = g.isHint ? ' 💡' : '';
   return `<div class="row ${isLatest ? 'new-guess' : ''}">
     <span class="rank">${rank}</span>
-    <span class="word${hotClass}">${g.word}</span>
+    <span class="word${hotClass}">${g.word}${hintMark}</span>
     <div class="temp-bar"><div class="temp-bar-fill" style="width:${barWidth}%;background:${color};"></div></div>
     <span class="pct">${pct}</span>
   </div>`;
@@ -846,6 +870,59 @@ function submitGuess() {
   } else {
     showMessage(`${icon} ${word} · ${(sim*100).toFixed(1)}%`);
   }
+  updateHintBtn();
+}
+
+function updateHintBtn() {
+  if (won) { hintBtn.disabled = true; return; }
+  const pool = allSims.slice(10, 40).filter(x => !guessedSet.has(x.word));
+  hintBtn.disabled = guesses.length < 5 || pool.length === 0;
+}
+
+function useHint() {
+  if (won) return;
+  const pool = allSims.slice(10, 40).filter(x => !guessedSet.has(x.word));
+  if (!pool.length) { showMessage('没有更多提示了', 'err'); return; }
+  const pick = pool[Math.floor(Math.random() * Math.min(pool.length, 8))];
+  hintsUsed++;
+  hintCountEl.textContent = hintsUsed;
+  const g = { word: pick.word, sim: pick.sim, rank: rankFor(pick.word), isHint: true };
+  guesses.push(g);
+  guessedSet.add(pick.word);
+  guessCountEl.textContent = guesses.length;
+  latestEl.classList.add('show');
+  latestRowEl.innerHTML = renderRow(g, true);
+  renderHistory();
+  showMessage(`💡 提示词：${pick.word} · ${(pick.sim*100).toFixed(1)}%`);
+  updateHintBtn();
+}
+
+function showGiveUp() {
+  revealAnswer.textContent = answer;
+  const cat = dominantCategory(answer);
+  revealStats.innerHTML = `你猜了 <b>${guesses.length}</b> 次 · 用了 <b>${hintsUsed}</b> 次提示<br>答案类别 · <b>${cat}</b>`;
+  const top5 = allSims.slice(0, 5);
+  revealTop5.innerHTML = top5.map((x, i) => {
+    const g = guesses.find(gg => gg.word === x.word);
+    const seen = g ? ' <span style="color:#a0e0c0;">✓已猜过</span>' : '';
+    return `<div>${i+1}. <b style="color:#ffd48a;">${x.word}</b> — ${(x.sim*100).toFixed(0)}%${seen}</div>`;
+  }).join('');
+  giveUpModal.classList.add('show');
+}
+
+function shareResult() {
+  const emojiHistory = guesses.map(g => tempIcon(g.sim)).join('');
+  const hintTxt = hintsUsed > 0 ? ` (含 ${hintsUsed} 次提示)` : '';
+  const text = `词影 · ${guesses.length}次猜中「${answer}」${hintTxt}\n${emojiHistory}\n${location.origin}${location.pathname}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = shareBtn.textContent;
+      shareBtn.textContent = '✅ 已复制到剪贴板';
+      setTimeout(() => shareBtn.textContent = orig, 1600);
+    }).catch(() => alert(text));
+  } else {
+    alert(text);
+  }
 }
 
 function showMessage(t, cls = '') {
@@ -857,11 +934,13 @@ function winGame() {
   won = true;
   winAnswer.textContent = answer;
   const cnt = guesses.length;
-  winStats.innerHTML = `你在第 <b>${cnt}</b> 次猜中<br>` +
+  const hintNote = hintsUsed > 0 ? `<br><span style="color:rgba(220,180,140,0.6);font-size:12px;">用了 ${hintsUsed} 次提示</span>` : '';
+  winStats.innerHTML = `你在第 <b>${cnt}</b> 次猜中${hintNote}<br>` +
     (cnt <= 5 ? '⭐ 语感强者' :
      cnt <= 15 ? '不错，稳中有胆' :
-     cnt <= 30 ? '慢慢来的胜利' : '契而不舍');
+     cnt <= 30 ? '慢慢来的胜利' : '锲而不舍');
   winModal.classList.add('show');
+  updateHintBtn();
 }
 
 function newRound() {
@@ -869,26 +948,33 @@ function newRound() {
   guesses = [];
   guessedSet = new Set();
   won = false;
+  hintsUsed = 0;
   computeAllSims();
   answerBlanks.textContent = '_ '.repeat(answer.length).trim();
+  answerCat.textContent = `${answer.length} 字 · 类别 ${dominantCategory(answer)}`;
   guessCountEl.textContent = '0';
+  hintCountEl.textContent = '0';
   latestEl.classList.remove('show');
   historyEl.innerHTML = '';
   showMessage('');
   winModal.classList.remove('show');
+  giveUpModal.classList.remove('show');
+  updateHintBtn();
   guessInput.focus();
 }
 
 // ============ Events ============
 submitBtn.addEventListener('click', submitGuess);
+hintBtn.addEventListener('click', useHint);
 guessInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); submitGuess(); }
 });
-giveUpBtn.addEventListener('click', () => {
-  if (confirm(`真放弃？答案是「${answer}」。换新题目吗？`)) newRound();
-});
+giveUpBtn.addEventListener('click', showGiveUp);
 againBtn.addEventListener('click', newRound);
+revealAgainBtn.addEventListener('click', newRound);
 homeBtn.addEventListener('click', () => { window.location.href = 'index.html'; });
+revealHomeBtn.addEventListener('click', () => { window.location.href = 'index.html'; });
+shareBtn.addEventListener('click', shareResult);
 
 // Boot
 newRound();
