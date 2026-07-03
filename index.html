@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>荔枝游戏</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -21,6 +22,15 @@
     text-align: center;
     margin-bottom: 50px;
     color: #fff;
+  }
+  header .logo {
+    width: 110px;
+    height: 110px;
+    border-radius: 28px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    margin-bottom: 18px;
+    object-fit: cover;
+    display: inline-block;
   }
   header h1 {
     font-size: clamp(32px, 5vw, 48px);
@@ -78,6 +88,21 @@
     line-height: 1.55;
     flex-grow: 1;
   }
+  .card .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: -4px;
+  }
+  .card .tags span {
+    font-size: 11px;
+    padding: 3px 10px;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
   .card .play {
     display: inline-flex;
     align-items: center;
@@ -94,7 +119,7 @@
   .card:hover .play::after {
     transform: translateX(4px);
   }
-  .card .tag {
+  .card .status {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -123,7 +148,8 @@
 <body>
 <div class="container">
   <header>
-    <h1>🎮 荔枝游戏</h1>
+    <img src="lychee-logo.png" alt="荔枝" class="logo">
+    <h1>荔枝游戏</h1>
     <p>放松一下，选一个玩</p>
   </header>
 
@@ -133,6 +159,11 @@
       <div class="emoji">🔢</div>
       <h2>数独</h2>
       <p>经典 9×9 数字谜题，四种难度可选，支持提示、检查、错误标记。</p>
+      <div class="tags">
+        <span>益智</span>
+        <span>数字</span>
+        <span>经典</span>
+      </div>
       <span class="play">开始玩</span>
     </a>
 
@@ -140,14 +171,24 @@
       <div class="emoji">🧩</div>
       <h2>2048</h2>
       <p>滑动合并相同数字，凑出 2048。支持键盘和触屏，记录最高分。</p>
+      <div class="tags">
+        <span>益智</span>
+        <span>数字</span>
+        <span>休闲</span>
+      </div>
       <span class="play">开始玩</span>
     </a>
 
     <a href="midnight-store.html" class="card">
-      <span class="tag">开发中</span>
+      <span class="status">开发中</span>
       <div class="emoji">🌙</div>
       <h2>凌晨两点的便利店</h2>
       <p>凌晨两点，便利店里四个陌生人擦肩的一晚。</p>
+      <div class="tags">
+        <span>剧情</span>
+        <span>视觉小说</span>
+        <span>群像</span>
+      </div>
       <span class="play">开始玩</span>
     </a>
 
