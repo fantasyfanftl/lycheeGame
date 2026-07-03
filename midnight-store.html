@@ -1262,6 +1262,34 @@ body {
   fill: rgba(245, 200, 138, 0.08);
 }
 
+
+/* ========== Notebook group headers ========== */
+.cp-group-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12px 4px 8px;
+  border-bottom: 1px dashed var(--paper-edge);
+  margin: 20px 0 12px;
+}
+.cp-group-header:first-child { margin-top: 0; }
+.cp-group-name {
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--ink);
+}
+.cp-group-count {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  font-weight: 500;
+}
+@media (max-width: 640px) {
+  .cp-group-name { font-size: 12px; letter-spacing: 2px; }
+  .cp-group-count { font-size: 11px; letter-spacing: 1px; }
+  .cp-group-header { padding: 8px 2px 6px; margin: 14px 0 8px; }
+}
+
 </style>
 </head>
 <body>
@@ -2850,27 +2878,48 @@ function closeBeat() {
   render();
 }
 
+const CP_GROUPS = [
+  { name: '一 至 九 · 与 店 员 的 每 一 个 瞬 间', cps: ['cp1','cp2','cp3','cp4','cp5','cp6','cp7','cp8','cp9'] },
+  { name: '十 至 十 六 · 三 位 客 人 之 间', cps: ['cp10','cp11','cp12','cp13','cp14','cp15','cp16'] }
+];
+
 function showNotebook() {
   const list = $('cp-list');
   list.innerHTML = '';
-  Object.entries(CONVERGENCES).forEach(([id, cp]) => {
-    const isUnlocked = state.convergences.has(id);
-    const entry = document.createElement('div');
-    entry.className = 'cp-entry' + (isUnlocked ? '' : ' locked');
-    if (isUnlocked) {
-      const record = state.notebookRecord[id] || {};
-      const povNames = Object.keys(record);
-      const povsHTML = povNames.map(char => {
-        const meta = (CHARACTERS[char]) || (NPC && NPC[char]) || { name: char };
-        return '<div class="cp-pov"><div class="cp-pov-name">' + meta.name + '</div><div class="cp-pov-text">' + renderTextWithQuotes(record[char] || '') + '</div></div>';
-      }).join('');
-      entry.innerHTML = '<div class="cp-entry-title">' + cp.title + '</div>' +
-                        (povsHTML ? '<div class="cp-entry-povs">' + povsHTML + '</div>' : '<div class="cp-locked-msg">这一晚，你经过了这里。</div>');
-    } else {
-      entry.innerHTML = '<div class="cp-entry-title">? · 尚 未 相 遇</div><div class="cp-locked-msg">继续在不同的视角里，看这一晚有没有交汇过...</div>';
-    }
-    list.appendChild(entry);
+
+  CP_GROUPS.forEach(group => {
+    // Count how many in this group are unlocked
+    const groupCPs = group.cps.filter(id => CONVERGENCES[id]);
+    const unlockedInGroup = groupCPs.filter(id => state.convergences.has(id)).length;
+    // Group header
+    const header = document.createElement('div');
+    header.className = 'cp-group-header';
+    header.innerHTML = '<span class="cp-group-name">' + group.name + '</span>' +
+                       '<span class="cp-group-count">' + unlockedInGroup + ' / ' + groupCPs.length + '</span>';
+    list.appendChild(header);
+    // Group entries
+    groupCPs.forEach(id => {
+      const cp = CONVERGENCES[id];
+      if (!cp) return;
+      const isUnlocked = state.convergences.has(id);
+      const entry = document.createElement('div');
+      entry.className = 'cp-entry' + (isUnlocked ? '' : ' locked');
+      if (isUnlocked) {
+        const record = state.notebookRecord[id] || {};
+        const povNames = Object.keys(record);
+        const povsHTML = povNames.map(char => {
+          const meta = (CHARACTERS[char]) || (typeof NPC !== 'undefined' && NPC[char]) || { name: char };
+          return '<div class="cp-pov"><div class="cp-pov-name">' + meta.name + '</div><div class="cp-pov-text">' + renderTextWithQuotes(record[char] || '') + '</div></div>';
+        }).join('');
+        entry.innerHTML = '<div class="cp-entry-title">' + cp.title + '</div>' +
+                          (povsHTML ? '<div class="cp-entry-povs">' + povsHTML + '</div>' : '<div class="cp-locked-msg">这一晚，你经过了这里。</div>');
+      } else {
+        entry.innerHTML = '<div class="cp-entry-title">? · 尚 未 相 遇</div><div class="cp-locked-msg">继续在不同的视角里，看这一晚有没有交汇过...</div>';
+      }
+      list.appendChild(entry);
+    });
   });
+
   $('notebook-screen').classList.remove('hidden');
   state.notebookOpen = true;
 }
@@ -2944,6 +2993,12 @@ function buildEndingLines(w) {
     lines.push('玻璃里映出他自己的脸，比他以为的样子更疲惫一点。');
   }
   lines.push('');
+  lines.push('');
+
+  // Stats: how many CPs were collected
+  const cpCount = state.convergences.size;
+  const totalCP = Object.keys(CONVERGENCES).length;
+  lines.push('这一晚，图鉴里记下了 ' + cpCount + ' / ' + totalCP + ' 段相遇。');
   lines.push('');
 
   // "藏在..." list — dynamic based on world state
@@ -3756,18 +3811,31 @@ function initCardNav() {
         updateCardDots();
       }
 // Object hints — shown as toast when player clicks something that isn't the current beat
+// Object hints — arrays; each click cycles through
 const OBJECT_HINTS = {
-  doorway:        '玻璃门。凌晨两点还开着。',
-  catBowl:        '猫碗。今晚有点满。',
-  driverSeat:     '窗边座位。',
-  waterDispenser: '饮水机。温水档。',
-  odenPot:        '关东煮的锅。',
-  shelves:        '货架。凌晨两点，货没什么变化。',
-  milkCabinet:    '热奶柜。上层的字很小。',
-  register:       '收银台。二维码和现金抽屉。',
-  radio:          '收音机。凌晨这时段偶尔放老歌。',
-  phone:          '有人的手机。屏幕亮着，没在看。'
+  doorway:        ['玻璃门。凌晨两点还开着。', '玻璃很亮，映得出人。', '门框的铜条氧化发绿。'],
+  catBowl:        ['猫碗。今晚有点满。', '碗底还有一点水渍。', '不锈钢的。风一吹会响。'],
+  driverSeat:     ['窗边座位。桌上一杯没喝完的水。', '这个位置晚上总有人坐。', '椅子腿有点晃。'],
+  waterDispenser: ['饮水机。温水档。', '手指伤口在水里会疼。', '水是甜的——也可能是你饿了。'],
+  odenPot:        ['关东煮的锅。', '汤底有点浑，煮过一晚的。', '香味漏出来一点点。'],
+  shelves:        ['货架。凌晨两点，货没什么变化。', '临期的往前排。', '灯管的影子从上面切过来。'],
+  milkCabinet:    ['热奶柜。上层的字很小。', '最上层的三瓶，日期不同。', '灯是偏红的，把牛奶照粉了。'],
+  register:       ['收银台。二维码和现金抽屉。', '一元硬币最前排一堆整齐的。', '柜台边有一根笔——被挪过又挪回来了。'],
+  radio:          ['收音机。凌晨这时段偶尔放老歌。', '现在放的是《春江花月夜》。', '开关的漆磨掉了。'],
+  phone:          ['有人的手机。屏幕亮着，没在看。', '正在等一个"还好"以外的字。', '屏幕锁没锁——你也不该看。']
 };
+
+// Cycle counter per key
+const _hintIdx = {};
+
+function nextHint(key) {
+  const arr = OBJECT_HINTS[key];
+  if (!arr || !arr.length) return null;
+  const i = _hintIdx[key] || 0;
+  const hint = arr[i % arr.length];
+  _hintIdx[key] = (i + 1) % arr.length;
+  return hint;
+}
 
 function initObjClicks() {
   document.querySelectorAll('.card-svg').forEach(svg => {
@@ -3783,7 +3851,7 @@ function initObjClicks() {
       }
       // Non-matching click — show hint
       if (state.dialogueOpen) return;  // don't spam during dialog
-      const hint = OBJECT_HINTS[hs];
+      const hint = nextHint(hs);
       if (hint) toast(hint);
     });
   });
