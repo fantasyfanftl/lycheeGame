@@ -3217,11 +3217,11 @@ function startNurseAmbient() {
   osc2.type = 'sine'; osc2.frequency.value = 82.5;
   const lfo = ctx.createOscillator();
   lfo.type = 'sine'; lfo.frequency.value = 0.08;
-  const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.06;
+  const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.03;
   lfo.connect(lfoGain);
   const droneGain = ctx.createGain();
   droneGain.gain.value = 0;
-  droneGain.gain.linearRampToValueAtTime(0.18, now + 2.2);
+  droneGain.gain.linearRampToValueAtTime(0.09, now + 2.2);
   lfoGain.connect(droneGain.gain);
   osc1.connect(droneGain);
   osc2.connect(droneGain);
@@ -3252,7 +3252,7 @@ function startCashierAmbient() {
   osc2.type = 'sine'; osc2.frequency.value = 100;
   const droneGain = ctx.createGain();
   droneGain.gain.value = 0;
-  droneGain.gain.linearRampToValueAtTime(0.13, now + 2);
+  droneGain.gain.linearRampToValueAtTime(0.06, now + 2);
   osc1.connect(droneGain);
   osc2.connect(droneGain);
   droneGain.connect(AUDIO.master);
@@ -3282,7 +3282,7 @@ function startDriverAmbient() {
   lpf.type = 'lowpass'; lpf.frequency.value = 180;
   const droneGain = ctx.createGain();
   droneGain.gain.value = 0;
-  droneGain.gain.linearRampToValueAtTime(0.08, now + 2);
+  droneGain.gain.linearRampToValueAtTime(0.04, now + 2);
   osc.connect(lpf);
   lpf.connect(droneGain);
   droneGain.connect(AUDIO.master);
@@ -3316,12 +3316,12 @@ function startTeenAmbient() {
   bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = 1.5;
   const windGain = ctx.createGain();
   windGain.gain.value = 0;
-  windGain.gain.linearRampToValueAtTime(0.09, now + 3);
+  windGain.gain.linearRampToValueAtTime(0.045, now + 3);
   // Slow modulation for wind swells
   const lfo = ctx.createOscillator();
   lfo.type = 'sine'; lfo.frequency.value = 0.15;
   const lfoGain = ctx.createGain();
-  lfoGain.gain.value = 0.05;
+  lfoGain.gain.value = 0.025;
   lfo.connect(lfoGain);
   lfoGain.connect(windGain.gain);
   noise.connect(bp);
@@ -3348,8 +3348,8 @@ function playPhoneVibration() {
     const g = ctx.createGain();
     const t0 = now + offset;
     g.gain.setValueAtTime(0, t0);
-    g.gain.linearRampToValueAtTime(0.05, t0 + 0.02);
-    g.gain.linearRampToValueAtTime(0.05, t0 + 0.14);
+    g.gain.linearRampToValueAtTime(0.025, t0 + 0.02);
+    g.gain.linearRampToValueAtTime(0.025, t0 + 0.14);
     g.gain.linearRampToValueAtTime(0, t0 + 0.18);
     osc.connect(g);
     g.connect(AUDIO.master);
@@ -3372,8 +3372,8 @@ function playTrafficWash() {
   lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 0.5;
   const g = ctx.createGain();
   g.gain.value = 0;
-  g.gain.linearRampToValueAtTime(0.05, now + 0.6);
-  g.gain.setValueAtTime(0.05, now + dur - 0.6);
+  g.gain.linearRampToValueAtTime(0.025, now + 0.6);
+  g.gain.setValueAtTime(0.025, now + dur - 0.6);
   g.gain.linearRampToValueAtTime(0, now + dur);
   noise.connect(lp);
   lp.connect(g);
@@ -3389,7 +3389,7 @@ function playMetalTink() {
   osc.type = 'triangle'; osc.frequency.value = 1800;
   const g = ctx.createGain();
   g.gain.setValueAtTime(0, now);
-  g.gain.linearRampToValueAtTime(0.03, now + 0.005);
+  g.gain.linearRampToValueAtTime(0.015, now + 0.005);
   g.gain.exponentialRampToValueAtTime(0.0005, now + 0.4);
   osc.connect(g);
   g.connect(AUDIO.master);
@@ -3411,8 +3411,8 @@ function playDistantTraffic() {
   lp.type = 'lowpass'; lp.frequency.value = 400; lp.Q.value = 0.5;
   const g = ctx.createGain();
   g.gain.value = 0;
-  g.gain.linearRampToValueAtTime(0.03, now + 0.5);
-  g.gain.setValueAtTime(0.03, now + dur - 0.5);
+  g.gain.linearRampToValueAtTime(0.015, now + 0.5);
+  g.gain.setValueAtTime(0.015, now + dur - 0.5);
   g.gain.linearRampToValueAtTime(0, now + dur);
   noise.connect(lp);
   lp.connect(g);
@@ -3456,7 +3456,7 @@ function playDoorChime() {
       u.lang = 'zh-CN';
       u.rate = 1.15;
       u.pitch = 1.2;
-      u.volume = 0.65;
+      u.volume = 0.4;
       const voice = (typeof getZhVoice === 'function') ? getZhVoice() : null;
       if (voice) u.voice = voice;
       speechSynthesis.speak(u);
@@ -3484,8 +3484,8 @@ function playFluorescent() {
 
   const g = ctx.createGain();
   g.gain.value = 0;
-  g.gain.linearRampToValueAtTime(0.10, now + 0.02);
-  g.gain.linearRampToValueAtTime(0.04, now + 0.06);
+  g.gain.linearRampToValueAtTime(0.05, now + 0.02);
+  g.gain.linearRampToValueAtTime(0.02, now + 0.06);
   g.gain.linearRampToValueAtTime(0, now + 0.18);
 
   noise.connect(filter);
@@ -3510,8 +3510,8 @@ function playHospitalBeep() {
     g.gain.value = 0;
     const t0 = now + offset;
     g.gain.setValueAtTime(0, t0);
-    g.gain.linearRampToValueAtTime(0.06, t0 + 0.03);
-    g.gain.linearRampToValueAtTime(0.06, t0 + 0.12);
+    g.gain.linearRampToValueAtTime(0.028, t0 + 0.03);
+    g.gain.linearRampToValueAtTime(0.028, t0 + 0.12);
     g.gain.linearRampToValueAtTime(0, t0 + 0.16);
 
     // Low-pass to soften it (feels far)
