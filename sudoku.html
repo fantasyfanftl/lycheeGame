@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数独游戏</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    padding: 30px;
+    max-width: 560px;
+    width: 100%;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 28px;
+  }
+  .back-link {
+    display: inline-block;
+    color: #764ba2;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 8px;
+    opacity: 0.75;
+    transition: opacity 0.15s;
+  }
+  .back-link:hover { opacity: 1; }
+  .info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #555;
+    font-size: 15px;
+  }
+  .difficulty {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+  }
+  .difficulty button {
+    padding: 6px 14px;
+    border: 2px solid #667eea;
+    background: #fff;
+    color: #667eea;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .difficulty button:hover { background: #eef; }
+  .difficulty button.active {
+    background: #667eea;
+    color: #fff;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 0;
+    border: 3px solid #333;
+    aspect-ratio: 1;
+    margin-bottom: 20px;
+    user-select: none;
+  }
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(16px, 4vw, 24px);
+    font-weight: 500;
+    background: #fff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background 0.15s;
+    aspect-ratio: 1;
+    position: relative;
+  }
+  .cell:nth-child(3n) { border-right: 2px solid #333; }
+  .cell:nth-child(9n) { border-right: 1px solid #ccc; }
+  .row-3 { border-bottom: 2px solid #333 !important; }
+  .cell.fixed { color: #222; font-weight: 700; background: #f5f7fa; }
+  .cell.selected { background: #b3d4fc !important; }
+  .cell.highlight { background: #e3edf9; }
+  .cell.same-num { background: #c6e0f5; }
+  .cell.error { color: #e74c3c; }
+  .cell:not(.fixed):hover { background: #eef4ff; }
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+  .numpad button {
+    padding: 12px 0;
+    font-size: 18px;
+    font-weight: 600;
+    background: #667eea;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .numpad button:hover { background: #5568d3; transform: translateY(-1px); }
+  .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .actions button {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f0f0f0;
+    color: #333;
+    transition: all 0.15s;
+  }
+  .actions button:hover { background: #e0e0e0; }
+  .actions .primary {
+    background: #764ba2;
+    color: #fff;
+  }
+  .actions .primary:hover { background: #5c3982; }
+  .message {
+    text-align: center;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    min-height: 24px;
+  }
+  .message.success { background: #d4edda; color: #155724; }
+  .message.error { background: #f8d7da; color: #721c24; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回游戏中心</a>
+  <h1>数独游戏</h1>
+  <div class="info">
+    <span>⏱ 时间: <span id="timer">00:00</span></span>
+    <span>❌ 错误: <span id="mistakes">0</span></span>
+  </div>
+  <div class="difficulty">
+    <button data-level="easy" class="active">简单</button>
+    <button data-level="medium">中等</button>
+    <button data-level="hard">困难</button>
+    <button data-level="expert">专家</button>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="numpad" id="numpad"></div>
+  <div class="actions">
+    <button id="newGame" class="primary">新游戏</button>
+    <button id="erase">擦除</button>
+    <button id="hint">提示</button>
+    <button id="check">检查</button>
+    <button id="solve">显示答案</button>
+  </div>
+  <div class="message" id="message"></div>
+</div>
+
+<script>
+const boardEl = document.getElementById('board');
+const numpadEl = document.getElementById('numpad');
+const timerEl = document.getElementById('timer');
+const mistakesEl = document.getElementById('mistakes');
+const messageEl = document.getElementById('message');
+
+let puzzle = [], solution = [], userBoard = [], fixed = [];
+let selected = null;
+let mistakes = 0;
+let seconds = 0;
+let timerId = null;
+let difficulty = 'easy';
+
+const DIFFICULTY = { easy: 40, medium: 32, hard: 26, expert: 22 };
+
+function createEmpty() {
+  return Array.from({length: 9}, () => Array(9).fill(0));
+}
+
+function isValid(g, r, c, n) {
+  for (let i = 0; i < 9; i++) {
+    if (g[r][i] === n || g[i][c] === n) return false;
+  }
+  const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 3; j++)
+      if (g[br+i][bc+j] === n) return false;
+  return true;
+}
+
+function solve(g) {
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (g[r][c] === 0) {
+        const nums = [1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
+        for (const n of nums) {
+          if (isValid(g, r, c, n)) {
+            g[r][c] = n;
+            if (solve(g)) return true;
+            g[r][c] = 0;
+          }
+        }
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function countSolutions(g, limit = 2) {
+  let count = 0;
+  function bt() {
+    if (count >= limit) return;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (g[r][c] === 0) {
+          for (let n = 1; n <= 9; n++) {
+            if (isValid(g, r, c, n)) {
+              g[r][c] = n;
+              bt();
+              g[r][c] = 0;
+              if (count >= limit) return;
+            }
+          }
+          return;
+        }
+      }
+    }
+    count++;
+  }
+  bt();
+  return count;
+}
+
+function generatePuzzle(clues) {
+  const grid = createEmpty();
+  solve(grid);
+  solution = grid.map(r => [...r]);
+  const puz = grid.map(r => [...r]);
+  const positions = [];
+  for (let i = 0; i < 81; i++) positions.push(i);
+  positions.sort(() => Math.random() - 0.5);
+  let removed = 0;
+  const target = 81 - clues;
+  for (const p of positions) {
+    if (removed >= target) break;
+    const r = Math.floor(p/9), c = p%9;
+    const backup = puz[r][c];
+    puz[r][c] = 0;
+    const copy = puz.map(x => [...x]);
+    if (countSolutions(copy) !== 1) {
+      puz[r][c] = backup;
+    } else {
+      removed++;
+    }
+  }
+  return puz;
+}
+
+function render() {
+  boardEl.innerHTML = '';
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if (r === 2 || r === 5) cell.classList.add('row-3');
+      if (fixed[r][c]) cell.classList.add('fixed');
+      cell.textContent = userBoard[r][c] || '';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      cell.addEventListener('click', () => selectCell(r, c));
+      boardEl.appendChild(cell);
+    }
+  }
+  applyHighlights();
+}
+
+function selectCell(r, c) {
+  selected = { r, c };
+  applyHighlights();
+}
+
+function applyHighlights() {
+  const cells = boardEl.children;
+  for (let i = 0; i < 81; i++) {
+    cells[i].classList.remove('selected', 'highlight', 'same-num', 'error');
+  }
+  if (!selected) return;
+  const { r, c } = selected;
+  const val = userBoard[r][c];
+  const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      const idx = i*9+j;
+      if (i === r || j === c || (i >= br && i < br+3 && j >= bc && j < bc+3)) {
+        cells[idx].classList.add('highlight');
+      }
+      if (val && userBoard[i][j] === val) {
+        cells[idx].classList.add('same-num');
+      }
+      if (userBoard[i][j] !== 0 && !fixed[i][j] && userBoard[i][j] !== solution[i][j]) {
+        cells[idx].classList.add('error');
+      }
+    }
+  }
+  cells[r*9+c].classList.add('selected');
+}
+
+function placeNumber(n) {
+  if (!selected) return;
+  const { r, c } = selected;
+  if (fixed[r][c]) return;
+  if (n !== 0 && userBoard[r][c] !== n && n !== solution[r][c]) {
+    mistakes++;
+    mistakesEl.textContent = mistakes;
+  }
+  userBoard[r][c] = n;
+  render();
+  if (isComplete()) {
+    stopTimer();
+    showMessage(`🎉 恭喜完成！用时 ${timerEl.textContent}，错误 ${mistakes} 次`, 'success');
+  }
+}
+
+function isComplete() {
+  for (let r = 0; r < 9; r++)
+    for (let c = 0; c < 9; c++)
+      if (userBoard[r][c] !== solution[r][c]) return false;
+  return true;
+}
+
+function showMessage(text, type) {
+  messageEl.textContent = text;
+  messageEl.className = 'message ' + (type || '');
+}
+
+function newGame() {
+  showMessage('生成中...', '');
+  setTimeout(() => {
+    puzzle = generatePuzzle(DIFFICULTY[difficulty]);
+    userBoard = puzzle.map(r => [...r]);
+    fixed = puzzle.map(r => r.map(v => v !== 0));
+    mistakes = 0;
+    seconds = 0;
+    selected = null;
+    mistakesEl.textContent = '0';
+    timerEl.textContent = '00:00';
+    showMessage('', '');
+    render();
+    startTimer();
+  }, 50);
+}
+
+function startTimer() {
+  stopTimer();
+  timerId = setInterval(() => {
+    seconds++;
+    const m = String(Math.floor(seconds/60)).padStart(2,'0');
+    const s = String(seconds%60).padStart(2,'0');
+    timerEl.textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerId) clearInterval(timerId);
+  timerId = null;
+}
+
+function buildNumpad() {
+  for (let n = 1; n <= 9; n++) {
+    const b = document.createElement('button');
+    b.textContent = n;
+    b.addEventListener('click', () => placeNumber(n));
+    numpadEl.appendChild(b);
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (!selected) return;
+  if (e.key >= '1' && e.key <= '9') placeNumber(parseInt(e.key));
+  else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') placeNumber(0);
+  else if (e.key.startsWith('Arrow')) {
+    let { r, c } = selected;
+    if (e.key === 'ArrowUp') r = (r+8)%9;
+    if (e.key === 'ArrowDown') r = (r+1)%9;
+    if (e.key === 'ArrowLeft') c = (c+8)%9;
+    if (e.key === 'ArrowRight') c = (c+1)%9;
+    selectCell(r, c);
+    e.preventDefault();
+  }
+});
+
+document.getElementById('newGame').addEventListener('click', newGame);
+document.getElementById('erase').addEventListener('click', () => placeNumber(0));
+document.getElementById('hint').addEventListener('click', () => {
+  if (!selected) { showMessage('请先选择一个格子', 'error'); return; }
+  const { r, c } = selected;
+  if (fixed[r][c]) return;
+  userBoard[r][c] = solution[r][c];
+  render();
+  if (isComplete()) {
+    stopTimer();
+    showMessage(`🎉 完成！用时 ${timerEl.textContent}`, 'success');
+  }
+});
+document.getElementById('check').addEventListener('click', () => {
+  let errors = 0;
+  for (let r = 0; r < 9; r++)
+    for (let c = 0; c < 9; c++)
+      if (userBoard[r][c] !== 0 && userBoard[r][c] !== solution[r][c]) errors++;
+  if (errors === 0) showMessage('✓ 目前填入均正确', 'success');
+  else showMessage(`✗ 发现 ${errors} 处错误`, 'error');
+});
+document.getElementById('solve').addEventListener('click', () => {
+  userBoard = solution.map(r => [...r]);
+  render();
+  stopTimer();
+  showMessage('已显示答案', '');
+});
+
+document.querySelectorAll('.difficulty button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.difficulty button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    difficulty = btn.dataset.level;
+    newGame();
+  });
+});
+
+buildNumpad();
+newGame();
+</script>
+</body>
+</html>
