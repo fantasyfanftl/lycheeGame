@@ -283,7 +283,8 @@
 
 <script>
 const INITIAL_SIZE = 5;
-const MAX_SIZE = 6;
+const MAX_SIZE = 7;
+const EXPAND_AT = { 128: 6, 512: 7 };  // value → new board size when this value first appears
 let SIZE = INITIAL_SIZE;
 
 // Tile size for a value
@@ -334,10 +335,10 @@ function setBoardSize(freshFrom = null) {
   }
 }
 
-function expandBoard() {
-  if (SIZE >= MAX_SIZE) return;
+function expandBoard(targetSize) {
+  if (SIZE >= targetSize) return;
   const oldSize = SIZE;
-  SIZE = MAX_SIZE;
+  SIZE = targetSize;
   // Preserve existing tile refs; grid grows to the right and bottom.
   const newGrid = Array.from({length: SIZE}, () => Array(SIZE).fill(null));
   for (let y = 0; y < oldSize; y++)
@@ -481,7 +482,7 @@ function move(dir) {
   let gain = 0;
   const mergedIds = new Set();  // survivors of a merge this turn (can't merge again)
   const failedMergeIds = new Set();  // tiles that tried to merge but no room for new size
-  let triggerExpand = false;
+  let triggerExpand = 0;  // 0 = no expand; otherwise the target board size
 
   for (const t of sorted) {
     if (t._removed) continue;
@@ -519,7 +520,7 @@ function move(dir) {
         mergedIds.add(front.id);
         gain += newV;
         didMove = true;
-        if (newV === 128 && SIZE < MAX_SIZE) triggerExpand = true;
+        if (EXPAND_AT[newV] && SIZE < EXPAND_AT[newV]) triggerExpand = EXPAND_AT[newV];
         if (newV === 2048 && !wonEver) { won = true; wonEver = true; }
       } else {
         // Merge fails, put them back and mark for shake feedback
