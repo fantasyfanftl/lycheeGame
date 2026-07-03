@@ -822,6 +822,113 @@ body {
   color: rgba(240, 223, 186, 0.9);
   background: rgba(0,0,0,0.3);
 }
+
+/* ========== Scene cards ========== */
+.scene-cards {
+  flex: 1;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  height: 100%;
+}
+.scene-cards::-webkit-scrollbar { display: none; }
+
+.scene-card {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.card-svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.hotspots-layer, .chars-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hotspots-layer > * { pointer-events: auto; }
+
+.card-label {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--paper);
+  opacity: 0.55;
+  background: rgba(20, 25, 40, 0.4);
+  padding: 4px 14px;
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.card-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
+.card-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(232, 220, 196, 0.35);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s ease;
+}
+.card-dot.active {
+  background: var(--warm-glow);
+  transform: scale(1.4);
+}
+
+.card-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(20, 25, 40, 0.35);
+  color: var(--paper);
+  border: 1px solid rgba(232, 220, 196, 0.3);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.2s;
+  padding: 0;
+}
+.card-nav:hover { background: rgba(20, 25, 40, 0.6); }
+.card-prev { left: 8px; }
+.card-next { right: 8px; }
+.card-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+@media (max-width: 640px) {
+  .card-nav { display: none; }
+  .card-label { top: 8px; font-size: 10px; letter-spacing: 3px; padding: 3px 12px; }
+  .card-dots { bottom: 8px; }
+}
+
 </style>
 </head>
 <body>
@@ -853,174 +960,200 @@ body {
     </div>
 
     <div class="scene-wrap">
-      <svg id="scene-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
-        <!-- Scene art (background, store, exterior) -->
-        <g id="scene-art">
-          <!-- Exterior sky (night, left third) -->
-          <rect x="0" y="0" width="380" height="700" fill="#2a3448"/>
-          <!-- Stars -->
-          <circle cx="60"  cy="120" r="1"   fill="#f5c88a" opacity="0.8"/>
-          <circle cx="180" cy="50"  r="1"   fill="#f5c88a" opacity="0.6"/>
-          <circle cx="240" cy="180" r="1.2" fill="#f5c88a" opacity="0.7"/>
-          <circle cx="330" cy="100" r="1"   fill="#f5c88a" opacity="0.5"/>
-          <circle cx="45"  cy="220" r="0.8" fill="#f5c88a" opacity="0.5"/>
-          <!-- Moon (crescent) -->
-          <circle cx="90"  cy="80"  r="26" fill="#f5c88a" opacity="0.85"/>
-          <circle cx="100" cy="74"  r="24" fill="#2a3448"/>
-          <!-- Lamppost with warm glow -->
-          <line x1="150" y1="500" x2="150" y2="180" stroke="#3d2f24" stroke-width="2.5"/>
-          <circle cx="150" cy="175" r="26" fill="#f5c88a" opacity="0.12"/>
-          <circle cx="150" cy="175" r="14" fill="#f5c88a" opacity="0.35"/>
-          <circle cx="150" cy="175" r="7"  fill="#f9f3e8" opacity="0.95"/>
-          <!-- Sidewalk edge -->
-          <line x1="0" y1="600" x2="380" y2="600" stroke="#c9b48a" stroke-width="0.6" opacity="0.5"/>
-          <!-- Storefront steps -->
-          <line x1="220" y1="600" x2="380" y2="600" stroke="#c9b48a" stroke-width="1"/>
-          <line x1="220" y1="620" x2="380" y2="620" stroke="#c9b48a" stroke-width="1"/>
-          <line x1="220" y1="640" x2="380" y2="640" stroke="#c9b48a" stroke-width="1"/>
-          <!-- Cat bowl -->
-          <ellipse cx="285" cy="642" rx="18" ry="4.5" fill="#3d2f24" opacity="0.55"/>
-          <ellipse cx="285" cy="640" rx="18" ry="4" fill="none" stroke="#c9b48a" stroke-width="1"/>
-          <text x="285" y="672" font-size="10" fill="#c9b48a" text-anchor="middle" letter-spacing="2" font-family="serif">猫 碗</text>
-          <!-- Cat silhouette (near bowl) -->
-          <g transform="translate(240, 618)" opacity="0.75">
-            <ellipse cx="0" cy="10" rx="16" ry="6" fill="#d9a760"/>
-            <circle  cx="-13" cy="5" r="6.5" fill="#d9a760"/>
-            <path d="M-18 2 L-16 -3 L-14 2 Z" fill="#d9a760"/>
-            <path d="M-11 2 L-9 -3 L-7 2 Z"  fill="#d9a760"/>
-          </g>
+      <div class="scene-cards" id="scene-cards">
+        <!-- Card 1: 门口台阶 -->
+        <div class="scene-card" data-card="doorstep">
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
+            <!-- Sky -->
+            <rect x="0" y="0" width="400" height="380" fill="#2a3448"/>
+            <!-- Stars -->
+            <circle cx="60" cy="80" r="1" fill="#f5c88a" opacity="0.8"/>
+            <circle cx="180" cy="40" r="1" fill="#f5c88a" opacity="0.6"/>
+            <circle cx="320" cy="60" r="1.2" fill="#f5c88a" opacity="0.7"/>
+            <circle cx="90" cy="140" r="0.8" fill="#f5c88a" opacity="0.5"/>
+            <circle cx="260" cy="160" r="1" fill="#f5c88a" opacity="0.6"/>
+            <!-- Moon (crescent) -->
+            <circle cx="80" cy="70" r="26" fill="#f5c88a" opacity="0.85"/>
+            <circle cx="90" cy="64" r="24" fill="#2a3448"/>
+            <!-- Lamppost -->
+            <line x1="330" y1="380" x2="330" y2="140" stroke="#3d2f24" stroke-width="2.5"/>
+            <circle cx="330" cy="135" r="26" fill="#f5c88a" opacity="0.14"/>
+            <circle cx="330" cy="135" r="14" fill="#f5c88a" opacity="0.4"/>
+            <circle cx="330" cy="135" r="7" fill="#f9f3e8" opacity="0.95"/>
+            <!-- Sidewalk / steps -->
+            <line x1="0" y1="380" x2="400" y2="380" stroke="#c9b48a" stroke-width="0.8" opacity="0.5"/>
+            <line x1="0" y1="410" x2="400" y2="410" stroke="#c9b48a" stroke-width="1"/>
+            <line x1="0" y1="435" x2="400" y2="435" stroke="#c9b48a" stroke-width="1"/>
+            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1"/>
+            <!-- Ground fill (dark below) -->
+            <rect x="0" y="460" width="400" height="90" fill="#1e2637"/>
+            <!-- Cat bowl -->
+            <ellipse cx="130" cy="472" rx="20" ry="5" fill="#3d2f24" opacity="0.6"/>
+            <ellipse cx="130" cy="470" rx="20" ry="4.5" fill="none" stroke="#c9b48a" stroke-width="1"/>
+            <text x="130" y="502" font-size="11" fill="#c9b48a" text-anchor="middle" letter-spacing="2" font-family="serif">猫 碗</text>
+            <!-- Cat silhouette -->
+            <g transform="translate(85, 445)" opacity="0.75">
+              <ellipse cx="0" cy="12" rx="18" ry="7" fill="#d9a760"/>
+              <circle cx="-14" cy="7" r="7" fill="#d9a760"/>
+              <path d="M-19 3 L-16 -3 L-13 3 Z" fill="#d9a760"/>
+              <path d="M-11 3 L-8 -3 L-5 3 Z" fill="#d9a760"/>
+            </g>
+            <!-- Glass door edge (right, connecting to interior) -->
+            <rect x="350" y="180" width="50" height="270" fill="#c9b48a" opacity="0.15"/>
+            <line x1="350" y1="180" x2="350" y2="450" stroke="#8b6f47" stroke-width="1.5"/>
+            <text x="375" y="220" font-size="10" fill="#c9b48a" text-anchor="middle" letter-spacing="1" font-family="serif">→ 店 内</text>
+          </svg>
+          <div class="hotspots-layer" data-card-hotspots="doorstep"></div>
+          <div class="chars-layer" data-card-chars="doorstep"></div>
+          <div class="card-label">门 口 · 台 阶</div>
+        </div>
 
-          <!-- Interior warm background -->
-          <rect x="380" y="0" width="820" height="700" fill="#e8dcc4"/>
-          <!-- Ceiling warm halo -->
-          <ellipse cx="800" cy="0" rx="520" ry="130" fill="#f5c88a" opacity="0.14"/>
-          <!-- Storefront glass frame -->
-          <line x1="380" y1="0" x2="380" y2="700" stroke="#8b6f47" stroke-width="2"/>
-          <!-- Glass door -->
-          <rect x="380" y="180" width="60" height="330" fill="#c9b48a" opacity="0.12"/>
-          <line x1="440" y1="180" x2="440" y2="510" stroke="#8b6f47" stroke-width="1.5"/>
-          <line x1="380" y1="180" x2="440" y2="180" stroke="#8b6f47" stroke-width="1.5"/>
-          <line x1="380" y1="510" x2="440" y2="510" stroke="#8b6f47" stroke-width="1.5"/>
-          <!-- Door handle -->
-          <circle cx="432" cy="345" r="2.5" fill="#3d2f24"/>
-          <text x="410" y="540" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">玻 璃 门</text>
+        <!-- Card 2: 窗边座位 -->
+        <div class="scene-card" data-card="window">
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
+            <!-- Interior -->
+            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
+            <!-- Ceiling halo -->
+            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
+            <!-- Ceiling light tube -->
+            <rect x="80" y="20" width="240" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <!-- Window (top strip showing night outside) -->
+            <rect x="20" y="60" width="360" height="120" fill="#2a3448" stroke="#8b6f47" stroke-width="1.5"/>
+            <line x1="200" y1="60" x2="200" y2="180" stroke="#8b6f47" stroke-width="1"/>
+            <!-- Small moon in window -->
+            <circle cx="90" cy="100" r="14" fill="#f5c88a" opacity="0.5"/>
+            <circle cx="95" cy="97" r="12" fill="#2a3448"/>
+            <!-- Window seat table -->
+            <rect x="80" y="330" width="240" height="8" fill="#a67240"/>
+            <!-- Table legs -->
+            <line x1="100" y1="338" x2="100" y2="440" stroke="#8b6f47" stroke-width="2"/>
+            <line x1="300" y1="338" x2="300" y2="440" stroke="#8b6f47" stroke-width="2"/>
+            <!-- Frame -->
+            <rect x="60" y="240" width="280" height="200" fill="none" stroke="#a67240" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+            <text x="200" y="480" font-size="12" fill="#3d2f24" text-anchor="middle" letter-spacing="4" font-family="serif">窗 边 座 位</text>
+            <!-- Floor line -->
+            <line x1="0" y1="500" x2="400" y2="500" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+          </svg>
+          <div class="hotspots-layer" data-card-hotspots="window"></div>
+          <div class="chars-layer" data-card-chars="window"></div>
+          <div class="card-label">窗 边 座 位</div>
+        </div>
 
-          <!-- Ceiling fluorescent tubes -->
-          <rect x="480" y="20" width="220" height="7" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
-          <rect x="760" y="20" width="220" height="7" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
-          <!-- One flickering (slightly dimmer) -->
-          <rect x="580" y="20" width="60" height="7" fill="#c17b52" opacity="0.25"/>
+        <!-- Card 3: 中央货架 -->
+        <div class="scene-card" data-card="middle">
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
+            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
+            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
+            <!-- Ceiling tubes with flicker -->
+            <rect x="30" y="20" width="150" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect x="220" y="20" width="150" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect x="90" y="20" width="45" height="6" fill="#c17b52" opacity="0.3"/>
+            <!-- Water dispenser -->
+            <rect x="35" y="200" width="80" height="140" fill="#c9b48a" stroke="#3d2f24" stroke-width="1.5"/>
+            <rect x="50" y="220" width="50" height="8" fill="#3d2f24" opacity="0.6"/>
+            <rect x="55" y="238" width="10" height="12" fill="#8b6f47"/>
+            <circle cx="80" cy="292" r="3" fill="#3d2f24"/>
+            <circle cx="92" cy="292" r="3" fill="#3d2f24"/>
+            <text x="75" y="360" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">饮 水 机</text>
+            <!-- Oden pot with steam -->
+            <ellipse cx="200" cy="230" rx="42" ry="8" fill="#8b6f47"/>
+            <rect x="158" y="230" width="84" height="52" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="178" y1="235" x2="178" y2="270" stroke="#f5c88a" stroke-width="1"/>
+            <line x1="192" y1="235" x2="192" y2="270" stroke="#f5c88a" stroke-width="1"/>
+            <line x1="206" y1="235" x2="206" y2="270" stroke="#f5c88a" stroke-width="1"/>
+            <line x1="220" y1="235" x2="220" y2="270" stroke="#f5c88a" stroke-width="1"/>
+            <path d="M188 220 Q184 208 188 196 Q192 184 188 172" stroke="#c9b48a" stroke-width="2" fill="none" opacity="0.55"/>
+            <path d="M204 218 Q208 206 204 194 Q200 182 204 170" stroke="#c9b48a" stroke-width="2" fill="none" opacity="0.5"/>
+            <path d="M218 220 Q222 208 218 196 Q214 184 218 172" stroke="#c9b48a" stroke-width="2" fill="none" opacity="0.55"/>
+            <text x="200" y="305" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">关 东 煮</text>
+            <!-- Shelves -->
+            <rect x="290" y="180" width="90" height="200" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="290" y1="230" x2="380" y2="230" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="290" y1="280" x2="380" y2="280" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="290" y1="330" x2="380" y2="330" stroke="#3d2f24" stroke-width="1"/>
+            <rect x="296" y="188" width="10" height="14" fill="#c17b52" opacity="0.7"/>
+            <rect x="310" y="188" width="10" height="14" fill="#a67240" opacity="0.7"/>
+            <rect x="335" y="238" width="12" height="18" fill="#c17b52" opacity="0.7"/>
+            <rect x="352" y="238" width="12" height="18" fill="#c9b48a" opacity="0.7"/>
+            <rect x="300" y="288" width="15" height="20" fill="#a67240" opacity="0.7"/>
+            <rect x="330" y="338" width="20" height="25" fill="#c17b52" opacity="0.7"/>
+            <text x="335" y="400" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
+            <!-- Floor -->
+            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+          </svg>
+          <div class="hotspots-layer" data-card-hotspots="middle"></div>
+          <div class="chars-layer" data-card-chars="middle"></div>
+          <div class="card-label">中 央 货 架</div>
+        </div>
 
-          <!-- Window seat area -->
-          <rect x="480" y="360" width="130" height="90" fill="none" stroke="#a67240" stroke-width="1.5"/>
-          <line x1="480" y1="360" x2="610" y2="360" stroke="#a67240" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.6"/>
-          <!-- Table -->
-          <rect x="490" y="405" width="110" height="6" fill="#a67240"/>
-          <text x="545" y="470" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="3" font-family="serif">窗 边 座 位</text>
+        <!-- Card 4: 收银台 -->
+        <div class="scene-card" data-card="register">
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
+            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
+            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
+            <!-- Ceiling tube -->
+            <rect x="80" y="20" width="240" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <!-- Clock top-right -->
+            <circle cx="350" cy="70" r="26" fill="#f9f3e8" stroke="#3d2f24" stroke-width="1.5"/>
+            <circle cx="350" cy="70" r="1.5" fill="#3d2f24"/>
+            <line x1="350" y1="70" x2="350" y2="52" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="350" y1="70" x2="362" y2="70" stroke="#3d2f24" stroke-width="1.5"/>
+            <text x="350" y="115" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">02 : 00</text>
+            <!-- Milk cabinet -->
+            <rect x="40" y="170" width="120" height="180" fill="#c9b48a" opacity="0.35" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="40" y1="230" x2="160" y2="230" stroke="#3d2f24" stroke-width="0.8"/>
+            <line x1="40" y1="285" x2="160" y2="285" stroke="#3d2f24" stroke-width="0.8"/>
+            <rect x="40" y="168" width="120" height="4" fill="#c17b52" opacity="0.7"/>
+            <rect x="55" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+            <rect x="75" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+            <rect x="95" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+            <rect x="115" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+            <rect x="60" y="240" width="12" height="30" fill="#c17b52" opacity="0.6"/>
+            <rect x="85" y="240" width="12" height="30" fill="#8b6f47" opacity="0.6"/>
+            <rect x="115" y="240" width="12" height="30" fill="#a67240" opacity="0.6"/>
+            <text x="100" y="375" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">热 奶 柜</text>
+            <!-- Register / counter -->
+            <rect x="220" y="250" width="150" height="120" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="220" y1="285" x2="370" y2="285" stroke="#3d2f24" stroke-width="0.8"/>
+            <!-- QR sign -->
+            <rect x="235" y="298" width="26" height="26" fill="#3d2f24"/>
+            <rect x="238" y="301" width="7" height="7" fill="#e8dcc4"/>
+            <rect x="250" y="301" width="7" height="7" fill="#e8dcc4"/>
+            <rect x="238" y="313" width="7" height="7" fill="#e8dcc4"/>
+            <rect x="252" y="315" width="5" height="5" fill="#e8dcc4"/>
+            <!-- Cash drawer -->
+            <rect x="280" y="330" width="80" height="26" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
+            <circle cx="320" cy="343" r="1.5" fill="#3d2f24"/>
+            <!-- Radio -->
+            <rect x="220" y="220" width="55" height="18" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8" rx="2"/>
+            <circle cx="234" cy="229" r="3" fill="#3d2f24"/>
+            <circle cx="248" cy="229" r="3" fill="#3d2f24"/>
+            <line x1="258" y1="224" x2="270" y2="224" stroke="#3d2f24" stroke-width="0.6"/>
+            <line x1="258" y1="228" x2="270" y2="228" stroke="#3d2f24" stroke-width="0.6"/>
+            <line x1="258" y1="232" x2="270" y2="232" stroke="#3d2f24" stroke-width="0.6"/>
+            <text x="248" y="215" font-size="8" fill="#3d2f24" text-anchor="middle" opacity="0.6" font-family="serif">收音机</text>
+            <text x="295" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
+            <!-- Floor -->
+            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+          </svg>
+          <div class="hotspots-layer" data-card-hotspots="register"></div>
+          <div class="chars-layer" data-card-chars="register"></div>
+          <div class="card-label">收 银 台</div>
+        </div>
+      </div>
 
-          <!-- Water dispenser -->
-          <rect x="650" y="290" width="80" height="130" fill="#c9b48a" stroke="#3d2f24" stroke-width="1.5"/>
-          <rect x="665" y="308" width="50" height="8" fill="#3d2f24" opacity="0.6"/>
-          <rect x="670" y="325" width="10" height="12" fill="#8b6f47"/>
-          <circle cx="698" cy="378" r="3" fill="#3d2f24"/>
-          <circle cx="710" cy="378" r="3" fill="#3d2f24"/>
-          <text x="690" y="440" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">饮 水 机</text>
+      <!-- Nav dots -->
+      <div class="card-dots" id="card-dots">
+        <button class="card-dot" data-card="doorstep" aria-label="门口"></button>
+        <button class="card-dot" data-card="window" aria-label="窗边"></button>
+        <button class="card-dot" data-card="middle" aria-label="中央"></button>
+        <button class="card-dot" data-card="register" aria-label="收银台"></button>
+      </div>
 
-          <!-- Oden pot with steam -->
-          <ellipse cx="780" cy="320" rx="42" ry="8" fill="#8b6f47"/>
-          <rect x="738" y="320" width="84" height="50" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
-          <!-- Skewers -->
-          <line x1="758" y1="325" x2="758" y2="355" stroke="#f5c88a" stroke-width="1"/>
-          <line x1="772" y1="325" x2="772" y2="355" stroke="#f5c88a" stroke-width="1"/>
-          <line x1="786" y1="325" x2="786" y2="355" stroke="#f5c88a" stroke-width="1"/>
-          <line x1="800" y1="325" x2="800" y2="355" stroke="#f5c88a" stroke-width="1"/>
-          <!-- Steam curls -->
-          <path d="M765 315 Q760 305 765 295 Q770 285 765 275" stroke="#e8dcc4" stroke-width="2" fill="none" opacity="0.6"/>
-          <path d="M780 313 Q785 303 780 293 Q775 283 780 273" stroke="#e8dcc4" stroke-width="2" fill="none" opacity="0.55"/>
-          <path d="M795 315 Q800 305 795 295 Q790 285 795 275" stroke="#e8dcc4" stroke-width="2" fill="none" opacity="0.6"/>
-          <text x="780" y="390" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">关 东 煮</text>
-
-          <!-- Shelves -->
-          <rect x="850" y="200" width="100" height="200" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
-          <line x1="850" y1="250" x2="950" y2="250" stroke="#3d2f24" stroke-width="1"/>
-          <line x1="850" y1="300" x2="950" y2="300" stroke="#3d2f24" stroke-width="1"/>
-          <line x1="850" y1="350" x2="950" y2="350" stroke="#3d2f24" stroke-width="1"/>
-          <!-- Items on shelves -->
-          <rect x="856" y="207" width="10" height="15" fill="#c17b52" opacity="0.7"/>
-          <rect x="870" y="207" width="10" height="15" fill="#a67240" opacity="0.7"/>
-          <rect x="890" y="210" width="8"  height="12" fill="#8b6f47" opacity="0.7"/>
-          <rect x="905" y="257" width="12" height="18" fill="#c17b52" opacity="0.7"/>
-          <rect x="920" y="257" width="12" height="18" fill="#c9b48a" opacity="0.7"/>
-          <rect x="860" y="307" width="15" height="20" fill="#a67240" opacity="0.7"/>
-          <rect x="880" y="307" width="15" height="20" fill="#8b6f47" opacity="0.7"/>
-          <rect x="900" y="357" width="20" height="25" fill="#c17b52" opacity="0.7"/>
-          <text x="900" y="420" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
-
-          <!-- Milk (hot drink) cabinet -->
-          <rect x="960" y="240" width="100" height="140" fill="#c9b48a" opacity="0.35" stroke="#3d2f24" stroke-width="1.5"/>
-          <line x1="960" y1="290" x2="1060" y2="290" stroke="#3d2f24" stroke-width="0.8"/>
-          <line x1="960" y1="330" x2="1060" y2="330" stroke="#3d2f24" stroke-width="0.8"/>
-          <!-- Milk cartons on top shelf -->
-          <rect x="972"  y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-          <rect x="990"  y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-          <rect x="1008" y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-          <rect x="1026" y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-          <!-- Middle shelf -->
-          <rect x="975"  y="298" width="10" height="25" fill="#c17b52" opacity="0.6"/>
-          <rect x="1000" y="298" width="10" height="25" fill="#8b6f47" opacity="0.6"/>
-          <rect x="1030" y="298" width="10" height="25" fill="#a67240" opacity="0.6"/>
-          <!-- Red-tinted lamp (mentioned in cashier's beat 1) -->
-          <rect x="960" y="238" width="100" height="4" fill="#c17b52" opacity="0.65"/>
-          <text x="1010" y="400" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">热 奶 柜</text>
-
-          <!-- Register / counter -->
-          <rect x="1070" y="410" width="120" height="95" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
-          <line x1="1070" y1="435" x2="1190" y2="435" stroke="#3d2f24" stroke-width="0.8"/>
-          <!-- QR code sign -->
-          <rect x="1082" y="445" width="22" height="22" fill="#3d2f24"/>
-          <rect x="1085" y="448" width="6" height="6" fill="#e8dcc4"/>
-          <rect x="1095" y="448" width="6" height="6" fill="#e8dcc4"/>
-          <rect x="1085" y="458" width="6" height="6" fill="#e8dcc4"/>
-          <rect x="1097" y="460" width="4" height="4" fill="#e8dcc4"/>
-          <!-- Cash drawer -->
-          <rect x="1115" y="472" width="70" height="22" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
-          <circle cx="1150" cy="483" r="1.5" fill="#3d2f24"/>
-          <!-- Radio on shelf behind counter -->
-          <rect x="1028" y="395" width="48" height="17" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8" rx="2"/>
-          <circle cx="1041" cy="403" r="2.5" fill="#3d2f24"/>
-          <circle cx="1052" cy="403" r="2.5" fill="#3d2f24"/>
-          <line x1="1062" y1="399" x2="1072" y2="399" stroke="#3d2f24" stroke-width="0.6"/>
-          <line x1="1062" y1="403" x2="1072" y2="403" stroke="#3d2f24" stroke-width="0.6"/>
-          <line x1="1062" y1="407" x2="1072" y2="407" stroke="#3d2f24" stroke-width="0.6"/>
-          <text x="1055" y="388" font-size="8" fill="#3d2f24" text-anchor="middle" opacity="0.6" font-family="serif">收音机</text>
-          <text x="1130" y="525" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
-
-          <!-- Floor line -->
-          <line x1="380" y1="560" x2="1200" y2="560" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
-
-          <!-- Clock (top right of interior) -->
-          <circle cx="1150" cy="60" r="26" fill="#f9f3e8" stroke="#3d2f24" stroke-width="1.5"/>
-          <circle cx="1150" cy="60" r="1.5" fill="#3d2f24"/>
-          <line x1="1150" y1="60" x2="1150" y2="42" stroke="#3d2f24" stroke-width="1.5"/>
-          <line x1="1150" y1="60" x2="1162" y2="60" stroke="#3d2f24" stroke-width="1.5"/>
-          <!-- Hour markers -->
-          <circle cx="1150" cy="38"  r="1" fill="#3d2f24"/>
-          <circle cx="1172" cy="60"  r="1" fill="#3d2f24"/>
-          <circle cx="1150" cy="82"  r="1" fill="#3d2f24"/>
-          <circle cx="1128" cy="60"  r="1" fill="#3d2f24"/>
-          <text x="1150" y="105" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">02 : 00</text>
-        </g>
-
-        <!-- Characters (drawn on top of scene) -->
-        <g id="characters">
-          <!-- placeholder -->
-        </g>
-
-        <!-- Hotspot glows (rendered above chars) -->
-        <g id="hotspots"></g>
-      </svg>
+      <!-- Prev/Next arrows (visible on desktop) -->
+      <button class="card-nav card-prev" id="card-prev" aria-label="上一张">‹</button>
+      <button class="card-nav card-next" id="card-next" aria-label="下一张">›</button>
     </div>
-
     <div class="bottom-bar">
       <div class="pov-indicator">
         <div class="pov-label">当前视角</div>
@@ -1092,22 +1225,23 @@ const NPC = {
 };
 
 // Hotspot scene positions (SVG coords)
+// Hotspots — each with card assignment + local (x,y) within that card's viewBox (400x550)
 const HOTSPOTS = {
-  doorway:        { x: 410, y: 400 },
-  milkCabinet:    { x: 985, y: 305 },
-  odenPot:        { x: 780, y: 320 },
-  shelves:        { x: 900, y: 380 },
-  register:       { x: 1120, y: 455 },
-  catBowl:        { x: 285, y: 640 },
-  driverSeat:     { x: 545, y: 385 },
-  waterDispenser: { x: 690, y: 350 },
-  radio:          { x: 1055, y: 420 },
-  // Character positions (POV or NPC)
-  cashier:        { x: 1120, y: 440 },
-  nurse:          { x: 915, y: 440 },
-  driver:         { x: 545, y: 400 },
-  teen:           { x: 260, y: 595 },
-  oldman:         { x: 800, y: 440 }
+  doorway:        { card: 'doorstep', x: 355, y: 300 },
+  catBowl:        { card: 'doorstep', x: 130, y: 470 },
+  driverSeat:     { card: 'window',   x: 200, y: 340 },
+  waterDispenser: { card: 'middle',   x: 75,  y: 285 },
+  odenPot:        { card: 'middle',   x: 200, y: 260 },
+  shelves:        { card: 'middle',   x: 335, y: 285 },
+  radio:          { card: 'register', x: 248, y: 228 },
+  milkCabinet:    { card: 'register', x: 100, y: 200 },
+  register:       { card: 'register', x: 295, y: 305 },
+  // Character positions (used for click-on-character hotspot beats)
+  cashier:        { card: 'register', x: 320, y: 400 },
+  nurse:          { card: 'middle',   x: 200, y: 400 },
+  driver:         { card: 'window',   x: 200, y: 380 },
+  teen:           { card: 'doorstep', x: 60,  y: 470 },
+  oldman:         { card: 'middle',   x: 340, y: 400 }
 };
 
 // Beats — filled by later batches (empty scaffolds for now)
@@ -1968,72 +2102,83 @@ function renderPOVIndicator() {
 }
 
 function renderHotspots() {
-  const g = $('hotspots');
-  g.innerHTML = '';
+  document.querySelectorAll('[data-card-hotspots]').forEach(el => { el.innerHTML = ''; });
   const beat = currentBeat();
   if (!beat || state.dialogueOpen) return;
-
   const pos = HOTSPOTS[beat.hs];
   if (!pos) return;
 
-  const svgNS = 'http://www.w3.org/2000/svg';
+  const cardEl = document.querySelector('[data-card-hotspots="' + pos.card + '"]');
+  if (!cardEl) return;
 
-  // 1. Outer ripple ring — radar ping expanding outward
+  // Create SVG overlay for this hotspot
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const overlay = document.createElementNS(svgNS, 'svg');
+  overlay.setAttribute('viewBox', '0 0 400 550');
+  overlay.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  overlay.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;');
+
+  // Ripple ring
   const ring = document.createElementNS(svgNS, 'circle');
-  ring.setAttribute('cx', pos.x);
-  ring.setAttribute('cy', pos.y);
-  ring.setAttribute('r', 30);
+  ring.setAttribute('cx', pos.x); ring.setAttribute('cy', pos.y); ring.setAttribute('r', 22);
   ring.setAttribute('fill', 'none');
   ring.setAttribute('stroke', 'rgba(245, 200, 138, 0.9)');
   ring.setAttribute('stroke-width', '3');
   ring.setAttribute('class', 'hotspot-ring');
-  ring.setAttribute('pointer-events', 'none');
-  g.appendChild(ring);
+  overlay.appendChild(ring);
 
-  // 2. Middle warm glow — soft breathing halo
+  // Warm glow
   const glow = document.createElementNS(svgNS, 'circle');
-  glow.setAttribute('cx', pos.x);
-  glow.setAttribute('cy', pos.y);
-  glow.setAttribute('r', 28);
+  glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y); glow.setAttribute('r', 20);
   glow.setAttribute('fill', 'rgba(245, 200, 138, 0.55)');
   glow.setAttribute('class', 'hotspot-glow');
-  glow.setAttribute('pointer-events', 'none');
-  g.appendChild(glow);
+  overlay.appendChild(glow);
 
-  // 3. Bright center dot — clear click target
+  // Bright center dot
   const dot = document.createElementNS(svgNS, 'circle');
-  dot.setAttribute('cx', pos.x);
-  dot.setAttribute('cy', pos.y);
-  dot.setAttribute('r', 7);
+  dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y); dot.setAttribute('r', 6);
   dot.setAttribute('fill', 'rgba(249, 243, 232, 0.95)');
   dot.setAttribute('stroke', 'rgba(193, 123, 82, 0.9)');
   dot.setAttribute('stroke-width', '1.5');
   dot.setAttribute('class', 'hotspot-dot');
-  dot.setAttribute('pointer-events', 'none');
-  g.appendChild(dot);
+  overlay.appendChild(dot);
 
-  // 4. Invisible click target — larger than visual for easy tap
+  // Click target (larger, invisible)
   const hit = document.createElementNS(svgNS, 'circle');
-  hit.setAttribute('cx', pos.x);
-  hit.setAttribute('cy', pos.y);
-  hit.setAttribute('r', 55);
+  hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 45);
   hit.setAttribute('fill', 'transparent');
-  hit.setAttribute('class', 'hotspot-target');
+  hit.setAttribute('style', 'pointer-events:auto;cursor:pointer;');
   hit.addEventListener('click', () => triggerHotspot(beat.hs));
-  g.appendChild(hit);
+  overlay.appendChild(hit);
+
+  cardEl.appendChild(overlay);
+
+  // Auto-scroll to this card if not already there
+  scrollToCard(pos.card);
 }
 
 function renderCharacters() {
-  const g = $('characters');
-  g.innerHTML = '';
-  CHAR_ORDER.forEach(id => {
+  document.querySelectorAll('[data-card-chars]').forEach(el => { el.innerHTML = ''; });
+  const list = CHAR_ORDER.slice();
+  // NPC old man is also drawn (in whichever card he's assigned)
+  if (typeof NPC !== 'undefined' && NPC.oldman) list.push('oldman');
+  list.forEach(id => {
     const pos = HOTSPOTS[id];
+    if (!pos) return;
+    const cardEl = document.querySelector('[data-card-chars="' + pos.card + '"]');
+    if (!cardEl) return;
     const isCurrent = state.currentPOV === id;
-    const wrap = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const overlay = document.createElementNS(svgNS, 'svg');
+    overlay.setAttribute('viewBox', '0 0 400 550');
+    overlay.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    overlay.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;');
+    const wrap = document.createElementNS(svgNS, 'g');
     wrap.setAttribute('class', 'char-svg' + (isCurrent ? ' current' : ' dimmed'));
-    wrap.setAttribute('transform', `translate(${pos.x - 30}, ${pos.y - 60})`);
+    wrap.setAttribute('transform', 'translate(' + (pos.x - 30) + ', ' + (pos.y - 60) + ')');
     wrap.innerHTML = characterSVG(id);
-    g.appendChild(wrap);
+    overlay.appendChild(wrap);
+    cardEl.appendChild(overlay);
   });
 }
 
@@ -3043,6 +3188,64 @@ if ('speechSynthesis' in window) {
   }
 }
 
+
+// Card navigation
+const CARDS = ['doorstep', 'window', 'middle', 'register'];
+let currentCardIdx = 0;
+
+function scrollToCard(cardName) {
+  const idx = CARDS.indexOf(cardName);
+  if (idx < 0) return;
+  const container = document.getElementById('scene-cards');
+  const card = container && container.children[idx];
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  currentCardIdx = idx;
+  updateCardDots();
+}
+
+function updateCardDots() {
+  document.querySelectorAll('.card-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentCardIdx);
+  });
+  const prev = document.getElementById('card-prev');
+  const next = document.getElementById('card-next');
+  if (prev) prev.disabled = currentCardIdx === 0;
+  if (next) next.disabled = currentCardIdx === CARDS.length - 1;
+}
+
+function initCardNav() {
+  const container = document.getElementById('scene-cards');
+  if (!container) return;
+  // Track scroll position → active card
+  let scrollTimer;
+  container.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const width = container.clientWidth;
+      const idx = Math.round(container.scrollLeft / width);
+      if (idx !== currentCardIdx) {
+        currentCardIdx = idx;
+        updateCardDots();
+      }
+    }, 100);
+  });
+  // Dots click
+  document.querySelectorAll('.card-dot').forEach((dot, i) => {
+    dot.addEventListener('click', () => scrollToCard(CARDS[i]));
+  });
+  // Prev/Next arrows
+  const prev = document.getElementById('card-prev');
+  const next = document.getElementById('card-next');
+  if (prev) prev.addEventListener('click', () => {
+    if (currentCardIdx > 0) scrollToCard(CARDS[currentCardIdx - 1]);
+  });
+  if (next) next.addEventListener('click', () => {
+    if (currentCardIdx < CARDS.length - 1) scrollToCard(CARDS[currentCardIdx + 1]);
+  });
+  updateCardDots();
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -3090,7 +3293,7 @@ function bindEvents() {
 
 function init() {
   bindEvents();
-  adjustMobileScene();
+  initCardNav();
   render();
 }
 
