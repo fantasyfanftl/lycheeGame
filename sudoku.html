@@ -150,6 +150,53 @@
   }
   .message.success { background: #d4edda; color: #155724; }
   .message.error { background: #f8d7da; color: #721c24; }
+
+  /* ===== Landscape (phones/tablets in landscape) ===== */
+  @media (orientation: landscape) and (max-height: 550px) {
+    body { padding: 8px; align-items: flex-start; }
+    .container {
+      max-width: none;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas:
+        "back    back"
+        "title   title"
+        "info    info"
+        "diff    diff"
+        "board   numpad"
+        "board   actions"
+        "board   message";
+      gap: 4px 16px;
+      align-items: start;
+    }
+    .back-link { grid-area: back; margin: 0; }
+    h1 { grid-area: title; font-size: 20px; margin-bottom: 2px; }
+    .info { grid-area: info; margin-bottom: 6px; font-size: 13px; }
+    .difficulty { grid-area: diff; margin-bottom: 6px; gap: 6px; }
+    .difficulty button { padding: 4px 10px; font-size: 12px; }
+    .board { grid-area: board; width: min(70vh, 380px); margin: 0; }
+    .numpad {
+      grid-area: numpad;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+    .numpad button { padding: 10px 0; font-size: 16px; }
+    .actions { grid-area: actions; gap: 6px; }
+    .actions button { padding: 6px 10px; font-size: 12px; }
+    .message { grid-area: message; margin-top: 4px; padding: 6px; font-size: 12px; min-height: 0; }
+  }
+
+  /* ===== Small portrait (compact phones) ===== */
+  @media (max-width: 380px) {
+    .container { padding: 20px 16px; }
+    h1 { font-size: 24px; }
+    .difficulty button { padding: 5px 10px; font-size: 12px; }
+    .numpad { gap: 4px; }
+    .numpad button { padding: 10px 0; font-size: 16px; }
+    .actions button { padding: 8px 14px; font-size: 13px; }
+  }
 </style>
 </head>
 <body>
