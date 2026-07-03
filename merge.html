@@ -233,6 +233,9 @@
     font-weight: 700;
   }
   .overlay button:hover { background: #c19b6a; }
+  .overlay button.secondary { background: transparent; border: 1px solid #ddb887; color: #ddb887; }
+  .overlay button.secondary:hover { background: rgba(220, 180, 140, 0.15); }
+  .overlay-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 
   @media (max-width: 480px) {
     .container { padding: 16px 14px; }
@@ -266,7 +269,10 @@
     <div class="overlay" id="overlay">
       <h2 id="overlayTitle">合体·破阵</h2>
       <p id="overlaySub">数字块滑动合并<br>合到 2048 通关</p>
-      <button id="startBtn">开 局</button>
+      <div class="overlay-btns">
+        <button id="continueBtn" class="secondary" style="display:none">继 续</button>
+        <button id="startBtn">开 局</button>
+      </div>
     </div>
   </div>
 
@@ -298,7 +304,8 @@ let grid;       // SIZE x SIZE array of tile refs (each cell)
 let nextId;
 let score, best;
 let animating;
-let won;
+let won;        // "win overlay pending / active" — cleared when player picks 继续
+let wonEver;    // "2048 has been reached this game" — prevents re-showing win overlay
 let history;    // for undo (snapshot before each move)
 
 const boardWrap = document.getElementById('boardWrap');
@@ -311,6 +318,7 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlayTitle');
 const overlaySub = document.getElementById('overlaySub');
 const startBtn = document.getElementById('startBtn');
+const continueBtn = document.getElementById('continueBtn');
 
 function setBoardSize(freshFrom = null) {
   gridBg.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
@@ -509,7 +517,7 @@ function move(dir) {
         gain += newV;
         didMove = true;
         if (newV === 128 && SIZE < MAX_SIZE) triggerExpand = true;
-        if (newV === 2048) won = true;
+        if (newV === 2048 && !wonEver) { won = true; wonEver = true; }
       } else {
         // Merge fails, put them back and mark for shake feedback
         placeOnGrid(t);
@@ -663,6 +671,7 @@ function saveState() {
     score,
     nextId,
     won,
+    wonEver,
     size: SIZE,
   });
   if (history.length > 12) history.shift();
@@ -681,6 +690,7 @@ function undo() {
   score = s.score;
   nextId = s.nextId;
   won = s.won;
+  wonEver = s.wonEver;
   updateScore();
   renderTiles();
   updateUndoBtn();
@@ -696,6 +706,7 @@ function newGame() {
   nextId = 1;
   score = 0;
   won = false;
+  wonEver = false;
   history = [];
   animating = false;
   tilesEl.innerHTML = '';
@@ -709,14 +720,18 @@ function newGame() {
 
 function showWin() {
   overlayTitle.textContent = '功 成';
-  overlaySub.innerHTML = `你合出了 <b style="color:#ffd48a">2048 · 曹操</b><br>得分 ${score}`;
+  overlaySub.innerHTML = `你合出了 <b style="color:#ffd48a">2048 · 曹操</b><br>得分 ${score}<br>继续挑战更高分？`;
   startBtn.textContent = '再 来 一 局';
+  startBtn.className = 'secondary';
+  continueBtn.style.display = '';
   overlay.classList.add('show');
 }
 function showLose() {
   overlayTitle.textContent = '阵 破 我 败';
   overlaySub.innerHTML = `无路可走 · 得分 ${score}<br>再来一局？`;
   startBtn.textContent = '再 来 一 局';
+  startBtn.className = '';
+  continueBtn.style.display = 'none';
   overlay.classList.add('show');
 }
 
@@ -754,6 +769,10 @@ document.getElementById('restartBtn').addEventListener('click', () => {
 });
 document.getElementById('undoBtn').addEventListener('click', undo);
 startBtn.addEventListener('click', newGame);
+continueBtn.addEventListener('click', () => {
+  won = false;
+  overlay.classList.remove('show');
+});
 
 window.addEventListener('resize', () => renderTiles());
 
