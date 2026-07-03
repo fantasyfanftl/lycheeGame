@@ -560,12 +560,13 @@ function move(dir) {
   updateUndoBtn();
 
   setTimeout(() => {
-    if (triggerExpand) expandBoard();
+    if (triggerExpand) expandBoard(triggerExpand);
     spawn();
     renderTiles(new Set(), true);  // second render to show new spawn
     animating = false;
     updateUndoBtn();
     if (won) showWin();
+    else if (tutorialGraduated) showTutorialDone();
     else if (!hasMovesLeft()) showLose();
   }, 140);
 }
