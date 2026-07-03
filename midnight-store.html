@@ -727,7 +727,9 @@ body {
   .pov-indicator { min-width: 0; border-right: none; border-bottom: 1px dashed var(--paper-edge); padding: 8px 10px; cursor: pointer; user-select: none; border-radius: 4px; transition: background 0.15s; }
   .pov-indicator:active { background: var(--paper-warm); }
   .pov-hint { display: block; font-size: 11px; margin-top: 4px; opacity: 0.75; letter-spacing: 1px; font-style: normal; }
-  .scene-wrap { flex: 1; min-height: 220px; background: #2a3448; }
+  .scene-wrap { flex: 0 0 auto; width: 100%; aspect-ratio: 900 / 620; background: #2a3448; }
+  #game-screen { background: #1a1f2c; }
+  .bottom-bar { margin-top: auto; }
   .char-tabs { gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
   .char-tab { min-width: 68px; padding: 6px 6px; flex-shrink: 0; }
   .char-tab-icon { width: 28px; height: 28px; margin-bottom: 2px; }
