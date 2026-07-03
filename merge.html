@@ -315,6 +315,7 @@ let SIZE = INITIAL_SIZE;
 // Tile size for a value
 function sizeForValue(v) {
   if (v >= 2048) return { w: 3, h: 3 };
+  if (v >= 1024) return { w: 2, h: 3 };
   if (v >= 128)  return { w: 2, h: 2 };
   if (v >= 32)   return { w: 2, h: 1 };
   return { w: 1, h: 1 };
@@ -365,7 +366,7 @@ function updateInfoText() {
   if (inTutorial) {
     infoEl.innerHTML = '教学·合出 <b>32</b> 结业&nbsp;·&nbsp;<span style="opacity:.65">数字变大占地更大，注意留空间</span>';
   } else {
-    infoEl.innerHTML = '数字越大 · 占地越大 · <b>32</b>→2×1 · <b>128</b>→2×2 · <b>2048</b>→3×3 通关';
+    infoEl.innerHTML = '数字越大 · 占地越大 · <b>32</b>→2×1 · <b>128</b>→2×2 · <b>1024</b>→2×3 · <b>2048</b>→3×3 通关';
   }
 }
 
