@@ -718,8 +718,8 @@ body {
 /* ========== Mobile (<= 640px) ========== */
 @media (max-width: 640px) {
   .top-bar { padding: 0 12px; height: 46px; }
-  .top-title { font-size: 12px; letter-spacing: 2px; }
-  .cp-counter { font-size: 12px; margin-right: 8px; }
+  .top-title { display: none; }
+  .cp-counter { font-size: 12px; margin-right: 8px; flex: 1; }
   .cp-counter .count { font-size: 14px; }
   .notebook-btn { padding: 4px 8px; font-size: 11px; letter-spacing: 1px; margin-right: 6px !important; }
 
@@ -727,7 +727,7 @@ body {
   .pov-indicator { min-width: 0; border-right: none; border-bottom: 1px dashed var(--paper-edge); padding: 8px 10px; cursor: pointer; user-select: none; border-radius: 4px; transition: background 0.15s; }
   .pov-indicator:active { background: var(--paper-warm); }
   .pov-hint { display: block; font-size: 11px; margin-top: 4px; opacity: 0.75; letter-spacing: 1px; font-style: normal; }
-  .scene-wrap { flex: 0 0 auto; height: 200px; }
+  .scene-wrap { flex: 1; min-height: 220px; background: #2a3448; }
   .char-tabs { gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
   .char-tab { min-width: 68px; padding: 6px 6px; flex-shrink: 0; }
   .char-tab-icon { width: 28px; height: 28px; margin-bottom: 2px; }
@@ -2045,8 +2045,40 @@ function showEnding() {
 // ============================================================
 
 function characterSVG(id) {
-  // returns SVG inner HTML for a character figure ~ 60x120
-  return `<circle cx="30" cy="20" r="14" fill="#3d2f24"/><rect x="18" y="34" width="24" height="60" fill="#3d2f24"/><text x="30" y="72" font-size="8" fill="#e8dcc4" text-anchor="middle">${CHARACTERS[id].short}</text>`;
+  // Distinct silhouettes per character
+  const specs = {
+    cashier: {
+      body: '#5a4a3a',
+      // headphones: two small squares near ears + wire down to body
+      extra: '<rect x="10" y="17" width="4" height="7" fill="#3d2f24"/><rect x="46" y="17" width="4" height="7" fill="#3d2f24"/><path d="M14 20 Q30 8 46 20" stroke="#3d2f24" stroke-width="1" fill="none"/>'
+    },
+    nurse: {
+      body: '#f9f3e8',
+      // white coat with red cross
+      extra: '<line x1="30" y1="42" x2="30" y2="54" stroke="#c17b52" stroke-width="2.5"/><line x1="24" y1="48" x2="36" y2="48" stroke="#c17b52" stroke-width="2.5"/>'
+    },
+    driver: {
+      body: '#2a3448',
+      // hunched posture indicated by tilted body via a line at back
+      extra: '<line x1="18" y1="60" x2="14" y2="80" stroke="#3d2f24" stroke-width="1.5"/>'
+    },
+    teen: {
+      body: '#3d2f24',
+      // hoodie: darker larger patch over head
+      extra: '<path d="M12 22 Q30 6 48 22 L48 32 L12 32 Z" fill="#5a4a3a" opacity="0.85"/>'
+    },
+    oldman: {
+      body: '#8b6f47',
+      // cane
+      extra: '<line x1="46" y1="50" x2="52" y2="94" stroke="#3d2f24" stroke-width="1.5"/><path d="M50 50 Q54 46 58 48" stroke="#3d2f24" stroke-width="1.5" fill="none"/>'
+    }
+  };
+  const spec = specs[id] || { body: '#3d2f24', extra: '' };
+  const meta = CHARACTERS[id] || (typeof NPC !== 'undefined' && NPC[id]) || { short: id };
+  return `<circle cx="30" cy="20" r="14" fill="#3d2f24"/>` +
+         `<rect x="18" y="34" width="24" height="60" fill="${spec.body}" stroke="#3d2f24" stroke-width="0.8"/>` +
+         spec.extra +
+         `<text x="30" y="112" font-size="9" fill="#3d2f24" text-anchor="middle" letter-spacing="1">${meta.short}</text>`;
 }
 
 function charIconSVG(id) {

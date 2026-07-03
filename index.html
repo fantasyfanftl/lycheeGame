@@ -144,6 +144,37 @@
     border-bottom: 1px dashed rgba(255,255,255,0.4);
   }
 
+  /* ===== Portrait phones — force 2-column card grid ===== */
+  @media (max-width: 640px) {
+    body { padding: 30px 14px; }
+    header { margin-bottom: 34px; }
+    header .logo {
+      width: 84px;
+      height: 84px;
+      border-radius: 22px;
+      margin-bottom: 14px;
+    }
+    header h1 { font-size: 26px; margin-bottom: 6px; }
+    header p { font-size: 14px; }
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .card {
+      padding: 16px 14px;
+      border-radius: 16px;
+      gap: 8px;
+    }
+    .card .emoji { font-size: 38px; }
+    .card h2 { font-size: 16px; }
+    .card p { font-size: 12px; line-height: 1.5; }
+    .card .tags { gap: 4px; margin-top: -2px; }
+    .card .tags span { font-size: 10px; padding: 2px 7px; }
+    .card .play { font-size: 12px; margin-top: 4px; }
+    .card .status { font-size: 10px; padding: 3px 8px; top: 10px; right: 10px; }
+    footer { margin-top: 40px; font-size: 12px; }
+  }
+
   /* ===== Landscape (compact vertical space) ===== */
   @media (orientation: landscape) and (max-height: 550px) {
     body { padding: 16px 20px; }
