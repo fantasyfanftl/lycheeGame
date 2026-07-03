@@ -376,7 +376,10 @@ function canOccupy(x, y, w, h) {
   return true;
 }
 
-// Get tile directly in front of `t` in direction (dx, dy). Returns tile or null (wall/empty/multiple).
+// Get the same-value tile in front of `t` in direction (dx, dy).
+// Relaxed: empty cells in the front row/col are skipped, so an offset partner
+// still counts as long as it's the unique tile touching our leading edge.
+// Wall cells still fail the whole check.
 function getFrontTile(t, dx, dy) {
   let front = null;
   if (dx === 1) {
@@ -384,7 +387,7 @@ function getFrontTile(t, dx, dy) {
       const cx = t.x + t.w, cy = t.y + dyi;
       if (cx >= SIZE) return null;
       const c = grid[cy][cx];
-      if (!c) return null;
+      if (!c) continue;
       if (front && front !== c) return null;
       front = c;
     }
@@ -393,7 +396,7 @@ function getFrontTile(t, dx, dy) {
       const cx = t.x - 1, cy = t.y + dyi;
       if (cx < 0) return null;
       const c = grid[cy][cx];
-      if (!c) return null;
+      if (!c) continue;
       if (front && front !== c) return null;
       front = c;
     }
@@ -402,7 +405,7 @@ function getFrontTile(t, dx, dy) {
       const cx = t.x + dxi, cy = t.y + t.h;
       if (cy >= SIZE) return null;
       const c = grid[cy][cx];
-      if (!c) return null;
+      if (!c) continue;
       if (front && front !== c) return null;
       front = c;
     }
@@ -411,7 +414,7 @@ function getFrontTile(t, dx, dy) {
       const cx = t.x + dxi, cy = t.y - 1;
       if (cy < 0) return null;
       const c = grid[cy][cx];
-      if (!c) return null;
+      if (!c) continue;
       if (front && front !== c) return null;
       front = c;
     }
