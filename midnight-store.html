@@ -1531,44 +1531,163 @@ const BEATS = {
       hs: 'doorway',
       title: '进 门',
       sfx: 'doorChime',
-      text: '你推门进店。前面有个穿白外套的护士，你们同时停在门口。\n\n你停下脚步，侧身让她先进。她点了个头，没说话。\n\n你腰背僵直，走路时右手一直按着后腰。今晚跑了十二个小时——从廊坊到南六环，最后一趟拉了一个吐了一路的乘客。你收了车，就近找了这家 24 小时的便利店歇歇脚。',
-      effects: (w) => { w.doorLetDriver = 'normal'; },
-      cps: [{ id: 'cp10' }]
+      text: '你推门进店。前面有个穿白外套的护士，你们同时停在门口。\n\n你腰背僵直，走路时右手一直按着后腰。今晚跑了十二个小时——从廊坊到南六环，最后一趟拉了一个吐了一路的乘客。你收了车，就近找了这家 24 小时的便利店歇歇脚。',
+      choicePrompt: '门口这一下，你怎么办？',
+      choices: [
+        {
+          label: '直接侧身进去。',
+          text: '你没停脚，直接侧身挤过去，目不斜视往靠窗座位走。\n\n她比你先进，也没什么。反正你今晚不想跟人打招呼。',
+          effects: (w) => { w.doorLetDriver = 'none'; },
+          cps: [{ id: 'cp10' }]
+        },
+        {
+          label: '停下脚步，侧身让她先进。',
+          text: '你停下脚步，侧身让她先进。她点了个头，没说话。\n\n你跟在后面进去。她直奔饮水机，你直奔靠窗座位。',
+          effects: (w) => { w.doorLetDriver = 'normal'; },
+          cps: [{ id: 'cp10' }]
+        },
+        {
+          label: '扶了一下门，让她过。',
+          text: '你侧身让她先进的时候，瞥见她手上有细小的伤口——护士常有的那种。\n\n你伸手扶了一下门，让她过的时候不用抬手推门。她点了下头道谢。\n\n你没说话，跟着进去。',
+          effects: (w) => { w.doorLetDriver = 'hold'; },
+          cps: [{ id: 'cp10' }]
+        }
+      ]
     },
     {
       hs: 'driverSeat',
       title: '靠 窗 落 座',
-      text: '你没朝收银台看，径直往靠窗的座位走。坐下之后抬手反复按后腰。窗那边有点风。\n\n收银台那小子朝你这边扫了一眼，又低头。过了一会儿你听见空调按键的响——窗边慢慢暖起来了。\n\n可能是空调自动调温。你没多想。',
-      effects: (w) => { w.driverSeatState = 'normal'; },
-      cps: [{ id: 'cp5' }]
+      text: '你没朝收银台看，径直往靠窗的座位走。坐下之后抬手反复按后腰。窗那边有点风。\n\n收银台那小子朝你这边扫了一眼，又低头。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '沉默坐着，自己揉腰。',
+          text: '你面无表情坐下，全程不看收银台方向。自己揉着腰，不麻烦谁。\n\n窗那边一直有点风。你把外套领口拉紧。',
+          effects: (w) => { w.driverSeatState = 'cold'; },
+          cps: [{ id: 'cp5' }]
+        },
+        {
+          label: '朝收银台点了个头，安静坐着。',
+          text: '你坐下时朝收银台方向微微点了个头，算是打招呼。然后自己安静坐着，不说话。\n\n过了一会儿你听见空调按键的响——窗边慢慢暖起来了。可能是空调自动调温。你没多想。',
+          effects: (w) => { w.driverSeatState = 'normal'; },
+          cps: [{ id: 'cp5' }]
+        },
+        {
+          label: '看见货架歪了，顺手扶了一把。',
+          text: '坐下时你看到窗边货架歪了，你走过去顺手扶了一把，还把掉在地上的价格签捡起来放在台面上。\n\n没说话。收银台那小子抬头看了你一眼，没吭声。你回到座位。',
+          effects: (w) => { w.driverSeatState = 'help'; },
+          cps: [{ id: 'cp5' }]
+        }
+      ]
     },
     {
       hs: 'register',
       title: '一 瓶 白 水',
-      text: '你歇了十几分钟。腰不那么僵了。\n\n站起来，走到饮料柜前，拿了一瓶最便宜的常温白水，走到收银台。指尖冻得发红。\n\n扫码时你看到店员手边有一杯温水，好像动了一下杯子——又收回去了。可能是你眼花。\n\n你扫了码，拎着水回座位。',
-      effects: (w) => { w.driverBuyWater = 'normal'; },
-      cps: [{ id: 'cp6' }]
+      text: '你歇了十几分钟。腰不那么僵了。\n\n站起来，走到饮料柜前，拿了一瓶最便宜的常温白水，走到收银台。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '递钱不说话。',
+          text: '你递钱时不说话，全程不看对方眼睛。找零拿了就回座位。\n\n他没抬头。你也没多说。',
+          effects: (w) => { w.driverBuyWater = 'cold'; },
+          cps: [{ id: 'cp6' }]
+        },
+        {
+          label: '找零时轻轻点头。',
+          text: '结账时你看到对方手边的员工水杯——好像动了一下，又收回去了。可能是你眼花。\n\n找零时你轻轻点了下头示意，转身回座位。',
+          effects: (w) => { w.driverBuyWater = 'normal'; },
+          cps: [{ id: 'cp6' }]
+        },
+        {
+          label: '"门口台阶滑，慢点走。"',
+          text: '你扫完码。看到他脚边放着的工具箱——好像刚拖过地。\n\n你犹豫了下：\n\n"门口台阶滑，慢点走。"\n\n他抬头看你——好像没料到——说了声谢谢。你已经拿着水回座位了。',
+          voice: { text: '门口台阶滑，慢点走。', rate: 0.9, pitch: 0.9 },
+          effects: (w) => { w.driverBuyWater = 'remind'; },
+          cps: [{ id: 'cp6' }]
+        }
+      ]
     },
     {
       hs: 'nurse',
-      title: '护 士 掉 的 那 支 笔',
-      text: '你起身结账，出门前走到门口——身后有人叫你，是刚才让门的那个护士。她弯腰把一支签字笔递给你。\n\n你摸了摸口袋——账本还在，笔口袋是空的。原来是你的笔掉了。\n\n"谢谢。"\n\n她摇摇头就回去继续喝她的水了。\n\n你把笔揣好，把账本也拍了拍。',
-      effects: (w) => { w.driverPen = 'return'; },
-      cps: [{ id: 'cp11' }]
+      title: '掉 的 那 支 笔',
+      text: '你起身结账，出门前走到门口——身后有人叫你。\n\n是刚才让门的那个护士。她弯腰把一支签字笔递给你。你摸了摸口袋——账本还在，笔口袋是空的。原来是你的笔掉了。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '接过笔，直接走了。',
+          text: '你接过笔，点了下头，没说话就走了。\n\n笔上印着她们医院的名字——你没看。你已经走到门口。',
+          effects: (w) => { w.driverPen = 'none'; },
+          cps: [{ id: 'cp11' }]
+        },
+        {
+          label: '"谢谢。" 接过笔揣好。',
+          text: '"谢谢。"\n\n她摇摇头就回去继续喝她的水了。\n\n你把笔揣好，把账本也拍了拍。',
+          voice: { text: '谢谢。', rate: 0.9, pitch: 0.85 },
+          effects: (w) => { w.driverPen = 'return'; },
+          cps: [{ id: 'cp11' }]
+        },
+        {
+          label: '"你也早点休息。"',
+          text: '你接过笔的时候看了看她。眼下青紫。你以前拉过夜班护士，都是这样的眼睛。\n\n"你也早点休息。"\n\n她愣了一下，笑了下——不是应付的那种。你点头出去了。',
+          voice: { text: '你也早点休息。', rate: 0.9, pitch: 0.9 },
+          effects: (w) => { w.driverPen = 'comfort'; },
+          cps: [{ id: 'cp11' }]
+        }
+      ]
     },
     {
       hs: 'teen',
       title: '台 阶 上 蹲 着',
-      text: '你结完账推门出去。台阶上一个连帽衫少年抱着膝盖蹲着，头埋得很低，旁边蹲着橘猫。\n\n你放慢脚步看了他一眼，又看了一眼猫。他察觉到，往旁边挪了挪，给你让路。\n\n你点了个头，没说话。\n\n车停在路边。你上了车，发动，暖风开到最大。'
-      ,effects: (w) => { w.driverTeen = 'glance'; },
-      cps: [{ id: 'cp14' }]
+      text: '你结完账推门出去。台阶上一个连帽衫少年抱着膝盖蹲着，头埋得很低，旁边蹲着橘猫。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '目不斜视走过去。',
+          text: '你目不斜视走过去，全程没看第二眼。\n\n车停在路边。你上了车。',
+          effects: (w) => { w.driverTeen = 'none'; },
+          cps: [{ id: 'cp14' }]
+        },
+        {
+          label: '放慢脚步看了他一眼。',
+          text: '你放慢脚步看了他一眼，又看了一眼猫。他察觉到，往旁边挪了挪，给你让路。\n\n你点了个头，没说话。上了车。发动，暖风开到最大。',
+          effects: (w) => { w.driverTeen = 'glance'; },
+          cps: [{ id: 'cp14' }]
+        },
+        {
+          label: '从车里摸出一瓶热牛奶递过去。',
+          text: '你从车里摸出一瓶没拆封的热牛奶——你老婆早上给你装的，你还没喝。\n\n你走回来递给他："夜里冷。"\n\n说完你就走了，没等他回话。上车，发动。',
+          voice: { text: '夜里冷。', rate: 0.85, pitch: 0.85 },
+          effects: (w) => { w.driverTeen = 'milk'; },
+          cps: [{ id: 'cp14' }]
+        }
+      ]
     },
     {
       hs: 'oldman',
       title: '拎 着 东 西 下 阶',
-      text: '你正要挂挡开车，从后视镜看到便利店门口出来一个老人。他拎着牛奶和一袋点心，走得很慢，在台阶前停了一下。\n\n你放下挡，等他先下台阶。他没看到你，慢慢下了阶。\n\n你没下车帮他。你也没催。\n\n他走远了。你才挂挡，慢慢开出去。',
-      effects: (w) => { w.driverElder = 'wait'; },
-      cps: [{ id: 'cp15' }]
+      text: '你正要挂挡开车，从后视镜看到便利店门口出来一个老人。他拎着牛奶和一袋点心，走得很慢，在台阶前停了一下。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '挂挡开走。',
+          text: '你挂挡开走。他没看到你，慢慢下阶。\n\n凌晨三点的街空得像张纸。',
+          effects: (w) => { w.driverElder = 'none'; },
+          cps: [{ id: 'cp15' }]
+        },
+        {
+          label: '放下挡，等他先下阶。',
+          text: '你放下挡，等他先下台阶。他没看到你，慢慢下了阶。\n\n你没下车帮他。你也没催。他走远了。你才挂挡，慢慢开出去。',
+          effects: (w) => { w.driverElder = 'wait'; },
+          cps: [{ id: 'cp15' }]
+        },
+        {
+          label: '下车帮他拎点心袋。',
+          text: '你下车，走过去帮他拎着点心袋，陪他走下台阶。到路边才递回去。\n\n"您慢点。"\n\n他抬头看你："小伙子人真好。"\n\n你笑了笑没说话，回车里。',
+          voice: { text: '您慢点。', rate: 0.85, pitch: 0.88 },
+          effects: (w) => { w.driverElder = 'help'; },
+          cps: [{ id: 'cp15' }]
+        }
+      ]
     },
     {
       hs: 'doorway',
@@ -1580,41 +1699,144 @@ const BEATS = {
     {
       hs: 'catBowl',
       title: '喂 猫',
-      text: '台阶角落，那只橘猫又缩在那里。\n\n你今天晚了半小时。它认得你的鞋——你走近它才慢慢站起来。\n\n它的粮碗和水碗都是满的。粮碗还剩着一小把，水碗满满一碗。\n\n谁弄的？你没看到。你把带来的猫粮倒了一小把在旁边，它先闻了闻新粮，又低头喝水。\n\n你蹲着，把连帽衫的帽子拉低。妈今天打了 17 个电话你没接。',
-      effects: (w) => { w.teenCat = 'observe'; },
-      cps: [{ id: 'cp7' }]
+      text: '台阶角落，那只橘猫又缩在那里。\n\n你今天晚了半小时。它认得你的鞋——你走近它才慢慢站起来。\n\n它的粮碗和水碗——今天有点满。粮碗还剩着一小把，水碗满满一碗。\n\n谁弄的？你没看到。妈今天打了 17 个电话你没接。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '不看店里，自己倒猫粮。',
+          text: '你没看店里那小子，自己蹲下把带来的猫粮倒进碗。它先闻了闻新粮，又低头喝水。\n\n你把连帽衫拉低。谁也别看见你。',
+          effects: (w) => { w.teenCat = 'cold'; },
+          cps: [{ id: 'cp7' }]
+        },
+        {
+          label: '抬头朝店里快速扫一眼。',
+          text: '你倒猫粮时抬头朝店里方向快速扫了一眼——见对方在忙。你没说话，继续弄自己的。\n\n它先闻了闻新粮，又低头喝水。你蹲着，把连帽衫的帽子拉低。',
+          effects: (w) => { w.teenCat = 'normal'; },
+          cps: [{ id: 'cp7' }]
+        },
+        {
+          label: '看到柜台的临期猫罐头，小声问一句。',
+          text: '你看到柜台边放着的临期猫罐头——包装上写着"临期减价"。\n\n你犹豫了半天，走进店里，小声问：\n\n"这个...多少钱？"\n\n声音很小。他抬头看你，愣了一下——"临期的，免费拿。"\n\n你愣在那儿没动。',
+          voice: { text: '这个多少钱？', rate: 0.85, pitch: 1.0, volume: 0.7 },
+          effects: (w) => { w.teenCat = 'ask'; },
+          cps: [{ id: 'cp7' }]
+        }
+      ]
     },
     {
       hs: 'doorway',
       title: '推 门',
       sfx: 'doorChime',
-      text: '猫粮袋要空了。你摸口袋，还剩十几块。\n\n推门进去，热气糊上脸。收银台那小子抬头扫了你一眼，又低头刷手机——你熟悉那种眼神，"又是这种孩子"。\n\n你不理他，直奔货架下层。'
+      text: '猫粮袋要空了。你摸口袋，还剩十几块。\n\n推门进去，热气糊上脸。收银台那小子扫了你一眼，又低头刷手机——你熟悉那种眼神，"又是这种孩子"。\n\n你不理他，直奔货架下层。'
     },
     {
       hs: 'register',
       title: '黑 屏 手 机',
-      text: '你拿了最便宜那袋猫粮，走到收银台。掏手机——按了好几下，屏幕黑着开不开。今天电池就撑到这儿了。\n\n你站着，攥着黑屏手机。收银员抬眼扫了一下你的手机，没说话，继续低头整理零钱。\n\n你从另一个口袋掏出十几块现金放在台面上。\n\n他扫了码，把猫粮推给你。你没抬头，拎着走了。',
-      effects: (w) => { w.teenPay = 'leave'; },
-      cps: [{ id: 'cp8' }]
+      text: '你拿了最便宜那袋猫粮，走到收银台。掏手机——按了好几下，屏幕黑着开不开。\n\n今天电池就撑到这儿了。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '攥着黑屏手机，站着不说话。',
+          text: '你攥着黑屏手机，咬着嘴唇不说话，也不求助。站了一会儿。\n\n他没抬头。你从另一个口袋掏出十几块现金放在台面上。\n\n他扫了码，把猫粮推给你。你没抬头，拎着走了。',
+          effects: (w) => { w.teenPay = 'cold'; },
+          cps: [{ id: 'cp8' }]
+        },
+        {
+          label: '"我...我下次再来买。"',
+          text: '你抬头快速看了他一眼，又低下头，小声说：\n\n"我...我下次再来买。"\n\n转身想走。他抬头："——先给你，下次再付。"\n\n你愣在那儿。他把猫粮推过来。你没接，还是从口袋掏出十几块现金放下，拎着走了。',
+          voice: { text: '我下次再来买。', rate: 0.8, pitch: 1.05, volume: 0.7 },
+          effects: (w) => { w.teenPay = 'leave'; },
+          cps: [{ id: 'cp8' }]
+        },
+        {
+          label: '"请问...有充电线吗？"',
+          text: '你犹豫了半天，红着脸小声问：\n\n"请问...有充电线吗？我充开机了付钱。"\n\n声音越来越小。他抬头，从柜台底下摸出一根线推给你。没说话。\n\n你接过来，把手机接上他桌角的插座。等它开机的那分钟里，你没抬头看他。',
+          voice: { text: '请问有充电线吗？', rate: 0.8, pitch: 1.05, volume: 0.7 },
+          effects: (w) => { w.teenPay = 'ask'; },
+          cps: [{ id: 'cp8' }]
+        }
+      ]
     },
     {
       hs: 'doorway',
       title: '蹲 门 口',
-      text: '你出门，没走。\n\n抱着膝盖蹲在门口台阶上，头埋得很低。橘猫走过来蹲在你脚边。\n\n你偶尔抬头往店里瞟一眼，看到店员在看自己，赶紧低下头，更往角落里缩了缩。\n\n他没赶你，但也没搭话。\n\n外面风大。你连帽衫太薄。',
-      effects: (w) => { w.teenDoorSit = 'shy'; },
-      cps: [{ id: 'cp9' }, { id: 'cp14' }]
+      text: '你出门，没走。抱着膝盖蹲在门口台阶上，头埋得很低。橘猫走过来蹲在你脚边。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '不看店里，自己蹲自己的。',
+          text: '你不往店里看。自己蹲自己的。\n\n外面风大。你连帽衫太薄。',
+          effects: (w) => { w.teenDoorSit = 'cold'; },
+          cps: [{ id: 'cp9' }, { id: 'cp14' }]
+        },
+        {
+          label: '偶尔抬头往店里瞟一眼。',
+          text: '你偶尔抬头往店里瞟一眼。看到店员在看自己，赶紧低下头，更往角落里缩了缩。\n\n他没赶你，但也没搭话。',
+          effects: (w) => { w.teenDoorSit = 'shy'; },
+          cps: [{ id: 'cp9' }, { id: 'cp14' }]
+        },
+        {
+          label: '轻轻敲玻璃门——"我能在门口站会儿吗？"',
+          text: '你冻得发抖。犹豫了半天，轻轻敲了下玻璃门，小声问：\n\n"我...我能在门口站会儿吗？外面太冷了。"\n\n他愣了一下，从柜台后面出来，把玻璃门拉开一条缝："进来吧。"\n\n你摇摇头："不进去。"\n\n他没坚持。门缝留着。暖气漏出来了一点。',
+          voice: { text: '我能在门口站会儿吗？', rate: 0.8, pitch: 1.0, volume: 0.7 },
+          effects: (w) => { w.teenDoorSit = 'ask'; },
+          cps: [{ id: 'cp9' }, { id: 'cp14' }]
+        }
+      ]
     },
     {
       hs: 'nurse',
       title: '护 士 路 过',
-      text: '一个穿白外套的姐姐从店里出来，走过你身边——她放慢脚步看了猫两眼，又看了你一眼。\n\n你把猫往自己身边拉了拉。\n\n她没说话，也没停，继续往前走。\n\n你没抬头。橘猫在你脚边蹭。',
-      effects: (w) => { w.teenNurse = 'wary'; },
-      cps: [{ id: 'cp12' }]
+      text: '一个穿白外套的姐姐从店里出来，走过你身边。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '头也不抬，继续喂猫。',
+          text: '你头也不抬，继续喂猫。她看了猫两眼，走了。\n\n你没抬头。',
+          effects: (w) => { w.teenNurse = 'cold'; },
+          cps: [{ id: 'cp12' }]
+        },
+        {
+          label: '抬头快速看一眼，把猫拉过来。',
+          text: '她放慢脚步看了猫两眼，又看了你一眼。你把猫往自己身边拉了拉——有点防备。\n\n她没说话，也没停，继续往前走。你没抬头。',
+          effects: (w) => { w.teenNurse = 'wary'; },
+          cps: [{ id: 'cp12' }]
+        },
+        {
+          label: '接过火腿肠，小声说"谢谢"。',
+          text: '她停下脚步，从包里摸出一根没拆封的火腿肠递过来："给它的。"\n\n你愣了一下，接过来，小声说：\n\n"谢谢。"\n\n声音很小，头也没抬。她笑了一下就走了。',
+          voice: { text: '谢谢。', rate: 0.8, pitch: 0.95, volume: 0.7 },
+          effects: (w) => { w.teenNurse = 'thanks'; },
+          cps: [{ id: 'cp12' }]
+        }
+      ]
     },
     {
       hs: 'oldman',
       title: '老 人 路 过',
-      text: '一个拎着牛奶的老人从便利店那边慢慢过来。他停下脚步，蹲得吃力，看着橘猫。\n\n你抬头快速看了他一眼，又低下头，往旁边挪了挪，给他让出看猫的位置。\n\n他没伸手摸猫，只是看。他嘴里念叨了一句什么——你没听清。\n\n他站起来时膝盖响了一声。慢慢走远了。'
+      text: '一个拎着牛奶的老人从便利店那边慢慢过来。他停下脚步，蹲得吃力，看着橘猫。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '头也不抬，继续蹲。',
+          text: '你头也不抬。他站了一会儿，看了看猫，慢慢走远了。\n\n膝盖响了一声。',
+          effects: (w) => { w.teenElder = 'cold'; },
+          cps: [{ id: 'cp16' }]
+        },
+        {
+          label: '抬头快速看一眼，往旁边挪了挪。',
+          text: '你抬头快速看了他一眼，又低下头，往旁边挪了挪，给他让出看猫的位置。\n\n他没伸手摸猫，只是看。他嘴里念叨了一句什么——你没听清。\n\n他站起来时膝盖响了一声。慢慢走远了。',
+          effects: (w) => { w.teenElder = 'move'; },
+          cps: [{ id: 'cp16' }]
+        },
+        {
+          label: '"它...它很乖的，你可以摸摸。"',
+          text: '你看到他喜欢猫。犹豫了一下，小声说：\n\n"它...它很乖的，你可以摸摸。"\n\n声音很小。他愣了一下，蹲下来伸手摸了两下。橘猫真的没跑。\n\n他转头看你："我年轻时也有一只，橘的。"\n\n你没接话。他慢慢站起来走了。',
+          voice: { text: '它很乖的，你可以摸摸。', rate: 0.85, pitch: 0.98, volume: 0.7 },
+          effects: (w) => { w.teenElder = 'invite'; },
+          cps: [{ id: 'cp16' }]
+        }
+      ]
     }
   ]};
 
@@ -1640,18 +1862,8 @@ const CONVERGENCES = {
   cp16: { title: '十 六 · 少年 × 老人 · 台 阶 边 看 猫',   participants: ['teen','oldman'],     npcs: ['oldman'] }
 };
 
-// Ending — placeholder, rewritten adaptively in batch 6
-const ENDING = {
-  lines: [
-    '凌晨三点。',
-    '街灯把便利店的玻璃染成一层薄薄的暖黄。',
-    '',
-    '（结局文本会在最后一批一起补——',
-    '  它会根据这一晚每个人具体做了什么，长出对应的收尾。）',
-    '',
-    '这一晚，就到这里了。'
-  ]
-};
+// Ending — adaptive, built from world state at runtime
+const ENDING = { lines: [] };  // filled by buildEndingLines(world) at showEnding time
 
 // ============================================================
 // STATE
@@ -2094,14 +2306,154 @@ function hideNotebook() {
   state.notebookOpen = false;
 }
 
+function buildEndingLines(w) {
+  const lines = [];
+  lines.push('凌晨三点。');
+  lines.push('街灯把便利店的玻璃染成一层薄薄的暖黄。');
+  lines.push('');
+
+  // 老人 (NPC)
+  if (w.milkHelp === 'given' || w.cashService === 'fast' || w.elderSlip === 'help') {
+    lines.push('老人回到家，把桂花糕的空袋子叠好，放进抽屉。');
+    lines.push('他冲着照片说："今晚，人挺好。"');
+  } else if (w.milkHelp === 'ready' || w.cashService === 'normal') {
+    lines.push('老人回到家，把桂花糕的空袋子叠好，放进抽屉。');
+    lines.push('他冲着照片说，今晚喝的是热牛奶。');
+  } else {
+    lines.push('老人回到家，把桂花糕的空袋子叠好，放进抽屉。');
+    lines.push('他冲着照片，什么也没说。');
+  }
+  lines.push('');
+
+  // 护士
+  if (w.nursePay === 'remind' || w.penPick === 'comfort' || w.elderSlip === 'help' || w.catMeet === 'food') {
+    lines.push('护士坐上末班地铁，头靠着车窗睡着了。');
+    lines.push('手心的药盒还留着一点体温。');
+  } else if (w.nursePay === 'normal' || w.doorLet === 'normal' || w.penPick === 'return') {
+    lines.push('护士坐上末班地铁，头靠着车窗睡着了。');
+    lines.push('手心的药盒还留着一点体温。');
+  } else {
+    lines.push('护士坐上末班地铁，眼睛瞪着窗外的黑。');
+    lines.push('掌心的药盒不烫也不凉。');
+  }
+  lines.push('');
+
+  // 司机
+  if (w.driverElder === 'help' || w.driverTeen === 'milk' || w.driverBuyWater === 'remind') {
+    lines.push('司机把车开上主路。凌晨三点的街空得像张纸。');
+    lines.push('后备箱那三个茶叶蛋——他终于伸手拿了一个。');
+  } else if (w.driverPen === 'return' || w.driverPen === 'comfort' || w.driverSeatState === 'help') {
+    lines.push('司机把车开上主路。凌晨三点的街空得像张纸。');
+    lines.push('后备箱三个茶叶蛋，还热着。');
+  } else {
+    lines.push('司机把车开上主路。凌晨三点的街空得像张纸。');
+    lines.push('后备箱三个茶叶蛋，一直凉着。');
+  }
+  lines.push('');
+
+  // 少年
+  if (w.teenPay === 'ask' || w.teenDoorSit === 'ask' || w.teenElder === 'invite' || w.teenNurse === 'thanks' || w.driverTeen === 'milk') {
+    lines.push('少年靠着便利店旁的墙角，橘猫钻进他怀里睡着了。');
+    lines.push('今晚他没那么冷。');
+  } else {
+    lines.push('少年靠着便利店旁的墙角。橘猫在他脚边，没过来。');
+    lines.push('他没接妈的电话。');
+  }
+  lines.push('');
+
+  // 店员
+  if (w.milkHelp === 'given' || w.charger === 'given' || w.doorGap === 'open' || w.catBowl === 'full' || w.odenState === 'hot') {
+    lines.push('店员摘下最后一只耳机，关掉收音机。');
+    lines.push('妈的第二条消息刚到——"今天没那么难受"。');
+  } else {
+    lines.push('店员摘下最后一只耳机，关掉收音机。');
+    lines.push('玻璃里映出他自己的脸，比他以为的样子更疲惫一点。');
+  }
+  lines.push('');
+  lines.push('');
+
+  // "藏在..." list — dynamic based on world state
+  const hidden = [];
+  // 店员
+  if (w.milkHelp === 'ready') hidden.push('藏在收银台边缘上那只随时准备起身的手里');
+  if (w.milkHelp === 'given') hidden.push('藏在替他取下热牛奶的那五步路里');
+  if (w.cashService === 'normal') hidden.push('藏在抽屉最前排整齐的一元硬币里');
+  if (w.cashService === 'fast') hidden.push('藏在按面额理好的三堆硬币里');
+  if (w.nurseCheckout === 'warm') hidden.push('藏在垫在热奶盒下面的那张纸里');
+  if (w.seatHeater === 'normal') hidden.push('藏在按了两下的空调遥控器里');
+  if (w.seatHeater === 'cushion') hidden.push('藏在悄悄挪过去的那个靠垫里');
+  if (w.driverCheckout === 'normal') hidden.push('藏在往那边推了半寸又收回的水杯里');
+  if (w.driverCheckout === 'warm') hidden.push('藏在从保温机接的那杯温水里');
+  if (w.charger === 'noticed') hidden.push('藏在没戳破的一分钟等待里');
+  if (w.charger === 'given') hidden.push('藏在柜台底下摸出的那根充电线里');
+  if (w.doorGap === 'watched') hidden.push('藏在夜班留在门口的那半只眼睛里');
+  if (w.doorGap === 'open') hidden.push('藏在故意留了一条缝的玻璃门里');
+  if (w.odenState === 'hot') hidden.push('藏在保温档上没关的那锅关东煮里');
+  if (w.catBowl === 'water') hidden.push('藏在猫碗被摆正的那一下里');
+  if (w.catBowl === 'full') hidden.push('藏在临期猫粮的员工码里');
+  // 护士
+  if (w.doorLet === 'normal' || w.doorLet === 'hold') hidden.push('藏在门口停下的那一秒里');
+  if (w.penPick === 'return') hidden.push('藏在弯腰捡起的那支笔里');
+  if (w.penPick === 'comfort') hidden.push('藏在"医护人员挺辛苦的"里');
+  if (w.catMeet === 'glance') hidden.push('藏在放慢的那两步里');
+  if (w.catMeet === 'food') hidden.push('藏在从包里摸出的那根火腿肠里');
+  if (w.elderSlip === 'ready' || w.elderSlip === 'help') hidden.push('藏在扶了一下的胳膊里');
+  if (w.nursePay === 'remind') hidden.push('藏在"那个快过期了，别吃"里');
+  // 司机
+  if (w.doorLetDriver === 'normal' || w.doorLetDriver === 'hold') hidden.push('藏在扶了一下的门里');
+  if (w.driverBuyWater === 'remind') hidden.push('藏在"门口台阶滑，慢点走"里');
+  if (w.driverPen === 'comfort') hidden.push('藏在"你也早点休息"里');
+  if (w.driverTeen === 'milk') hidden.push('藏在从车里摸出的那瓶热牛奶里');
+  if (w.driverElder === 'wait' || w.driverElder === 'help') hidden.push('藏在放下的那个挡里');
+  if (w.driverSeatState === 'help') hidden.push('藏在顺手扶起的那个货架里');
+  // 少年
+  if (w.teenCat === 'ask') hidden.push('藏在小声问的"这个多少钱"里');
+  if (w.teenPay === 'ask') hidden.push('藏在小声问的"有充电线吗"里');
+  if (w.teenPay === 'leave') hidden.push('藏在"我下次再来买"里');
+  if (w.teenDoorSit === 'ask') hidden.push('藏在小声敲响的那扇玻璃门里');
+  if (w.teenNurse === 'thanks') hidden.push('藏在小声说出的那个"谢谢"里');
+  if (w.teenElder === 'invite') hidden.push('藏在"它很乖的"里');
+
+  if (hidden.length >= 3) {
+    lines.push('他们把好意藏得那么深——');
+    lines.push('');
+    hidden.forEach(h => lines.push(h + '，'));
+    lines.push('');
+    lines.push('他们中没有人觉得，自己做了什么好事。');
+    lines.push('他们中没有人觉得，对方对自己好。');
+    lines.push('');
+    lines.push('但这个夜晚——');
+    lines.push('还是被这些谁也没承认过的小事，');
+    lines.push('一起，托住了。');
+  } else if (hidden.length > 0) {
+    lines.push('他们把好意藏得那么深——');
+    lines.push('');
+    hidden.forEach(h => lines.push(h + '，'));
+    lines.push('');
+    lines.push('几件小事，像几粒米。');
+    lines.push('这个夜晚，勉强够。');
+  } else {
+    lines.push('这一晚——');
+    lines.push('没有谁，特意为谁做过什么。');
+    lines.push('');
+    lines.push('他们各自回家，各自睡去。');
+    lines.push('');
+    lines.push('街灯，还亮着。');
+    lines.push('明天还有明天要过。');
+  }
+
+  return lines;
+}
+
 function showEnding() {
   const wrap = $('ending-text');
   wrap.innerHTML = '';
-  ENDING.lines.forEach((line, i) => {
+  const lines = buildEndingLines(state.world);
+  lines.forEach((line, i) => {
     const div = document.createElement('div');
     div.className = 'line';
-    div.textContent = line || ' ';
-    div.style.animationDelay = (0.2 + i * 0.35) + 's';
+    div.textContent = line || ' ';
+    div.style.animationDelay = (0.2 + i * 0.3) + 's';
     wrap.appendChild(div);
   });
   showScreen('ending-screen');
