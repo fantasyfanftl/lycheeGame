@@ -2722,8 +2722,7 @@ function renderHotspots() {
 
   cardEl.appendChild(overlay);
 
-  // Auto-scroll to this card if not already there
-  scrollToCard(pos.card);
+  // No auto-scroll — player finds the trigger by swiping. Dot indicator hints where.
 }
 
 function renderCharacters() {
@@ -4009,8 +4008,11 @@ function scrollToCard(cardName) {
 }
 
 function updateCardDots() {
+  const beat = currentBeat();
+  const activeHotspotCard = (beat && HOTSPOTS[beat.hs]) ? HOTSPOTS[beat.hs].card : null;
   document.querySelectorAll('.card-dot').forEach((dot, i) => {
     dot.classList.toggle('active', i === currentCardIdx);
+    dot.classList.toggle('has-hotspot', CARDS[i] === activeHotspotCard && i !== currentCardIdx);
   });
   const prev = document.getElementById('card-prev');
   const next = document.getElementById('card-next');
