@@ -3179,12 +3179,42 @@ function buildEndingLines(w) {
 
 function showEnding() {
   updateClockUI();
+  const prevRunData = loadPrevRun();
+  const prevWorld = prevRunData ? prevRunData.last : null;
+  const runCount = prevRunData ? prevRunData.count : 0;
+  saveRunSummary(state.world || {});
   clearSave();
   const endTimeEl = document.getElementById('ending-time');
   if (endTimeEl) endTimeEl.textContent = formatGameTime() + ' AM';
   const wrap = $('ending-text');
   wrap.innerHTML = '';
   const lines = buildEndingLines(state.world);
+  // Append replay differences if previous run exists
+  if (prevWorld) {
+    const diffs = computeDiffs(prevWorld, state.world || {});
+    if (diffs.length > 0) {
+      lines.push('');
+      lines.push('【 上 次 的 这 一 晚 】');
+      const showN = Math.min(diffs.length, 5);
+      lines.push('这次跟上次不一样了 · 一共 ' + diffs.length + ' 处');
+      lines.push('');
+      diffs.slice(0, showN).forEach(d => {
+        lines.push('· 上次 ' + d.prev + '，这次 ' + d.curr + '。');
+      });
+      if (diffs.length > showN) {
+        lines.push('· ......（还有 ' + (diffs.length - showN) + ' 件）');
+      }
+    } else {
+      lines.push('');
+      lines.push('【 又 是 这 样 的 一 晚 】');
+      lines.push('跟上次一模一样。');
+    }
+  }
+  // Also mention run count if this is 2+ playthrough
+  if (runCount >= 1) {
+    lines.push('');
+    lines.push('（第 ' + (runCount + 1) + ' 次走过这一晚）');
+  }
   lines.forEach((line, i) => {
     const div = document.createElement('div');
     div.className = 'line';
@@ -4020,6 +4050,79 @@ function updateClockUI() {
     el.style.animation = 'none'; // stop auto-rotation
     el.style.transform = 'rotate(' + rotation + 'deg)';
   });
+}
+
+
+
+// ============================================================
+// REPLAY / PREVIOUS RUN
+// ============================================================
+const RUNS_KEY = 'midnight-store.runs.v1';
+
+function saveRunSummary(world) {
+  try {
+    const raw = localStorage.getItem(RUNS_KEY);
+    const data = raw ? JSON.parse(raw) : { count: 0, last: null };
+    // Snapshot what happened this run
+    data.last = Object.assign({}, world);
+    data.count = (data.count || 0) + 1;
+    localStorage.setItem(RUNS_KEY, JSON.stringify(data));
+  } catch (e) {}
+}
+
+function loadPrevRun() {
+  try {
+    const raw = localStorage.getItem(RUNS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+
+// Human-readable labels for world state values
+const WORLD_LABELS = {
+  milkHelp:       { none: '看着老人自己够', ready: '手搭在收银台边', given: '起身帮拿了' },
+  cashService:    { slow: '不耐烦地收现金', normal: '接过硬币替他数', fast: '帮他把硬币理整齐' },
+  odenState:      { off: '没煮关东煮', cold: '煮完关火了', hot: '锅留了保温档' },
+  catBowl:        { ignored: '没管猫碗', water: '摆正了猫碗补了水', full: '扫员工码倒了猫粮' },
+  nurseCheckout:  { cold: '低头扫码没抬头', normal: '问了句"袋子要吗"', warm: '拿了厚袋子说"路上小心"' },
+  seatHeater:     { off: '没管司机的腰', normal: '空调调高半格', cushion: '悄悄挪了靠垫' },
+  driverCheckout: { cold: '递水没抬头', normal: '往那边推了半寸水杯又收回', warm: '接了杯温水递过去' },
+  charger:        { none: '装没看见少年黑屏手机', noticed: '扫了眼手机没说话', given: '递了充电线' },
+  doorGap:        { none: '装没看见蹲门口的少年', watched: '偶尔扫一眼门口', open: '把门拉开一条缝' },
+
+  doorLet:        { none: '面无表情自己先进', normal: '停下侧身让门', hold: '扶了一下门' },
+  nursePay:       { cold: '面无表情扫码走了', normal: '扫码时点头示意', remind: '提醒了句"那个快过期了"' },
+  penPick:        { none: '看到笔没捡', return: '弯腰捡了递过去', comfort: '说了句"医护人员挺辛苦的"' },
+  catMeet:        { none: '目不斜视走过', glance: '放慢脚步看了眼', food: '摸出火腿肠说"给它的"' },
+  elderSlip:      { none: '侧身躲开', ready: '虚扶了一下胳膊', help: '扶住还帮拎牛奶袋' },
+
+  doorLetDriver:  { none: '直接侧身进', normal: '侧身让护士先进', hold: '扶了一下门' },
+  driverSeatState: { cold: '沉默揉腰', normal: '朝收银台点头', help: '扶了歪的货架' },
+  driverBuyWater: { cold: '递钱不说话', normal: '找零点头', remind: '说了"门口台阶滑"' },
+  driverPen:      { none: '接过笔就走', return: '说了句谢谢', comfort: '说"你也早点休息"' },
+  driverTeen:     { none: '目不斜视走过', glance: '看了少年一眼', milk: '递了瓶热牛奶' },
+  driverElder:    { none: '挂挡开走', wait: '放下挡等他先下阶', help: '下车帮拎点心袋' },
+
+  teenCat:        { cold: '不看店里自己倒粮', normal: '朝店里扫了一眼', ask: '问了"这个多少钱"' },
+  teenPay:        { cold: '攥着黑屏手机站着', leave: '说了"下次再来买"', ask: '问了"有充电线吗"' },
+  teenDoorSit:    { cold: '不看店里', shy: '偶尔往店里瞟', ask: '敲玻璃问"能站会儿吗"' },
+  teenNurse:      { cold: '头也没抬', wary: '把猫拉过来', thanks: '接过火腿肠小声说谢谢' },
+  teenElder:      { cold: '头也没抬', move: '挪了挪让位置', invite: '说"它很乖的"' }
+};
+
+function computeDiffs(prev, curr) {
+  const diffs = [];
+  Object.keys(WORLD_LABELS).forEach(key => {
+    const p = prev[key];
+    const c = curr[key];
+    if (p !== c && (p !== undefined || c !== undefined)) {
+      const labels = WORLD_LABELS[key];
+      const prevLabel = p ? (labels[p] || p) : '这件事没做';
+      const currLabel = c ? (labels[c] || c) : '这件事没做';
+      diffs.push({ key, prev: prevLabel, curr: currLabel });
+    }
+  });
+  return diffs;
 }
 
 // ============================================================
