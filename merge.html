@@ -715,7 +715,7 @@ function updateUndoBtn() {
 
 function updateItemBtns() {
   const maxVal = tiles ? tiles.reduce((m, t) => Math.max(m, t.value), 0) : 0;
-  shuffleBtn.disabled = animating || maxVal < 256 || (tiles && tiles.length < 3);
+  shuffleBtn.disabled = animating || maxVal < 256;
   sweepBtn.disabled = animating || maxVal < 1024 || !tiles || !tiles.some(t => t.value <= 8);
 }
 
