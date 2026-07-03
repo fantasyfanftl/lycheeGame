@@ -832,10 +832,159 @@ body {
       <svg id="scene-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
         <!-- Scene art (background, store, exterior) -->
         <g id="scene-art">
-          <!-- placeholder, filled by Edit -->
-          <rect width="1200" height="700" fill="#2a3548"/>
+          <!-- Exterior sky (night, left third) -->
+          <rect x="0" y="0" width="380" height="700" fill="#2a3448"/>
+          <!-- Stars -->
+          <circle cx="60"  cy="120" r="1"   fill="#f5c88a" opacity="0.8"/>
+          <circle cx="180" cy="50"  r="1"   fill="#f5c88a" opacity="0.6"/>
+          <circle cx="240" cy="180" r="1.2" fill="#f5c88a" opacity="0.7"/>
+          <circle cx="330" cy="100" r="1"   fill="#f5c88a" opacity="0.5"/>
+          <circle cx="45"  cy="220" r="0.8" fill="#f5c88a" opacity="0.5"/>
+          <!-- Moon (crescent) -->
+          <circle cx="90"  cy="80"  r="26" fill="#f5c88a" opacity="0.85"/>
+          <circle cx="100" cy="74"  r="24" fill="#2a3448"/>
+          <!-- Lamppost with warm glow -->
+          <line x1="150" y1="500" x2="150" y2="180" stroke="#3d2f24" stroke-width="2.5"/>
+          <circle cx="150" cy="175" r="26" fill="#f5c88a" opacity="0.12"/>
+          <circle cx="150" cy="175" r="14" fill="#f5c88a" opacity="0.35"/>
+          <circle cx="150" cy="175" r="7"  fill="#f9f3e8" opacity="0.95"/>
+          <!-- Sidewalk edge -->
+          <line x1="0" y1="600" x2="380" y2="600" stroke="#c9b48a" stroke-width="0.6" opacity="0.5"/>
+          <!-- Storefront steps -->
+          <line x1="220" y1="600" x2="380" y2="600" stroke="#c9b48a" stroke-width="1"/>
+          <line x1="220" y1="620" x2="380" y2="620" stroke="#c9b48a" stroke-width="1"/>
+          <line x1="220" y1="640" x2="380" y2="640" stroke="#c9b48a" stroke-width="1"/>
+          <!-- Cat bowl -->
+          <ellipse cx="285" cy="642" rx="18" ry="4.5" fill="#3d2f24" opacity="0.55"/>
+          <ellipse cx="285" cy="640" rx="18" ry="4" fill="none" stroke="#c9b48a" stroke-width="1"/>
+          <text x="285" y="672" font-size="10" fill="#c9b48a" text-anchor="middle" letter-spacing="2" font-family="serif">猫 碗</text>
+          <!-- Cat silhouette (near bowl) -->
+          <g transform="translate(240, 618)" opacity="0.75">
+            <ellipse cx="0" cy="10" rx="16" ry="6" fill="#d9a760"/>
+            <circle  cx="-13" cy="5" r="6.5" fill="#d9a760"/>
+            <path d="M-18 2 L-16 -3 L-14 2 Z" fill="#d9a760"/>
+            <path d="M-11 2 L-9 -3 L-7 2 Z"  fill="#d9a760"/>
+          </g>
+
+          <!-- Interior warm background -->
           <rect x="380" y="0" width="820" height="700" fill="#e8dcc4"/>
-          <text x="600" y="360" fill="#3d2f24" font-size="20" text-anchor="middle" letter-spacing="4">场景绘制中...</text>
+          <!-- Ceiling warm halo -->
+          <ellipse cx="800" cy="0" rx="520" ry="130" fill="#f5c88a" opacity="0.14"/>
+          <!-- Storefront glass frame -->
+          <line x1="380" y1="0" x2="380" y2="700" stroke="#8b6f47" stroke-width="2"/>
+          <!-- Glass door -->
+          <rect x="380" y="180" width="60" height="330" fill="#c9b48a" opacity="0.12"/>
+          <line x1="440" y1="180" x2="440" y2="510" stroke="#8b6f47" stroke-width="1.5"/>
+          <line x1="380" y1="180" x2="440" y2="180" stroke="#8b6f47" stroke-width="1.5"/>
+          <line x1="380" y1="510" x2="440" y2="510" stroke="#8b6f47" stroke-width="1.5"/>
+          <!-- Door handle -->
+          <circle cx="432" cy="345" r="2.5" fill="#3d2f24"/>
+          <text x="410" y="540" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">玻 璃 门</text>
+
+          <!-- Ceiling fluorescent tubes -->
+          <rect x="480" y="20" width="220" height="7" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+          <rect x="760" y="20" width="220" height="7" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+          <!-- One flickering (slightly dimmer) -->
+          <rect x="580" y="20" width="60" height="7" fill="#c17b52" opacity="0.25"/>
+
+          <!-- Window seat area -->
+          <rect x="480" y="360" width="130" height="90" fill="none" stroke="#a67240" stroke-width="1.5"/>
+          <line x1="480" y1="360" x2="610" y2="360" stroke="#a67240" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.6"/>
+          <!-- Table -->
+          <rect x="490" y="405" width="110" height="6" fill="#a67240"/>
+          <text x="545" y="470" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="3" font-family="serif">窗 边 座 位</text>
+
+          <!-- Water dispenser -->
+          <rect x="650" y="290" width="80" height="130" fill="#c9b48a" stroke="#3d2f24" stroke-width="1.5"/>
+          <rect x="665" y="308" width="50" height="8" fill="#3d2f24" opacity="0.6"/>
+          <rect x="670" y="325" width="10" height="12" fill="#8b6f47"/>
+          <circle cx="698" cy="378" r="3" fill="#3d2f24"/>
+          <circle cx="710" cy="378" r="3" fill="#3d2f24"/>
+          <text x="690" y="440" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">饮 水 机</text>
+
+          <!-- Oden pot with steam -->
+          <ellipse cx="780" cy="320" rx="42" ry="8" fill="#8b6f47"/>
+          <rect x="738" y="320" width="84" height="50" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
+          <!-- Skewers -->
+          <line x1="758" y1="325" x2="758" y2="355" stroke="#f5c88a" stroke-width="1"/>
+          <line x1="772" y1="325" x2="772" y2="355" stroke="#f5c88a" stroke-width="1"/>
+          <line x1="786" y1="325" x2="786" y2="355" stroke="#f5c88a" stroke-width="1"/>
+          <line x1="800" y1="325" x2="800" y2="355" stroke="#f5c88a" stroke-width="1"/>
+          <!-- Steam curls -->
+          <path d="M765 315 Q760 305 765 295 Q770 285 765 275" stroke="#e8dcc4" stroke-width="2" fill="none" opacity="0.6"/>
+          <path d="M780 313 Q785 303 780 293 Q775 283 780 273" stroke="#e8dcc4" stroke-width="2" fill="none" opacity="0.55"/>
+          <path d="M795 315 Q800 305 795 295 Q790 285 795 275" stroke="#e8dcc4" stroke-width="2" fill="none" opacity="0.6"/>
+          <text x="780" y="390" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">关 东 煮</text>
+
+          <!-- Shelves -->
+          <rect x="850" y="200" width="100" height="200" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
+          <line x1="850" y1="250" x2="950" y2="250" stroke="#3d2f24" stroke-width="1"/>
+          <line x1="850" y1="300" x2="950" y2="300" stroke="#3d2f24" stroke-width="1"/>
+          <line x1="850" y1="350" x2="950" y2="350" stroke="#3d2f24" stroke-width="1"/>
+          <!-- Items on shelves -->
+          <rect x="856" y="207" width="10" height="15" fill="#c17b52" opacity="0.7"/>
+          <rect x="870" y="207" width="10" height="15" fill="#a67240" opacity="0.7"/>
+          <rect x="890" y="210" width="8"  height="12" fill="#8b6f47" opacity="0.7"/>
+          <rect x="905" y="257" width="12" height="18" fill="#c17b52" opacity="0.7"/>
+          <rect x="920" y="257" width="12" height="18" fill="#c9b48a" opacity="0.7"/>
+          <rect x="860" y="307" width="15" height="20" fill="#a67240" opacity="0.7"/>
+          <rect x="880" y="307" width="15" height="20" fill="#8b6f47" opacity="0.7"/>
+          <rect x="900" y="357" width="20" height="25" fill="#c17b52" opacity="0.7"/>
+          <text x="900" y="420" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
+
+          <!-- Milk (hot drink) cabinet -->
+          <rect x="960" y="240" width="100" height="140" fill="#c9b48a" opacity="0.35" stroke="#3d2f24" stroke-width="1.5"/>
+          <line x1="960" y1="290" x2="1060" y2="290" stroke="#3d2f24" stroke-width="0.8"/>
+          <line x1="960" y1="330" x2="1060" y2="330" stroke="#3d2f24" stroke-width="0.8"/>
+          <!-- Milk cartons on top shelf -->
+          <rect x="972"  y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+          <rect x="990"  y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+          <rect x="1008" y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+          <rect x="1026" y="250" width="12" height="30" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
+          <!-- Middle shelf -->
+          <rect x="975"  y="298" width="10" height="25" fill="#c17b52" opacity="0.6"/>
+          <rect x="1000" y="298" width="10" height="25" fill="#8b6f47" opacity="0.6"/>
+          <rect x="1030" y="298" width="10" height="25" fill="#a67240" opacity="0.6"/>
+          <!-- Red-tinted lamp (mentioned in cashier's beat 1) -->
+          <rect x="960" y="238" width="100" height="4" fill="#c17b52" opacity="0.65"/>
+          <text x="1010" y="400" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">热 奶 柜</text>
+
+          <!-- Register / counter -->
+          <rect x="1070" y="410" width="120" height="95" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
+          <line x1="1070" y1="435" x2="1190" y2="435" stroke="#3d2f24" stroke-width="0.8"/>
+          <!-- QR code sign -->
+          <rect x="1082" y="445" width="22" height="22" fill="#3d2f24"/>
+          <rect x="1085" y="448" width="6" height="6" fill="#e8dcc4"/>
+          <rect x="1095" y="448" width="6" height="6" fill="#e8dcc4"/>
+          <rect x="1085" y="458" width="6" height="6" fill="#e8dcc4"/>
+          <rect x="1097" y="460" width="4" height="4" fill="#e8dcc4"/>
+          <!-- Cash drawer -->
+          <rect x="1115" y="472" width="70" height="22" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
+          <circle cx="1150" cy="483" r="1.5" fill="#3d2f24"/>
+          <!-- Radio on shelf behind counter -->
+          <rect x="1028" y="395" width="48" height="17" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8" rx="2"/>
+          <circle cx="1041" cy="403" r="2.5" fill="#3d2f24"/>
+          <circle cx="1052" cy="403" r="2.5" fill="#3d2f24"/>
+          <line x1="1062" y1="399" x2="1072" y2="399" stroke="#3d2f24" stroke-width="0.6"/>
+          <line x1="1062" y1="403" x2="1072" y2="403" stroke="#3d2f24" stroke-width="0.6"/>
+          <line x1="1062" y1="407" x2="1072" y2="407" stroke="#3d2f24" stroke-width="0.6"/>
+          <text x="1055" y="388" font-size="8" fill="#3d2f24" text-anchor="middle" opacity="0.6" font-family="serif">收音机</text>
+          <text x="1130" y="525" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
+
+          <!-- Floor line -->
+          <line x1="380" y1="560" x2="1200" y2="560" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+
+          <!-- Clock (top right of interior) -->
+          <circle cx="1150" cy="60" r="26" fill="#f9f3e8" stroke="#3d2f24" stroke-width="1.5"/>
+          <circle cx="1150" cy="60" r="1.5" fill="#3d2f24"/>
+          <line x1="1150" y1="60" x2="1150" y2="42" stroke="#3d2f24" stroke-width="1.5"/>
+          <line x1="1150" y1="60" x2="1162" y2="60" stroke="#3d2f24" stroke-width="1.5"/>
+          <!-- Hour markers -->
+          <circle cx="1150" cy="38"  r="1" fill="#3d2f24"/>
+          <circle cx="1172" cy="60"  r="1" fill="#3d2f24"/>
+          <circle cx="1150" cy="82"  r="1" fill="#3d2f24"/>
+          <circle cx="1128" cy="60"  r="1" fill="#3d2f24"/>
+          <text x="1150" y="105" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">02 : 00</text>
         </g>
 
         <!-- Characters (drawn on top of scene) -->
