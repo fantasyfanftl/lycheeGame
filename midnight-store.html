@@ -1162,6 +1162,39 @@ body {
   100% { transform: scale(1); }
 }
 
+
+/* ========== Save / Resume UI ========== */
+.save-resume {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.save-info {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: rgba(232, 220, 196, 0.55);
+  margin-bottom: 4px;
+}
+.save-btn {
+  background: rgba(245, 200, 138, 0.9) !important;
+}
+.save-clear {
+  background: none;
+  border: none;
+  color: rgba(232, 220, 196, 0.4);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.25s;
+}
+.save-clear:hover {
+  color: rgba(232, 220, 196, 0.85);
+}
+
 </style>
 </head>
 <body>
@@ -1179,6 +1212,11 @@ body {
       <p class="title-sub">四个陌生人，交汇成一场安静的</p>
       <p class="title-sub2">无人知晓的温柔</p>
       <button class="paper-btn" id="start-btn">推 门 进 去</button>
+      <div class="save-resume" id="save-resume" style="display: none;">
+        <div class="save-info" id="save-info"></div>
+        <button class="paper-btn save-btn" id="continue-btn">继 续 这 一 晚 →</button>
+        <button class="save-clear" id="save-clear-btn">重 新 开 始</button>
+      </div>
     </div>
   </div>
 
@@ -2583,6 +2621,7 @@ function playBeat(beat) {
 }
 
 function pickChoice(idx) {
+  
   const beat = _currentEffective;
   const choice = beat.choices[idx];
 
@@ -2688,6 +2727,8 @@ function setContinueEnabled(enabled) {
 }
 
 function closeBeat() {
+  // Save happens after progress advances (at end)
+  
   state.dialogueOpen = false;
   $('dialogue-overlay').classList.add('hidden');
 
@@ -2701,6 +2742,9 @@ function closeBeat() {
       setTimeout(() => toast(CHARACTERS[c].name + ' · 这 一 段 走 完 了'), 300);
     }
   }
+
+  // Save state after every beat close
+  saveState();
 
   // All 5 arcs done → ending
   if (state.completed.size >= CHAR_ORDER.length) {
@@ -2883,6 +2927,7 @@ function buildEndingLines(w) {
 }
 
 function showEnding() {
+  clearSave();
   const wrap = $('ending-text');
   wrap.innerHTML = '';
   const lines = buildEndingLines(state.world);
@@ -2895,6 +2940,73 @@ function showEnding() {
   });
   showScreen('ending-screen');
 }
+
+// ============================================================
+// SAVE / RESUME
+// ============================================================
+
+const SAVE_KEY = 'midnight-store.save.v1';
+
+function saveState() {
+  try {
+    const s = {
+      v: 1,
+      currentPOV: state.currentPOV,
+      progress: state.progress,
+      completed: Array.from(state.completed),
+      convergences: Array.from(state.convergences),
+      cpProgress: Object.fromEntries(
+        Object.entries(state.cpProgress).map(([k, v]) => [k, Array.from(v)])
+      ),
+      world: state.world || {},
+      notebookRecord: state.notebookRecord || {}
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+  } catch (e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const s = JSON.parse(raw);
+    if (!s || s.v !== 1) return false;
+    // Meaningful progress check: at least one beat played
+    const anyProgress = s.progress && Object.values(s.progress).some(v => v > 0);
+    if (!anyProgress) return false;
+    state.currentPOV = s.currentPOV || null;
+    state.progress = Object.assign({ cashier: 0, nurse: 0, driver: 0, teen: 0 }, s.progress);
+    state.completed = new Set(s.completed || []);
+    state.convergences = new Set(s.convergences || []);
+    state.cpProgress = {};
+    Object.entries(s.cpProgress || {}).forEach(([k, v]) => {
+      state.cpProgress[k] = new Set(v);
+    });
+    state.world = s.world || {};
+    state.notebookRecord = s.notebookRecord || {};
+    return true;
+  } catch (e) { return false; }
+}
+
+function clearSave() {
+  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+}
+
+function hasValidSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || s.v !== 1) return null;
+    const anyProgress = s.progress && Object.values(s.progress).some(v => v > 0);
+    if (!anyProgress) return null;
+    // Return summary for UI
+    const done = (s.completed || []).length;
+    const cpCount = (s.convergences || []).length;
+    return { completed: done, cps: cpCount };
+  } catch (e) { return null; }
+}
+
 
 // ============================================================
 // SVG ART — placeholders, filled by Edit
@@ -3579,6 +3691,27 @@ function bindEvents() {
     state.currentPOV = null;
     render();
   });
+  const continueBtn = document.getElementById('continue-btn');
+  if (continueBtn) {
+    continueBtn.addEventListener('click', () => {
+      if (loadState()) {
+        showScreen('game-screen');
+        // If loaded state indicates all done, jump to ending
+        if (state.completed.size >= CHAR_ORDER.length) {
+          showEnding();
+        } else {
+          render();
+        }
+      }
+    });
+  }
+  const clearBtn = document.getElementById('save-clear-btn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      clearSave();
+      refreshSaveUI();
+    });
+  }
   $('dialogue-continue').addEventListener('click', closeBeat);
   $('notebook-btn').addEventListener('click', showNotebook);
   $('notebook-close').addEventListener('click', hideNotebook);
@@ -3608,6 +3741,7 @@ function bindEvents() {
     state.cpProgress = {};
     state.notebookRecord = {};
     state.world = {};
+    refreshSaveUI();
     showScreen('title-screen');
     // Recreate onboarding hint for next run
     if (!document.getElementById('onboarding-hint')) {
@@ -3626,7 +3760,23 @@ function bindEvents() {
 function init() {
   bindEvents();
   initCardNav();
+  refreshSaveUI();
   render();
+}
+
+function refreshSaveUI() {
+  const info = hasValidSave();
+  const box = document.getElementById('save-resume');
+  if (!box) return;
+  if (info) {
+    box.style.display = 'flex';
+    const infoEl = document.getElementById('save-info');
+    if (infoEl) {
+      infoEl.textContent = '上次进度 · 走完 ' + info.completed + ' / 4 · 交汇 ' + info.cps + ' / 16';
+    }
+  } else {
+    box.style.display = 'none';
+  }
 }
 
 function adjustMobileScene() {

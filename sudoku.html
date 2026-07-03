@@ -3,531 +3,722 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>星辰命盘</title>
+<title>雪夜列车</title>
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'KaiTi', 'STKaiti', '楷体', 'Songti SC', 'Segoe UI', serif;
+    font-family: 'Songti SC', 'STSong', 'Georgia', serif;
     background:
-      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.5), transparent),
-      radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.4), transparent),
-      radial-gradient(2px 2px at 80% 20%, rgba(255, 216, 155, 0.6), transparent),
-      radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,0.4), transparent),
-      radial-gradient(1.5px 1.5px at 90% 60%, rgba(180, 140, 220, 0.5), transparent),
-      radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.3), transparent),
-      radial-gradient(ellipse at 30% 40%, rgba(120, 80, 200, 0.2), transparent 50%),
-      radial-gradient(ellipse at 70% 60%, rgba(200, 140, 90, 0.15), transparent 50%),
-      linear-gradient(135deg, #0f0e2a 0%, #1a1030 50%, #0a0518 100%);
-    background-size: 800px 800px, 600px 600px, 700px 700px, 500px 500px, 900px 900px, 400px 400px, 100% 100%, 100% 100%, 100% 100%;
+      radial-gradient(ellipse at 20% 20%, rgba(90, 120, 160, 0.18), transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(70, 90, 130, 0.15), transparent 60%),
+      linear-gradient(180deg, #12182a 0%, #0a0f1e 100%);
     background-attachment: fixed;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    color: #e8dcc4;
+    color: #d4d8e0;
     user-select: none;
     -webkit-user-select: none;
+    overflow-x: hidden;
   }
-  .container {
-    background: rgba(15, 14, 42, 0.7);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(245, 200, 138, 0.2);
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(180, 140, 220, 0.15) inset;
-    padding: 26px;
-    max-width: 560px;
-    width: 100%;
+  #app { position: relative; min-height: 100vh; }
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    overflow: hidden;
+  }
+  .screen.active { display: flex; opacity: 1; }
+  #screen-title, #screen-verdict, #screen-result {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .back-link {
-    display: inline-block;
-    color: rgba(245, 200, 138, 0.55);
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    color: rgba(212, 216, 224, 0.5);
     text-decoration: none;
     font-size: 12px;
-    margin-bottom: 8px;
-    letter-spacing: 2px;
+    padding: 4px 10px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 12px;
+    z-index: 100;
+    letter-spacing: 1px;
   }
-  .back-link:hover { color: #f5c88a; }
-  h1 {
-    text-align: center;
-    color: #f5c88a;
-    font-size: 28px;
-    letter-spacing: 10px;
-    margin-bottom: 4px;
-    text-shadow: 0 0 20px rgba(245, 200, 138, 0.4);
+  .back-link:hover { color: rgba(212, 216, 224, 0.9); }
+
+  /* Snowfall */
+  .snow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
   }
-  .subtitle {
-    text-align: center;
-    color: rgba(232, 220, 196, 0.6);
+  .snow span {
+    position: absolute;
+    top: -10px;
+    color: rgba(255, 255, 255, 0.35);
+    animation: fall linear infinite;
+    user-select: none;
+  }
+  @keyframes fall {
+    to { transform: translateY(105vh); }
+  }
+
+  /* Title screen */
+  #screen-title { text-align: center; z-index: 2; }
+  .title-time {
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: rgba(160, 180, 210, 0.55);
+    margin-bottom: 30px;
+  }
+  .title-main {
+    font-size: clamp(30px, 6vw, 42px);
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+    color: #e0e6ee;
+    text-shadow: 0 0 40px rgba(140, 170, 210, 0.3);
+  }
+  .title-sub {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: rgba(160, 180, 210, 0.5);
+    margin-bottom: 40px;
+  }
+  .intro-text {
+    max-width: 500px;
+    line-height: 2;
+    font-size: 15px;
+    color: rgba(212, 216, 224, 0.85);
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+  }
+  .intro-text p { margin: 4px 0; }
+  .intro-text p.gap { height: 12px; }
+
+  .cold-btn {
+    background: #d4d8e0;
+    color: #12182a;
+    border: none;
+    padding: 12px 30px;
+    font-size: 15px;
+    letter-spacing: 5px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 2px;
+    box-shadow: 0 2px 12px rgba(140, 170, 210, 0.15);
+    transition: all 0.3s;
+    position: relative;
+  }
+  .cold-btn::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border: 1px solid rgba(140, 170, 210, 0.3);
+    pointer-events: none;
+  }
+  .cold-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(140, 170, 210, 0.35); }
+  .cold-btn:disabled { opacity: 0.35; cursor: not-allowed; background: #8890a0; }
+  .cold-btn.small { padding: 8px 18px; font-size: 13px; letter-spacing: 3px; }
+
+  /* Game screen */
+  #screen-game { justify-content: flex-start; padding-top: 50px; z-index: 2; }
+  .game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .game-title {
+    font-size: 15px;
+    letter-spacing: 3px;
+    color: rgba(160, 180, 210, 0.8);
+  }
+  .clue-btn {
+    background: transparent;
+    border: 1px solid rgba(160, 180, 210, 0.3);
+    color: rgba(212, 216, 224, 0.85);
+    padding: 5px 12px;
     font-size: 12px;
-    letter-spacing: 4px;
-    margin-bottom: 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-family: inherit;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .clue-btn:hover { background: rgba(160, 180, 210, 0.1); }
+  .clue-btn .badge {
+    background: #a04040;
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    margin-left: 6px;
   }
   .info {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    color: rgba(232, 220, 196, 0.75);
-    font-size: 13px;
-    letter-spacing: 1px;
-    padding: 0 8px;
+    gap: 8px;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 10px;
   }
-  .info span b { color: #f5c88a; margin-left: 4px; }
+  .info span {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(160, 180, 210, 0.15);
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(212, 216, 224, 0.75);
+    letter-spacing: 1px;
+  }
+  .info span b { color: #e0e6ee; margin-left: 4px; }
+
   .difficulty {
     display: flex;
-    gap: 6px;
+    gap: 5px;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 10px;
     justify-content: center;
-    margin-bottom: 14px;
     flex-wrap: wrap;
   }
   .difficulty button {
-    padding: 5px 12px;
-    border: 1px solid rgba(245, 200, 138, 0.35);
+    padding: 4px 10px;
+    border: 1px solid rgba(160, 180, 210, 0.25);
     background: transparent;
-    color: rgba(232, 220, 196, 0.85);
+    color: rgba(212, 216, 224, 0.75);
     border-radius: 20px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 1px;
     font-family: inherit;
     transition: all 0.2s;
   }
-  .difficulty button:hover { background: rgba(245, 200, 138, 0.1); }
+  .difficulty button:hover { background: rgba(160, 180, 210, 0.1); }
   .difficulty button.active {
-    background: rgba(245, 200, 138, 0.25);
-    border-color: #f5c88a;
-    color: #f5c88a;
+    background: rgba(160, 180, 210, 0.2);
+    border-color: #e0e6ee;
+    color: #e0e6ee;
   }
+
   .board {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     gap: 0;
-    border: 2px solid rgba(245, 200, 138, 0.5);
+    border: 2px solid rgba(160, 180, 210, 0.5);
     aspect-ratio: 1;
-    margin-bottom: 18px;
-    background: rgba(0, 0, 0, 0.35);
+    margin-bottom: 14px;
+    background: rgba(0, 0, 0, 0.3);
+    max-width: 560px;
+    width: 100%;
     position: relative;
   }
   .cell {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(16px, 4vw, 24px);
+    font-size: clamp(15px, 3.8vw, 22px);
     font-weight: 400;
     background: transparent;
-    border: 1px solid rgba(245, 200, 138, 0.1);
+    border: 1px solid rgba(160, 180, 210, 0.08);
     cursor: pointer;
-    transition: background 0.15s;
     aspect-ratio: 1;
-    color: rgba(232, 220, 196, 0.9);
+    color: rgba(212, 216, 224, 0.9);
     font-family: 'Georgia', serif;
+    transition: background 0.15s;
     position: relative;
   }
-  .cell:nth-child(3n) { border-right: 1px solid rgba(245, 200, 138, 0.4); }
-  .cell:nth-child(9n) { border-right: 1px solid rgba(245, 200, 138, 0.1); }
-  .row-3 { border-bottom: 1px solid rgba(245, 200, 138, 0.4) !important; }
+  .cell:nth-child(3n) { border-right: 1px solid rgba(160, 180, 210, 0.4); }
+  .cell:nth-child(9n) { border-right: 1px solid rgba(160, 180, 210, 0.08); }
+  .row-3 { border-bottom: 1px solid rgba(160, 180, 210, 0.4) !important; }
   .cell.fixed {
-    color: #f5c88a;
+    color: #e0e6ee;
     font-weight: 500;
-    background: rgba(245, 200, 138, 0.06);
+    background: rgba(160, 180, 210, 0.05);
   }
   .cell.selected {
-    background: rgba(180, 140, 220, 0.35) !important;
-    box-shadow: 0 0 15px rgba(180, 140, 220, 0.5) inset;
+    background: rgba(160, 100, 100, 0.35) !important;
+    box-shadow: 0 0 12px rgba(200, 130, 130, 0.4) inset;
   }
-  .cell.highlight { background: rgba(180, 140, 220, 0.1); }
-  .cell.same-num { background: rgba(245, 200, 138, 0.15); }
-  .cell.error { color: #ff6b6b; text-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
-  .cell:not(.fixed):hover { background: rgba(245, 200, 138, 0.1); }
+  .cell.highlight { background: rgba(160, 180, 210, 0.08); }
+  .cell.same-num { background: rgba(160, 180, 210, 0.15); }
+  .cell.error { color: #ff8080; text-shadow: 0 0 10px rgba(255, 128, 128, 0.4); }
+  .cell:not(.fixed):hover { background: rgba(160, 180, 210, 0.08); }
+  .cell.box-solved {
+    background: rgba(180, 150, 100, 0.14);
+  }
+
   .numpad {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    gap: 5px;
-    margin-bottom: 14px;
+    gap: 4px;
+    margin-bottom: 12px;
+    max-width: 560px;
+    width: 100%;
   }
   .numpad button {
-    padding: 10px 0;
-    font-size: 17px;
+    padding: 9px 0;
+    font-size: 16px;
     font-weight: 500;
-    background: rgba(180, 140, 220, 0.15);
-    color: #e8dcc4;
-    border: 1px solid rgba(245, 200, 138, 0.2);
-    border-radius: 4px;
+    background: rgba(160, 180, 210, 0.1);
+    color: #d4d8e0;
+    border: 1px solid rgba(160, 180, 210, 0.2);
+    border-radius: 3px;
     cursor: pointer;
     font-family: 'Georgia', serif;
     transition: all 0.15s;
   }
   .numpad button:hover {
-    background: rgba(180, 140, 220, 0.3);
-    color: #f5c88a;
-    border-color: rgba(245, 200, 138, 0.5);
+    background: rgba(160, 180, 210, 0.25);
+    border-color: rgba(160, 180, 210, 0.5);
   }
   .actions {
     display: flex;
-    gap: 8px;
-    justify-content: center;
+    gap: 6px;
+    max-width: 560px;
+    width: 100%;
     flex-wrap: wrap;
   }
   .actions button {
-    padding: 8px 16px;
-    font-size: 13px;
+    flex: 1;
+    padding: 8px 0;
+    font-size: 12px;
     letter-spacing: 2px;
-    border: 1px solid rgba(245, 200, 138, 0.3);
-    border-radius: 4px;
+    border: 1px solid rgba(160, 180, 210, 0.3);
+    border-radius: 2px;
     cursor: pointer;
     background: transparent;
-    color: rgba(232, 220, 196, 0.85);
+    color: rgba(212, 216, 224, 0.85);
     font-family: inherit;
     transition: all 0.15s;
+    min-width: 60px;
   }
-  .actions button:hover { background: rgba(245, 200, 138, 0.1); }
-  .actions .primary {
-    background: rgba(180, 140, 220, 0.25);
-    border-color: rgba(180, 140, 220, 0.6);
-    color: #f5c88a;
+  .actions button:hover:not(:disabled) { background: rgba(160, 180, 210, 0.1); }
+  .actions button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .actions button.accuse {
+    background: rgba(160, 60, 60, 0.4);
+    border-color: rgba(200, 100, 100, 0.6);
+    color: #ffb0b0;
   }
+  .actions button.accuse:hover:not(:disabled) { background: rgba(200, 80, 80, 0.5); }
+
   .message {
     text-align: center;
-    padding: 8px;
-    margin-top: 10px;
-    border-radius: 4px;
-    font-weight: 500;
-    min-height: 22px;
+    padding: 6px;
+    margin-top: 8px;
+    border-radius: 2px;
     font-size: 13px;
     letter-spacing: 2px;
+    min-height: 22px;
+    color: rgba(212, 216, 224, 0.7);
   }
-  .message.success {
-    background: rgba(140, 220, 180, 0.15);
-    color: #a0e8c0;
-    border: 1px solid rgba(140, 220, 180, 0.4);
+  .message.info { color: #a0c8e8; }
+  .message.error { color: #ff9090; }
+
+  /* Clue toast */
+  .clue-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #e8e0d0;
+    color: #2a2418;
+    padding: 24px 30px;
+    max-width: 460px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(200, 170, 130, 0.3);
+    border: 1px solid #a09070;
+    z-index: 200;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    font-family: 'Georgia', 'Songti SC', serif;
   }
-  .message.error {
-    background: rgba(220, 100, 100, 0.15);
-    color: #ffa0a0;
+  .clue-toast.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .clue-toast .location {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #907050;
+    margin-bottom: 4px;
+  }
+  .clue-toast .head {
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: #2a2418;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(160, 144, 112, 0.4);
+  }
+  .clue-toast .body {
+    font-size: 15px;
+    line-height: 1.8;
+    letter-spacing: 1px;
+  }
+  .clue-toast .foot {
+    font-size: 10px;
+    color: #907050;
+    margin-top: 14px;
+    text-align: right;
+    letter-spacing: 2px;
   }
 
-  /* Reveal modal (命盘) */
+  /* Modal (clue log) */
   .modal-mask {
     position: fixed;
     inset: 0;
-    background: rgba(5, 3, 15, 0.85);
-    backdrop-filter: blur(8px);
-    z-index: 100;
+    background: rgba(5, 10, 20, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 300;
     display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    opacity: 0;
-    transition: opacity 0.5s;
   }
-  .modal-mask.show { display: flex; opacity: 1; }
+  .modal-mask.show { display: flex; }
   .modal {
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(180, 140, 220, 0.25), transparent 60%),
-      linear-gradient(180deg, #1a0f30 0%, #0f0620 100%);
-    border: 1px solid rgba(245, 200, 138, 0.4);
-    border-radius: 4px;
-    padding: 32px 30px;
-    max-width: 480px;
+    background: #e8e0d0;
+    color: #2a2418;
+    padding: 28px 26px;
+    max-width: 520px;
     width: 100%;
-    max-height: 90vh;
+    max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 40px rgba(180, 140, 220, 0.2);
-    text-align: center;
-    animation: modalIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #a09070;
+    font-family: 'Georgia', 'Songti SC', serif;
   }
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.85); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  .star-decoration {
-    color: #f5c88a;
-    font-size: 20px;
-    letter-spacing: 10px;
-    opacity: 0.7;
-    margin-bottom: 12px;
-  }
-  .modal h2 {
-    font-size: 24px;
-    letter-spacing: 10px;
-    color: #f5c88a;
-    margin-bottom: 24px;
-    text-shadow: 0 0 20px rgba(245, 200, 138, 0.5);
-  }
-  .main-star {
-    padding: 18px;
-    border: 1px solid rgba(245, 200, 138, 0.3);
-    margin-bottom: 22px;
-    background: rgba(0, 0, 0, 0.3);
-  }
-  .main-star .star-label {
-    display: block;
-    color: rgba(232, 220, 196, 0.55);
-    font-size: 11px;
-    letter-spacing: 4px;
-    margin-bottom: 8px;
-  }
-  .main-star .star-name {
-    display: block;
-    font-size: 32px;
-    color: #f5c88a;
-    letter-spacing: 10px;
-    text-shadow: 0 0 20px rgba(245, 200, 138, 0.6);
-    margin-bottom: 6px;
-  }
-  .main-star .star-trait {
-    display: block;
-    color: rgba(232, 220, 196, 0.7);
-    font-size: 13px;
-    letter-spacing: 3px;
-  }
-  .main-star .star-reason {
-    display: block;
-    margin-top: 8px;
-    color: rgba(245, 200, 138, 0.55);
-    font-size: 11px;
-    letter-spacing: 3px;
-  }
-  .scenario {
-    padding: 16px;
-    border: 1px dashed rgba(245, 200, 138, 0.25);
-    margin-bottom: 22px;
-    background: rgba(180, 140, 220, 0.06);
-    text-align: center;
-  }
-  .scenario .scenario-label {
-    display: block;
-    color: rgba(232, 220, 196, 0.55);
-    font-size: 11px;
+  .modal h3 {
+    font-size: 18px;
     letter-spacing: 4px;
     margin-bottom: 6px;
   }
-  .scenario .scenario-name {
-    display: block;
-    font-size: 22px;
-    color: #f5c88a;
-    letter-spacing: 6px;
-    margin-bottom: 6px;
-  }
-  .scenario .scenario-desc {
-    display: block;
-    color: rgba(232, 220, 196, 0.75);
-    font-size: 13px;
+  .modal .modal-sub {
+    font-size: 12px;
+    color: #907050;
     letter-spacing: 2px;
-    margin-bottom: 4px;
-    line-height: 1.7;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(160, 144, 112, 0.4);
   }
-  .scenario .scenario-stat {
-    display: block;
-    color: rgba(245, 200, 138, 0.5);
-    font-size: 11px;
-    letter-spacing: 2px;
-    font-style: italic;
-  }
-  .fortune-section {
-    text-align: left;
-    margin-bottom: 18px;
-  }
-  .fortune-section h3 {
-    font-size: 13px;
-    color: #f5c88a;
-    letter-spacing: 6px;
-    margin-bottom: 10px;
-    padding-left: 8px;
-    border-left: 2px solid rgba(245, 200, 138, 0.6);
-  }
-  .fortune-section ul {
-    list-style: none;
-    padding-left: 8px;
-  }
-  .fortune-section li {
-    padding: 8px 0;
-    color: rgba(232, 220, 196, 0.85);
-    font-size: 14px;
-    letter-spacing: 2px;
-    line-height: 1.5;
-    border-bottom: 1px dashed rgba(245, 200, 138, 0.1);
-  }
-  .fortune-section li:last-child { border-bottom: none; }
-  .fortune-section li::before {
-    content: '· ';
-    color: rgba(245, 200, 138, 0.6);
-  }
-  .fortune-section .fortune-text {
-    display: inline;
-  }
-  .fortune-section .fortune-why {
-    display: block;
-    margin-top: 3px;
-    padding-left: 12px;
-    font-size: 11px;
-    color: rgba(232, 220, 196, 0.5);
-    letter-spacing: 1.5px;
-    font-style: italic;
+  .clue-item {
+    padding: 12px 0;
+    border-bottom: 1px dashed rgba(160, 144, 112, 0.4);
+    display: flex;
+    gap: 12px;
     line-height: 1.6;
   }
-  .fortune-section .fortune-why::before {
-    content: '— ';
+  .clue-item:last-child { border-bottom: none; }
+  .clue-location {
+    color: #907050;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 60px;
+    letter-spacing: 1px;
   }
-  .poem {
-    background: rgba(180, 140, 220, 0.08);
-    border: 1px dashed rgba(245, 200, 138, 0.25);
-    padding: 16px 18px;
-    margin: 20px 0;
-    font-size: 14px;
-    line-height: 2;
-    color: rgba(232, 220, 196, 0.9);
-    letter-spacing: 3px;
-    white-space: pre-line;
-    font-style: italic;
-  }
-  .luck {
-    color: rgba(232, 220, 196, 0.7);
-    font-size: 13px;
-    letter-spacing: 3px;
-    margin-bottom: 24px;
-  }
-  .luck .stars { color: #f5c88a; letter-spacing: 4px; font-size: 16px; }
-  .modal-actions { display: flex; gap: 10px; justify-content: center; }
-  .modal-actions button {
-    padding: 8px 20px;
-    background: transparent;
-    color: rgba(232, 220, 196, 0.9);
-    border: 1px solid rgba(245, 200, 138, 0.5);
-    cursor: pointer;
+  .clue-body-inner { color: #2a2418; font-size: 14px; flex: 1; }
+  .clue-body-inner.locked { color: #907050; opacity: 0.55; font-style: italic; }
+  .modal-close {
+    display: block;
+    margin: 20px auto 0;
+    background: none;
+    border: 1px solid #6b5d40;
+    color: #2a2418;
+    padding: 8px 22px;
     font-family: inherit;
     letter-spacing: 3px;
+    cursor: pointer;
     font-size: 13px;
+  }
+  .modal-close:hover { background: rgba(107, 93, 64, 0.1); }
+
+  /* Verdict */
+  #screen-verdict, #screen-result { justify-content: flex-start; padding-top: 60px; z-index: 2; }
+  .verdict-title {
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: #e0e6ee;
+    margin-bottom: 8px;
+  }
+  .verdict-sub {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: rgba(160, 180, 210, 0.6);
+    margin-bottom: 30px;
+    text-align: center;
+    max-width: 500px;
+    line-height: 1.8;
+  }
+  .verdict-section {
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: 24px;
+  }
+  .verdict-section h4 {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: rgba(160, 180, 210, 0.75);
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .choice {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(160, 180, 210, 0.2);
+    color: #d4d8e0;
+    padding: 14px 12px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 2px;
+    text-align: center;
     transition: all 0.2s;
   }
-  .modal-actions button:hover {
-    background: rgba(245, 200, 138, 0.15);
-    color: #f5c88a;
+  .choice:hover { background: rgba(160, 180, 210, 0.08); border-color: rgba(160, 180, 210, 0.5); }
+  .choice.selected {
+    background: rgba(160, 60, 60, 0.3);
+    border-color: rgba(200, 100, 100, 0.7);
+    box-shadow: 0 0 12px rgba(200, 100, 100, 0.3);
   }
+  .choice .avatar { font-size: 26px; margin-bottom: 6px; }
+  .choice .name { font-size: 15px; letter-spacing: 2px; margin-bottom: 3px; }
+  .choice .role { font-size: 11px; color: rgba(212, 216, 224, 0.5); letter-spacing: 1px; margin-bottom: 6px; }
+  .choice .desc { font-size: 12px; color: rgba(212, 216, 224, 0.6); line-height: 1.5; }
+  .verdict-submit { margin-top: 20px; }
+
+  /* Result */
+  .result-title {
+    font-size: 26px;
+    letter-spacing: 8px;
+    margin-bottom: 24px;
+  }
+  .result-title.win { color: #a0e0c0; }
+  .result-title.lose { color: #ffa090; }
+  .result-body {
+    max-width: 560px;
+    line-height: 2.2;
+    font-size: 16px;
+    color: rgba(212, 216, 224, 0.9);
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+    text-align: left;
+    padding: 0 20px;
+  }
+  .result-body p { margin: 4px 0; }
+  .result-body p.gap { height: 14px; }
+  .result-body p.emph { color: #a0c8e8; font-style: italic; }
+  .result-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 
   /* Landscape */
   @media (orientation: landscape) and (max-height: 550px) {
-    body { padding: 8px; align-items: flex-start; }
-    .container {
-      max-width: none;
-      padding: 14px 18px;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      grid-template-areas:
-        "back    back"
-        "title   title"
-        "info    info"
-        "diff    diff"
-        "board   numpad"
-        "board   actions"
-        "board   message";
-      gap: 4px 16px;
-      align-items: start;
-    }
-    .back-link { grid-area: back; margin: 0; }
-    h1 { grid-area: title; font-size: 18px; margin-bottom: 2px; letter-spacing: 6px; }
-    .subtitle { display: none; }
-    .info { grid-area: info; margin: 0; font-size: 12px; }
-    .difficulty { grid-area: diff; margin-bottom: 4px; }
-    .difficulty button { padding: 3px 8px; font-size: 11px; }
-    .board { grid-area: board; width: min(70vh, 380px); margin: 0; }
-    .numpad {
-      grid-area: numpad;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      margin: 0;
-    }
-    .numpad button { padding: 8px 0; font-size: 15px; }
-    .actions { grid-area: actions; gap: 6px; }
-    .actions button { padding: 5px 10px; font-size: 11px; letter-spacing: 1px; }
-    .message { grid-area: message; margin: 0; font-size: 12px; }
+    #screen-game { padding-top: 30px; }
+    .game-header, .info, .difficulty, .board, .numpad, .actions { max-width: 500px; }
+    .board { width: min(500px, 62vh); }
   }
-  @media (max-width: 480px) {
-    h1 { font-size: 22px; letter-spacing: 6px; }
-    .container { padding: 20px 16px; }
-    .difficulty button { padding: 4px 10px; font-size: 11px; letter-spacing: 0; }
+  @media (max-width: 500px) {
+    .verdict-title { font-size: 18px; letter-spacing: 4px; }
+    .choice-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .choice { padding: 10px 8px; }
+    .clue-toast .body { font-size: 14px; }
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
-  <h1>星 辰 命 盘</h1>
-  <div class="subtitle">九星入盘 · 为你排一次命</div>
+<a href="index.html" class="back-link">← 荔枝游戏</a>
+<div class="snow" id="snow"></div>
+<div id="app">
+
+<!-- Title -->
+<div id="screen-title" class="screen active">
+  <div class="title-time">凌晨 · 三时 · 二十分</div>
+  <h1 class="title-main">雪 夜 列 车</h1>
+  <div class="title-sub">京沪线 · 山中停驻 · 一夜风雪</div>
+  <div class="intro-text" id="introText"></div>
+  <button class="cold-btn" id="startBtn">登 车 调 查</button>
+</div>
+
+<!-- Game -->
+<div id="screen-game" class="screen">
+  <div class="game-header">
+    <span class="game-title">❄ 雪夜列车 · 车厢搜查图</span>
+    <button class="clue-btn" id="clueBtn">线索簿 <span class="badge" id="clueBadge">0/9</span></button>
+  </div>
   <div class="info">
     <span>时辰 <b id="timer">00:00</b></span>
     <span>差错 <b id="mistakes">0</b></span>
+    <span>已搜 <b id="searched">0</b>/9 处</span>
   </div>
   <div class="difficulty">
-    <button data-level="easy" class="active">初 · 星海入门</button>
-    <button data-level="medium">中 · 星象初显</button>
-    <button data-level="hard">难 · 天机深藏</button>
-    <button data-level="expert">极 · 逆天改命</button>
+    <button data-level="easy" class="active">初 · 车厢概览</button>
+    <button data-level="medium">中 · 搜查渐深</button>
+    <button data-level="hard">难 · 步步紧逼</button>
+    <button data-level="expert">极 · 只有一线</button>
   </div>
   <div class="board" id="board"></div>
   <div class="numpad" id="numpad"></div>
   <div class="actions">
-    <button id="newGame" class="primary">重排星盘</button>
+    <button id="newGame">重启调查</button>
     <button id="erase">擦除</button>
-    <button id="hint">天机</button>
-    <button id="check">观星</button>
+    <button id="hint">直觉</button>
+    <button id="check">核对</button>
+    <button id="accuseBtn" class="accuse">推理定案</button>
   </div>
   <div class="message" id="message"></div>
 </div>
 
-<div class="modal-mask" id="revealModal">
-  <div class="modal">
-    <div class="star-decoration">✦ ✧ ✦</div>
-    <h2>你 的 命 盘</h2>
-    <div class="main-star">
-      <span class="star-label">— 主 星 —</span>
-      <span class="star-name" id="mainStar"></span>
-      <span class="star-trait" id="starTrait"></span>
-      <span class="star-reason" id="starReason"></span>
-    </div>
-    <div class="scenario">
-      <span class="scenario-label">— 局 面 —</span>
-      <span class="scenario-name" id="scenarioName"></span>
-      <span class="scenario-desc" id="scenarioDesc"></span>
-      <span class="scenario-stat" id="scenarioStat"></span>
-    </div>
-    <div class="fortune-section">
-      <h3>宜</h3>
-      <ul id="auspiciousList"></ul>
-    </div>
-    <div class="fortune-section">
-      <h3>忌</h3>
-      <ul id="avoidList"></ul>
-    </div>
-    <div class="poem" id="poem"></div>
-    <div class="luck">
-      今日运势 · <span class="stars" id="luckStars"></span>
-    </div>
-    <div class="modal-actions">
-      <button id="reshuffleBtn">再算一卦</button>
-      <button id="newPuzzleBtn">重排星盘</button>
-    </div>
+<!-- Verdict -->
+<div id="screen-verdict" class="screen">
+  <h2 class="verdict-title">推 · 理 · 定 案</h2>
+  <p class="verdict-sub" id="verdictSub"></p>
+
+  <div class="verdict-section">
+    <h4>凶手</h4>
+    <div class="choice-grid" id="suspectGrid"></div>
+  </div>
+
+  <div class="verdict-section">
+    <h4>手法</h4>
+    <div class="choice-grid" id="methodGrid"></div>
+  </div>
+
+  <div class="verdict-submit">
+    <button class="cold-btn" id="submitVerdictBtn" disabled>正式指控</button>
+    <button class="cold-btn small" id="backToGameBtn" style="margin-left: 10px;">继续调查</button>
   </div>
 </div>
 
+<!-- Result -->
+<div id="screen-result" class="screen">
+  <h2 class="result-title" id="resultTitle"></h2>
+  <div class="result-body" id="resultBody"></div>
+  <div class="result-actions">
+    <button class="cold-btn small" id="replayBtn">另立新案</button>
+    <button class="cold-btn small" id="homeBtn">回菜单</button>
+  </div>
+</div>
+
+<!-- Clue toast + modal -->
+<div class="clue-toast" id="clueToast">
+  <div class="location" id="clueToastLoc"></div>
+  <div class="head" id="clueToastHead">— 搜查结果 —</div>
+  <div class="body" id="clueToastBody"></div>
+  <div class="foot">点击继续</div>
+</div>
+
+<div class="modal-mask" id="clueModal">
+  <div class="modal">
+    <h3>线 索 簿</h3>
+    <div class="modal-sub">数独盘的每个 3×3 宫 = 车厢的一处位置。填完即搜清</div>
+    <div id="clueList"></div>
+    <button class="modal-close" id="closeClueBtn">合上</button>
+  </div>
+</div>
+
+</div>
+
 <script>
+// ============ Story ============
+const STORY = {
+  intro: [
+    '凌晨三点二十分，京沪列车因暴雪停驻山中。',
+    '头等舱第 7 号包厢——沈老爷倒在血泊里，胸前一枚针眼。',
+    '房门反锁，钥匙就在他自己的胸袋。',
+    '',
+    '你是同车的年轻检察官。风雪短时不停，车上没有别人可以求助。',
+    '',
+    '每查清一处地方（数独盘的每一个 3×3 宫），',
+    '你就能收获一条线索。凑齐所有线索，指出凶手。',
+  ],
+  clues: [
+    // 9 boxes: (top-left, top-mid, top-right, mid-left, mid-mid, mid-right, bot-left, bot-mid, bot-right)
+    { loc: '头等舱 · 7 号包厢', text: '死者手背有一枚细小针眼。血液已冷。' },
+    { loc: '餐车',              text: '案发前，餐车咖啡杯上有一抹口红——沈眉自称她昨晚从未来过餐车。' },
+    { loc: '尾车厢',            text: '一张被撕碎的旧报纸：四十年前，沈家老宅逼一位女佣堕胎，女佣自尽于井中。' },
+    { loc: '卧铺 A · 沈眉铺位', text: '沈眉的行李里，一本日记写着"父亲最近对我说过一件事"，页面后被撕掉。' },
+    { loc: '走廊监控',          text: '案发前六分钟，走廊监控被人切断电源。有人熟悉车厢线路。' },
+    { loc: '卧铺 B · 陆璟铺位', text: '陆璟的旅行包里，有医用注射器与一小瓶胰岛素——他自称不是糖尿病人。' },
+    { loc: '洗手间',            text: '洗手池边的手绢沾血，血型与死者一致。手绢一角绣着"陈"字。' },
+    { loc: '车长室 · 通讯',      text: '车长通讯记录被删除了一段。删除时间与走廊断电重合。' },
+    { loc: '车尾平台',          text: '一张揉皱的旧车票，姓名栏写着"陈璟"。车上没有姓陈的人。' },
+  ],
+  suspects: [
+    { id: 'meiyan',  name: '沈眉',   role: '女大学生 · 20 岁', avatar: '🎀',
+      desc: '死者独女 · 遗产唯一继承人 · 昨夜情绪反常' },
+    { id: 'lujing',  name: '陆璟',   role: '医学生 · 24 岁', avatar: '🩺',
+      desc: '同车 · 学医出身 · 与沈家素不相识' },
+    { id: 'aru',     name: '阿茹',   role: '售票员 · 26 岁', avatar: '🎫',
+      desc: '沉稳内敛 · 熟悉车厢每一处线路' },
+    { id: 'wangtao', name: '王涛',   role: '商务乘客 · 43 岁', avatar: '💼',
+      desc: '偶然同车 · 频繁通话 · 目的可疑' },
+  ],
+  methods: [
+    { id: 'injection', name: '药物注射', desc: '手背针眼 · 使用胰岛素让心脏骤停' },
+    { id: 'suffocate', name: '枕头窒息', desc: '压迫口鼻 · 应留下挣扎痕迹' },
+    { id: 'poison',    name: '心药加毒', desc: '在死者常服的药片里做手脚' },
+  ],
+  answer: { suspect: 'lujing', method: 'injection' },
+  correct: [
+    '你转向陆璟。',
+    '"你不姓陆。你叫陈璟。"',
+    '',
+    '他没有说话。你继续。',
+    '"四十年前，沈老爷让人赶走了怀着他孩子的女佣。',
+    ' 你母亲在生下你之后自尽。',
+    ' 她姓陈——你从她的姓，改了名。"',
+    '',
+    '"你今晚在车上等他，用胰岛素注射他。',
+    ' 一个健康人被注射高剂量胰岛素，看起来就像是自然的心脏骤停。',
+    ' 你是医学生，你懂。"',
+    '',
+    '陆璟低下头，慢慢地把那枚旧车票，从口袋里放到桌上。',
+    '"我等了四十年。"',
+    '',
+    '——雪停了。案件了结。',
+  ],
+  wrong: (sName, mName) => [
+    `你说是${sName}，用${mName}。`,
+    '',
+    '车厢里，只有沈眉低声的抽泣。',
+    '',
+    '真相并非如此——凶手是陆璟，用胰岛素注射。',
+    '他是沈老爷四十年前那次不认账的私生子。',
+    '你漏看了那张署名"陈璟"的旧车票。',
+    '',
+    '也许你需要再来一次。',
+  ],
+};
+
 // ============ Sudoku core ============
 const N = 9;
 let puzzle, solution, userBoard, fixed;
 let selected = null;
-let mistakes = 0;
-let seconds = 0;
+let mistakes = 0, seconds = 0;
 let timerId = null;
 let difficulty = 'easy';
 let solved = false;
+let unlockedBoxes;  // Set of box indices (0-8) unlocked
+let clueQueue = [];
+let showingClue = false;
 const DIFFICULTY = { easy: 40, medium: 32, hard: 26, expert: 22 };
 
-function createEmpty() {
-  return Array.from({length: N}, () => Array(N).fill(0));
-}
-
+function createEmpty() { return Array.from({length: N}, () => Array(N).fill(0)); }
 function isValid(g, r, c, n) {
   for (let i = 0; i < N; i++) if (g[r][i] === n || g[i][c] === n) return false;
   const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
@@ -536,10 +727,9 @@ function isValid(g, r, c, n) {
       if (g[br+i][bc+j] === n) return false;
   return true;
 }
-
 function solveGrid(g) {
-  for (let r = 0; r < N; r++) {
-    for (let c = 0; c < N; c++) {
+  for (let r = 0; r < N; r++)
+    for (let c = 0; c < N; c++)
       if (g[r][c] === 0) {
         const nums = [1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
         for (const n of nums) {
@@ -551,36 +741,29 @@ function solveGrid(g) {
         }
         return false;
       }
-    }
-  }
   return true;
 }
-
 function countSolutions(g, limit = 2) {
   let count = 0;
   function bt() {
     if (count >= limit) return;
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
+    for (let r = 0; r < N; r++)
+      for (let c = 0; c < N; c++)
         if (g[r][c] === 0) {
-          for (let n = 1; n <= 9; n++) {
+          for (let n = 1; n <= 9; n++)
             if (isValid(g, r, c, n)) {
               g[r][c] = n;
               bt();
               g[r][c] = 0;
               if (count >= limit) return;
             }
-          }
           return;
         }
-      }
-    }
     count++;
   }
   bt();
   return count;
 }
-
 function generatePuzzle(clues) {
   const grid = createEmpty();
   solveGrid(grid);
@@ -595,66 +778,69 @@ function generatePuzzle(clues) {
     const backup = puz[r][c];
     puz[r][c] = 0;
     const copy = puz.map(x => [...x]);
-    if (countSolutions(copy) !== 1) {
-      puz[r][c] = backup;
-    } else {
-      removed++;
-    }
+    if (countSolutions(copy) !== 1) puz[r][c] = backup;
+    else removed++;
   }
   return puz;
 }
 
-// ============ Render ============
+// ============ DOM ============
 const boardEl = document.getElementById('board');
 const numpadEl = document.getElementById('numpad');
 const timerEl = document.getElementById('timer');
 const mistakesEl = document.getElementById('mistakes');
+const searchedEl = document.getElementById('searched');
 const messageEl = document.getElementById('message');
+const clueBadge = document.getElementById('clueBadge');
+const introText = document.getElementById('introText');
+const clueToast = document.getElementById('clueToast');
+const clueToastLoc = document.getElementById('clueToastLoc');
+const clueToastBody = document.getElementById('clueToastBody');
+const clueModal = document.getElementById('clueModal');
+const clueList = document.getElementById('clueList');
 
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ============ Render ============
 function render() {
   boardEl.innerHTML = '';
-  for (let r = 0; r < N; r++) {
+  for (let r = 0; r < N; r++)
     for (let c = 0; c < N; c++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
       if (r === 2 || r === 5) cell.classList.add('row-3');
       if (fixed[r][c]) cell.classList.add('fixed');
+      const boxIdx = Math.floor(r/3)*3 + Math.floor(c/3);
+      if (unlockedBoxes.has(boxIdx)) cell.classList.add('box-solved');
       cell.textContent = userBoard[r][c] || '';
       cell.dataset.r = r;
       cell.dataset.c = c;
       cell.addEventListener('click', () => selectCell(r, c));
       boardEl.appendChild(cell);
     }
-  }
   applyHighlights();
 }
 
-function selectCell(r, c) {
-  selected = { r, c };
-  applyHighlights();
-}
+function selectCell(r, c) { selected = { r, c }; applyHighlights(); }
 
 function applyHighlights() {
   const cells = boardEl.children;
-  for (let i = 0; i < 81; i++) {
-    cells[i].classList.remove('selected', 'highlight', 'same-num', 'error');
-  }
+  for (let i = 0; i < 81; i++) cells[i].classList.remove('selected', 'highlight', 'same-num', 'error');
   if (!selected) return;
   const { r, c } = selected;
   const val = userBoard[r][c];
   const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 9; i++)
     for (let j = 0; j < 9; j++) {
       const idx = i*9+j;
-      if (i === r || j === c || (i >= br && i < br+3 && j >= bc && j < bc+3)) {
-        cells[idx].classList.add('highlight');
-      }
+      if (i === r || j === c || (i >= br && i < br+3 && j >= bc && j < bc+3)) cells[idx].classList.add('highlight');
       if (val && userBoard[i][j] === val) cells[idx].classList.add('same-num');
-      if (userBoard[i][j] !== 0 && !fixed[i][j] && userBoard[i][j] !== solution[i][j]) {
-        cells[idx].classList.add('error');
-      }
+      if (userBoard[i][j] !== 0 && !fixed[i][j] && userBoard[i][j] !== solution[i][j]) cells[idx].classList.add('error');
     }
-  }
   cells[r*9+c].classList.add('selected');
 }
 
@@ -668,12 +854,57 @@ function placeNumber(n) {
   }
   userBoard[r][c] = n;
   render();
+  checkBoxUnlocks();
   if (isComplete()) {
     stopTimer();
     solved = true;
-    showMessage('星盘归位 · 天机将现', 'success');
-    setTimeout(showReveal, 700);
+    showMessage('全盘搜清 · 请你推理定案', 'info');
   }
+}
+
+function isBoxComplete(boxIdx) {
+  const br = Math.floor(boxIdx / 3) * 3;
+  const bc = (boxIdx % 3) * 3;
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 3; j++)
+      if (userBoard[br+i][bc+j] !== solution[br+i][bc+j]) return false;
+  return true;
+}
+
+function checkBoxUnlocks() {
+  for (let bi = 0; bi < 9; bi++) {
+    if (unlockedBoxes.has(bi)) continue;
+    if (isBoxComplete(bi)) {
+      unlockedBoxes.add(bi);
+      queueClueToast(STORY.clues[bi]);
+    }
+  }
+  searchedEl.textContent = unlockedBoxes.size;
+  clueBadge.textContent = `${unlockedBoxes.size}/9`;
+}
+
+function queueClueToast(clue) {
+  clueQueue.push(clue);
+  if (!showingClue) processClueQueue();
+}
+function processClueQueue() {
+  if (!clueQueue.length) { showingClue = false; return; }
+  showingClue = true;
+  const clue = clueQueue.shift();
+  clueToastLoc.textContent = `— ${clue.loc} —`;
+  clueToastBody.textContent = clue.text;
+  clueToast.classList.add('show');
+  let done = false;
+  const dismiss = () => {
+    if (done) return;
+    done = true;
+    clueToast.classList.remove('show');
+    clueToast.removeEventListener('click', dismiss);
+    clearTimeout(timer);
+    setTimeout(processClueQueue, 400);
+  };
+  clueToast.addEventListener('click', dismiss);
+  const timer = setTimeout(dismiss, 4500);
 }
 
 function isComplete() {
@@ -689,8 +920,8 @@ function showMessage(text, type) {
 }
 
 function newGame() {
-  showMessage('星盘排布中……', '');
   solved = false;
+  showMessage('新盘布置中……', '');
   setTimeout(() => {
     puzzle = generatePuzzle(DIFFICULTY[difficulty]);
     userBoard = puzzle.map(r => [...r]);
@@ -698,12 +929,17 @@ function newGame() {
     mistakes = 0;
     seconds = 0;
     selected = null;
+    unlockedBoxes = new Set();
+    clueQueue = [];
+    showingClue = false;
+    clueToast.classList.remove('show');
     mistakesEl.textContent = '0';
     timerEl.textContent = '00:00';
+    searchedEl.textContent = '0';
+    clueBadge.textContent = '0/9';
     showMessage('', '');
     render();
     startTimer();
-    hideReveal();
   }, 50);
 }
 
@@ -728,6 +964,7 @@ function buildNumpad() {
 }
 
 document.addEventListener('keydown', e => {
+  if (!document.getElementById('screen-game').classList.contains('active')) return;
   if (!selected) return;
   if (e.key >= '1' && e.key <= '9') placeNumber(parseInt(e.key));
   else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') placeNumber(0);
@@ -750,18 +987,15 @@ document.getElementById('hint').addEventListener('click', () => {
   if (fixed[r][c] || solved) return;
   userBoard[r][c] = solution[r][c];
   render();
-  if (isComplete()) {
-    stopTimer(); solved = true;
-    showMessage('星盘归位 · 天机将现', 'success');
-    setTimeout(showReveal, 700);
-  }
+  checkBoxUnlocks();
+  if (isComplete()) { stopTimer(); solved = true; showMessage('全盘搜清', 'info'); }
 });
 document.getElementById('check').addEventListener('click', () => {
   let errors = 0;
   for (let r = 0; r < N; r++)
     for (let c = 0; c < N; c++)
       if (userBoard[r][c] !== 0 && userBoard[r][c] !== solution[r][c]) errors++;
-  if (errors === 0) showMessage('☾ 目前无差错', 'success');
+  if (errors === 0) showMessage('☾ 目前无差错', 'info');
   else showMessage(`✗ 现有 ${errors} 处错位`, 'error');
 });
 
@@ -774,234 +1008,127 @@ document.querySelectorAll('.difficulty button').forEach(btn => {
   });
 });
 
-// ============ Fortune (命盘揭示) ============
-// 主星：由完成后的「命宫」（中央格 grid[4][4]）决定，puzzle 生成时就已经注定
-const NINE_STARS = [
-  { name: '贪狼', trait: '善变敏感 · 情感丰盈' },
-  { name: '巨门', trait: '心思深沉 · 一鸣惊人' },
-  { name: '禄存', trait: '福气自来 · 稳中有喜' },
-  { name: '文曲', trait: '才思敏捷 · 笔下生花' },
-  { name: '廉贞', trait: '外柔内刚 · 遇事有骨' },
-  { name: '武曲', trait: '刚正果断 · 逢困破局' },
-  { name: '破军', trait: '开创革新 · 不循旧路' },
-  { name: '左辅', trait: '温柔守护 · 情深意长' },
-  { name: '右弼', trait: '灵动机敏 · 逢凶化吉' },
-];
-const BONUS_STAR = { name: '紫微', trait: '天生贵人 · 万物待你' };
+// Clue log modal
+document.getElementById('clueBtn').addEventListener('click', () => {
+  renderClueList();
+  clueModal.classList.add('show');
+});
+document.getElementById('closeClueBtn').addEventListener('click', () => clueModal.classList.remove('show'));
+clueModal.addEventListener('click', e => { if (e.target === clueModal) clueModal.classList.remove('show'); });
 
-// 5 种「局面」 by (speed, errors)
-const SCENARIOS = {
-  少年得志: {  // fast + 0 err
-    desc: '解题如风，一气呵成 · 命盘开阔',
-    auspicious: [
-      { t: '大声表白心意', why: '你今日的果决不多得' },
-      { t: '主动接下一件大事', why: '此刻你的锋芒该用出来' },
-      { t: '联系许久未见的人', why: '这份气势能带走一层疏远' },
-      { t: '穿件亮色衣服出门', why: '让别人也看见你现在的状态' },
-    ],
-    avoid: [
-      { t: '把话又吞回去', why: '不合你今日气象' },
-      { t: '低估自己', why: '你其实比想象的更靠近答案' },
-      { t: '事后反悔', why: '相信第一直觉是你今天的运' },
-    ],
-    poems: [
-      '若在今日不发声，\n此心便要错过风。',
-      '好日子要用响声记住，\n不必等谁允许。',
-    ],
-  },
-  锋芒毕露: {  // fast + few errors
-    desc: '快是快 · 但快过了一寸',
-    auspicious: [
-      { t: '收敛半分锋芒', why: '你太急了，回一步反倒稳' },
-      { t: '写下想说的话再说', why: '给冲动一层过滤' },
-      { t: '深呼吸五次', why: '这点节奏会补上你差的那一分错' },
-    ],
-    avoid: [
-      { t: '冲动做决定', why: '你今日的错就是从这来的' },
-      { t: '喝太多咖啡', why: '你已经够快了' },
-      { t: '和人硬碰硬', why: '让让别人，是让让你自己' },
-    ],
-    poems: [
-      '快过头了，\n走两步，停一下。',
-      '锋芒是好东西，\n但要藏一半给自己。',
-    ],
-  },
-  深水静流: {  // slow + 0 err
-    desc: '慢慢来，一步不错 · 稳是你今日的底色',
-    auspicious: [
-      { t: '复盘一件旧事', why: '你今日的稳，正合此事' },
-      { t: '与父母打电话', why: '心境正好承此意' },
-      { t: '把桌面整理干净', why: '静心处见真章' },
-      { t: '重读一本旧书', why: '你今天读得懂的东西比昨天多' },
-    ],
-    avoid: [
-      { t: '轻信别人', why: '静的时候更易被扰' },
-      { t: '匆忙做决定', why: '你不是那种人' },
-      { t: '深夜刷手机', why: '沉住，睡好' },
-    ],
-    poems: [
-      '静水流深，\n心思落定。\n不必替自己解释，\n时间会替你说话。',
-      '走过的路都算数。\n转弯也是。',
-    ],
-  },
-  水到渠成: {  // medium + 0 err
-    desc: '不快不慢，恰是你的节奏',
-    auspicious: [
-      { t: '把想做的事做一半', why: '你今日的节奏适合"启动"' },
-      { t: '邀一个朋友吃饭', why: '你此刻的稳能感染人' },
-      { t: '写一封短邮件', why: '不长，但能定事' },
-    ],
-    avoid: [
-      { t: '想太多', why: '你已经在做了，别自己拆台' },
-      { t: '和过去较劲', why: '不该是今天的活' },
-      { t: '囤积待办', why: '一点一点做完就好' },
-    ],
-    poems: [
-      '慢就是稳，\n稳就是快。\n今天不必急。',
-      '一件一件做完，\n就是了不起的一天。',
-    ],
-  },
-  跌撞前行: {  // any + many errors
-    desc: '错了几次，才走到这里 · 不容易',
-    auspicious: [
-      { t: '给自己一顿好饭', why: '你今天很努力' },
-      { t: '写下今天最好的一件事', why: '别只盯着错的' },
-      { t: '早睡', why: '身体是本钱，你今天用得多' },
-      { t: '原谅昨天的自己', why: '走到这已经不错' },
-    ],
-    avoid: [
-      { t: '钻牛角尖', why: '你今日的错本可以放过' },
-      { t: '和陌生人比命', why: '你有你的路' },
-      { t: '否认自己的感觉', why: '错的不是你，是"急" ' },
-    ],
-    poems: [
-      '有些等待像一颗种子，\n埋下时看不见，\n开花时才知道是什么。',
-      '不必所有事都有答案。\n静静做完就够了。',
-    ],
-  },
-  紫微入命: {  // expert + 0 err
-    desc: '极难难度 · 零差错 · 天赐一日',
-    auspicious: [
-      { t: '接下最想做的那件事', why: '今天没有能拦住你的' },
-      { t: '把心里那个人认真对待', why: '你此刻的运要给最重要的人' },
-      { t: '许一个大愿', why: '紫微入命，天听得见' },
-    ],
-    avoid: [
-      { t: '把这好日子浪费在小事上', why: '大运禁小用' },
-      { t: '妄自菲薄', why: '别人比不上你今天' },
-    ],
-    poems: [
-      '紫气东来，\n天门已开。\n你手里握着的，\n就是答案。',
-    ],
-  },
-};
+function renderClueList() {
+  clueList.innerHTML = STORY.clues.map((c, i) => {
+    const unlocked = unlockedBoxes.has(i);
+    return `<div class="clue-item">
+      <span class="clue-location">${c.loc}</span>
+      <span class="clue-body-inner ${unlocked ? '' : 'locked'}">${unlocked ? c.text : '尚未搜查……'}</span>
+    </div>`;
+  }).join('');
+}
 
-function pickScenario(seconds, mistakes, difficulty) {
-  if (difficulty === 'expert' && mistakes === 0) return '紫微入命';
-  const fast = seconds < 240, medium = seconds < 720;
-  if (mistakes >= 4) return '跌撞前行';
-  if (mistakes === 0) {
-    if (fast) return '少年得志';
-    if (!medium) return '深水静流';
-    return '水到渠成';
+// ============ Verdict ============
+let selectedSuspect = null, selectedMethod = null;
+
+function initVerdict() {
+  document.getElementById('verdictSub').textContent =
+    `你已搜清 ${unlockedBoxes.size}/9 处 · 差错 ${mistakes} 次。凶手是谁？用了什么手法？`;
+  const sg = document.getElementById('suspectGrid');
+  sg.innerHTML = STORY.suspects.map(s => `
+    <button class="choice" data-sus="${s.id}">
+      <div class="avatar">${s.avatar}</div>
+      <div class="name">${s.name}</div>
+      <div class="role">${s.role}</div>
+      <div class="desc">${s.desc}</div>
+    </button>`).join('');
+  sg.querySelectorAll('.choice').forEach(b => {
+    b.addEventListener('click', () => {
+      sg.querySelectorAll('.choice').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+      selectedSuspect = b.dataset.sus;
+      updateSubmit();
+    });
+  });
+  const mg = document.getElementById('methodGrid');
+  mg.innerHTML = STORY.methods.map(m => `
+    <button class="choice" data-mtd="${m.id}">
+      <div class="name">${m.name}</div>
+      <div class="desc">${m.desc}</div>
+    </button>`).join('');
+  mg.querySelectorAll('.choice').forEach(b => {
+    b.addEventListener('click', () => {
+      mg.querySelectorAll('.choice').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+      selectedMethod = b.dataset.mtd;
+      updateSubmit();
+    });
+  });
+  selectedSuspect = null; selectedMethod = null;
+  updateSubmit();
+}
+
+function updateSubmit() {
+  document.getElementById('submitVerdictBtn').disabled = !selectedSuspect || !selectedMethod;
+}
+
+function submitVerdict() {
+  const correct = selectedSuspect === STORY.answer.suspect && selectedMethod === STORY.answer.method;
+  const titleEl = document.getElementById('resultTitle');
+  const bodyEl = document.getElementById('resultBody');
+  if (correct) {
+    titleEl.textContent = '真 相 大 白';
+    titleEl.className = 'result-title win';
+    bodyEl.innerHTML = STORY.correct.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+  } else {
+    const sName = STORY.suspects.find(s => s.id === selectedSuspect).name;
+    const mName = STORY.methods.find(m => m.id === selectedMethod).name;
+    titleEl.textContent = '你 错 了';
+    titleEl.className = 'result-title lose';
+    bodyEl.innerHTML = STORY.wrong(sName, mName).map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
   }
-  // 1-3 errors
-  if (fast) return '锋芒毕露';
-  return '跌撞前行';
+  showScreen('screen-result');
 }
 
-function mulberry32(seed) {
-  return function() {
-    let t = seed += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
-let currentScenario = null;
-
-function generateFortune(reshuffle = false) {
-  const scenarioKey = pickScenario(seconds, mistakes, difficulty);
-  currentScenario = scenarioKey;
-  const s = SCENARIOS[scenarioKey];
-
-  // 主星 = 中宫 grid[4][4] 的值决定
-  const centerVal = solution[4][4];
-  const star = scenarioKey === '紫微入命' ? BONUS_STAR : NINE_STARS[centerVal - 1];
-
-  // 从场景池里取 3 条宜、3 条忌、1 首诗
-  const seed = reshuffle
-    ? (seconds * 31 + mistakes * 137 + Math.floor(Date.now() / 100))
-    : (seconds * 31 + mistakes * 137 + centerVal * 991 + difficulty.length * 7);
-  const rand = mulberry32(seed);
-  const pick = (arr, n = 1) => {
-    const shuffled = [...arr].sort(() => rand() - 0.5);
-    return n === 1 ? shuffled[0] : shuffled.slice(0, n);
-  };
-
-  const auspicious = pick(s.auspicious, Math.min(3, s.auspicious.length));
-  const avoid = pick(s.avoid, Math.min(3, s.avoid.length));
-  const poem = pick(s.poems);
-
-  // 运势星级：错误越少越高
-  let luck;
-  if (scenarioKey === '紫微入命') luck = 5;
-  else if (mistakes === 0) luck = 5;
-  else if (mistakes <= 2) luck = 4;
-  else if (mistakes <= 5) luck = 3;
-  else luck = 2;
-
-  return {
-    star, scenario: scenarioKey, scenarioDesc: s.desc,
-    centerVal, auspicious, avoid, poem, luck,
-    stats: { seconds, mistakes, difficulty }
-  };
-}
-
-function renderFortune(f) {
-  document.getElementById('mainStar').textContent = f.star.name;
-  document.getElementById('starTrait').textContent = f.star.trait;
-  document.getElementById('starReason').textContent = f.scenario === '紫微入命'
-    ? '极难 · 零差错 · 破天而入'
-    : `中宫落 ${f.centerVal} · 星入命宫`;
-  document.getElementById('scenarioName').textContent = f.scenario;
-  document.getElementById('scenarioDesc').textContent = f.scenarioDesc;
-  const timeStr = `${Math.floor(f.stats.seconds/60)}分${f.stats.seconds%60}秒`;
-  document.getElementById('scenarioStat').textContent = `你用 ${timeStr}，错 ${f.stats.mistakes} 处`;
-  document.getElementById('auspiciousList').innerHTML = f.auspicious.map(item =>
-    `<li><span class="fortune-text">${item.t}</span><span class="fortune-why">${item.why}</span></li>`
-  ).join('');
-  document.getElementById('avoidList').innerHTML = f.avoid.map(item =>
-    `<li><span class="fortune-text">${item.t}</span><span class="fortune-why">${item.why}</span></li>`
-  ).join('');
-  document.getElementById('poem').textContent = f.poem;
-  document.getElementById('luckStars').textContent = '★'.repeat(f.luck) + '☆'.repeat(5 - f.luck);
-}
-
-function showReveal() {
-  const f = generateFortune();
-  renderFortune(f);
-  document.getElementById('revealModal').classList.add('show');
-}
-function hideReveal() {
-  document.getElementById('revealModal').classList.remove('show');
-}
-document.getElementById('reshuffleBtn').addEventListener('click', () => {
-  const f = generateFortune(true);
-  renderFortune(f);
+document.getElementById('accuseBtn').addEventListener('click', () => {
+  initVerdict();
+  showScreen('screen-verdict');
 });
-document.getElementById('newPuzzleBtn').addEventListener('click', () => {
-  hideReveal();
+document.getElementById('backToGameBtn').addEventListener('click', () => showScreen('screen-game'));
+document.getElementById('submitVerdictBtn').addEventListener('click', submitVerdict);
+document.getElementById('replayBtn').addEventListener('click', () => { newGame(); showScreen('screen-game'); });
+document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'index.html'; });
+
+document.getElementById('startBtn').addEventListener('click', () => {
   newGame();
-});
-document.getElementById('revealModal').addEventListener('click', e => {
-  if (e.target.id === 'revealModal') hideReveal();
+  showScreen('screen-game');
 });
 
-// ============ Boot ============
+// ============ Init ============
+function initIntro() {
+  introText.innerHTML = STORY.intro.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+}
+function initSnow() {
+  const snowEl = document.getElementById('snow');
+  const flakes = 40;
+  for (let i = 0; i < flakes; i++) {
+    const s = document.createElement('span');
+    s.textContent = ['❅','❆','·','·','.'][Math.floor(Math.random()*5)];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.fontSize = (8 + Math.random() * 10) + 'px';
+    s.style.animationDuration = (10 + Math.random() * 15) + 's';
+    s.style.animationDelay = (Math.random() * -25) + 's';
+    s.style.opacity = 0.2 + Math.random() * 0.5;
+    snowEl.appendChild(s);
+  }
+}
+
+initIntro();
+initSnow();
 buildNumpad();
-newGame();
+// newGame not called until user clicks start
+unlockedBoxes = new Set();
+userBoard = createEmpty();
+fixed = userBoard.map(r => r.map(_ => false));
+solution = createEmpty();
 </script>
 </body>
 </html>
