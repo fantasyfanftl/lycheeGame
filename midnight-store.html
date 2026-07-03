@@ -1151,6 +1151,7 @@ const BEATS = {
     {
       hs: 'milkCabinet',
       title: '老 人 · 够 不 到 的 最 上 层',
+      sfx: 'doorChime',
       text: '玻璃门叮的一声。\n\n老人。你把手里那半支烟掐了，回来。身上还带着冷气。\n\n他停在热奶柜前，踮脚够上层的盒装牛奶，晃了一下没够到。手抖得厉害。\n\n从这儿到冷藏柜有五步。你在收银台后面。',
       choicePrompt: '你怎么办？',
       choices: [
@@ -1181,6 +1182,7 @@ const BEATS = {
       choicePrompt: '你怎么办？',
       choices: [
         {
+          voice: { text: '扫码更快。', rate: 0.98, pitch: 0.95 },
           label: '"可以扫二维码更快。"',
           text: '你抬手指了指柜台上的二维码。"扫码更快。"\n\n他愣了下，皱起眉，摇头，低头继续数。你等了半分钟，才不耐烦地伸手接过那把硬币，自己数好，扔了三毛零钱回去。\n\n他没说谢谢。你也没抬头。',
           effects: (w) => { w.cashService = 'slow'; },
@@ -1193,6 +1195,7 @@ const BEATS = {
           cps: [{ id: 'cp2' }]
         },
         {
+          voice: { text: '六块八。', rate: 0.9, pitch: 0.9 },
           label: '直接报总价。帮他把散硬币理整齐。',
           text: '"六块八。" 你直接报了总价。\n\n他手停下来。你伸手过去，把散在一起的硬币按面额捡好——一元一堆，五毛一堆，一毛一堆。\n\n找的三毛你按面额叠好递过去。"路上慢点。" 他抬头看你一眼，没说话，把硬币收好走了。',
           effects: (w) => { w.cashService = 'fast'; },
@@ -1219,6 +1222,7 @@ const BEATS = {
           cps: [{ id: 'cp4' }]
         },
         {
+          voice: { text: '路上小心。', rate: 0.85, pitch: 0.95 },
           label: '扫完顺手拿个厚袋子装好——怕汤洒。',
           text: '你扫完码，弯腰从下面抽了个厚袋子，把面包和热奶装进去。热奶盒有点烫，你顺手垫了张纸。\n\n"路上小心。" 她抬头看你一眼——好像没料到——点了下头就走了。\n\n你不知道自己刚才为什么多说那一句。',
           effects: (w) => { w.nurseCheckout = 'warm'; },
@@ -1229,6 +1233,7 @@ const BEATS = {
     {
       hs: 'driverSeat',
       title: '司 机 · 靠 窗 落 座',
+      sfx: 'doorChime',
       text: '玻璃门又叮了一声。\n\n一个中年男人推门进来。深色外套，一身寒气。腰背僵直，走路时右手一直按着后腰。\n\n他没朝收银台看，径直往靠窗的座位走。坐下之后抬手反复按后腰，脸皱着。',
       choicePrompt: '你怎么办？',
       choices: [
@@ -1271,6 +1276,7 @@ const BEATS = {
           cps: [{ id: 'cp6' }]
         },
         {
+          voice: { text: '这个免费，凉的伤胃。', rate: 0.9, pitch: 0.92 },
           label: '从保温机接一杯温水递过去。',
           text: '你从保温机里接了一杯温水，把纸杯递过去。\n\n"这个免费，凉的伤胃。"\n\n他愣了一下——好像没想到这句话是对他说的——小声说了声谢谢。你已经低头理账了。',
           effects: (w) => { w.driverCheckout = 'warm'; },
@@ -1281,6 +1287,7 @@ const BEATS = {
     {
       hs: 'register',
       title: '少 年 · 黑 屏 手 机',
+      sfx: 'doorChime',
       text: '玻璃门第三次响。\n\n少年。那个每晚来买最便宜猫粮的孩子。帽檐压得极低。\n\n他走到货架下层，拿了最便宜那袋。走到收银台。掏手机——按了好几下，屏幕黑着开不开。\n\n他站着不说话。',
       choicePrompt: '你怎么办？',
       choices: [
@@ -1335,6 +1342,7 @@ const BEATS = {
     {
       hs: 'doorway',
       title: '进 门',
+      sfx: 'doorChime',
       text: '你推门进店，身后跟着一身寒气——一个穿深色外套的中年男人，腰背僵直。你们同时停在门口，都想让对方先进。\n\n昨天你在急诊科。最后一个是十八岁的女孩，跳楼。抢救完，她妈妈在走廊上哭得像个孩子。你有一秒想："她哭她的，你还有病人要接。"\n\n那一秒你没让自己多停。可你会想她的眼睛。以后每次值班都会想起。',
       choicePrompt: '门口这一下，你怎么办？',
       choices: [
@@ -1406,6 +1414,7 @@ const BEATS = {
           cps: [{ id: 'cp4' }]
         },
         {
+          voice: { text: '那个快过期了，别吃。', rate: 0.9, pitch: 0.98 },
           label: '看到他手边的临期面包——提醒一句就走。',
           text: '扫完码你看到他手边放着一个开了口的临期面包——好像他一会儿要吃。\n\n你犹豫了一下："那个快过期了，别吃。"\n\n说完你就走。没等他反应。',
           effects: (w) => { w.nursePay = 'remind'; },
@@ -1432,6 +1441,7 @@ const BEATS = {
           cps: [{ id: 'cp11' }]
         },
         {
+          voice: { text: '医护人员挺辛苦的。', rate: 0.88, pitch: 0.95 },
           label: '看到笔上医院名字，递过去时说了一句。',
           text: '你弯腰捡起来。笔上印着你们医院的名字——你以前抢救的时候用过一模一样的。\n\n你等他走到门口，把笔递过去："医护人员挺辛苦的。"\n\n他愣了一下——好像没想到这句话是对他说的——"谢谢。"你摇摇头就出去了。',
           effects: (w) => { w.penPick = 'comfort'; },
@@ -1485,6 +1495,7 @@ const BEATS = {
           cps: [{ id: 'cp13' }]
         },
         {
+          voice: { text: '慢点走，地滑。', rate: 0.9, pitch: 0.96 },
           label: '上前扶住老人，帮他拎住牛奶袋。',
           text: '你上前一步扶住老人，帮他拎住牛奶袋。等他站稳了才递回去。\n\n"慢点走，地滑。"\n\n他抬头看你："姑娘挺好心。"\n\n你笑了一下，没说话，继续往前走。',
           effects: (w) => { w.elderSlip = 'help'; },
@@ -1497,6 +1508,7 @@ const BEATS = {
     {
       hs: 'doorway',
       title: '进 门',
+      sfx: 'doorChime',
       text: '你推门进店。前面有个穿白外套的护士，你们同时停在门口。\n\n你停下脚步，侧身让她先进。她点了个头，没说话。\n\n你腰背僵直，走路时右手一直按着后腰。今晚跑了十二个小时——从廊坊到南六环，最后一趟拉了一个吐了一路的乘客。你收了车，就近找了这家 24 小时的便利店歇歇脚。',
       effects: (w) => { w.doorLetDriver = 'normal'; },
       cps: [{ id: 'cp10' }]
@@ -1553,6 +1565,7 @@ const BEATS = {
     {
       hs: 'doorway',
       title: '推 门',
+      sfx: 'doorChime',
       text: '猫粮袋要空了。你摸口袋，还剩十几块。\n\n推门进去，热气糊上脸。收银台那小子抬头扫了你一眼，又低头刷手机——你熟悉那种眼神，"又是这种孩子"。\n\n你不理他，直奔货架下层。'
     },
     {
@@ -1789,8 +1802,7 @@ function switchPOV(char) {
     return;
   }
   state.currentPOV = char;
-  if (char === 'nurse') startAmbient('nurse');
-  else stopAmbient();
+  startAmbient(char);
 
   // Handle empty arc (scaffold placeholder): auto-complete
   const arcLen = (BEATS[char] || []).length;
@@ -1843,6 +1855,11 @@ function playBeat(beat) {
   $('dialogue-narrator').textContent = char.name + ' · 视角';
   $('dialogue-title').textContent = effective.title || '';
   $('dialogue-text').textContent = effective.text || '';
+
+  // Beat-start SFX
+  if (effective.sfx === 'doorChime' || (beat && beat.sfx === 'doorChime')) {
+    playDoorChime();
+  }
 
   // Reset containers
   $('observations-container').innerHTML = '';
@@ -2095,9 +2112,8 @@ function charIconSVG(id) {
 const AUDIO = {
   ctx: null,
   master: null,
-  drone: null,        // { osc1, osc2, gain }
-  fluorTimer: null,
-  beepTimer: null,
+  drone: null,        // { oscillators: [...], gain }
+  timers: [],         // active setTimeout ids
   muted: false,
   currentAmbient: null
 };
@@ -2122,11 +2138,13 @@ function startAmbient(character) {
   stopAmbient(true);
   if (!ensureAudio()) return;
   AUDIO.currentAmbient = character;
-  if (character === 'nurse') startNurseAmbient();
+  if (character === 'nurse')       startNurseAmbient();
+  else if (character === 'cashier') startCashierAmbient();
+  else if (character === 'driver')  startDriverAmbient();
+  else if (character === 'teen')    startTeenAmbient();
 }
 
 function stopAmbient(instant) {
-  const prev = AUDIO.currentAmbient;
   AUDIO.currentAmbient = null;
   if (!AUDIO.ctx) return;
   const now = AUDIO.ctx.currentTime;
@@ -2141,70 +2159,268 @@ function stopAmbient(instant) {
       g.linearRampToValueAtTime(0, now + (instant ? 0.15 : 1.4));
     } catch (e) {}
     setTimeout(() => {
-      try { d.osc1.stop(); } catch (e) {}
-      try { d.osc2.stop(); } catch (e) {}
+      (d.oscillators || []).forEach(o => { try { o.stop(); } catch (e) {} });
     }, instant ? 200 : 1600);
   }
-  if (AUDIO.fluorTimer) { clearTimeout(AUDIO.fluorTimer); AUDIO.fluorTimer = null; }
-  if (AUDIO.beepTimer)  { clearTimeout(AUDIO.beepTimer);  AUDIO.beepTimer  = null; }
+  (AUDIO.timers || []).forEach(t => clearTimeout(t));
+  AUDIO.timers = [];
 }
 
 function startNurseAmbient() {
   const ctx = AUDIO.ctx;
   const now = ctx.currentTime;
-
-  // Low drone — 55Hz + slight fifth for depth
   const osc1 = ctx.createOscillator();
-  osc1.type = 'sine';
-  osc1.frequency.value = 55;
-
+  osc1.type = 'sine'; osc1.frequency.value = 55;
   const osc2 = ctx.createOscillator();
-  osc2.type = 'sine';
-  osc2.frequency.value = 82.5;
-
-  // Very slow LFO on osc2 gain for a barely-alive feel
+  osc2.type = 'sine'; osc2.frequency.value = 82.5;
   const lfo = ctx.createOscillator();
-  lfo.type = 'sine';
-  lfo.frequency.value = 0.08;
-  const lfoGain = ctx.createGain();
-  lfoGain.gain.value = 0.06;
+  lfo.type = 'sine'; lfo.frequency.value = 0.08;
+  const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.06;
   lfo.connect(lfoGain);
-
   const droneGain = ctx.createGain();
   droneGain.gain.value = 0;
   droneGain.gain.linearRampToValueAtTime(0.18, now + 2.2);
-
   lfoGain.connect(droneGain.gain);
-
   osc1.connect(droneGain);
   osc2.connect(droneGain);
   droneGain.connect(AUDIO.master);
+  osc1.start(); osc2.start(); lfo.start();
+  AUDIO.drone = { oscillators: [osc1, osc2, lfo], gain: droneGain };
 
-  osc1.start();
-  osc2.start();
-  lfo.start();
-
-  AUDIO.drone = { osc1, osc2, lfo, gain: droneGain };
-
-  // Fluorescent flicker — random bursts of filtered high noise
   const scheduleFluor = () => {
     if (AUDIO.currentAmbient !== 'nurse') return;
-    const delay = 2800 + Math.random() * 5500;
-    AUDIO.fluorTimer = setTimeout(() => {
-      playFluorescent();
-      scheduleFluor();
-    }, delay);
+    AUDIO.timers.push(setTimeout(() => { playFluorescent(); scheduleFluor(); }, 2800 + Math.random() * 5500));
   };
   scheduleFluor();
 
-  // Distant hospital monitor beep — very sparse
   const scheduleBeep = () => {
     if (AUDIO.currentAmbient !== 'nurse') return;
-    const delay = 18000 + Math.random() * 22000;
-    AUDIO.beepTimer = setTimeout(() => {
-      playHospitalBeep();
-      scheduleBeep();
-    }, delay);
+    AUDIO.timers.push(setTimeout(() => { playHospitalBeep(); scheduleBeep(); }, 18000 + Math.random() * 22000));
+  };
+  scheduleBeep();
+}
+
+function startCashierAmbient() {
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  // Store hum: low + gentle overtone
+  const osc1 = ctx.createOscillator();
+  osc1.type = 'sine'; osc1.frequency.value = 50;
+  const osc2 = ctx.createOscillator();
+  osc2.type = 'sine'; osc2.frequency.value = 100;
+  const droneGain = ctx.createGain();
+  droneGain.gain.value = 0;
+  droneGain.gain.linearRampToValueAtTime(0.13, now + 2);
+  osc1.connect(droneGain);
+  osc2.connect(droneGain);
+  droneGain.connect(AUDIO.master);
+  osc1.start(); osc2.start();
+  AUDIO.drone = { oscillators: [osc1, osc2], gain: droneGain };
+  // Fluorescent flicker (shared with nurse)
+  const scheduleFluor = () => {
+    if (AUDIO.currentAmbient !== 'cashier') return;
+    AUDIO.timers.push(setTimeout(() => { playFluorescent(); scheduleFluor(); }, 3200 + Math.random() * 6000));
+  };
+  scheduleFluor();
+  // Occasional soft phone vibration (mother's expected message)
+  const scheduleVibration = () => {
+    if (AUDIO.currentAmbient !== 'cashier') return;
+    AUDIO.timers.push(setTimeout(() => { playPhoneVibration(); scheduleVibration(); }, 25000 + Math.random() * 30000));
+  };
+  scheduleVibration();
+}
+
+function startDriverAmbient() {
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  // Low road-hum drone (sawtooth low-passed for warmth)
+  const osc = ctx.createOscillator();
+  osc.type = 'sawtooth'; osc.frequency.value = 60;
+  const lpf = ctx.createBiquadFilter();
+  lpf.type = 'lowpass'; lpf.frequency.value = 180;
+  const droneGain = ctx.createGain();
+  droneGain.gain.value = 0;
+  droneGain.gain.linearRampToValueAtTime(0.08, now + 2);
+  osc.connect(lpf);
+  lpf.connect(droneGain);
+  droneGain.connect(AUDIO.master);
+  osc.start();
+  AUDIO.drone = { oscillators: [osc], gain: droneGain };
+  // Traffic wash (occasional)
+  const scheduleTraffic = () => {
+    if (AUDIO.currentAmbient !== 'driver') return;
+    AUDIO.timers.push(setTimeout(() => { playTrafficWash(); scheduleTraffic(); }, 8000 + Math.random() * 14000));
+  };
+  scheduleTraffic();
+  // Rare metallic tink (car cooling)
+  const scheduleTink = () => {
+    if (AUDIO.currentAmbient !== 'driver') return;
+    AUDIO.timers.push(setTimeout(() => { playMetalTink(); scheduleTink(); }, 20000 + Math.random() * 30000));
+  };
+  scheduleTink();
+}
+
+function startTeenAmbient() {
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  // Wind: bandpassed noise looped
+  const bufSize = Math.floor(ctx.sampleRate * 4);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf; noise.loop = true;
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = 1.5;
+  const windGain = ctx.createGain();
+  windGain.gain.value = 0;
+  windGain.gain.linearRampToValueAtTime(0.09, now + 3);
+  // Slow modulation for wind swells
+  const lfo = ctx.createOscillator();
+  lfo.type = 'sine'; lfo.frequency.value = 0.15;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 0.05;
+  lfo.connect(lfoGain);
+  lfoGain.connect(windGain.gain);
+  noise.connect(bp);
+  bp.connect(windGain);
+  windGain.connect(AUDIO.master);
+  noise.start(); lfo.start();
+  AUDIO.drone = { oscillators: [noise, lfo], gain: windGain };
+  // Distant traffic swoosh (rare, muffled)
+  const scheduleDistant = () => {
+    if (AUDIO.currentAmbient !== 'teen') return;
+    AUDIO.timers.push(setTimeout(() => { playDistantTraffic(); scheduleDistant(); }, 15000 + Math.random() * 25000));
+  };
+  scheduleDistant();
+}
+
+function playPhoneVibration() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'cashier' || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  // Two short low buzzes
+  [0, 0.22].forEach(offset => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = 130;
+    const g = ctx.createGain();
+    const t0 = now + offset;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.05, t0 + 0.02);
+    g.gain.linearRampToValueAtTime(0.05, t0 + 0.14);
+    g.gain.linearRampToValueAtTime(0, t0 + 0.18);
+    osc.connect(g);
+    g.connect(AUDIO.master);
+    osc.start(t0); osc.stop(t0 + 0.2);
+  });
+}
+
+function playTrafficWash() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'driver' || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const dur = 3 + Math.random() * 3;
+  const bufSize = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const lp = ctx.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 0.5;
+  const g = ctx.createGain();
+  g.gain.value = 0;
+  g.gain.linearRampToValueAtTime(0.05, now + 0.6);
+  g.gain.setValueAtTime(0.05, now + dur - 0.6);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  noise.connect(lp);
+  lp.connect(g);
+  g.connect(AUDIO.master);
+  noise.start(now); noise.stop(now + dur);
+}
+
+function playMetalTink() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'driver' || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  osc.type = 'triangle'; osc.frequency.value = 1800;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.03, now + 0.005);
+  g.gain.exponentialRampToValueAtTime(0.0005, now + 0.4);
+  osc.connect(g);
+  g.connect(AUDIO.master);
+  osc.start(now); osc.stop(now + 0.5);
+}
+
+function playDistantTraffic() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'teen' || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const dur = 2.5 + Math.random() * 2;
+  const bufSize = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.4;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const lp = ctx.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 400; lp.Q.value = 0.5;
+  const g = ctx.createGain();
+  g.gain.value = 0;
+  g.gain.linearRampToValueAtTime(0.03, now + 0.5);
+  g.gain.setValueAtTime(0.03, now + dur - 0.5);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  noise.connect(lp);
+  lp.connect(g);
+  g.connect(AUDIO.master);
+  noise.start(now); noise.stop(now + dur);
+}
+
+function playDoorChime() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const notes = [
+    { f: 987.77, d: 0,    dur: 0.32 },  // B5
+    { f: 783.99, d: 0.30, dur: 0.55 }   // G5
+  ];
+  notes.forEach(({ f, d, dur }) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = f;
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sine'; osc2.frequency.value = f * 2.001;
+    const oscG = ctx.createGain(); oscG.gain.value = 0.3;
+    const g = ctx.createGain();
+    const t0 = now + d;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.20, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+    osc.connect(g);
+    osc2.connect(oscG);
+    oscG.connect(g);
+    g.connect(AUDIO.master);
+    osc.start(t0); osc.stop(t0 + dur + 0.05);
+    osc2.start(t0); osc2.stop(t0 + dur + 0.05);
+  });
+  // Convenience-store PA welcome greeting (mechanical) after chime
+  setTimeout(() => {
+    if (AUDIO.muted) return;
+    if (!('speechSynthesis' in window)) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance('欢迎光临。');
+      u.lang = 'zh-CN';
+      u.rate = 1.15;
+      u.pitch = 1.2;
+      u.volume = 0.65;
+      const voice = (typeof getZhVoice === 'function') ? getZhVoice() : null;
+      if (voice) u.voice = voice;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }, 750);
+}, delay);
   };
   scheduleBeep();
 }
