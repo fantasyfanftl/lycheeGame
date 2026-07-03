@@ -678,6 +678,14 @@ body {
   letter-spacing: 0.5px;
 }
 
+.cp-pov-text .quote {
+  color: var(--accent);
+  font-weight: 500;
+  padding: 0 2px;
+  background: rgba(245, 200, 138, 0.14);
+  border-radius: 2px;
+}
+
 .cp-locked-msg {
   font-size: 13px;
   color: var(--ink-mid);
@@ -1038,6 +1046,41 @@ body {
   0%, 100% { opacity: 0.7; }
   50%      { opacity: 0.9; }
 }
+
+
+/* ========== Speech vs narration ========== */
+.dialogue-text .quote {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 2px;
+  padding: 0 3px;
+  background: rgba(245, 200, 138, 0.16);
+  border-radius: 2px;
+}
+
+/* ========== Card edge blend ========== */
+.scene-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 22px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.22), transparent);
+  z-index: 3;
+  pointer-events: none;
+}
+.scene-card::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 22px;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.22), transparent);
+  z-index: 3;
+  pointer-events: none;
+}
+/* First card no left fade (nothing to blend with) */
+.scene-card:first-child::before { display: none; }
+/* Last card no right fade */
+.scene-card:last-child::after { display: none; }
 
 </style>
 </head>
@@ -2166,6 +2209,17 @@ let _currentEffective = null;
 
 function $(id) { return document.getElementById(id); }
 
+function renderTextWithQuotes(text) {
+  if (!text) return '';
+  // Escape HTML entities first
+  const escaped = String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // Wrap Chinese full-width quotes as spoken text
+  return escaped.replace(/"([^"]+?)"/g, '<span class="quote">"function $(id) { return document.getElementById(id); }"</span>');
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => {
     if (s.id === id) s.classList.remove('hidden');
@@ -2398,7 +2452,7 @@ function playBeat(beat) {
   const char = CHARACTERS[state.currentPOV];
   $('dialogue-narrator').textContent = char.name + ' · 视角';
   $('dialogue-title').textContent = effective.title || '';
-  $('dialogue-text').textContent = effective.text || '';
+  $('dialogue-text').innerHTML = renderTextWithQuotes(effective.text || '');
 
   // Beat-start SFX
   if (effective.sfx === 'doorChime' || (beat && beat.sfx === 'doorChime')) {
@@ -2452,7 +2506,7 @@ function pickChoice(idx) {
   // Append the choice's follow-up text to the main text
   const textDiv = $('dialogue-text');
   if (choice.text) {
-    textDiv.textContent = textDiv.textContent + '\n\n' + choice.text;
+    textDiv.innerHTML = textDiv.innerHTML + '\n\n' + renderTextWithQuotes(choice.text);
   }
 
   // Apply effects
@@ -2572,7 +2626,7 @@ function showNotebook() {
       const povNames = Object.keys(record);
       const povsHTML = povNames.map(char => {
         const meta = (CHARACTERS[char]) || (NPC && NPC[char]) || { name: char };
-        return '<div class="cp-pov"><div class="cp-pov-name">' + meta.name + '</div><div class="cp-pov-text">' + (record[char] || '') + '</div></div>';
+        return '<div class="cp-pov"><div class="cp-pov-name">' + meta.name + '</div><div class="cp-pov-text">' + renderTextWithQuotes(record[char] || '') + '</div></div>';
       }).join('');
       entry.innerHTML = '<div class="cp-entry-title">' + cp.title + '</div>' +
                         (povsHTML ? '<div class="cp-entry-povs">' + povsHTML + '</div>' : '<div class="cp-locked-msg">这一晚，你经过了这里。</div>');
@@ -3249,6 +3303,32 @@ function playArcComplete() {
   });
 }
 
+function playSwipeSFX() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  // Short paper-flip: brief noise burst with band-pass around 1200Hz, quick decay
+  const bufSize = Math.floor(ctx.sampleRate * 0.18);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize) * 0.6;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 1200;
+  filter.Q.value = 1.5;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.09, now + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+  noise.connect(filter);
+  filter.connect(g);
+  g.connect(AUDIO.master);
+  noise.start(now);
+  noise.stop(now + 0.2);
+}
+
 // ============================================================
 // VOICE — Web Speech TTS (prefer neural voices) with file/recording fallback
 // ============================================================
@@ -3331,6 +3411,7 @@ if ('speechSynthesis' in window) {
 // Card navigation
 const CARDS = ['doorstep', 'window', 'middle', 'register'];
 let currentCardIdx = 0;
+let _scrollingAuto = false;
 
 function scrollToCard(cardName) {
   const idx = CARDS.indexOf(cardName);
@@ -3338,9 +3419,11 @@ function scrollToCard(cardName) {
   const container = document.getElementById('scene-cards');
   const card = container && container.children[idx];
   if (!card) return;
+  _scrollingAuto = true;
   card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   currentCardIdx = idx;
   updateCardDots();
+  setTimeout(() => { _scrollingAuto = false; }, 700);
 }
 
 function updateCardDots() {
@@ -3364,6 +3447,7 @@ function initCardNav() {
       const width = container.clientWidth;
       const idx = Math.round(container.scrollLeft / width);
       if (idx !== currentCardIdx) {
+        if (!_scrollingAuto) playSwipeSFX();
         currentCardIdx = idx;
         updateCardDots();
       }
