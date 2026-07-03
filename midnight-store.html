@@ -727,7 +727,7 @@ body {
   .pov-indicator { min-width: 0; border-right: none; border-bottom: 1px dashed var(--paper-edge); padding: 8px 10px; cursor: pointer; user-select: none; border-radius: 4px; transition: background 0.15s; }
   .pov-indicator:active { background: var(--paper-warm); }
   .pov-hint { display: block; font-size: 11px; margin-top: 4px; opacity: 0.75; letter-spacing: 1px; font-style: normal; }
-  .scene-wrap { flex: 0 0 auto; width: 100%; aspect-ratio: 12 / 7; background: #2a3448; }
+  .scene-wrap { flex: 0 0 auto; width: 100%; aspect-ratio: 1000 / 660; background: #2a3448; }
   #game-screen { background: #1a1f2c; }
   .bottom-bar { margin-top: auto; }
   .char-tabs { gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
@@ -2477,7 +2477,27 @@ function bindEvents() {
 
 function init() {
   bindEvents();
+  adjustMobileScene();
   render();
+}
+
+function adjustMobileScene() {
+  const svg = document.getElementById('scene-svg');
+  if (!svg) return;
+  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  if (isMobile) {
+    // Mobile: crop to interior + cat bowl (drop moon/lamppost/stars)
+    svg.setAttribute('viewBox', '200 20 1000 660');
+  } else {
+    svg.setAttribute('viewBox', '0 0 1200 700');
+  }
+}
+
+// Re-adjust on window resize (e.g., phone rotation)
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', () => {
+    if (typeof adjustMobileScene === 'function') adjustMobileScene();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
