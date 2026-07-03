@@ -1622,7 +1622,104 @@ body {
           <div class="card-label">窗 边 座 位</div>
         </div>
 
-        <!-- Card 3: 中央货架 -->
+
+        <!-- Card: 货架 (含热奶柜) -->
+        <div class="scene-card" data-card="shelves">
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
+            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
+            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
+            <!-- Ceiling tube -->
+            <rect x="80" y="20" width="240" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <!-- Shelves outer + rows -->
+            <rect x="110" y="145" width="200" height="270" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="110" y1="205" x2="310" y2="205" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="110" y1="270" x2="310" y2="270" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="110" y1="335" x2="310" y2="335" stroke="#3d2f24" stroke-width="1"/>
+            <!-- Top row = milk cabinet (red LED strip + cartons) -->
+            <rect class="milk-red-lamp" x="110" y="143" width="200" height="4" fill="#c17b52"/>
+            <rect x="130" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <rect x="150" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <rect x="170" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <rect x="270" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <!-- Row 2: goods -->
+            <rect x="122" y="212" width="14" height="20" fill="#c17b52" opacity="0.7"/>
+            <rect x="140" y="212" width="14" height="20" fill="#a67240" opacity="0.7"/>
+            <rect x="220" y="215" width="16" height="24" fill="#c17b52" opacity="0.7"/>
+            <rect x="240" y="215" width="16" height="24" fill="#c9b48a" opacity="0.7"/>
+            <!-- price tag on shelf 2 -->
+            <line x1="256" y1="205" x2="256" y2="212" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect x="250" y="212" width="14" height="9" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <line x1="253" y1="217" x2="261" y2="217" stroke="#3d2f24" stroke-width="0.3"/>
+            <!-- Row 3: goods -->
+            <rect x="135" y="278" width="16" height="24" fill="#a67240" opacity="0.7"/>
+            <rect x="230" y="278" width="18" height="26" fill="#c17b52" opacity="0.7"/>
+            <!-- Row 4: goods -->
+            <rect x="195" y="345" width="24" height="30" fill="#c17b52" opacity="0.7"/>
+            <text x="145" y="180" font-size="9" fill="#c17b52" text-anchor="middle" letter-spacing="2" font-family="serif" opacity="0.75">热 奶 柜</text>
+            <text x="210" y="435" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
+            <!-- Floor -->
+            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+
+            <rect class="obj-zone" data-hs="milkCabinet" x="115" y="140" width="190" height="65"/>
+            <rect class="obj-zone" data-hs="shelves" x="115" y="210" width="190" height="205"/>
+          </svg>
+          <div class="hotspots-layer" data-card-hotspots="shelves"></div>
+          <div class="chars-layer" data-card-chars="shelves"></div>
+          <div class="card-label">货 架 · 热 奶 柜</div>
+        </div>
+
+        <!-- Card 4: 收银台 -->
+        <div class="scene-card" data-card="register">
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
+            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
+            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
+            <!-- Ceiling tube -->
+            <rect x="80" y="20" width="240" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <!-- Clock top-right -->
+            <circle cx="350" cy="70" r="26" fill="#f9f3e8" stroke="#3d2f24" stroke-width="1.5"/>
+            <circle cx="350" cy="70" r="1.5" fill="#3d2f24"/>
+            <line class="clock-min" x1="350" y1="70" x2="350" y2="52" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="350" y1="70" x2="362" y2="70" stroke="#3d2f24" stroke-width="1.5"/>
+            <text class="clock-time" x="350" y="115" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">01 : 47</text>
+            <!-- Register / counter (centered) -->
+            <rect x="100" y="240" width="200" height="130" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="100" y1="275" x2="300" y2="275" stroke="#3d2f24" stroke-width="0.8"/>
+            <!-- QR sign -->
+            <rect x="118" y="290" width="30" height="30" fill="#3d2f24"/>
+            <rect x="122" y="294" width="8" height="8" fill="#e8dcc4"/>
+            <rect x="135" y="294" width="8" height="8" fill="#e8dcc4"/>
+            <rect x="122" y="307" width="8" height="8" fill="#e8dcc4"/>
+            <rect x="135" y="309" width="6" height="6" fill="#e8dcc4"/>
+            <!-- Cash drawer -->
+            <rect x="165" y="330" width="90" height="28" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
+            <circle cx="210" cy="344" r="1.6" fill="#3d2f24"/>
+            <!-- Cashier's phone on counter (screen glowing) -->
+            <rect x="160" y="290" width="16" height="26" fill="#3d2f24" stroke="#3d2f24" stroke-width="0.5" rx="2"/>
+            <rect x="162" y="294" width="12" height="19" fill="#f9f3e8" opacity="0.85" class="phone-screen"/>
+            <circle cx="168" cy="316" r="1" fill="#3d2f24"/>
+            <text x="168" y="332" font-size="7" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif" opacity="0.7">手 机</text>
+            <!-- Pen on counter -->
+            <line x1="200" y1="260" x2="215" y2="262" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="215" y1="262" x2="217" y2="263" stroke="#c17b52" stroke-width="1.5"/>
+            <!-- Folded receipts stack -->
+            <rect x="245" y="256" width="20" height="14" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <rect x="243" y="258" width="20" height="14" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4" opacity="0.7"/>
+            <!-- Plastic bag stack right side of counter -->
+            <rect x="275" y="290" width="14" height="18" fill="#e8dcc4" stroke="#c9b48a" stroke-width="0.5" opacity="0.6"/>
+            <path d="M275 290 L282 284 L289 290" stroke="#c9b48a" stroke-width="0.4" fill="none"/>
+<text x="200" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
+            <!-- Floor -->
+            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+
+            <rect class="obj-zone" data-hs="register" x="95" y="235" width="210" height="140"/>
+            <rect class="obj-zone" data-hs="phone" x="155" y="285" width="26" height="36"/>
+          </svg>
+          <div class="hotspots-layer" data-card-hotspots="register"></div>
+          <div class="chars-layer" data-card-chars="register"></div>
+          <div class="card-label">收 银 台</div>
+        </div>
+
+        <!-- Card 5: 饮水机 · 关东煮 -->
         <div class="scene-card" data-card="dispenser">
           <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
             <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
@@ -1755,102 +1852,6 @@ body {
           <div class="hotspots-layer" data-card-hotspots="dispenser"></div>
           <div class="chars-layer" data-card-chars="dispenser"></div>
           <div class="card-label">饮 水 机 · 关 东 煮</div>
-        </div>
-
-        <!-- Card: 货架 (含热奶柜) -->
-        <div class="scene-card" data-card="shelves">
-          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
-            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
-            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
-            <!-- Ceiling tube -->
-            <rect x="80" y="20" width="240" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
-            <!-- Shelves outer + rows -->
-            <rect x="110" y="145" width="200" height="270" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="110" y1="205" x2="310" y2="205" stroke="#3d2f24" stroke-width="1"/>
-            <line x1="110" y1="270" x2="310" y2="270" stroke="#3d2f24" stroke-width="1"/>
-            <line x1="110" y1="335" x2="310" y2="335" stroke="#3d2f24" stroke-width="1"/>
-            <!-- Top row = milk cabinet (red LED strip + cartons) -->
-            <rect class="milk-red-lamp" x="110" y="143" width="200" height="4" fill="#c17b52"/>
-            <rect x="130" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
-            <rect x="150" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
-            <rect x="170" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
-            <rect x="270" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
-            <!-- Row 2: goods -->
-            <rect x="122" y="212" width="14" height="20" fill="#c17b52" opacity="0.7"/>
-            <rect x="140" y="212" width="14" height="20" fill="#a67240" opacity="0.7"/>
-            <rect x="220" y="215" width="16" height="24" fill="#c17b52" opacity="0.7"/>
-            <rect x="240" y="215" width="16" height="24" fill="#c9b48a" opacity="0.7"/>
-            <!-- price tag on shelf 2 -->
-            <line x1="256" y1="205" x2="256" y2="212" stroke="#3d2f24" stroke-width="0.5"/>
-            <rect x="250" y="212" width="14" height="9" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
-            <line x1="253" y1="217" x2="261" y2="217" stroke="#3d2f24" stroke-width="0.3"/>
-            <!-- Row 3: goods -->
-            <rect x="135" y="278" width="16" height="24" fill="#a67240" opacity="0.7"/>
-            <rect x="230" y="278" width="18" height="26" fill="#c17b52" opacity="0.7"/>
-            <!-- Row 4: goods -->
-            <rect x="195" y="345" width="24" height="30" fill="#c17b52" opacity="0.7"/>
-            <text x="145" y="180" font-size="9" fill="#c17b52" text-anchor="middle" letter-spacing="2" font-family="serif" opacity="0.75">热 奶 柜</text>
-            <text x="210" y="435" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
-            <!-- Floor -->
-            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
-
-            <rect class="obj-zone" data-hs="milkCabinet" x="115" y="140" width="190" height="65"/>
-            <rect class="obj-zone" data-hs="shelves" x="115" y="210" width="190" height="205"/>
-          </svg>
-          <div class="hotspots-layer" data-card-hotspots="shelves"></div>
-          <div class="chars-layer" data-card-chars="shelves"></div>
-          <div class="card-label">货 架 · 热 奶 柜</div>
-        </div>
-
-        <!-- Card 4: 收银台 -->
-        <div class="scene-card" data-card="register">
-          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
-            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
-            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
-            <!-- Ceiling tube -->
-            <rect x="80" y="20" width="240" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
-            <!-- Clock top-right -->
-            <circle cx="350" cy="70" r="26" fill="#f9f3e8" stroke="#3d2f24" stroke-width="1.5"/>
-            <circle cx="350" cy="70" r="1.5" fill="#3d2f24"/>
-            <line class="clock-min" x1="350" y1="70" x2="350" y2="52" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="350" y1="70" x2="362" y2="70" stroke="#3d2f24" stroke-width="1.5"/>
-            <text class="clock-time" x="350" y="115" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">01 : 47</text>
-            <!-- Register / counter (centered) -->
-            <rect x="100" y="240" width="200" height="130" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="100" y1="275" x2="300" y2="275" stroke="#3d2f24" stroke-width="0.8"/>
-            <!-- QR sign -->
-            <rect x="118" y="290" width="30" height="30" fill="#3d2f24"/>
-            <rect x="122" y="294" width="8" height="8" fill="#e8dcc4"/>
-            <rect x="135" y="294" width="8" height="8" fill="#e8dcc4"/>
-            <rect x="122" y="307" width="8" height="8" fill="#e8dcc4"/>
-            <rect x="135" y="309" width="6" height="6" fill="#e8dcc4"/>
-            <!-- Cash drawer -->
-            <rect x="165" y="330" width="90" height="28" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
-            <circle cx="210" cy="344" r="1.6" fill="#3d2f24"/>
-            <!-- Cashier's phone on counter (screen glowing) -->
-            <rect x="160" y="290" width="16" height="26" fill="#3d2f24" stroke="#3d2f24" stroke-width="0.5" rx="2"/>
-            <rect x="162" y="294" width="12" height="19" fill="#f9f3e8" opacity="0.85" class="phone-screen"/>
-            <circle cx="168" cy="316" r="1" fill="#3d2f24"/>
-            <text x="168" y="332" font-size="7" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif" opacity="0.7">手 机</text>
-            <!-- Pen on counter -->
-            <line x1="200" y1="260" x2="215" y2="262" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="215" y1="262" x2="217" y2="263" stroke="#c17b52" stroke-width="1.5"/>
-            <!-- Folded receipts stack -->
-            <rect x="245" y="256" width="20" height="14" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
-            <rect x="243" y="258" width="20" height="14" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4" opacity="0.7"/>
-            <!-- Plastic bag stack right side of counter -->
-            <rect x="275" y="290" width="14" height="18" fill="#e8dcc4" stroke="#c9b48a" stroke-width="0.5" opacity="0.6"/>
-            <path d="M275 290 L282 284 L289 290" stroke="#c9b48a" stroke-width="0.4" fill="none"/>
-<text x="200" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
-            <!-- Floor -->
-            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
-
-            <rect class="obj-zone" data-hs="register" x="95" y="235" width="210" height="140"/>
-            <rect class="obj-zone" data-hs="phone" x="155" y="285" width="26" height="36"/>
-          </svg>
-          <div class="hotspots-layer" data-card-hotspots="register"></div>
-          <div class="chars-layer" data-card-chars="register"></div>
-          <div class="card-label">收 银 台</div>
         </div>
       </div>
 
