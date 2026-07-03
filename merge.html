@@ -158,7 +158,6 @@
     width: 100%;
     height: 100%;
     overflow: visible;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
   }
   .tile-num {
     position: absolute;
@@ -365,8 +364,8 @@ function piecePath(w, h, sides) {
     const r = Math.min(w, h) * 0.09;
     return `M ${r} 0 L ${w-r} 0 Q ${w} 0, ${w} ${r} L ${w} ${h-r} Q ${w} ${h}, ${w-r} ${h} L ${r} ${h} Q 0 ${h}, 0 ${h-r} L 0 ${r} Q 0 0, ${r} 0 Z`;
   }
-  const K = Math.min(w, h) * 0.22;  // knob depth
-  const N = Math.min(w, h) * 0.13;  // neck width
+  const K = Math.min(w, h) * 0.14;  // knob depth (flatter, larger body)
+  const N = Math.min(w, h) * 0.10;  // neck width
   const midX = w / 2, midY = h / 2;
   const parts = ['M 0 0'];
   // TOP
@@ -392,19 +391,14 @@ function buildTileSVG(t, tileW, tileH) {
   const style = tierStyleFor(t.value);
   const sides = sidesForValue(t.value);
   const isSmooth = !sides;
-  const K = isSmooth ? 0 : Math.min(tileW, tileH) * 0.22;
-  const inset = isSmooth ? 4 : Math.ceil(K) + 2;
+  const K = isSmooth ? 0 : Math.min(tileW, tileH) * 0.14;
+  const inset = isSmooth ? 3 : Math.ceil(K);
   const bodyW = tileW - inset * 2;
   const bodyH = tileH - inset * 2;
   const path = piecePath(bodyW, bodyH, isSmooth ? null : sides);
-  const gid = `g${t.id}`;
   return `<svg class="tile-svg" viewBox="0 0 ${tileW} ${tileH}" preserveAspectRatio="none">`
-    + `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0.5" y2="1">`
-    + `<stop offset="0" stop-color="${style.c1}"/>`
-    + `<stop offset="1" stop-color="${style.c2}"/>`
-    + `</linearGradient></defs>`
     + `<g transform="translate(${inset} ${inset})">`
-    + `<path d="${path}" fill="url(#${gid})" stroke="${style.stroke}" stroke-width="1.5" stroke-linejoin="round"/>`
+    + `<path d="${path}" fill="${style.c1}"/>`
     + `</g></svg>`;
 }
 
@@ -742,7 +736,7 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
     const tileW = t.w * cellSize + (t.w - 1) * gap;
     const tileH = t.h * cellSize + (t.h - 1) * gap;
     const minDim = Math.min(t.w, t.h);
-    const fs = Math.floor(cellSize * (minDim === 1 ? 0.5 : minDim === 2 ? 0.42 : 0.36));
+    const fs = Math.floor(cellSize * (minDim === 1 ? 0.55 : minDim === 2 ? 0.48 : 0.42));
 
     // Regenerate the SVG piece only when value/shape/rendered-size changes.
     const rk = `${t.value}|${t.w}|${t.h}|${Math.round(tileW)}|${Math.round(tileH)}`;

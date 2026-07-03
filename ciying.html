@@ -239,6 +239,9 @@
   .row.new-guess {
     animation: flash 0.8s;
   }
+  .row.oov .word-pill {
+    border-style: dashed;
+  }
   @keyframes flash {
     0% { background: rgba(255, 200, 130, 0.3); transform: scale(1.02); }
     100% { background: rgba(220, 180, 140, 0.04); transform: scale(1); }
@@ -851,11 +854,12 @@ function tempClass(sim) {
 function renderRow(g, isLatest = false) {
   const rank = g.rank > 0 && g.rank <= 500 ? `#${g.rank}` : '';
   const pct = (g.sim * 100).toFixed(1) + '%';
-  const hintMark = g.isHint ? ' 💡' : '';
+  const mark = g.isHint ? ' 💡' : (g.isOOV ? ' <span style="font-size:11px;opacity:0.7;">·词外</span>' : '');
   const tCls = tempClass(g.sim);
-  return `<div class="row ${tCls} ${isLatest ? 'new-guess' : ''}">
+  const oovCls = g.isOOV ? 'oov' : '';
+  return `<div class="row ${tCls} ${oovCls} ${isLatest ? 'new-guess' : ''}">
     <span class="rank">${rank}</span>
-    <span class="word-pill">${g.word}${hintMark}</span>
+    <span class="word-pill">${g.word}${mark}</span>
     <span class="pct">${pct}</span>
   </div>`;
 }
@@ -874,8 +878,36 @@ function submitGuess() {
   guessInput.focus();
 
   if (!WORDS[word]) {
-    shakeInput();
-    showMessage(`「${word}」不在词表`, 'err');
+    // 词表外的词：尝试合成语义算相似度
+    const fallback = tryFallbackSim(word, answer);
+    if (fallback === null) {
+      // 完全无关（一个字符都对应不上词表）
+      shakeInput();
+      showMessage(`「${word}」词表里完全无关`, 'err');
+      return;
+    }
+    // 接受作为一次猜测，标为词表外
+    if (guessedSet.has(word)) {
+      shakeInput();
+      showMessage(`「${word}」猜过了`, 'err');
+      return;
+    }
+    const prevBest = guesses.length ? Math.max(...guesses.map(x => x.sim)) : -1;
+    const isNewBest = fallback > prevBest && fallback < 1;
+    const rank = allSims.filter(x => x.sim > fallback).length + 1;
+    const g = { word, sim: fallback, rank, isOOV: true };
+    guesses.push(g);
+    guessedSet.add(word);
+    guessCountEl.textContent = guesses.length;
+    renderHistory(word);
+    const icon = tempIcon(fallback);
+    if (isNewBest && guesses.length >= 3) {
+      showMessage(`🔥 更热了！${word} · ${(fallback*100).toFixed(1)}% · 词外`);
+      if (navigator.vibrate) navigator.vibrate(20);
+    } else {
+      showMessage(`${icon} ${word} · ${(fallback*100).toFixed(1)}% · 词外`);
+    }
+    updateHintBtn();
     return;
   }
   if (guessedSet.has(word)) {
@@ -927,6 +959,7 @@ function synthesizeTags(word) {
 }
 
 // Fallback similarity for out-of-vocab words
+// 使用 Overlap 系数 (intersection / min(|A|, |B|))，更好处理"父母包含母亲"这种情况
 function tryFallbackSim(word, ans) {
   const synth = synthesizeTags(word);
   if (!synth.length) return null;
@@ -935,8 +968,9 @@ function tryFallbackSim(word, ans) {
   if (set2.size === 0) return 0;
   let inter = 0;
   for (const t of set1) if (set2.has(t)) inter++;
-  const union = set1.size + set2.size - inter;
-  return union ? inter / union : 0;
+  const overlap = inter / Math.min(set1.size, set2.size);
+  // 词表外最高 0.95，永远进不了"完美命中"
+  return Math.min(overlap, 0.95);
 }
 
 // Find character-based similar words in vocab (unused now — kept for potential future use)
