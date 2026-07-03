@@ -282,6 +282,7 @@
 </div>
 
 <script>
+const TUTORIAL_SIZE = 4;
 const INITIAL_SIZE = 5;
 const MAX_SIZE = 7;
 const EXPAND_AT = { 128: 6, 512: 7 };  // value → new board size when this value first appears
@@ -307,6 +308,7 @@ let score, best;
 let animating;
 let won;        // "win overlay pending / active" — cleared when player picks 继续
 let wonEver;    // "2048 has been reached this game" — prevents re-showing win overlay
+let inTutorial; // first-time player is on the tutorial board
 let history;    // for undo (snapshot before each move)
 
 const boardWrap = document.getElementById('boardWrap');
