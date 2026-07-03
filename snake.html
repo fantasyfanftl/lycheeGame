@@ -3,231 +3,419 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>贪吃蛇</title>
+<title>修真吞灵</title>
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Segoe UI', -apple-system, Tahoma, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'Songti SC', 'Segoe UI', serif;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(120, 80, 200, 0.25), transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(180, 140, 90, 0.18), transparent 60%),
+      linear-gradient(135deg, #12132a 0%, #0a0a1a 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 18px;
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
+    color: #e8dcc4;
+    overflow: hidden;
   }
   .container {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    padding: 26px;
-    max-width: 460px;
+    background: rgba(10, 10, 20, 0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(245, 200, 138, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(245, 200, 138, 0.06) inset;
+    padding: 20px;
+    max-width: 480px;
     width: 100%;
   }
   .back-link {
     display: inline-block;
-    color: #764ba2;
+    color: rgba(245, 200, 138, 0.55);
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
     margin-bottom: 8px;
-    opacity: 0.75;
-    transition: opacity 0.15s;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    transition: color 0.2s;
   }
-  .back-link:hover { opacity: 1; }
+  .back-link:hover { color: rgba(245, 200, 138, 0.95); }
+
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
-  h1 {
-    color: #333;
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+  .realm-info { }
+  .realm-name {
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: #f5c88a;
+    text-shadow: 0 0 12px rgba(245, 200, 138, 0.4);
+    transition: color 0.6s ease, text-shadow 0.6s ease;
+  }
+  .realm-desc {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(232, 220, 196, 0.55);
+    margin-top: 2px;
   }
   .scores {
     display: flex;
-    gap: 8px;
+    gap: 6px;
   }
   .score-box {
-    background: #f5f7fa;
-    border-radius: 8px;
-    padding: 6px 12px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(245, 200, 138, 0.15);
+    border-radius: 4px;
+    padding: 5px 10px;
     text-align: center;
-    min-width: 60px;
+    min-width: 54px;
   }
   .score-box .label {
     display: block;
     font-size: 10px;
-    color: #999;
-    font-weight: 700;
-    letter-spacing: 1px;
+    color: rgba(232, 220, 196, 0.5);
+    letter-spacing: 2px;
   }
   .score-box .value {
     display: block;
-    font-size: 18px;
-    font-weight: 700;
-    color: #764ba2;
+    font-size: 17px;
+    color: #f5c88a;
+    font-weight: bold;
     margin-top: 1px;
   }
+
+  /* Progress bar with realm markers */
+  .progress {
+    position: relative;
+    margin-bottom: 14px;
+    padding: 0 4px;
+  }
+  .progress-track {
+    height: 3px;
+    background: rgba(245, 200, 138, 0.1);
+    border-radius: 2px;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4a90e2, #f5a623, #b16fff, #f0f4ff, #ffd89b);
+    border-radius: 2px;
+    width: 0;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px rgba(245, 200, 138, 0.6);
+  }
+  .progress-marker {
+    position: absolute;
+    top: -3px;
+    transform: translateX(-50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(20, 20, 30, 1);
+    border: 1.5px solid rgba(245, 200, 138, 0.4);
+    transition: all 0.4s ease;
+  }
+  .progress-marker.reached {
+    background: #f5c88a;
+    border-color: #ffd89b;
+    box-shadow: 0 0 10px rgba(245, 200, 138, 0.8);
+  }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: rgba(232, 220, 196, 0.4);
+    letter-spacing: 1px;
+    margin-top: 8px;
+    padding: 0 2px;
+  }
+  .progress-labels span.reached { color: #f5c88a; }
+
+  /* Board */
   .board-wrap {
     position: relative;
     aspect-ratio: 1;
-    border-radius: 12px;
+    border-radius: 6px;
     overflow: hidden;
-    background: #f5f7fa;
+    background: radial-gradient(ellipse at center, #14162e 0%, #0a0a18 100%);
     margin-bottom: 12px;
+    border: 1px solid rgba(245, 200, 138, 0.15);
   }
   canvas {
     display: block;
     width: 100%;
     height: 100%;
+    position: relative;
+    z-index: 2;
   }
+  .aura {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 30%, transparent 70%);
+  }
+  .aura.realm-1 { opacity: 0.4; background: radial-gradient(circle at 50% 50%, rgba(74, 144, 226, 0.3), transparent 65%); }
+  .aura.realm-2 { opacity: 0.5; background: radial-gradient(circle at 50% 50%, rgba(245, 166, 35, 0.35), transparent 60%); }
+  .aura.realm-3 { opacity: 0.5; background: radial-gradient(circle at 50% 50%, rgba(177, 111, 255, 0.35), transparent 60%); }
+  .aura.realm-4 { opacity: 0.6; background: radial-gradient(circle at 50% 50%, rgba(240, 244, 255, 0.3), transparent 55%); }
+  .aura.realm-5 { opacity: 0.9; background: radial-gradient(circle at 50% 50%, rgba(255, 216, 155, 0.4), transparent 55%), conic-gradient(from 0deg, transparent, rgba(255, 216, 155, 0.15), transparent, rgba(180, 90, 240, 0.15), transparent); animation: rotate 8s linear infinite; }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+
+  /* Overlay (start / game over) */
   .overlay {
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(4px);
+    z-index: 20;
+    background: rgba(10, 10, 20, 0.8);
+    backdrop-filter: blur(6px);
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 30px;
-    z-index: 10;
+    padding: 24px;
   }
   .overlay.show { display: flex; }
   .overlay h2 {
-    font-size: 32px;
-    color: #333;
-    margin-bottom: 8px;
-    font-weight: 700;
+    font-size: 30px;
+    color: #f5c88a;
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(245, 200, 138, 0.4);
   }
   .overlay p {
-    color: #666;
+    color: rgba(232, 220, 196, 0.7);
     margin-bottom: 22px;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 13px;
+    letter-spacing: 3px;
+    line-height: 1.7;
   }
-  .overlay button {
-    padding: 11px 26px;
-    font-size: 15px;
-    background: #764ba2;
-    color: #fff;
+  .paper-btn {
+    background: #e8dcc4;
+    color: #3d2f24;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: 10px 26px;
+    font-size: 15px;
+    letter-spacing: 4px;
+    font-family: inherit;
     cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 1px;
+    border-radius: 2px;
+    box-shadow: 0 2px 12px rgba(245, 200, 138, 0.15);
+    transition: all 0.3s;
+    position: relative;
   }
-  .overlay button:hover { background: #5c3982; transform: translateY(-1px); }
+  .paper-btn::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border: 1px solid rgba(245, 200, 138, 0.3);
+    pointer-events: none;
+  }
+  .paper-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(245, 200, 138, 0.4);
+  }
 
+  /* Breakthrough overlay */
+  .breakthrough {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background: radial-gradient(ellipse at center, rgba(245, 200, 138, 0.15) 0%, rgba(10, 10, 20, 0.85) 60%);
+    animation: btFadeIn 0.5s ease-out;
+  }
+  .breakthrough.show { display: flex; }
+  @keyframes btFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .bt-realm {
+    font-size: 34px;
+    letter-spacing: 12px;
+    color: #f5c88a;
+    text-shadow: 0 0 30px rgba(245, 200, 138, 0.8), 0 0 60px rgba(245, 200, 138, 0.4);
+    margin-bottom: 16px;
+    animation: btPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes btPulse {
+    0%, 100% { text-shadow: 0 0 20px rgba(245, 200, 138, 0.6), 0 0 40px rgba(245, 200, 138, 0.3); }
+    50% { text-shadow: 0 0 40px rgba(245, 200, 138, 1), 0 0 80px rgba(245, 200, 138, 0.6); }
+  }
+  .bt-text {
+    font-size: 14px;
+    line-height: 2;
+    color: rgba(232, 220, 196, 0.85);
+    letter-spacing: 4px;
+    max-width: 320px;
+  }
+  .bt-tap {
+    margin-top: 20px;
+    font-size: 11px;
+    color: rgba(232, 220, 196, 0.4);
+    letter-spacing: 3px;
+  }
+
+  /* Actions */
   .actions {
     display: flex;
     gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .actions button {
-    padding: 8px 18px;
-    font-size: 13px;
-    border: none;
-    border-radius: 8px;
+    padding: 7px 20px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    background: transparent;
+    border: 1px solid rgba(245, 200, 138, 0.3);
+    color: rgba(232, 220, 196, 0.85);
+    font-family: inherit;
     cursor: pointer;
-    background: #f0f0f0;
-    color: #333;
-    transition: all 0.15s;
-    font-weight: 500;
+    border-radius: 2px;
+    transition: all 0.2s;
   }
-  .actions button:hover { background: #e4e4e4; }
-  .actions button.primary { background: #764ba2; color: #fff; }
-  .actions button.primary:hover { background: #5c3982; }
+  .actions button:hover { background: rgba(245, 200, 138, 0.1); }
+  .actions button.primary {
+    background: rgba(245, 200, 138, 0.15);
+    border-color: rgba(245, 200, 138, 0.6);
+  }
 
   .hint {
     text-align: center;
-    color: #888;
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  .hint kbd {
-    display: inline-block;
-    padding: 1px 6px;
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: monospace;
+    color: rgba(232, 220, 196, 0.35);
     font-size: 11px;
-    color: #555;
-    margin: 0 1px;
+    letter-spacing: 1.5px;
+    line-height: 1.7;
   }
 
-  /* Landscape */
   @media (orientation: landscape) and (max-height: 550px) {
-    body { padding: 8px; align-items: flex-start; }
     .container {
       max-width: none;
-      padding: 14px 18px;
+      padding: 12px 18px;
       display: grid;
       grid-template-columns: auto 1fr;
       grid-template-areas:
         "back    back"
         "header  header"
+        "prog    prog"
         "board   controls";
       gap: 8px 18px;
       align-items: start;
     }
     .back-link { grid-area: back; margin: 0; }
     .header { grid-area: header; margin: 0; }
-    h1 { font-size: 22px; }
-    .board-wrap { grid-area: board; max-width: 78vh; margin: 0; }
+    .progress { grid-area: prog; margin: 0; }
+    .board-wrap { grid-area: board; max-width: 62vh; margin: 0; }
     .actions, .hint { grid-area: controls; }
-    .actions { flex-direction: column; }
-    .actions button { padding: 8px 14px; font-size: 12px; }
-    .hint { font-size: 11px; margin-top: 6px; }
+    .actions { flex-direction: column; margin: 0 0 6px; }
+    .hint { font-size: 10px; }
   }
 </style>
 </head>
 <body>
 <div class="container">
-  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <a href="index.html" class="back-link">← 荔枝游戏</a>
+
   <div class="header">
-    <h1>🐍 贪吃蛇</h1>
+    <div class="realm-info">
+      <div class="realm-name" id="realmName">凡人</div>
+      <div class="realm-desc" id="realmDesc">肉身凡胎，未闻仙音</div>
+    </div>
     <div class="scores">
-      <div class="score-box"><span class="label">得分</span><span class="value" id="score">0</span></div>
-      <div class="score-box"><span class="label">最高</span><span class="value" id="best">0</span></div>
+      <div class="score-box"><span class="label">身长</span><span class="value" id="lengthEl">3</span></div>
+      <div class="score-box"><span class="label">最长</span><span class="value" id="best">0</span></div>
+    </div>
+  </div>
+
+  <div class="progress">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+      <div class="progress-marker" data-idx="1" style="left: 12%"></div>
+      <div class="progress-marker" data-idx="2" style="left: 24%"></div>
+      <div class="progress-marker" data-idx="3" style="left: 40%"></div>
+      <div class="progress-marker" data-idx="4" style="left: 60%"></div>
+      <div class="progress-marker" data-idx="5" style="left: 80%"></div>
+    </div>
+    <div class="progress-labels">
+      <span data-idx="0">凡人</span>
+      <span data-idx="1">筑基</span>
+      <span data-idx="2">金丹</span>
+      <span data-idx="3">元婴</span>
+      <span data-idx="4">化神</span>
+      <span data-idx="5">飞升</span>
     </div>
   </div>
 
   <div class="board-wrap" id="boardWrap">
+    <div class="aura" id="aura"></div>
     <canvas id="board"></canvas>
+
     <div class="overlay show" id="overlay">
-      <h2 id="overlayTitle">贪吃蛇</h2>
-      <p id="overlaySub">吃食物变长，别撞墙也别咬到自己</p>
-      <button id="startBtn">开始游戏</button>
+      <h2 id="overlayTitle">修真吞灵</h2>
+      <p id="overlaySub">吞噬灵气 · 破境登仙<br>凡蛇亦可成龙</p>
+      <button id="startBtn" class="paper-btn">悟 道</button>
+    </div>
+
+    <div class="breakthrough" id="breakthrough">
+      <div class="bt-realm" id="btRealm"></div>
+      <div class="bt-text" id="btText"></div>
+      <div class="bt-tap">— 点击继续 —</div>
     </div>
   </div>
 
   <div class="actions">
     <button id="pauseBtn">暂停</button>
-    <button id="restartBtn" class="primary">重开</button>
+    <button id="restartBtn" class="primary">重新悟道</button>
   </div>
 
   <div class="hint">
-    <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> 或 <kbd>WASD</kbd> · <kbd>空格</kbd>暂停 · 手机滑动
+    方向键 / WASD / 手机滑动 · 空格暂停
   </div>
 </div>
 
 <script>
 const CELLS = 18;
+const REALMS = [
+  { name: '凡人',   min: 3,   desc: '肉身凡胎，未闻仙音',
+    body: '#8fa650', head: '#a8c060', shadowBlur: 0 },
+  { name: '筑基期', min: 30,  desc: '灵气入体，身若微光',
+    body: '#4a90e2', head: '#78b0f0', shadowBlur: 8, shadowColor: 'rgba(74,144,226,0.6)',
+    poem: '灵气入体，蛇身微光初显。<br>你已是修士。' },
+  { name: '金丹期', min: 60,  desc: '结丹于内，纹金浮现',
+    body: '#f5a623', head: '#ffd07a', shadowBlur: 12, shadowColor: 'rgba(245,166,35,0.7)',
+    poem: '金丹凝成，蛇纹浮金。<br>大千世界，触手可及。' },
+  { name: '元婴期', min: 100, desc: '婴出识海，身若琉璃',
+    body: '#b16fff', head: '#dbb8ff', shadowBlur: 16, shadowColor: 'rgba(177,111,255,0.7)',
+    poem: '元婴出窍，蛇身如玉。<br>灵气自绕，若隐若现。' },
+  { name: '化神期', min: 150, desc: '神识凝形，残影流转',
+    body: '#f0f4ff', head: '#ffffff', shadowBlur: 20, shadowColor: 'rgba(240,244,255,0.9)',
+    poem: '神识凝形，残影流转。<br>一念之间，可跨山海。' },
+  { name: '飞升',   min: 200, desc: '登仙——你已成龙',
+    body: 'dragon', head: 'dragon', shadowBlur: 30,
+    poem: '登仙——你已成龙。<br>紫气东来，天门已开。' },
+];
+
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
-const scoreEl = document.getElementById('score');
+const lengthEl = document.getElementById('lengthEl');
 const bestEl = document.getElementById('best');
 const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlayTitle');
@@ -235,9 +423,20 @@ const overlaySub = document.getElementById('overlaySub');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const restartBtn = document.getElementById('restartBtn');
+const realmNameEl = document.getElementById('realmName');
+const realmDescEl = document.getElementById('realmDesc');
+const progressFill = document.getElementById('progressFill');
+const auraEl = document.getElementById('aura');
+const breakthroughEl = document.getElementById('breakthrough');
+const btRealmEl = document.getElementById('btRealm');
+const btTextEl = document.getElementById('btText');
 
 let cellSize;
-let snake, food, dir, dirQueue, score, best, ticker, tickMs, running, paused;
+let snake, food, dir, dirQueue;
+let best, ticker, tickMs, running, paused;
+let currentRealmIdx;
+let seenRealms;
+let animFrame = 0;
 
 function fitCanvas() {
   const rect = canvas.getBoundingClientRect();
@@ -250,27 +449,33 @@ function fitCanvas() {
 }
 window.addEventListener('resize', fitCanvas);
 
+function realmForLen(len) {
+  for (let i = REALMS.length - 1; i >= 0; i--) {
+    if (len >= REALMS[i].min) return i;
+  }
+  return 0;
+}
+
 function newGame() {
   snake = [{ r: 9, c: 8 }, { r: 9, c: 7 }, { r: 9, c: 6 }];
   dir = { r: 0, c: 1 };
   dirQueue = [];
   spawnFood();
-  score = 0;
-  tickMs = 140;
+  tickMs = 145;
   running = true;
   paused = false;
-  updateScore();
+  currentRealmIdx = 0;
+  seenRealms = new Set([0]);
+  updateUI();
   hideOverlay();
   startTicker();
 }
 
 function spawnFood() {
   const empty = [];
-  for (let r = 0; r < CELLS; r++) {
-    for (let c = 0; c < CELLS; c++) {
+  for (let r = 0; r < CELLS; r++)
+    for (let c = 0; c < CELLS; c++)
       if (!snake.some(s => s.r === r && s.c === c)) empty.push({ r, c });
-    }
-  }
   food = empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
 }
 
@@ -281,7 +486,6 @@ function startTicker() {
 
 function tick() {
   if (!running || paused) return;
-  // pull next direction from queue (avoid instant reverse)
   while (dirQueue.length) {
     const nd = dirQueue.shift();
     if (nd.r === -dir.r && nd.c === -dir.c) continue;
@@ -293,70 +497,225 @@ function tick() {
   if (snake.some(s => s.r === head.r && s.c === head.c)) return gameOver();
   snake.unshift(head);
   if (food && head.r === food.r && head.c === food.c) {
-    score++;
-    if (tickMs > 60) { tickMs = Math.max(60, tickMs - 3); startTicker(); }
+    if (tickMs > 55) { tickMs = Math.max(55, tickMs - 3); startTicker(); }
     spawnFood();
-    updateScore();
+    checkBreakthrough();
   } else {
     snake.pop();
   }
+  updateUI();
   render();
 }
 
+function checkBreakthrough() {
+  const idx = realmForLen(snake.length);
+  if (idx > currentRealmIdx && !seenRealms.has(idx)) {
+    seenRealms.add(idx);
+    currentRealmIdx = idx;
+    showBreakthrough(idx);
+  } else if (idx > currentRealmIdx) {
+    currentRealmIdx = idx;
+  }
+}
+
+function showBreakthrough(idx) {
+  const r = REALMS[idx];
+  paused = true;
+  btRealmEl.textContent = r.name;
+  btTextEl.innerHTML = r.poem || '';
+  breakthroughEl.classList.add('show');
+  const dismiss = () => {
+    breakthroughEl.classList.remove('show');
+    breakthroughEl.removeEventListener('click', dismiss);
+    document.removeEventListener('keydown', keyDismiss);
+    clearTimeout(timer);
+    if (running) paused = false;
+  };
+  const keyDismiss = (e) => { if (e.key === ' ' || e.key === 'Enter' || e.key === 'Escape') { dismiss(); e.preventDefault(); } };
+  breakthroughEl.addEventListener('click', dismiss);
+  document.addEventListener('keydown', keyDismiss);
+  const timer = setTimeout(dismiss, 3500);
+}
+
+function updateUI() {
+  const idx = realmForLen(snake.length);
+  const realm = REALMS[idx];
+  realmNameEl.textContent = realm.name;
+  realmDescEl.textContent = realm.desc;
+  lengthEl.textContent = snake.length;
+  if (snake.length > best) {
+    best = snake.length;
+    localStorage.setItem('bestXiuzhen', best);
+  }
+  bestEl.textContent = best;
+  // Progress bar
+  const maxLen = 200;
+  const pct = Math.min(100, (snake.length / maxLen) * 100);
+  progressFill.style.width = pct + '%';
+  document.querySelectorAll('.progress-marker').forEach(m => {
+    m.classList.toggle('reached', +m.dataset.idx <= idx);
+  });
+  document.querySelectorAll('.progress-labels span').forEach(s => {
+    s.classList.toggle('reached', +s.dataset.idx <= idx);
+  });
+  // Aura
+  auraEl.className = 'aura' + (idx > 0 ? ' realm-' + idx : '');
+}
+
+function segmentColor(realm, idx, total, isHead) {
+  if (realm.body === 'dragon') {
+    // Rainbow cycling based on time and segment index
+    const hue = (animFrame * 2 + idx * 8) % 360;
+    return `hsl(${hue}, 80%, ${isHead ? 62 : 55}%)`;
+  }
+  const t = idx / Math.max(total - 1, 1);
+  return isHead ? realm.head : shadeColor(realm.body, -t * 12);
+}
+
+function shadeColor(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  let r = (num >> 16) + Math.round(2.55 * percent);
+  let g = ((num >> 8) & 0xff) + Math.round(2.55 * percent);
+  let b = (num & 0xff) + Math.round(2.55 * percent);
+  r = Math.max(0, Math.min(255, r));
+  g = Math.max(0, Math.min(255, g));
+  b = Math.max(0, Math.min(255, b));
+  return `rgb(${r},${g},${b})`;
+}
+
 function render() {
+  animFrame++;
   const w = canvas.width / (window.devicePixelRatio || 1);
   ctx.clearRect(0, 0, w, w);
+
   // Grid dots
-  ctx.fillStyle = 'rgba(102, 126, 234, 0.08)';
+  ctx.fillStyle = 'rgba(245, 200, 138, 0.06)';
   for (let r = 0; r < CELLS; r++) {
     for (let c = 0; c < CELLS; c++) {
       ctx.beginPath();
-      ctx.arc(c * cellSize + cellSize/2, r * cellSize + cellSize/2, 1.2, 0, Math.PI * 2);
+      ctx.arc(c * cellSize + cellSize/2, r * cellSize + cellSize/2, 0.9, 0, Math.PI * 2);
       ctx.fill();
     }
   }
-  // Food
+
+  // Food (spirit orb)
   if (food) {
-    const t = Date.now() / 300;
-    const pulse = Math.sin(t) * 0.06 + 0.94;
-    ctx.fillStyle = '#f5a76b';
+    const t = animFrame / 25;
+    const pulse = Math.sin(t) * 0.08 + 0.92;
+    const cx = food.c * cellSize + cellSize/2;
+    const cy = food.r * cellSize + cellSize/2;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cellSize/2);
+    grad.addColorStop(0, '#fff5c8');
+    grad.addColorStop(0.5, '#f5c88a');
+    grad.addColorStop(1, 'rgba(245, 200, 138, 0.1)');
+    ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.arc(food.c * cellSize + cellSize/2, food.r * cellSize + cellSize/2, cellSize/2 * pulse - 2, 0, Math.PI * 2);
+    ctx.arc(cx, cy, (cellSize/2 - 1) * pulse, 0, Math.PI * 2);
     ctx.fill();
-    // Sparkle
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    // Center highlight
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
     ctx.beginPath();
-    ctx.arc(food.c * cellSize + cellSize/2 - 3, food.r * cellSize + cellSize/2 - 3, 2, 0, Math.PI * 2);
+    ctx.arc(cx - 2, cy - 2, cellSize * 0.1, 0, Math.PI * 2);
     ctx.fill();
   }
-  // Snake body (tail-to-head order for nice overlaps)
+
+  // Snake
+  const idx = realmForLen(snake.length);
+  const realm = REALMS[idx];
+  ctx.save();
+  if (realm.shadowBlur) {
+    ctx.shadowBlur = realm.shadowBlur;
+    ctx.shadowColor = realm.shadowColor || 'rgba(255,255,255,0.6)';
+  }
+
+  const isDragon = realm.body === 'dragon';
+  const isHuashen = idx === 4;
+
+  // Trail (残影) for 化神期 and above
+  if (idx >= 4) {
+    for (let trail = 0; trail < 2; trail++) {
+      const alpha = 0.15 - trail * 0.05;
+      ctx.globalAlpha = alpha;
+      snake.forEach((s, i) => {
+        if (i > snake.length - 5) return;
+        const offset = trail * 3;
+        const x = s.c * cellSize + cellSize/2 - dir.c * offset;
+        const y = s.r * cellSize + cellSize/2 - dir.r * offset;
+        ctx.fillStyle = segmentColor(realm, i, snake.length, false);
+        ctx.beginPath();
+        ctx.arc(x, y, cellSize * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Body (tail-first)
   for (let i = snake.length - 1; i >= 0; i--) {
     const s = snake[i];
-    const t = i / Math.max(snake.length - 1, 1);
-    // Head purple, gradually fade to blue for tail
-    const hue = 260 - t * 30;
-    const light = 55 - t * 15;
-    ctx.fillStyle = i === 0 ? '#764ba2' : `hsl(${hue}, 55%, ${light}%)`;
-    const pad = 1.5;
-    roundRect(s.c * cellSize + pad, s.r * cellSize + pad, cellSize - pad*2, cellSize - pad*2, 4);
+    const isHead = i === 0;
+    ctx.fillStyle = segmentColor(realm, i, snake.length, isHead);
+    const pad = isDragon ? 0.5 : 1.5;
+    const size = cellSize - pad * 2;
+    const cornerR = isDragon ? 6 : (idx >= 3 ? 5 : 4);
+    roundRect(s.c * cellSize + pad, s.r * cellSize + pad, size, size, cornerR);
     ctx.fill();
+    // Dragon: extra glow
+    if (isDragon && !isHead) {
+      ctx.strokeStyle = `hsl(${(animFrame * 2 + i * 8) % 360}, 90%, 75%)`;
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+    }
   }
-  // Head eyes
+  ctx.restore();
+
+  // Head decorations
   if (snake.length) {
     const h = snake[0];
-    ctx.fillStyle = '#fff';
     const cx = h.c * cellSize + cellSize/2;
     const cy = h.r * cellSize + cellSize/2;
-    const eyeOff = cellSize * 0.2;
-    let ex1, ey1, ex2, ey2;
-    if (dir.c === 1) { ex1 = cx + eyeOff; ey1 = cy - eyeOff; ex2 = cx + eyeOff; ey2 = cy + eyeOff; }
-    else if (dir.c === -1) { ex1 = cx - eyeOff; ey1 = cy - eyeOff; ex2 = cx - eyeOff; ey2 = cy + eyeOff; }
-    else if (dir.r === -1) { ex1 = cx - eyeOff; ey1 = cy - eyeOff; ex2 = cx + eyeOff; ey2 = cy - eyeOff; }
-    else { ex1 = cx - eyeOff; ey1 = cy + eyeOff; ex2 = cx + eyeOff; ey2 = cy + eyeOff; }
-    ctx.beginPath();
-    ctx.arc(ex1, ey1, 2.2, 0, Math.PI * 2);
-    ctx.arc(ex2, ey2, 2.2, 0, Math.PI * 2);
-    ctx.fill();
+
+    if (isDragon) {
+      // Dragon horns / whiskers (small ornaments)
+      ctx.fillStyle = '#fff8c8';
+      ctx.strokeStyle = 'rgba(255, 216, 155, 0.9)';
+      ctx.lineWidth = 1.5;
+      const eyeOff = cellSize * 0.18;
+      let ex1 = cx, ey1 = cy, ex2 = cx, ey2 = cy;
+      if (dir.c === 1)      { ex1 = cx + eyeOff; ey1 = cy - eyeOff; ex2 = cx + eyeOff; ey2 = cy + eyeOff; }
+      else if (dir.c === -1){ ex1 = cx - eyeOff; ey1 = cy - eyeOff; ex2 = cx - eyeOff; ey2 = cy + eyeOff; }
+      else if (dir.r === -1){ ex1 = cx - eyeOff; ey1 = cy - eyeOff; ex2 = cx + eyeOff; ey2 = cy - eyeOff; }
+      else                  { ex1 = cx - eyeOff; ey1 = cy + eyeOff; ex2 = cx + eyeOff; ey2 = cy + eyeOff; }
+      ctx.beginPath();
+      ctx.arc(ex1, ey1, 2.5, 0, Math.PI * 2);
+      ctx.arc(ex2, ey2, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      // Golden ring around head
+      ctx.strokeStyle = `hsla(${(animFrame * 3) % 360}, 90%, 70%, 0.6)`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, cellSize * 0.55, 0, Math.PI * 2);
+      ctx.stroke();
+    } else {
+      // Normal eyes
+      ctx.fillStyle = '#fff';
+      const eyeOff = cellSize * 0.2;
+      let ex1, ey1, ex2, ey2;
+      if (dir.c === 1)      { ex1 = cx + eyeOff; ey1 = cy - eyeOff; ex2 = cx + eyeOff; ey2 = cy + eyeOff; }
+      else if (dir.c === -1){ ex1 = cx - eyeOff; ey1 = cy - eyeOff; ex2 = cx - eyeOff; ey2 = cy + eyeOff; }
+      else if (dir.r === -1){ ex1 = cx - eyeOff; ey1 = cy - eyeOff; ex2 = cx + eyeOff; ey2 = cy - eyeOff; }
+      else                  { ex1 = cx - eyeOff; ey1 = cy + eyeOff; ex2 = cx + eyeOff; ey2 = cy + eyeOff; }
+      ctx.beginPath();
+      ctx.arc(ex1, ey1, 2, 0, Math.PI * 2);
+      ctx.arc(ex2, ey2, 2, 0, Math.PI * 2);
+      ctx.fill();
+      // Pupil
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(ex1, ey1, 1, 0, Math.PI * 2);
+      ctx.arc(ex2, ey2, 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 }
 
@@ -370,21 +729,14 @@ function roundRect(x, y, w, h, r) {
   ctx.closePath();
 }
 
-function updateScore() {
-  scoreEl.textContent = score;
-  if (score > best) {
-    best = score;
-    localStorage.setItem('bestSnake', best);
-  }
-  bestEl.textContent = best;
-}
-
 function gameOver() {
   running = false;
   clearInterval(ticker);
-  overlayTitle.textContent = '游戏结束';
-  overlaySub.textContent = `得分 ${score} · 长度 ${snake.length}`;
-  startBtn.textContent = '再来一局';
+  const idx = realmForLen(snake.length);
+  const realmName = REALMS[idx].name;
+  overlayTitle.textContent = '道 陨';
+  overlaySub.innerHTML = `止步于 <b style="color:#f5c88a">${realmName}</b> · 身长 ${snake.length}<br>再来一次？`;
+  startBtn.textContent = '再 悟 一 道';
   overlay.classList.add('show');
 }
 
@@ -395,16 +747,16 @@ function togglePause() {
   paused = !paused;
   pauseBtn.textContent = paused ? '继续' : '暂停';
   if (paused) {
-    overlayTitle.textContent = '暂停中';
-    overlaySub.textContent = '按空格或点击继续';
-    startBtn.textContent = '继续';
+    overlayTitle.textContent = '闭 关';
+    overlaySub.textContent = '静心，等你归来';
+    startBtn.textContent = '出 关';
     overlay.classList.add('show');
   } else {
     hideOverlay();
   }
 }
 
-// ============ Input ============
+// Input
 document.addEventListener('keydown', e => {
   const map = {
     ArrowUp: {r:-1,c:0}, ArrowDown: {r:1,c:0}, ArrowLeft: {r:0,c:-1}, ArrowRight: {r:0,c:1},
@@ -415,6 +767,7 @@ document.addEventListener('keydown', e => {
     if (dirQueue.length < 2) dirQueue.push(map[e.key]);
     e.preventDefault();
   } else if (e.key === ' ') {
+    if (breakthroughEl.classList.contains('show')) return;
     if (running) togglePause();
     else newGame();
     e.preventDefault();
@@ -433,6 +786,7 @@ canvas.addEventListener('touchend', e => {
   const dy = t.clientY - touchStart.y;
   const ax = Math.abs(dx), ay = Math.abs(dy);
   if (Math.max(ax, ay) < 20) {
+    if (breakthroughEl.classList.contains('show')) { touchStart = null; return; }
     if (running) togglePause();
     else newGame();
     touchStart = null;
@@ -451,24 +805,30 @@ startBtn.addEventListener('click', () => {
 });
 pauseBtn.addEventListener('click', togglePause);
 restartBtn.addEventListener('click', newGame);
-overlay.addEventListener('click', e => {
-  if (e.target === overlay) startBtn.click();
-});
 
-// ============ Boot ============
-best = parseInt(localStorage.getItem('bestSnake') || '0', 10);
+// Boot
+best = parseInt(localStorage.getItem('bestXiuzhen') || '0', 10);
 bestEl.textContent = best;
 snake = [{r:9,c:8},{r:9,c:7},{r:9,c:6}];
 food = { r: 9, c: 12 };
 dir = { r: 0, c: 1 };
 dirQueue = [];
-score = 0;
+currentRealmIdx = 0;
+seenRealms = new Set([0]);
+running = false;
+paused = false;
 fitCanvas();
+updateUI();
 
-// Continuous animation loop for food pulse
+// Idle animation loop for food pulse and dragon
 setInterval(() => {
-  if (running && !paused) return;  // main tick handles render
+  if (running && !paused && !breakthroughEl.classList.contains('show')) return;
   render();
+}, 55);
+
+// Keep dragon animated even while playing
+setInterval(() => {
+  if (running && !paused && realmForLen(snake?.length || 0) >= 5) render();
 }, 60);
 </script>
 </body>
