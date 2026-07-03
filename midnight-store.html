@@ -1747,6 +1747,39 @@ body {
             <!-- Floor -->
             <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
 
+            <!-- ==== Perspective floor + trash bin ==== -->
+            <!-- Floor plane (trapezoid receding to horizon) -->
+            <polygon points="0,550 400,550 320,340 80,340" fill="#d8c69e" opacity="0.55"/>
+            <!-- Vanishing lines -->
+            <line x1="0" y1="550" x2="200" y2="340" stroke="#8b6f47" stroke-width="0.5" opacity="0.35"/>
+            <line x1="400" y1="550" x2="200" y2="340" stroke="#8b6f47" stroke-width="0.5" opacity="0.35"/>
+            <line x1="120" y1="550" x2="182" y2="340" stroke="#8b6f47" stroke-width="0.3" opacity="0.2"/>
+            <line x1="280" y1="550" x2="218" y2="340" stroke="#8b6f47" stroke-width="0.3" opacity="0.2"/>
+            <!-- Perspective horizontal tile lines -->
+            <line x1="52" y1="410" x2="348" y2="410" stroke="#8b6f47" stroke-width="0.4" opacity="0.28"/>
+            <line x1="26" y1="480" x2="374" y2="480" stroke="#8b6f47" stroke-width="0.4" opacity="0.28"/>
+            <!-- Front edge line -->
+            <line x1="80" y1="340" x2="320" y2="340" stroke="#8b6f47" stroke-width="0.8" opacity="0.5"/>
+
+            <!-- Trash bin (cylindrical, in front-center on the floor) -->
+            <!-- Shadow beneath bin -->
+            <ellipse cx="200" cy="502" rx="34" ry="5" fill="#3d2f24" opacity="0.18"/>
+            <!-- Bin body (rounded cylinder) -->
+            <path d="M 174 440 Q 174 496 200 500 Q 226 496 226 440 Z" fill="#a67240" stroke="#3d2f24" stroke-width="1.2"/>
+            <!-- Vertical shading strip -->
+            <path d="M 178 445 Q 178 494 194 498" stroke="#8b6f47" stroke-width="0.8" fill="none" opacity="0.5"/>
+            <!-- Bin top ellipse (rim) -->
+            <ellipse cx="200" cy="440" rx="26" ry="7" fill="#8b6f47" stroke="#3d2f24" stroke-width="1"/>
+            <ellipse cx="200" cy="440" rx="22" ry="5" fill="#2a1f16" opacity="0.85"/>
+            <!-- Swing-lid slit hint (the opening on top, oval slot) -->
+            <ellipse cx="200" cy="440" rx="14" ry="2.5" fill="#1a1109"/>
+            <!-- Small "回收 / 垃圾" label ring -->
+            <rect x="188" y="465" width="24" height="10" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <text x="200" y="472" font-size="6" fill="#3d2f24" text-anchor="middle" font-family="serif" letter-spacing="1">垃 圾</text>
+            <!-- Handle / foot pedal stem sticking up on the back -->
+            <line x1="200" y1="440" x2="200" y2="422" stroke="#3d2f24" stroke-width="1"/>
+            <circle cx="200" cy="420" r="2.5" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.6"/>
+
             <rect class="obj-zone" data-hs="waterDispenser" x="25" y="150" width="130" height="220"/>
             <rect class="obj-zone" data-hs="odenPot" x="215" y="105" width="185" height="240"/>
           </svg>
@@ -1949,7 +1982,7 @@ const HOTSPOTS = {
   register:       { card: 'register',  x: 200, y: 305 },
   // Character positions (used for click-on-character hotspot beats)
   cashier:        { card: 'register',  x: 200, y: 430 },
-  nurse:          { card: 'dispenser', x: 200, y: 430 },
+  nurse:          { card: 'dispenser', x: 285, y: 445 },
   driver:         { card: 'window',    x: 200, y: 350 },
   teen:           { card: 'doorstep',  x: 65,  y: 490 },
   oldman:         { card: 'shelves',   x: 210, y: 470 }

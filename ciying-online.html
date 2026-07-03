@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>词影 · 联机</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Songti SC', 'STSong', Georgia, serif;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(180, 140, 220, 0.15), transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(230, 150, 100, 0.12), transparent 60%),
+      linear-gradient(180deg, #1a1830 0%, #0e0c1e 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #e8dcc4;
+    padding: 20px 16px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .container {
+    max-width: 560px;
+    margin: 0 auto;
+    background: rgba(15, 12, 30, 0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(220, 180, 140, 0.2);
+    border-radius: 8px;
+    padding: 22px 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .back-link { display: inline-block; color: rgba(220, 180, 140, 0.55); text-decoration: none; font-size: 12px; margin-bottom: 8px; letter-spacing: 2px; }
+  .back-link:hover { color: #ddb887; }
+  h1 { text-align: center; font-size: 20px; letter-spacing: 6px; color: #ddb887; margin-bottom: 2px; text-shadow: 0 0 15px rgba(220, 180, 140, 0.35); }
+  .subtitle { text-align: center; color: rgba(220, 180, 140, 0.5); font-size: 11px; letter-spacing: 2px; margin-bottom: 14px; font-style: italic; }
+
+  /* Room banner */
+  .room-banner {
+    background: linear-gradient(135deg, rgba(180, 140, 220, 0.15), rgba(230, 150, 100, 0.08));
+    border: 1px solid rgba(220, 180, 140, 0.35);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .room-info .label { display: block; font-size: 10px; color: rgba(220, 180, 140, 0.55); letter-spacing: 3px; margin-bottom: 4px; }
+  .room-info .code { font-size: 22px; letter-spacing: 6px; color: #ffd48a; font-family: 'Georgia', monospace; font-weight: 700; }
+  .room-info .status { font-size: 11px; color: rgba(220, 180, 140, 0.65); letter-spacing: 1.5px; margin-top: 3px; }
+  .room-info .status.err { color: #ffa8a8; }
+  .room-info .status.ok { color: #a0e0c0; }
+  .room-btn {
+    background: #ddb887;
+    color: #1a1830;
+    border: none;
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .room-btn:hover { background: #c19b6a; }
+  .room-btn.small { padding: 6px 12px; font-size: 11px; }
+
+  .players {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 6px 4px;
+  }
+  .player-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: rgba(220, 180, 140, 0.1);
+    border: 1px solid rgba(220, 180, 140, 0.2);
+    border-radius: 999px;
+    font-size: 12px;
+    color: rgba(232, 220, 196, 0.9);
+    letter-spacing: 1px;
+  }
+  .player-chip.me { border-color: #ddb887; background: rgba(220, 180, 140, 0.25); color: #ffd48a; font-weight: 600; }
+  .player-chip.host::before { content: '👑'; font-size: 11px; }
+
+  .answer-hint {
+    text-align: center;
+    margin: 8px 0 16px;
+    padding: 12px;
+    background: rgba(220, 180, 140, 0.05);
+    border: 1px solid rgba(220, 180, 140, 0.2);
+    border-radius: 4px;
+  }
+  .answer-hint .label { display: block; font-size: 11px; color: rgba(220, 180, 140, 0.5); letter-spacing: 4px; margin-bottom: 6px; }
+  .answer-blanks { font-size: 26px; letter-spacing: 14px; color: #ddb887; text-align: center; padding-left: 14px; }
+  .answer-cat { display: block; font-size: 11px; color: rgba(220, 180, 140, 0.55); letter-spacing: 3px; margin-top: 8px; }
+
+  .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .input-row input {
+    flex: 1; padding: 10px 14px; background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(220, 180, 140, 0.3); color: #e8dcc4;
+    font-family: inherit; font-size: 16px; border-radius: 4px;
+    letter-spacing: 3px; text-align: center; outline: none;
+    -webkit-appearance: none;
+  }
+  .input-row input:focus { border-color: #ddb887; box-shadow: 0 0 12px rgba(220, 180, 140, 0.3); }
+  .input-row input.shake { animation: inputShake 0.4s ease-out; }
+  @keyframes inputShake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); border-color: #ff8080; }
+    40%,80% { transform: translateX(6px); border-color: #ff8080; }
+  }
+  .input-row button {
+    padding: 10px 20px; background: #ddb887; color: #1a1830;
+    border: none; font-family: inherit; font-size: 14px;
+    letter-spacing: 3px; cursor: pointer; border-radius: 4px; font-weight: 700;
+  }
+  .input-row button:hover:not(:disabled) { background: #c19b6a; }
+  .input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 8px; color: rgba(220, 180, 140, 0.7);
+    font-size: 13px; letter-spacing: 2px; margin-bottom: 10px;
+  }
+  .stat-row b { color: #ddb887; margin-left: 4px; }
+  .action-btn {
+    background: none; border: none; color: rgba(220, 180, 140, 0.5);
+    font-family: inherit; font-size: 12px; cursor: pointer; letter-spacing: 2px;
+  }
+  .action-btn:hover { color: #ddb887; }
+
+  .message { text-align: center; padding: 4px 10px; font-size: 12px; letter-spacing: 2px; margin-bottom: 8px; min-height: 0; max-height: 0; overflow: hidden; opacity: 0; color: rgba(220, 180, 140, 0.75); transition: opacity 0.3s, max-height 0.3s, padding 0.3s; }
+  .message.show { max-height: 30px; padding: 4px 10px; opacity: 1; }
+  .message.err { color: #ffa8a8; }
+
+  .row {
+    display: grid; grid-template-columns: 34px 1fr 60px;
+    gap: 10px; align-items: center; padding: 5px 12px; margin-bottom: 4px;
+    background: rgba(220, 180, 140, 0.04); border-radius: 8px;
+    font-size: 14px; transition: transform 0.15s, background 0.2s;
+  }
+  .row:hover { background: rgba(220, 180, 140, 0.08); }
+  .row .rank { color: rgba(220, 180, 140, 0.4); text-align: center; font-size: 12px; font-family: 'Georgia', monospace; }
+  .row .word-pill-wrap { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+  .row .word-pill {
+    display: block; padding: 6px 14px;
+    background: rgba(220, 180, 140, 0.12);
+    border: 1px solid rgba(220, 180, 140, 0.25);
+    border-radius: 7px; color: #e8dcc4; letter-spacing: 3px;
+    font-size: 15px; font-weight: 500; text-align: center;
+    transition: all 0.2s;
+  }
+  .row .by { font-size: 10px; color: rgba(220, 180, 140, 0.5); letter-spacing: 1px; text-align: center; padding-left: 4px; }
+  .row.cold .word-pill { background: rgba(90, 130, 180, 0.15); border-color: rgba(120, 150, 200, 0.35); color: rgba(180, 200, 230, 0.85); }
+  .row.cool .word-pill { background: rgba(140, 180, 200, 0.15); border-color: rgba(160, 190, 210, 0.4); color: rgba(210, 220, 235, 0.9); }
+  .row.warm .word-pill { background: linear-gradient(135deg, rgba(230, 200, 130, 0.25), rgba(220, 180, 140, 0.15)); border-color: rgba(230, 200, 130, 0.6); color: #ffd48a; font-weight: 600; }
+  .row.hot .word-pill {
+    background: linear-gradient(135deg, #ffd48a, #f5a76b);
+    border-color: #ffd48a; color: #2a1810; font-weight: 700;
+    box-shadow: 0 0 16px rgba(255, 200, 130, 0.5);
+  }
+  .row .pct { text-align: right; font-family: 'Georgia', monospace; font-size: 14px; color: rgba(220, 180, 140, 0.85); font-weight: 500; }
+  .row.hot .pct { color: #ffd48a; font-weight: 700; }
+  .row.warm .pct { color: #ffd48a; }
+  .row.new-guess { animation: flash 0.8s; }
+  @keyframes flash {
+    0% { background: rgba(255, 200, 130, 0.3); transform: scale(1.02); }
+    100% { background: rgba(220, 180, 140, 0.04); transform: scale(1); }
+  }
+  .history { max-height: 620px; overflow-y: auto; padding-right: 4px; }
+
+  .hint { text-align: center; color: rgba(220, 180, 140, 0.4); font-size: 11px; letter-spacing: 2px; margin-top: 12px; line-height: 1.6; }
+
+  .win-modal { position: fixed; inset: 0; background: rgba(5, 3, 15, 0.85); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .win-modal.show { display: flex; }
+  .win-modal .box {
+    background: radial-gradient(ellipse at 50% 0%, rgba(220, 180, 140, 0.25), transparent 60%),
+      linear-gradient(180deg, #1a1830 0%, #0e0c1e 100%);
+    border: 1px solid rgba(220, 180, 140, 0.5); border-radius: 4px;
+    padding: 30px 26px; max-width: 420px; width: 100%; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(220, 180, 140, 0.2);
+  }
+  .win-modal h2 { color: #ddb887; font-size: 22px; letter-spacing: 10px; margin-bottom: 12px; }
+  .win-modal .answer-reveal { font-size: 34px; color: #ffd48a; letter-spacing: 12px; margin: 16px 0; }
+  .win-modal .stats { color: rgba(220, 180, 140, 0.85); font-size: 14px; letter-spacing: 2px; line-height: 1.8; margin-bottom: 22px; }
+  .win-modal .stats b { color: #ffd48a; }
+  .win-modal button { padding: 8px 22px; background: transparent; color: #ddb887; border: 1px solid #ddb887; font-family: inherit; font-size: 13px; letter-spacing: 3px; cursor: pointer; border-radius: 2px; margin: 4px; }
+  .win-modal button:hover { background: rgba(220, 180, 140, 0.15); }
+
+  @media (max-width: 480px) {
+    .container { padding: 18px 14px; }
+    h1 { font-size: 18px; letter-spacing: 4px; }
+    .room-info .code { font-size: 18px; letter-spacing: 4px; }
+    .row { grid-template-columns: 28px 1fr 54px; gap: 8px; padding: 4px 10px; font-size: 13px; }
+    .row .word-pill { padding: 5px 12px; font-size: 14px; letter-spacing: 2px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <h1>词 影 · 联 机</h1>
+  <div class="subtitle">— 一起猜，越接近越热 —</div>
+
+  <div class="room-banner">
+    <div class="room-info">
+      <span class="label">— 房间号 —</span>
+      <span class="code" id="roomCode">连接中...</span>
+      <span class="status" id="roomStatus">正在初始化</span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <button class="room-btn small" id="copyLinkBtn">📋 复制链接</button>
+      <button class="room-btn small" id="changeNameBtn">改昵称</button>
+    </div>
+  </div>
+
+  <div class="players" id="players"></div>
+
+  <div class="answer-hint">
+    <span class="label">— 大家一起猜 —</span>
+    <div class="answer-blanks" id="answerBlanks">_ _</div>
+    <span class="answer-cat" id="answerCat"></span>
+  </div>
+
+  <div class="input-row">
+    <input type="text" id="guessInput" placeholder="输入一个词" maxlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    <button id="submitBtn" disabled>猜</button>
+  </div>
+
+  <div class="stat-row">
+    <span>共 <b id="guessCount">0</b> 次尝试</span>
+    <span><button class="action-btn" id="newRoundBtn">下一题</button></span>
+  </div>
+
+  <div class="message" id="message"></div>
+  <div class="history" id="history"></div>
+  <div class="hint">房主关网页 = 房间结束 · 想长期玩用 Firebase 版</div>
+</div>
+
+<div class="win-modal" id="winModal">
+  <div class="box">
+    <h2 id="winTitle">猜 中 了</h2>
+    <div class="answer-reveal" id="winAnswer"></div>
+    <div class="stats" id="winStats"></div>
+    <button id="againBtn">下一题</button>
+    <button id="homeBtn">回菜单</button>
+  </div>
+</div>
+
+<script>
+// ============ Vocab (小型词库 · 从 ciying.html 复用) ============
+// 为控制文件大小，联机版用精简词库 200 词
+const WORDS = {
+  "月亮":["自然","天体","夜晚","亮","高远","冷","诗意","圆"],"太阳":["自然","天体","白天","亮","高远","热","圆","光"],"星星":["自然","天体","夜晚","亮","小","高远","诗意","众多"],"云":["自然","天空","软","轻","白","变幻","诗意"],"彩虹":["自然","天气","亮","诗意","短暂","雨后","色彩","高远"],"流星":["自然","天体","夜晚","亮","短暂","高远","诗意","移动"],"宇宙":["自然","天体","远","大","抽象","诗意","深"],"天空":["自然","天空","高远","大","蓝","抽象","广阔"],"影子":["自然","光","暗","跟随","诗意","抽象","身体"],"阳光":["自然","光","亮","热","白天","温暖","诗意"],"月光":["自然","光","亮","夜晚","冷","诗意","柔"],"星光":["自然","光","亮","夜晚","冷","诗意","小","远"],"夜晚":["自然","时间","夜晚","暗","诗意","静"],"深夜":["自然","时间","夜晚","暗","静","孤独","诗意"],"早晨":["自然","时间","白天","亮","新","开始","露水"],"黎明":["自然","时间","白天","亮","新","诗意","开始","希望"],"黄昏":["自然","时间","夜晚","诗意","橙","柔","孤独","告别"],"雨":["自然","天气","水","湿","声音","诗意","忧伤","落"],"雪":["自然","天气","水","冷","白","诗意","软","静"],"雪花":["自然","天气","水","冷","白","诗意","软","小"],"冰":["自然","水","冷","硬","亮","静"],"露珠":["自然","水","小","亮","诗意","早晨","短暂"],"雾":["自然","天气","湿","朦胧","诗意","柔","白"],"风":["自然","天气","声音","动","诗意","看不见","冷","暖"],"台风":["自然","天气","风","强","破坏","大","声音"],"闪电":["自然","天气","光","强","短暂","声音","亮"],"雷":["自然","天气","声音","强","破坏","短暂"],"海":["自然","水","大","蓝","深","诗意","广阔","咸"],"大海":["自然","水","大","蓝","深","诗意","广阔","咸"],"河":["自然","水","流动","长","家园"],"湖":["自然","水","静","诗意","蓝","镜"],"溪":["自然","水","流动","小","诗意","山"],"泉":["自然","水","清","诗意","流动","山"],"浪":["自然","水","海","动","声音"],"沙滩":["自然","地","海","黄","温暖","记忆"],"岛":["自然","水","孤独","诗意","远"],"山":["自然","地","高","大","静","诗意","硬"],"森林":["自然","植物","绿","深","广","静","家园"],"沙漠":["自然","地","黄","热","干","广","孤独"],"树":["自然","植物","大","高","静","生命","家园"],"花":["自然","植物","色彩","小","香","诗意","短暂","柔"],"叶子":["自然","植物","小","绿","诗意","落"],"落叶":["自然","植物","小","秋","诗意","落","孤独","记忆"],"草":["自然","植物","绿","小","柔","广"],"花园":["人造","植物","色彩","香","家园","诗意"],"玫瑰":["自然","植物","花","红","爱情","香","诗意"],"樱花":["自然","植物","花","粉","诗意","短暂","春"],"猫":["生物","动物","小","柔","家居","独立","诗意"],"狗":["生物","动物","小","忠诚","家居","热闹"],"鸟":["生物","动物","小","飞","天空","声音","自由"],"鱼":["生物","动物","水","小","静","游"],"蝴蝶":["生物","动物","小","色彩","飞","诗意","短暂","花"],"萤火虫":["生物","动物","小","光","夜晚","诗意","短暂","亮"],"家":["人造","建筑","温暖","家庭","归","诗意"],"老屋":["人造","建筑","家庭","记忆","诗意","过去","乡村"],"窗":["人造","建筑","家","看","透","开","诗意"],"门":["人造","建筑","家","进","出","诗意"],"床":["人造","家居","软","睡","家","休息"],"灯":["人造","家居","光","亮","温暖","诗意","家"],"镜子":["人造","家居","看","自己","冷","硬","反射"],"钥匙":["人造","家居","小","硬","家","打开","秘密"],"咖啡":["人造","饮料","苦","热","深色","醒","早晨","都市"],"茶":["人造","饮料","热","苦","淡","诗意","静","中国"],"酒":["人造","饮料","苦","醉","孤独","诗意","热闹","红"],"水":["自然","饮料","水","清","无味","液体"],"苹果":["自然","食物","水果","红","甜","圆","小"],"眼睛":["生物","身体","看","小","诗意","眼泪","感官"],"眼泪":["生物","身体","水","小","悲伤","诗意","咸","小"],"手":["生物","身体","触","拥抱","写","诗意"],"心":["生物","身体","诗意","情感","跳","抽象","爱"],"心跳":["生物","身体","声音","诗意","情感","爱","短暂"],"呼吸":["生物","身体","诗意","静","生命","循环"],"微笑":["身体","情感","喜","诗意","温暖","脸","柔"],"拥抱":["身体","情感","温暖","爱","接触","诗意"],"亲吻":["身体","情感","温暖","爱","接触","诗意","嘴唇"],"爱":["情感","喜","诗意","抽象","温暖","强","关系"],"思念":["情感","悲","诗意","抽象","远","记忆","柔"],"悲伤":["情感","悲","抽象","诗意","柔","负面"],"快乐":["情感","喜","抽象","诗意","温暖","热闹"],"孤独":["情感","悲","抽象","诗意","静","一","负面"],"温柔":["情感","柔","诗意","温暖","关系","女"],"温暖":["情感","喜","热","诗意","柔","家","抽象"],"希望":["情感","喜","抽象","诗意","远","亮","未来"],"秘密":["抽象","诗意","隐藏","关系","小"],"记忆":["抽象","诗意","过去","情感","柔","脑"],"梦":["抽象","诗意","夜晚","柔","短暂","希望","脑"],"岁月":["时间","抽象","诗意","过去","长","柔"],"时光":["时间","抽象","诗意","过去","长","柔"],"青春":["时间","抽象","诗意","过去","热闹","短暂","个人"],"童年":["时间","抽象","诗意","过去","天真","家","记忆","个人"],"母亲":["人","家庭","女","温暖","诗意","爱","关系"],"父亲":["人","家庭","男","家","严","关系"],"孩子":["人","家庭","小","天真","家","关系"],"朋友":["人","关系","温暖","陪伴"],"恋人":["人","关系","爱","温暖","诗意"],"火车":["人造","交通","大","移动","远","诗意","离别","声音","铁"],"船":["人造","交通","水","移动","诗意","远","孤独"],"飞机":["人造","交通","天空","移动","远","快"],"远方":["抽象","诗意","远","移动","希望","孤独"],"故乡":["抽象","诗意","家","过去","温暖","远","记忆","乡村"],"城市":["人造","建筑","大","热闹","都市","广"],"村庄":["人造","建筑","小","静","乡村","诗意","家"],"街道":["人造","建筑","长","都市","热闹"],"桥":["人造","建筑","水","连接","诗意","长"],"灯塔":["人造","建筑","光","海","孤独","诗意","远","亮"],"书":["人造","家居","静","知识","小","家"],"信":["人造","家居","字","远","诗意","关系"],"音乐":["人造","抽象","声音","诗意","情感","热闹"],"电影":["人造","抽象","诗意","故事","情感","热闹"],"诗":["人造","抽象","诗意","字","柔","情感"],"歌":["人造","抽象","诗意","声音","情感","热闹"],"雨伞":["人造","家居","雨","小","保护","诗意"],"戒指":["人造","家居","小","圆","爱情","诗意"],"秋千":["人造","家居","移动","童年","诗意"],"风筝":["人造","家居","天空","飞","童年","诗意"],"烟花":["人造","天空","色彩","声音","短暂","热闹","诗意"],"蜡烛":["人造","家居","光","小","短暂","诗意","温暖"],"火":["自然","热","亮","红","短暂","诗意"],"父母":["人","家庭","关系","温暖","家","爱","诗意"],"家庭":["人","家庭","温暖","家","关系","爱","诗意"],"兄弟":["人","家庭","关系","男","青春"],"姐妹":["人","家庭","关系","女","青春"],"心动":["情感","喜","诗意","短暂","爱","跳"],"难过":["情感","悲","诗意","负面","柔"],"开心":["情感","喜","抽象","诗意","温暖"],"生活":["抽象","日常","家","诗意","长"],"回忆":["抽象","诗意","过去","柔","记忆"],"沙发":["人造","家居","软","家","休息"],"桌子":["人造","家居","硬","家","日常"],"椅子":["人造","家居","硬","家","日常"],"眼镜":["人造","家居","小","看","日常"],"帽子":["人造","家居","头","日常","穿"],"衣服":["人造","家居","身体","日常","穿"],"鞋子":["人造","家居","脚","日常","穿"],"早餐":["人造","食物","早晨","家","日常","温"],"火锅":["人造","食物","热","家","中国","团圆","热闹"],"图书馆":["人造","建筑","书","静","知识","家","记忆"],"地铁":["人造","交通","移动","都市","声音"],"春":["自然","时间","四季","生长","诗意","温暖","希望"],"夏":["自然","时间","四季","热","诗意","热闹"],"秋":["自然","时间","四季","诗意","落","离别","收"],"冬":["自然","时间","四季","冷","静","诗意"],"红":["色彩","抽象","强","热","情感"],"蓝":["色彩","抽象","冷","天空","水","静"],"金":["色彩","抽象","亮","富","热"],"白":["色彩","抽象","亮","纯","静"],"黑":["色彩","抽象","暗","静","强"],"跑步":["抽象","身体","动","日常","热"],"睡觉":["抽象","静","家","休息","夜晚"],
+};
+const ANSWERS = [
+  "月亮","眼泪","咖啡","童年","火车","秘密","星星","大海","故乡","雨伞","电影","母亲","深夜","时光","初恋",
+  "梦","灯塔","萤火虫","沉默","勇气","自由","缘分","冬","秋","日出","火锅","散步","相遇","告别","远方",
+];
+
+// ============ Similarity ============
+function similarity(w1, w2) {
+  if (w1 === w2) return 1.0;
+  const t1 = new Set(WORDS[w1] || []);
+  const t2 = new Set(WORDS[w2] || []);
+  if (t1.size === 0 || t2.size === 0) return 0;
+  let inter = 0;
+  for (const t of t1) if (t2.has(t)) inter++;
+  const union = t1.size + t2.size - inter;
+  return inter / union;
+}
+function synthesizeTags(word) {
+  const tags = new Set();
+  const chars = new Set(word);
+  for (const c of chars) {
+    for (const w in WORDS) {
+      if (w.includes(c)) for (const t of WORDS[w]) tags.add(t);
+    }
+  }
+  return [...tags];
+}
+function tryFallbackSim(word, ans) {
+  const set2 = new Set(WORDS[ans] || []);
+  if (set2.size === 0) return 0.05;
+  const synth = synthesizeTags(word);
+  if (!synth.length) return 0.03;
+  const set1 = new Set(synth);
+  let inter = 0;
+  for (const t of set1) if (set2.has(t)) inter++;
+  const overlap = inter / Math.min(set1.size, set2.size);
+  return Math.min(overlap, 0.95);
+}
+function computeSim(word, ans) {
+  if (WORDS[word]) return similarity(word, ans);
+  return tryFallbackSim(word, ans);
+}
+const CATEGORY_TAGS = ['自然','人造','生物','情感','时间','色彩','关系','抽象','身体','天体','天气','食物','家居','建筑','植物','动物','交通','声音'];
+function dominantCategory(word) {
+  const tags = WORDS[word] || [];
+  for (const cat of CATEGORY_TAGS) if (tags.includes(cat)) return cat;
+  return tags[0] || '?';
+}
+function tempClass(sim) {
+  if (sim >= 0.85) return 'hot';
+  if (sim >= 0.55) return 'warm';
+  if (sim >= 0.30) return '';
+  if (sim >= 0.15) return 'cool';
+  return 'cold';
+}
+function tempIcon(sim) {
+  if (sim >= 0.85) return '🔥';
+  if (sim >= 0.65) return '🌡';
+  if (sim >= 0.45) return '😌';
+  if (sim >= 0.25) return '❄';
+  return '🧊';
+}
+
+// ============ Room / P2P ============
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function generateNickname() {
+  const adj = ['清风','明月','翠竹','流水','浮云','远山','秋叶','春晓','夜航','初雪','暖阳','薄雾'];
+  return adj[Math.floor(Math.random() * adj.length)] + Math.floor(Math.random() * 90 + 10);
+}
+
+let myNickname = localStorage.getItem('ciyingNick') || generateNickname();
+localStorage.setItem('ciyingNick', myNickname);
+
+// URL parsing
+const url = new URL(location.href);
+let roomCode = url.searchParams.get('room');
+let isHost = !roomCode;
+if (isHost) {
+  roomCode = generateRoomCode();
+  url.searchParams.set('room', roomCode);
+  history.replaceState(null, '', url.toString());
+}
+
+// PeerJS
+let peer = null;
+let hostConn = null;       // guest: connection to host
+let guestConns = [];       // host: connections to all guests
+
+// Shared game state (host authoritative)
+let gameState = {
+  answer: null,
+  guesses: [],   // { word, sim, rank, by }
+  players: {},   // peerId → nickname
+};
+
+// UI DOM refs
+const roomCodeEl = document.getElementById('roomCode');
+const roomStatusEl = document.getElementById('roomStatus');
+const copyLinkBtn = document.getElementById('copyLinkBtn');
+const changeNameBtn = document.getElementById('changeNameBtn');
+const playersEl = document.getElementById('players');
+const answerBlanks = document.getElementById('answerBlanks');
+const answerCat = document.getElementById('answerCat');
+const guessInput = document.getElementById('guessInput');
+const submitBtn = document.getElementById('submitBtn');
+const newRoundBtn = document.getElementById('newRoundBtn');
+const messageEl = document.getElementById('message');
+const historyEl = document.getElementById('history');
+const guessCountEl = document.getElementById('guessCount');
+const winModal = document.getElementById('winModal');
+const winTitle = document.getElementById('winTitle');
+const winAnswer = document.getElementById('winAnswer');
+const winStats = document.getElementById('winStats');
+const againBtn = document.getElementById('againBtn');
+const homeBtn = document.getElementById('homeBtn');
+
+roomCodeEl.textContent = roomCode;
+
+function setStatus(msg, cls = '') {
+  roomStatusEl.textContent = msg;
+  roomStatusEl.className = 'status ' + cls;
+}
+
+function initPeer() {
+  const peerId = 'ciying-' + roomCode + (isHost ? '' : '-' + Math.random().toString(36).slice(2, 8));
+  peer = new Peer(peerId);
+  peer.on('open', id => {
+    if (isHost) {
+      setStatus(`房主 · 你是 ${myNickname}`, 'ok');
+      submitBtn.disabled = false;
+      // Host: init game
+      gameState.players[peer.id] = myNickname;
+      startNewRound();
+      renderPlayers();
+    } else {
+      setStatus('连接房主中...');
+      // Guest: try connect to host
+      const hostId = 'ciying-' + roomCode;
+      hostConn = peer.connect(hostId, { reliable: true });
+      hostConn.on('open', () => {
+        setStatus(`已连接 · 你是 ${myNickname}`, 'ok');
+        submitBtn.disabled = false;
+        hostConn.send({ type: 'join', nickname: myNickname });
+      });
+      hostConn.on('data', data => handleHostMessage(data));
+      hostConn.on('close', () => {
+        setStatus('房主已离线，房间结束', 'err');
+        submitBtn.disabled = true;
+      });
+      hostConn.on('error', e => {
+        console.error(e);
+        setStatus('连接失败：找不到房主 · 请刷新或重新分享', 'err');
+      });
+    }
+  });
+  peer.on('connection', conn => {
+    if (!isHost) return;
+    guestConns.push(conn);
+    conn.on('open', () => {});
+    conn.on('data', data => handleGuestMessage(conn, data));
+    conn.on('close', () => {
+      guestConns = guestConns.filter(c => c !== conn);
+      delete gameState.players[conn.peer];
+      broadcastState();
+      renderPlayers();
+    });
+  });
+  peer.on('error', e => {
+    console.error('peer error', e);
+    if (e.type === 'unavailable-id' && isHost) {
+      setStatus('房间码冲突，重新生成中...', 'err');
+      setTimeout(() => location.reload(), 1000);
+    } else if (e.type === 'peer-unavailable') {
+      setStatus('房主不在，找不到这个房间', 'err');
+    } else {
+      setStatus('连接出错：' + e.type, 'err');
+    }
+  });
+}
+
+function handleGuestMessage(conn, data) {
+  if (data.type === 'join') {
+    gameState.players[conn.peer] = data.nickname;
+    broadcastState();
+    renderPlayers();
+    showMessage(`${data.nickname} 加入了`);
+  } else if (data.type === 'guess') {
+    processGuess(data.word, data.nickname);
+  } else if (data.type === 'newRound') {
+    startNewRound();
+  } else if (data.type === 'nick') {
+    gameState.players[conn.peer] = data.nickname;
+    broadcastState();
+    renderPlayers();
+  }
+}
+
+function handleHostMessage(data) {
+  if (data.type === 'state') {
+    gameState = data.state;
+    renderAll();
+  }
+}
+
+function broadcastState() {
+  const msg = { type: 'state', state: gameState };
+  for (const c of guestConns) if (c.open) c.send(msg);
+}
+
+function processGuess(word, byNick) {
+  if (!word || gameState.answer === null) return;
+  // Dupe check
+  if (gameState.guesses.find(g => g.word === word)) return;
+  const sim = computeSim(word, gameState.answer);
+  const rank = -1; // rank not important in multi
+  gameState.guesses.push({ word, sim, rank, by: byNick, ts: Date.now() });
+  broadcastState();
+  renderAll();
+  if (word === gameState.answer) {
+    showWin(byNick);
+  }
+}
+
+function startNewRound() {
+  const ans = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
+  gameState.answer = ans;
+  gameState.guesses = [];
+  broadcastState();
+  renderAll();
+  winModal.classList.remove('show');
+}
+
+// ============ Rendering ============
+function renderAll() {
+  if (!gameState.answer) return;
+  answerBlanks.textContent = '_ '.repeat(gameState.answer.length).trim();
+  answerCat.textContent = `${gameState.answer.length} 字 · 类别 ${dominantCategory(gameState.answer)}`;
+  guessCountEl.textContent = gameState.guesses.length;
+  renderHistory();
+  renderPlayers();
+}
+
+function renderHistory(newWord = null) {
+  const sorted = [...gameState.guesses].sort((a, b) => b.sim - a.sim);
+  historyEl.innerHTML = sorted.map(g => {
+    const rank = g.rank > 0 && g.rank <= 500 ? `#${g.rank}` : '';
+    const pct = (g.sim * 100).toFixed(1) + '%';
+    const tCls = tempClass(g.sim);
+    const isNew = g.word === newWord ? 'new-guess' : '';
+    return `<div class="row ${tCls} ${isNew}">
+      <span class="rank">${rank}</span>
+      <div class="word-pill-wrap">
+        <span class="word-pill">${g.word}</span>
+        <span class="by">by ${g.by || '?'}</span>
+      </div>
+      <span class="pct">${pct}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderPlayers() {
+  const arr = Object.entries(gameState.players);
+  const myPeer = peer && peer.id;
+  playersEl.innerHTML = arr.map(([pid, nick]) => {
+    const cls = [];
+    if (pid === myPeer) cls.push('me');
+    // host: peerId ends with just the room code (no random suffix)
+    if (pid === 'ciying-' + roomCode) cls.push('host');
+    return `<span class="player-chip ${cls.join(' ')}">${nick}</span>`;
+  }).join('');
+}
+
+function showMessage(t, cls = '') {
+  messageEl.textContent = t;
+  messageEl.className = 'message ' + cls;
+  clearTimeout(messageEl._timer);
+  if (t) {
+    messageEl.classList.add('show');
+    messageEl._timer = setTimeout(() => messageEl.classList.remove('show'), 2500);
+  }
+}
+
+function showWin(byNick) {
+  winTitle.textContent = `${byNick} 猜中了！`;
+  winAnswer.textContent = gameState.answer;
+  winStats.innerHTML = `全房间共猜了 <b>${gameState.guesses.length}</b> 次`;
+  winModal.classList.add('show');
+}
+
+function shakeInput() {
+  guessInput.classList.remove('shake');
+  void guessInput.offsetWidth;
+  guessInput.classList.add('shake');
+}
+
+// ============ Actions ============
+function submitGuess() {
+  const word = guessInput.value.trim();
+  if (!word) return;
+  if (!gameState.answer) { showMessage('等待房间就绪...', 'err'); return; }
+  if (gameState.guesses.find(g => g.word === word)) { shakeInput(); showMessage(`「${word}」有人猜过了`, 'err'); return; }
+  guessInput.value = '';
+  guessInput.focus();
+  if (isHost) {
+    processGuess(word, myNickname);
+  } else {
+    hostConn.send({ type: 'guess', word, nickname: myNickname });
+  }
+}
+
+submitBtn.addEventListener('click', submitGuess);
+guessInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submitGuess(); } });
+
+newRoundBtn.addEventListener('click', () => {
+  if (!confirm('确定要出下一题？全房间进度会清空')) return;
+  if (isHost) {
+    startNewRound();
+  } else {
+    hostConn.send({ type: 'newRound' });
+  }
+});
+
+copyLinkBtn.addEventListener('click', () => {
+  const link = location.href;
+  navigator.clipboard.writeText(link).then(() => {
+    copyLinkBtn.textContent = '✅ 已复制';
+    setTimeout(() => copyLinkBtn.textContent = '📋 复制链接', 1500);
+  }).catch(() => alert(link));
+});
+
+changeNameBtn.addEventListener('click', () => {
+  const newName = prompt('新昵称（不超过 8 字）', myNickname);
+  if (!newName || !newName.trim()) return;
+  myNickname = newName.trim().slice(0, 8);
+  localStorage.setItem('ciyingNick', myNickname);
+  if (isHost) {
+    gameState.players[peer.id] = myNickname;
+    broadcastState();
+    renderPlayers();
+  } else if (hostConn && hostConn.open) {
+    hostConn.send({ type: 'nick', nickname: myNickname });
+  }
+  setStatus((isHost ? '房主 · 你是 ' : '已连接 · 你是 ') + myNickname, 'ok');
+});
+
+againBtn.addEventListener('click', () => {
+  winModal.classList.remove('show');
+  if (isHost) startNewRound();
+  else hostConn.send({ type: 'newRound' });
+});
+homeBtn.addEventListener('click', () => { location.href = 'index.html'; });
+
+// Boot
+initPeer();
+</script>
+</body>
+</html>
