@@ -176,6 +176,12 @@
     15%,45%,75% { transform: var(--pos) translateY(-5px); }
     30%,60%,90% { transform: var(--pos) translateY(5px); }
   }
+  .tile.sweeping { animation: sweepOut 420ms ease-out forwards; z-index: 5; }
+  @keyframes sweepOut {
+    0%   { opacity: 1; transform: var(--pos) scale(1); filter: brightness(1); }
+    30%  { opacity: 1; transform: var(--pos) scale(1.1); filter: brightness(1.6) drop-shadow(0 0 8px #ff8848); }
+    100% { opacity: 0; transform: var(--pos) scale(0.3); filter: brightness(2) drop-shadow(0 0 12px #ff5522); }
+  }
 
   /* 1×1 colors (2-16) — bright */
   .tile-2    { background: #eee4da; color: #776e65; }
@@ -283,7 +289,8 @@
 
   <div class="actions">
     <button id="undoBtn" disabled>↩ 撤销</button>
-    <button id="sweepBtn" disabled title="清掉所有 ≤8 的小方块（需要棋盘上有 1024+）">焚 卒</button>
+    <button id="shuffleBtn" disabled title="随机重排所有方块（需要 256+）">洗 牌</button>
+    <button id="sweepBtn" disabled title="清掉所有 ≤8 的小方块（需要 1024+）">焚 卒</button>
     <button id="restartBtn" class="primary">重开</button>
   </div>
 
@@ -343,6 +350,8 @@ const tilesEl = document.getElementById('tiles');
 const scoreEl = document.getElementById('score');
 const bestEl = document.getElementById('best');
 const undoBtn = document.getElementById('undoBtn');
+const shuffleBtn = document.getElementById('shuffleBtn');
+const sweepBtn = document.getElementById('sweepBtn');
 const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlayTitle');
 const overlaySub = document.getElementById('overlaySub');
@@ -599,6 +608,7 @@ function move(dir) {
     renderTiles(new Set(), true);  // second render to show new spawn
     animating = false;
     updateUndoBtn();
+    updateItemBtns();
     if (won) showWin();
     else if (tutorialGraduated) showTutorialDone();
     else if (!hasMovesLeft()) showLose();
@@ -703,6 +713,12 @@ function updateUndoBtn() {
   undoBtn.disabled = !history.length || animating;
 }
 
+function updateItemBtns() {
+  const maxVal = tiles ? tiles.reduce((m, t) => Math.max(m, t.value), 0) : 0;
+  shuffleBtn.disabled = animating || maxVal < 256 || (tiles && tiles.length < 3);
+  sweepBtn.disabled = animating || maxVal < 1024 || !tiles || !tiles.some(t => t.value <= 8);
+}
+
 // ============ Save / Undo ============
 function saveState() {
   history.push({
@@ -733,7 +749,69 @@ function undo() {
   updateScore();
   renderTiles();
   updateUndoBtn();
+  updateItemBtns();
   overlay.classList.remove('show');
+}
+
+// ============ Items ============
+function sweep() {
+  if (sweepBtn.disabled || animating) return;
+  const doomed = tiles.filter(t => t.value <= 8);
+  if (doomed.length === 0) return;
+  saveState();
+  animating = true;
+  updateUndoBtn();
+  updateItemBtns();
+  for (const t of doomed) {
+    const el = tilesEl.querySelector(`[data-id="${t.id}"]`);
+    if (el) el.classList.add('sweeping');
+  }
+  haptic(20);
+  setTimeout(() => {
+    for (const t of doomed) removeFromGrid(t);
+    tiles = tiles.filter(t => t.value > 8);
+    animating = false;
+    renderTiles();
+    updateUndoBtn();
+    updateItemBtns();
+  }, 420);
+}
+
+function shuffle() {
+  if (shuffleBtn.disabled || animating) return;
+  // Dry-run placement on a scratch grid so we don't corrupt state on failure.
+  const sorted = [...tiles].sort((a, b) => b.w * b.h - a.w * a.h);
+  const scratch = emptyGrid();
+  const newPos = new Map();
+  for (const t of sorted) {
+    const spots = [];
+    for (let y = 0; y <= SIZE - t.h; y++) {
+      for (let x = 0; x <= SIZE - t.w; x++) {
+        let ok = true;
+        for (let dy = 0; dy < t.h && ok; dy++)
+          for (let dx = 0; dx < t.w && ok; dx++)
+            if (scratch[y + dy][x + dx]) ok = false;
+        if (ok) spots.push([x, y]);
+      }
+    }
+    if (!spots.length) return;  // impossible; abort silently
+    const [nx, ny] = spots[Math.floor(Math.random() * spots.length)];
+    newPos.set(t.id, [nx, ny]);
+    for (let dy = 0; dy < t.h; dy++)
+      for (let dx = 0; dx < t.w; dx++)
+        scratch[ny + dy][nx + dx] = t;
+  }
+  saveState();
+  for (const t of tiles) {
+    const [nx, ny] = newPos.get(t.id);
+    t.x = nx;
+    t.y = ny;
+  }
+  grid = scratch;
+  haptic(15);
+  renderTiles();
+  updateUndoBtn();
+  updateItemBtns();
 }
 
 // ============ Game control ============
@@ -756,6 +834,7 @@ function newGame() {
   renderTiles();
   updateScore();
   updateUndoBtn();
+  updateItemBtns();
   updateInfoText();
   overlay.classList.remove('show');
 }
@@ -820,6 +899,8 @@ document.getElementById('restartBtn').addEventListener('click', () => {
   newGame();
 });
 document.getElementById('undoBtn').addEventListener('click', undo);
+shuffleBtn.addEventListener('click', shuffle);
+sweepBtn.addEventListener('click', sweep);
 startBtn.addEventListener('click', newGame);
 continueBtn.addEventListener('click', () => {
   won = false;
