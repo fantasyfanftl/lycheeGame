@@ -755,7 +755,7 @@ function undo() {
 
 // ============ Game control ============
 function newGame() {
-  inTutorial = !localStorage.getItem('mergeTutorialDone') && best === 0;
+  inTutorial = !localStorage.getItem('mergeTutorialDone');
   SIZE = inTutorial ? TUTORIAL_SIZE : INITIAL_SIZE;
   setBoardSize();
   tiles = [];
