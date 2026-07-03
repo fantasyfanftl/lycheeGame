@@ -145,15 +145,29 @@
 
   .message {
     text-align: center;
-    padding: 8px;
-    border-radius: 4px;
-    font-size: 13px;
+    padding: 4px 10px;
+    font-size: 12px;
     letter-spacing: 2px;
-    margin-bottom: 10px;
-    min-height: 24px;
-    color: rgba(220, 180, 140, 0.7);
+    margin-bottom: 8px;
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    color: rgba(220, 180, 140, 0.75);
+    transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease;
+  }
+  .message.show {
+    max-height: 30px;
+    padding: 4px 10px;
+    opacity: 1;
   }
   .message.err { color: #ffa8a8; }
+  .input-row input.shake { animation: inputShake 0.4s ease-out; }
+  @keyframes inputShake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); border-color: #ff8080; }
+    40%,80% { transform: translateX(6px); border-color: #ff8080; }
+  }
 
   .latest {
     background: rgba(220, 180, 140, 0.08);
@@ -339,7 +353,7 @@
   <div class="history" id="history"></div>
 
   <div class="hint">
-    温度越高，语义越接近。词表约 200 词，只能猜表内的词
+    温度越高，语义越接近 · 只能猜词表内的词
   </div>
 </div>
 
@@ -841,11 +855,13 @@ function submitGuess() {
   guessInput.focus();
 
   if (!WORDS[word]) {
-    showMessage(`「${word}」不在词表里，试试别的（词表约 200 词）`, 'err');
+    shakeInput();
+    showMessage(`「${word}」不在词表里`, 'err');
     return;
   }
   if (guessedSet.has(word)) {
-    showMessage(`「${word}」已经猜过啦`, 'err');
+    shakeInput();
+    showMessage(`「${word}」猜过了`, 'err');
     return;
   }
 
@@ -928,6 +944,23 @@ function shareResult() {
 function showMessage(t, cls = '') {
   messageEl.textContent = t;
   messageEl.className = 'message ' + cls;
+  clearTimeout(messageEl._timer);
+  if (t) {
+    messageEl.classList.add('show');
+    const dur = cls === 'err' ? 2200 : 3500;
+    messageEl._timer = setTimeout(() => {
+      messageEl.classList.remove('show');
+    }, dur);
+  } else {
+    messageEl.classList.remove('show');
+  }
+}
+
+function shakeInput() {
+  guessInput.classList.remove('shake');
+  void guessInput.offsetWidth;
+  guessInput.classList.add('shake');
+  if (navigator.vibrate) navigator.vibrate(30);
 }
 
 function winGame() {
