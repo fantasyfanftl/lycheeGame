@@ -226,14 +226,36 @@ body {
 }
 
 .hotspot-glow {
-  animation: pulse 2.4s ease-in-out infinite;
+  animation: hotspot-pulse 1.8s ease-in-out infinite;
   transform-origin: center;
   transform-box: fill-box;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.15); }
+.hotspot-ring {
+  animation: hotspot-ripple 1.6s ease-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.hotspot-dot {
+  animation: hotspot-dot-pulse 1.8s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes hotspot-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50%      { opacity: 0.9;  transform: scale(1.2); }
+}
+
+@keyframes hotspot-ripple {
+  0%   { transform: scale(0.6); opacity: 0.95; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes hotspot-dot-pulse {
+  0%, 100% { opacity: 0.8; }
+  50%      { opacity: 1; }
 }
 
 .char-svg {
@@ -1742,21 +1764,47 @@ function renderHotspots() {
   const pos = HOTSPOTS[beat.hs];
   if (!pos) return;
 
-  // outer glow ring
-  const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  // 1. Outer ripple ring — radar ping expanding outward
+  const ring = document.createElementNS(svgNS, 'circle');
+  ring.setAttribute('cx', pos.x);
+  ring.setAttribute('cy', pos.y);
+  ring.setAttribute('r', 30);
+  ring.setAttribute('fill', 'none');
+  ring.setAttribute('stroke', 'rgba(245, 200, 138, 0.9)');
+  ring.setAttribute('stroke-width', '3');
+  ring.setAttribute('class', 'hotspot-ring');
+  ring.setAttribute('pointer-events', 'none');
+  g.appendChild(ring);
+
+  // 2. Middle warm glow — soft breathing halo
+  const glow = document.createElementNS(svgNS, 'circle');
   glow.setAttribute('cx', pos.x);
   glow.setAttribute('cy', pos.y);
-  glow.setAttribute('r', 42);
-  glow.setAttribute('fill', 'rgba(245, 200, 138, 0.35)');
+  glow.setAttribute('r', 28);
+  glow.setAttribute('fill', 'rgba(245, 200, 138, 0.55)');
   glow.setAttribute('class', 'hotspot-glow');
   glow.setAttribute('pointer-events', 'none');
   g.appendChild(glow);
 
-  // click target
-  const hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  // 3. Bright center dot — clear click target
+  const dot = document.createElementNS(svgNS, 'circle');
+  dot.setAttribute('cx', pos.x);
+  dot.setAttribute('cy', pos.y);
+  dot.setAttribute('r', 7);
+  dot.setAttribute('fill', 'rgba(249, 243, 232, 0.95)');
+  dot.setAttribute('stroke', 'rgba(193, 123, 82, 0.9)');
+  dot.setAttribute('stroke-width', '1.5');
+  dot.setAttribute('class', 'hotspot-dot');
+  dot.setAttribute('pointer-events', 'none');
+  g.appendChild(dot);
+
+  // 4. Invisible click target — larger than visual for easy tap
+  const hit = document.createElementNS(svgNS, 'circle');
   hit.setAttribute('cx', pos.x);
   hit.setAttribute('cy', pos.y);
-  hit.setAttribute('r', 48);
+  hit.setAttribute('r', 55);
   hit.setAttribute('fill', 'transparent');
   hit.setAttribute('class', 'hotspot-target');
   hit.addEventListener('click', () => triggerHotspot(beat.hs));
