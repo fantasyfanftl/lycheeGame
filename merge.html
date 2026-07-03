@@ -159,9 +159,9 @@
   .tile-4    { background: #ede0c8; color: #776e65; }
   .tile-8    { background: #f2b179; color: #f9f6f2; }
   .tile-16   { background: #f59563; color: #f9f6f2; }
-  /* 1×2 (32-64) — vertical bronze */
-  .tile-32   { background: linear-gradient(180deg, #f67c5f, #c65a35); color: #f9f6f2; }
-  .tile-64   { background: linear-gradient(180deg, #f65e3b, #a83f1c); color: #f9f6f2; }
+  /* 2×1 (32-64) — horizontal bronze */
+  .tile-32   { background: linear-gradient(90deg, #f67c5f, #c65a35); color: #f9f6f2; }
+  .tile-64   { background: linear-gradient(90deg, #f65e3b, #a83f1c); color: #f9f6f2; }
   /* 2×2 (128-1024) — warm gold */
   .tile-128  { background: linear-gradient(135deg, #edcf72, #d4a544); color: #4a2f0f; }
   .tile-256  { background: linear-gradient(135deg, #edcc61, #c99632); color: #4a2f0f; }
@@ -255,7 +255,7 @@
   </div>
 
   <div class="info">
-    数字越大 · 占地越大 · <b>32</b>→1×2 · <b>128</b>→2×2 · <b>2048</b>→3×3 通关
+    数字越大 · 占地越大 · <b>32</b>→2×1 · <b>128</b>→2×2 · <b>2048</b>→3×3 通关
   </div>
 
   <div class="actions">
@@ -290,7 +290,7 @@ let SIZE = INITIAL_SIZE;
 function sizeForValue(v) {
   if (v >= 2048) return { w: 3, h: 3 };
   if (v >= 128)  return { w: 2, h: 2 };
-  if (v >= 32)   return { w: 1, h: 2 };
+  if (v >= 32)   return { w: 2, h: 1 };
   return { w: 1, h: 1 };
 }
 function classForValue(v) {
