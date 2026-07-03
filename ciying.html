@@ -865,12 +865,8 @@ function submitGuess() {
   guessedSet.add(word);
   guessCountEl.textContent = guesses.length;
 
-  // Show as latest
-  latestEl.classList.add('show');
-  latestRowEl.innerHTML = renderRow(g, true);
-
-  // Show in history
-  renderHistory();
+  // Show in history (with new-guess flash)
+  renderHistory(word);
 
   // Show message
   const icon = tempIcon(sim);
