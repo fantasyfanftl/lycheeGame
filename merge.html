@@ -154,13 +154,14 @@
     30%,60%,90% { transform: var(--pos) translateY(5px); }
   }
 
-  /* 1×1 colors (2-64) — bright */
+  /* 1×1 colors (2-16) — bright */
   .tile-2    { background: #eee4da; color: #776e65; }
   .tile-4    { background: #ede0c8; color: #776e65; }
   .tile-8    { background: #f2b179; color: #f9f6f2; }
   .tile-16   { background: #f59563; color: #f9f6f2; }
-  .tile-32   { background: #f67c5f; color: #f9f6f2; }
-  .tile-64   { background: #f65e3b; color: #f9f6f2; }
+  /* 1×2 (32-64) — vertical bronze */
+  .tile-32   { background: linear-gradient(180deg, #f67c5f, #c65a35); color: #f9f6f2; }
+  .tile-64   { background: linear-gradient(180deg, #f65e3b, #a83f1c); color: #f9f6f2; }
   /* 2×2 (128-1024) — warm gold */
   .tile-128  { background: linear-gradient(135deg, #edcf72, #d4a544); color: #4a2f0f; }
   .tile-256  { background: linear-gradient(135deg, #edcc61, #c99632); color: #4a2f0f; }
@@ -251,7 +252,7 @@
   </div>
 
   <div class="info">
-    数字越大 · 占地越大 · 合体到 <b>128</b> 变 2×2 · 合体到 <b>2048</b> 变 3×3 通关
+    数字越大 · 占地越大 · <b>32</b>→1×2 · <b>128</b>→2×2 · <b>2048</b>→3×3 通关
   </div>
 
   <div class="actions">
@@ -275,12 +276,15 @@
 </div>
 
 <script>
-const SIZE = 6;
+const INITIAL_SIZE = 5;
+const MAX_SIZE = 6;
+let SIZE = INITIAL_SIZE;
 
 // Tile size for a value
 function sizeForValue(v) {
   if (v >= 2048) return { w: 3, h: 3 };
   if (v >= 128)  return { w: 2, h: 2 };
+  if (v >= 32)   return { w: 1, h: 2 };
   return { w: 1, h: 1 };
 }
 function classForValue(v) {
@@ -308,13 +312,34 @@ const overlayTitle = document.getElementById('overlayTitle');
 const overlaySub = document.getElementById('overlaySub');
 const startBtn = document.getElementById('startBtn');
 
-function initBg() {
+function setBoardSize(freshFrom = null) {
+  gridBg.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
+  gridBg.style.gridTemplateRows = `repeat(${SIZE}, 1fr)`;
   gridBg.innerHTML = '';
-  for (let i = 0; i < SIZE * SIZE; i++) {
-    const c = document.createElement('div');
-    c.className = 'cell-bg';
-    gridBg.appendChild(c);
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      const c = document.createElement('div');
+      c.className = 'cell-bg';
+      if (freshFrom !== null && (x >= freshFrom || y >= freshFrom)) c.classList.add('fresh');
+      gridBg.appendChild(c);
+    }
   }
+}
+
+function expandBoard() {
+  if (SIZE >= MAX_SIZE) return;
+  const oldSize = SIZE;
+  SIZE = MAX_SIZE;
+  // Preserve existing tile refs; grid grows to the right and bottom.
+  const newGrid = Array.from({length: SIZE}, () => Array(SIZE).fill(null));
+  for (let y = 0; y < oldSize; y++)
+    for (let x = 0; x < oldSize; x++)
+      newGrid[y][x] = grid[y][x];
+  grid = newGrid;
+  setBoardSize(oldSize);
+  boardWrap.classList.remove('expand');
+  void boardWrap.offsetHeight;
+  boardWrap.classList.add('expand');
 }
 
 function emptyGrid() {
@@ -445,6 +470,7 @@ function move(dir) {
   let gain = 0;
   const mergedIds = new Set();  // survivors of a merge this turn (can't merge again)
   const failedMergeIds = new Set();  // tiles that tried to merge but no room for new size
+  let triggerExpand = false;
 
   for (const t of sorted) {
     if (t._removed) continue;
@@ -482,6 +508,7 @@ function move(dir) {
         mergedIds.add(front.id);
         gain += newV;
         didMove = true;
+        if (newV === 128 && SIZE < MAX_SIZE) triggerExpand = true;
         if (newV === 2048) won = true;
       } else {
         // Merge fails, put them back and mark for shake feedback
@@ -521,6 +548,7 @@ function move(dir) {
   updateUndoBtn();
 
   setTimeout(() => {
+    if (triggerExpand) expandBoard();
     spawn();
     renderTiles(new Set(), true);  // second render to show new spawn
     animating = false;
@@ -586,7 +614,8 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
     const py = t.y * (cellSize + gap);
     el.style.width = tileW + 'px';
     el.style.height = tileH + 'px';
-    el.style.fontSize = Math.floor(cellSize * (t.w === 1 ? 0.5 : t.w === 2 ? 0.42 : 0.36)) + 'px';
+    const minDim = Math.min(t.w, t.h);
+    el.style.fontSize = Math.floor(cellSize * (minDim === 1 ? 0.5 : minDim === 2 ? 0.42 : 0.36)) + 'px';
     const posTr = `translate(${px}px, ${py}px)`;
     el.style.setProperty('--pos', posTr);
     el.style.transform = posTr;
@@ -634,6 +663,7 @@ function saveState() {
     score,
     nextId,
     won,
+    size: SIZE,
   });
   if (history.length > 12) history.shift();
 }
@@ -641,6 +671,10 @@ function undo() {
   if (!history.length || animating) return;
   const s = history.pop();
   tilesEl.innerHTML = '';
+  if (s.size !== SIZE) {
+    SIZE = s.size;
+    setBoardSize();
+  }
   grid = emptyGrid();
   tiles = s.tiles.map(t => ({...t}));
   for (const t of tiles) placeOnGrid(t);
@@ -655,6 +689,8 @@ function undo() {
 
 // ============ Game control ============
 function newGame() {
+  SIZE = INITIAL_SIZE;
+  setBoardSize();
   tiles = [];
   grid = emptyGrid();
   nextId = 1;
@@ -724,7 +760,6 @@ window.addEventListener('resize', () => renderTiles());
 // Boot
 best = parseInt(localStorage.getItem('bestMerge') || '0', 10);
 bestEl.textContent = best;
-initBg();
 newGame();
 </script>
 </body>

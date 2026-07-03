@@ -1241,6 +1241,73 @@ body {
   color: rgba(232, 220, 196, 0.85);
 }
 
+/* ========== Title character picker ========== */
+.title-pick-hint {
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: rgba(245, 200, 138, 0.75);
+  margin: 20px 0 20px;
+  animation: pickHintPulse 2.4s ease-in-out infinite;
+}
+@keyframes pickHintPulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+.char-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.char-picker-card {
+  background: rgba(232, 220, 196, 0.05);
+  border: 1px solid rgba(232, 220, 196, 0.28);
+  border-radius: 3px;
+  padding: 18px 8px 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--paper);
+  font-family: inherit;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.char-picker-card:hover {
+  background: rgba(245, 200, 138, 0.14);
+  border-color: rgba(245, 200, 138, 0.7);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+.char-picker-icon {
+  font-size: 26px;
+  line-height: 1;
+  margin-bottom: 4px;
+  opacity: 0.9;
+}
+.char-picker-name {
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: var(--paper);
+}
+.char-picker-tag {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(232, 220, 196, 0.55);
+  margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+  .title-pick-hint { font-size: 11px; letter-spacing: 4px; margin: 16px 0 14px; }
+  .char-picker { grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 320px; }
+  .char-picker-card { padding: 14px 6px 12px; }
+  .char-picker-icon { font-size: 22px; }
+  .char-picker-name { font-size: 12px; letter-spacing: 2px; }
+  .char-picker-tag { font-size: 9px; }
+}
+
 
 /* Phone screen subtle pulse (waiting for message) */
 .phone-screen {
@@ -1360,7 +1427,31 @@ body {
       <p class="title-sub">在这座失眠的城市</p>
       <p class="title-sub">四个陌生人，交汇成一场安静的</p>
       <p class="title-sub2">无人知晓的温柔</p>
-      <button class="paper-btn" id="start-btn">推 门 进 去</button>
+
+      <div class="title-pick-hint">选 一 个 人 · 走 进 这 一 晚</div>
+      <div class="char-picker" id="char-picker">
+        <button class="char-picker-card" data-char="cashier">
+          <div class="char-picker-icon">🎧</div>
+          <div class="char-picker-name">便 利 店 店 员</div>
+          <div class="char-picker-tag">值 夜 班</div>
+        </button>
+        <button class="char-picker-card" data-char="nurse">
+          <div class="char-picker-icon">🏥</div>
+          <div class="char-picker-name">夜 班 护 士</div>
+          <div class="char-picker-tag">刚 从 急 诊 出 来</div>
+        </button>
+        <button class="char-picker-card" data-char="driver">
+          <div class="char-picker-icon">🚗</div>
+          <div class="char-picker-name">长 途 司 机</div>
+          <div class="char-picker-tag">跑 了 十 二 个 小 时</div>
+        </button>
+        <button class="char-picker-card" data-char="teen">
+          <div class="char-picker-icon">🐈</div>
+          <div class="char-picker-name">少 年</div>
+          <div class="char-picker-tag">来 给 猫 买 粮</div>
+        </button>
+      </div>
+
       <div class="save-resume" id="save-resume" style="display: none;">
         <div class="save-info" id="save-info"></div>
         <button class="paper-btn save-btn" id="continue-btn">继 续 这 一 晚 →</button>
@@ -4130,11 +4221,32 @@ function computeDiffs(prev, curr) {
 // ============================================================
 
 function bindEvents() {
-  $('start-btn').addEventListener('click', () => {
-    ensureAudio();
-    showScreen('game-screen');
-    state.currentPOV = null;
-    render();
+  // Character picker cards on title screen
+  document.querySelectorAll('.char-picker-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const char = card.dataset.char;
+      if (!char) return;
+      ensureAudio();
+      showScreen('game-screen');
+      // Fresh start: clear any leftover state (unless resuming, which uses continue-btn)
+      state.currentPOV = null;
+      state.completed = new Set();
+      state.progress = { cashier: 0, nurse: 0, driver: 0, teen: 0 };
+      state.convergences = new Set();
+      state.cpProgress = {};
+      state.world = {};
+      state.notebookRecord = {};
+      state.observedObjects = new Set();
+      state.beatsCompleted = 0;
+      switchPOV(char);
+      render();
+      // Hide onboarding hint since player picked already
+      const hint = document.getElementById('onboarding-hint');
+      if (hint && !hint.classList.contains('dismissed')) {
+        hint.classList.add('dismissed');
+        setTimeout(() => hint.remove(), 700);
+      }
+    });
   });
   const continueBtn = document.getElementById('continue-btn');
   if (continueBtn) {
