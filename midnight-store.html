@@ -1613,62 +1613,86 @@ body {
         </div>
 
         <!-- Card 3: 中央货架 -->
-        <div class="scene-card" data-card="middle">
+        <div class="scene-card" data-card="dispenser">
           <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
             <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
             <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
             <!-- Ceiling tubes with flicker -->
-            <rect x="30" y="20" width="150" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
-            <rect x="220" y="20" width="150" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
-            <rect class="tube-flicker" x="90" y="20" width="45" height="6" fill="#c17b52"/>
-            <!-- Water dispenser -->
-            <rect x="35" y="200" width="80" height="140" fill="#c9b48a" stroke="#3d2f24" stroke-width="1.5"/>
-            <rect x="50" y="220" width="50" height="8" fill="#3d2f24" opacity="0.6"/>
-            <rect x="55" y="238" width="10" height="12" fill="#8b6f47"/>
-            <circle cx="80" cy="292" r="3" fill="#3d2f24"/>
-            <circle cx="92" cy="292" r="3" fill="#3d2f24"/>
-            <text x="75" y="360" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">饮 水 机</text>
-            <!-- Oden pot with steam -->
-            <ellipse cx="200" cy="230" rx="42" ry="8" fill="#8b6f47"/>
-            <rect x="158" y="230" width="84" height="52" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="178" y1="235" x2="178" y2="270" stroke="#f5c88a" stroke-width="1"/>
-            <line x1="192" y1="235" x2="192" y2="270" stroke="#f5c88a" stroke-width="1"/>
-            <line x1="206" y1="235" x2="206" y2="270" stroke="#f5c88a" stroke-width="1"/>
-            <line x1="220" y1="235" x2="220" y2="270" stroke="#f5c88a" stroke-width="1"/>
-            <path class="steam" d="M188 220 Q184 208 188 196 Q192 184 188 172" stroke="#c9b48a" stroke-width="2" fill="none"/>
-            <path class="steam steam-2" d="M204 218 Q208 206 204 194 Q200 182 204 170" stroke="#c9b48a" stroke-width="2" fill="none"/>
-            <path class="steam steam-3" d="M218 220 Q222 208 218 196 Q214 184 218 172" stroke="#c9b48a" stroke-width="2" fill="none"/>
-            <text x="200" y="305" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">关 东 煮</text>
-            <!-- Shelves -->
-            <rect x="290" y="180" width="90" height="200" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="290" y1="230" x2="380" y2="230" stroke="#3d2f24" stroke-width="1"/>
-            <line x1="290" y1="280" x2="380" y2="280" stroke="#3d2f24" stroke-width="1"/>
-            <line x1="290" y1="330" x2="380" y2="330" stroke="#3d2f24" stroke-width="1"/>
-            <rect x="296" y="188" width="10" height="14" fill="#c17b52" opacity="0.7"/>
-            <rect x="310" y="188" width="10" height="14" fill="#a67240" opacity="0.7"/>
-            <rect x="335" y="238" width="12" height="18" fill="#c17b52" opacity="0.7"/>
-            <rect x="352" y="238" width="12" height="18" fill="#c9b48a" opacity="0.7"/>
-            <rect x="300" y="288" width="15" height="20" fill="#a67240" opacity="0.7"/>
-            <rect x="330" y="338" width="20" height="25" fill="#c17b52" opacity="0.7"/>
-            <!-- Small price tag hanging from shelf edge -->
-            <line x1="365" y1="230" x2="365" y2="238" stroke="#3d2f24" stroke-width="0.5"/>
-            <rect x="360" y="238" width="12" height="8" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
-            <line x1="362" y1="242" x2="370" y2="242" stroke="#3d2f24" stroke-width="0.3"/>
-            <!-- Floor tile pattern hint -->
-            <line x1="0" y1="480" x2="400" y2="480" stroke="#c9b48a" stroke-width="0.3" opacity="0.4"/>
-            <line x1="80" y1="460" x2="80" y2="500" stroke="#c9b48a" stroke-width="0.3" opacity="0.4"/>
-            <line x1="240" y1="460" x2="240" y2="500" stroke="#c9b48a" stroke-width="0.3" opacity="0.4"/>
-            <text x="335" y="400" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
+            <rect x="40" y="20" width="140" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect x="220" y="20" width="140" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect class="tube-flicker" x="100" y="20" width="45" height="6" fill="#c17b52"/>
+            <!-- Water dispenser (left) -->
+            <rect x="65" y="200" width="90" height="160" fill="#c9b48a" stroke="#3d2f24" stroke-width="1.5"/>
+            <rect x="82" y="222" width="56" height="9" fill="#3d2f24" opacity="0.6"/>
+            <rect x="88" y="240" width="10" height="12" fill="#8b6f47"/>
+            <circle cx="103" cy="300" r="3.2" fill="#3d2f24"/>
+            <circle cx="116" cy="300" r="3.2" fill="#3d2f24"/>
+            <text x="110" y="385" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">饮 水 机</text>
+            <!-- Oden pot (right) with steam -->
+            <ellipse cx="290" cy="230" rx="50" ry="9" fill="#8b6f47"/>
+            <rect x="240" y="230" width="100" height="60" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="262" y1="235" x2="262" y2="278" stroke="#f5c88a" stroke-width="1"/>
+            <line x1="278" y1="235" x2="278" y2="278" stroke="#f5c88a" stroke-width="1"/>
+            <line x1="294" y1="235" x2="294" y2="278" stroke="#f5c88a" stroke-width="1"/>
+            <line x1="310" y1="235" x2="310" y2="278" stroke="#f5c88a" stroke-width="1"/>
+            <path class="steam" d="M272 220 Q268 208 272 196 Q276 184 272 172" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            <path class="steam steam-2" d="M292 218 Q296 206 292 194 Q288 182 292 170" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            <path class="steam steam-3" d="M310 220 Q314 208 310 196 Q306 184 310 172" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            <text x="290" y="315" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">关 东 煮</text>
             <!-- Floor -->
             <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
-          
-            <rect class="obj-zone" data-hs="waterDispenser" x="30" y="195" width="90" height="180"/>
-            <rect class="obj-zone" data-hs="odenPot" x="150" y="215" width="100" height="105"/>
-            <rect class="obj-zone" data-hs="shelves" x="285" y="175" width="100" height="230"/>
+
+            <rect class="obj-zone" data-hs="waterDispenser" x="60" y="195" width="100" height="190"/>
+            <rect class="obj-zone" data-hs="odenPot" x="230" y="215" width="120" height="115"/>
           </svg>
-          <div class="hotspots-layer" data-card-hotspots="middle"></div>
-          <div class="chars-layer" data-card-chars="middle"></div>
-          <div class="card-label">中 央 货 架</div>
+          <div class="hotspots-layer" data-card-hotspots="dispenser"></div>
+          <div class="chars-layer" data-card-chars="dispenser"></div>
+          <div class="card-label">饮 水 机 · 关 东 煮</div>
+        </div>
+
+        <!-- Card: 货架 (含热奶柜) -->
+        <div class="scene-card" data-card="shelves">
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
+            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
+            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
+            <!-- Ceiling tube -->
+            <rect x="80" y="20" width="240" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <!-- Shelves outer + rows -->
+            <rect x="110" y="145" width="200" height="270" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="110" y1="205" x2="310" y2="205" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="110" y1="270" x2="310" y2="270" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="110" y1="335" x2="310" y2="335" stroke="#3d2f24" stroke-width="1"/>
+            <!-- Top row = milk cabinet (red LED strip + cartons) -->
+            <rect class="milk-red-lamp" x="110" y="143" width="200" height="4" fill="#c17b52"/>
+            <rect x="130" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <rect x="150" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <rect x="170" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <rect x="270" y="160" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <!-- Row 2: goods -->
+            <rect x="122" y="212" width="14" height="20" fill="#c17b52" opacity="0.7"/>
+            <rect x="140" y="212" width="14" height="20" fill="#a67240" opacity="0.7"/>
+            <rect x="220" y="215" width="16" height="24" fill="#c17b52" opacity="0.7"/>
+            <rect x="240" y="215" width="16" height="24" fill="#c9b48a" opacity="0.7"/>
+            <!-- price tag on shelf 2 -->
+            <line x1="256" y1="205" x2="256" y2="212" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect x="250" y="212" width="14" height="9" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <line x1="253" y1="217" x2="261" y2="217" stroke="#3d2f24" stroke-width="0.3"/>
+            <!-- Row 3: goods -->
+            <rect x="135" y="278" width="16" height="24" fill="#a67240" opacity="0.7"/>
+            <rect x="230" y="278" width="18" height="26" fill="#c17b52" opacity="0.7"/>
+            <!-- Row 4: goods -->
+            <rect x="195" y="345" width="24" height="30" fill="#c17b52" opacity="0.7"/>
+            <text x="145" y="180" font-size="9" fill="#c17b52" text-anchor="middle" letter-spacing="2" font-family="serif" opacity="0.75">热 奶 柜</text>
+            <text x="210" y="435" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
+            <!-- Floor -->
+            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+
+            <rect class="obj-zone" data-hs="milkCabinet" x="115" y="140" width="190" height="65"/>
+            <rect class="obj-zone" data-hs="shelves" x="115" y="210" width="190" height="205"/>
+          </svg>
+          <div class="hotspots-layer" data-card-hotspots="shelves"></div>
+          <div class="chars-layer" data-card-chars="shelves"></div>
+          <div class="card-label">货 架 · 热 奶 柜</div>
         </div>
 
         <!-- Card 4: 收银台 -->
@@ -1684,52 +1708,38 @@ body {
             <line class="clock-min" x1="350" y1="70" x2="350" y2="52" stroke="#3d2f24" stroke-width="1.5"/>
             <line x1="350" y1="70" x2="362" y2="70" stroke="#3d2f24" stroke-width="1.5"/>
             <text class="clock-time" x="350" y="115" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">01 : 47</text>
-            <!-- Milk cabinet -->
-            <rect x="40" y="170" width="120" height="180" fill="#c9b48a" opacity="0.35" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="40" y1="230" x2="160" y2="230" stroke="#3d2f24" stroke-width="0.8"/>
-            <line x1="40" y1="285" x2="160" y2="285" stroke="#3d2f24" stroke-width="0.8"/>
-            <rect class="milk-red-lamp" x="40" y="168" width="120" height="4" fill="#c17b52"/>
-            <rect x="55" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-            <rect x="75" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-            <rect x="95" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-            <rect x="115" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
-            <rect x="60" y="240" width="12" height="30" fill="#c17b52" opacity="0.6"/>
-            <rect x="85" y="240" width="12" height="30" fill="#8b6f47" opacity="0.6"/>
-            <rect x="115" y="240" width="12" height="30" fill="#a67240" opacity="0.6"/>
-            <text x="100" y="375" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">热 奶 柜</text>
-            <!-- Register / counter -->
-            <rect x="220" y="250" width="150" height="120" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="220" y1="285" x2="370" y2="285" stroke="#3d2f24" stroke-width="0.8"/>
+            <!-- Register / counter (centered) -->
+            <rect x="100" y="240" width="200" height="130" fill="#a67240" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="100" y1="275" x2="300" y2="275" stroke="#3d2f24" stroke-width="0.8"/>
             <!-- QR sign -->
-            <rect x="235" y="298" width="26" height="26" fill="#3d2f24"/>
-            <rect x="238" y="301" width="7" height="7" fill="#e8dcc4"/>
-            <rect x="250" y="301" width="7" height="7" fill="#e8dcc4"/>
-            <rect x="238" y="313" width="7" height="7" fill="#e8dcc4"/>
-            <rect x="252" y="315" width="5" height="5" fill="#e8dcc4"/>
+            <rect x="118" y="290" width="30" height="30" fill="#3d2f24"/>
+            <rect x="122" y="294" width="8" height="8" fill="#e8dcc4"/>
+            <rect x="135" y="294" width="8" height="8" fill="#e8dcc4"/>
+            <rect x="122" y="307" width="8" height="8" fill="#e8dcc4"/>
+            <rect x="135" y="309" width="6" height="6" fill="#e8dcc4"/>
             <!-- Cash drawer -->
-            <rect x="280" y="330" width="80" height="26" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
-            <circle cx="320" cy="343" r="1.5" fill="#3d2f24"/>
+            <rect x="165" y="330" width="90" height="28" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
+            <circle cx="210" cy="344" r="1.6" fill="#3d2f24"/>
             <!-- Cashier's phone on counter (screen glowing) -->
-            <rect x="273" y="298" width="14" height="24" fill="#3d2f24" stroke="#3d2f24" stroke-width="0.5" rx="2"/>
-            <rect x="275" y="301" width="10" height="17" fill="#f9f3e8" opacity="0.85" class="phone-screen"/>
-            <circle cx="280" cy="320" r="1" fill="#3d2f24"/>
-            <text x="280" y="335" font-size="7" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif" opacity="0.7">手 机</text>
+            <rect x="160" y="290" width="16" height="26" fill="#3d2f24" stroke="#3d2f24" stroke-width="0.5" rx="2"/>
+            <rect x="162" y="294" width="12" height="19" fill="#f9f3e8" opacity="0.85" class="phone-screen"/>
+            <circle cx="168" cy="316" r="1" fill="#3d2f24"/>
+            <text x="168" y="332" font-size="7" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif" opacity="0.7">手 机</text>
             <!-- Pen on counter -->
-            <line x1="285" y1="270" x2="298" y2="272" stroke="#3d2f24" stroke-width="1.5"/>
-            <line x1="298" y1="272" x2="300" y2="273" stroke="#c17b52" stroke-width="1.5"/>
+            <line x1="200" y1="260" x2="215" y2="262" stroke="#3d2f24" stroke-width="1.5"/>
+            <line x1="215" y1="262" x2="217" y2="263" stroke="#c17b52" stroke-width="1.5"/>
             <!-- Folded receipts stack -->
-            <rect x="325" y="268" width="18" height="12" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
-            <rect x="323" y="270" width="18" height="12" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4" opacity="0.7"/>
-            <!-- Plastic bag stack next to counter -->
-            <rect x="360" y="290" width="12" height="16" fill="#e8dcc4" stroke="#c9b48a" stroke-width="0.5" opacity="0.6"/>
-            <path d="M360 290 L366 285 L372 290" stroke="#c9b48a" stroke-width="0.4" fill="none"/>
-<text x="295" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
+            <rect x="245" y="256" width="20" height="14" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <rect x="243" y="258" width="20" height="14" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4" opacity="0.7"/>
+            <!-- Plastic bag stack right side of counter -->
+            <rect x="275" y="290" width="14" height="18" fill="#e8dcc4" stroke="#c9b48a" stroke-width="0.5" opacity="0.6"/>
+            <path d="M275 290 L282 284 L289 290" stroke="#c9b48a" stroke-width="0.4" fill="none"/>
+<text x="200" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
             <!-- Floor -->
             <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
-          
-            <rect class="obj-zone" data-hs="milkCabinet" x="35" y="165" width="130" height="220"/>
-            <rect class="obj-zone" data-hs="register" x="215" y="245" width="160" height="140"/>
-            <rect class="obj-zone" data-hs="phone" x="268" y="292" width="24" height="34"/>
+
+            <rect class="obj-zone" data-hs="register" x="95" y="235" width="210" height="140"/>
+            <rect class="obj-zone" data-hs="phone" x="155" y="285" width="26" height="36"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="register"></div>
           <div class="chars-layer" data-card-chars="register"></div>
@@ -1741,7 +1751,8 @@ body {
       <div class="card-dots" id="card-dots">
         <button class="card-dot" data-card="doorstep" aria-label="门口"></button>
         <button class="card-dot" data-card="window" aria-label="窗边"></button>
-        <button class="card-dot" data-card="middle" aria-label="中央"></button>
+        <button class="card-dot" data-card="dispenser" aria-label="饮水机 · 关东煮"></button>
+        <button class="card-dot" data-card="shelves" aria-label="货架 · 热奶柜"></button>
         <button class="card-dot" data-card="register" aria-label="收银台"></button>
       </div>
 
@@ -1823,20 +1834,20 @@ const NPC = {
 // Hotspot scene positions (SVG coords)
 // Hotspots — each with card assignment + local (x,y) within that card's viewBox (400x550)
 const HOTSPOTS = {
-  doorway:        { card: 'doorstep', x: 355, y: 300 },
-  catBowl:        { card: 'doorstep', x: 130, y: 470 },
-  driverSeat:     { card: 'window',   x: 200, y: 340 },
-  waterDispenser: { card: 'middle',   x: 75,  y: 285 },
-  odenPot:        { card: 'middle',   x: 200, y: 260 },
-  shelves:        { card: 'middle',   x: 335, y: 285 },
-  milkCabinet:    { card: 'register', x: 100, y: 200 },
-  register:       { card: 'register', x: 295, y: 305 },
+  doorway:        { card: 'doorstep',  x: 355, y: 300 },
+  catBowl:        { card: 'doorstep',  x: 130, y: 470 },
+  driverSeat:     { card: 'window',    x: 200, y: 340 },
+  waterDispenser: { card: 'dispenser', x: 110, y: 285 },
+  odenPot:        { card: 'dispenser', x: 290, y: 260 },
+  shelves:        { card: 'shelves',   x: 210, y: 320 },
+  milkCabinet:    { card: 'shelves',   x: 210, y: 175 },
+  register:       { card: 'register',  x: 200, y: 305 },
   // Character positions (used for click-on-character hotspot beats)
-  cashier:        { card: 'register', x: 320, y: 380 },
-  nurse:          { card: 'middle',   x: 145, y: 380 },
-  driver:         { card: 'window',   x: 200, y: 350 },
-  teen:           { card: 'doorstep', x: 65,  y: 490 },
-  oldman:         { card: 'middle',   x: 335, y: 415 }
+  cashier:        { card: 'register',  x: 200, y: 430 },
+  nurse:          { card: 'dispenser', x: 200, y: 430 },
+  driver:         { card: 'window',    x: 200, y: 350 },
+  teen:           { card: 'doorstep',  x: 65,  y: 490 },
+  oldman:         { card: 'shelves',   x: 210, y: 470 }
 };
 
 // Beats — filled by later batches (empty scaffolds for now)
@@ -2604,6 +2615,7 @@ const state = {
   unlocked: new Set(['cashier','nurse','driver','teen']),
   completed: new Set(),
   progress: { cashier: 0, nurse: 0, driver: 0, teen: 0 },
+  playedBeats: { cashier: new Set(), nurse: new Set(), driver: new Set(), teen: new Set() },
   convergences: new Set(),
   cpProgress: {}, // { cpId: Set of chars who've contributed }
   notebookRecord: {}, // { cpId: { char: chosen text } }
@@ -2617,6 +2629,7 @@ const state = {
 // per-open state (not part of `state`, just transient)
 let _currentBeat = null;
 let _currentEffective = null;
+let _currentBeatIndex = -1;
 
 // ============================================================
 // HELPERS
@@ -2652,10 +2665,34 @@ function toast(msg) {
 }
 
 function currentBeat() {
+  // In exploration mode there's no single "next" beat — return the first
+  // unplayed one just for legacy callers (POV hint text, dot glow).
   if (!state.currentPOV) return null;
   const beats = BEATS[state.currentPOV] || [];
-  const i = state.progress[state.currentPOV];
-  return beats[i] || null;
+  const played = state.playedBeats[state.currentPOV] || new Set();
+  for (let i = 0; i < beats.length; i++) {
+    if (!played.has(i)) return beats[i];
+  }
+  return null;
+}
+
+function unplayedBeats() {
+  // Return [{beat, index}] for each unplayed beat of the current POV,
+  // dedup'd by hs (if two beats share a hotspot, only the earlier one shows).
+  if (!state.currentPOV) return [];
+  const beats = BEATS[state.currentPOV] || [];
+  const played = state.playedBeats[state.currentPOV] || new Set();
+  const seenHs = new Set();
+  const list = [];
+  for (let i = 0; i < beats.length; i++) {
+    if (played.has(i)) continue;
+    const b = beats[i];
+    if (!b || !b.hs) continue;
+    if (seenHs.has(b.hs)) continue;
+    seenHs.add(b.hs);
+    list.push({ beat: b, index: i });
+  }
+  return list;
 }
 
 // ============================================================
@@ -2698,70 +2735,79 @@ function renderPOVIndicator() {
     return;
   }
   $('pov-name').textContent = CHARACTERS[state.currentPOV].name;
-  const beat = currentBeat();
+  const played = state.playedBeats[state.currentPOV] || new Set();
+  const total = (BEATS[state.currentPOV] || []).length;
+  const remaining = total - played.size;
   const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
-  if (!beat) {
+  if (remaining <= 0) {
     $('pov-hint').textContent = '这 一 段 走 完 了 · 选 下 一 位';
   } else if (isMobile) {
-    $('pov-hint').textContent = '· ' + (beat.title || '') + ' · 轻 点 继 续 →';
+    $('pov-hint').textContent = '· 左 右 滑 动 · 找 会 亮 的 地 方';
   } else {
-    $('pov-hint').textContent = '点 击 闪 烁 处 继 续';
+    $('pov-hint').textContent = '滑 动 场 景 · 点 击 会 亮 的 地 方';
   }
 }
 
 function renderHotspots() {
   document.querySelectorAll('[data-card-hotspots]').forEach(el => { el.innerHTML = ''; });
-  const beat = currentBeat();
-  if (!beat || state.dialogueOpen) return;
-  const pos = HOTSPOTS[beat.hs];
-  if (!pos) return;
+  if (state.dialogueOpen) return;
+  const items = unplayedBeats();
+  if (!items.length) return;
 
-  const cardEl = document.querySelector('[data-card-hotspots="' + pos.card + '"]');
-  if (!cardEl) return;
-
-  // Create SVG overlay for this hotspot
   const svgNS = 'http://www.w3.org/2000/svg';
-  const overlay = document.createElementNS(svgNS, 'svg');
-  overlay.setAttribute('viewBox', '0 0 400 550');
-  overlay.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-  overlay.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;');
+  // Group by card so each card gets one overlay SVG with multiple hotspots.
+  const byCard = {};
+  items.forEach(({ beat, index }) => {
+    const pos = HOTSPOTS[beat.hs];
+    if (!pos) return;
+    (byCard[pos.card] = byCard[pos.card] || []).push({ pos, beat, index });
+  });
 
-  // Ripple ring
-  const ring = document.createElementNS(svgNS, 'circle');
-  ring.setAttribute('cx', pos.x); ring.setAttribute('cy', pos.y); ring.setAttribute('r', 26);
-  ring.setAttribute('fill', 'none');
-  ring.setAttribute('stroke', 'rgba(245, 200, 138, 0.95)');
-  ring.setAttribute('stroke-width', '3.5');
-  ring.setAttribute('class', 'hotspot-ring');
-  overlay.appendChild(ring);
+  Object.keys(byCard).forEach(cardName => {
+    const cardEl = document.querySelector('[data-card-hotspots="' + cardName + '"]');
+    if (!cardEl) return;
+    const overlay = document.createElementNS(svgNS, 'svg');
+    overlay.setAttribute('viewBox', '0 0 400 550');
+    overlay.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    overlay.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;');
 
-  // Warm glow
-  const glow = document.createElementNS(svgNS, 'circle');
-  glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y); glow.setAttribute('r', 28);
-  glow.setAttribute('fill', 'rgba(245, 200, 138, 0.6)');
-  glow.setAttribute('class', 'hotspot-glow');
-  overlay.appendChild(glow);
+    byCard[cardName].forEach(({ pos, beat, index }) => {
+      // Ripple ring
+      const ring = document.createElementNS(svgNS, 'circle');
+      ring.setAttribute('cx', pos.x); ring.setAttribute('cy', pos.y); ring.setAttribute('r', 26);
+      ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', 'rgba(245, 200, 138, 0.9)');
+      ring.setAttribute('stroke-width', '3.2');
+      ring.setAttribute('class', 'hotspot-ring');
+      overlay.appendChild(ring);
 
-  // Bright center dot
-  const dot = document.createElementNS(svgNS, 'circle');
-  dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y); dot.setAttribute('r', 8);
-  dot.setAttribute('fill', 'rgba(249, 243, 232, 0.95)');
-  dot.setAttribute('stroke', 'rgba(193, 123, 82, 0.9)');
-  dot.setAttribute('stroke-width', '1.5');
-  dot.setAttribute('class', 'hotspot-dot');
-  overlay.appendChild(dot);
+      // Warm glow
+      const glow = document.createElementNS(svgNS, 'circle');
+      glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y); glow.setAttribute('r', 26);
+      glow.setAttribute('fill', 'rgba(245, 200, 138, 0.55)');
+      glow.setAttribute('class', 'hotspot-glow');
+      overlay.appendChild(glow);
 
-  // Click target (larger, invisible)
-  const hit = document.createElementNS(svgNS, 'circle');
-  hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 55);
-  hit.setAttribute('fill', 'transparent');
-  hit.setAttribute('style', 'pointer-events:auto;cursor:pointer;');
-  hit.addEventListener('click', () => triggerHotspot(beat.hs));
-  overlay.appendChild(hit);
+      // Bright center dot
+      const dot = document.createElementNS(svgNS, 'circle');
+      dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y); dot.setAttribute('r', 7.5);
+      dot.setAttribute('fill', 'rgba(249, 243, 232, 0.95)');
+      dot.setAttribute('stroke', 'rgba(193, 123, 82, 0.9)');
+      dot.setAttribute('stroke-width', '1.5');
+      dot.setAttribute('class', 'hotspot-dot');
+      overlay.appendChild(dot);
 
-  cardEl.appendChild(overlay);
+      // Click target (larger, invisible)
+      const hit = document.createElementNS(svgNS, 'circle');
+      hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 52);
+      hit.setAttribute('fill', 'transparent');
+      hit.setAttribute('style', 'pointer-events:auto;cursor:pointer;');
+      hit.addEventListener('click', () => triggerBeatByIndex(index));
+      overlay.appendChild(hit);
+    });
 
-  // No auto-scroll — player finds the trigger by swiping. Dot indicator hints where.
+    cardEl.appendChild(overlay);
+  });
 }
 
 function renderCharacters() {
@@ -2836,10 +2882,21 @@ function switchPOV(char) {
   render();
 }
 
-function triggerHotspot(hs) {
-  const beat = currentBeat();
-  if (!beat || beat.hs !== hs) return;
+function triggerBeatByIndex(idx) {
+  const beats = BEATS[state.currentPOV] || [];
+  const beat = beats[idx];
+  if (!beat) return;
+  const played = state.playedBeats[state.currentPOV] || new Set();
+  if (played.has(idx)) return;
+  _currentBeatIndex = idx;
   playBeat(beat);
+}
+
+// Legacy shim in case anything else calls triggerHotspot(hs)
+function triggerHotspot(hs) {
+  const items = unplayedBeats();
+  const match = items.find(x => x.beat.hs === hs);
+  if (match) triggerBeatByIndex(match.index);
 }
 
 function resolveBranch(beat) {
@@ -3025,12 +3082,17 @@ function setContinueEnabled(enabled) {
 
 function closeBeat() {
   // Save happens after progress advances (at end)
-  
+
   state.dialogueOpen = false;
   $('dialogue-overlay').classList.add('hidden');
 
   const c = state.currentPOV;
-  state.progress[c]++;
+  if (_currentBeatIndex >= 0) {
+    if (!state.playedBeats[c]) state.playedBeats[c] = new Set();
+    state.playedBeats[c].add(_currentBeatIndex);
+  }
+  state.progress[c] = state.playedBeats[c] ? state.playedBeats[c].size : 0;
+  _currentBeatIndex = -1;
 
   if (state.progress[c] >= (BEATS[c] || []).length) {
     if (!state.completed.has(c)) {
@@ -3367,7 +3429,10 @@ function saveState() {
       world: state.world || {},
       notebookRecord: state.notebookRecord || {},
       observedObjects: Array.from(state.observedObjects || []),
-      beatsCompleted: state.beatsCompleted || 0
+      beatsCompleted: state.beatsCompleted || 0,
+      playedBeats: Object.fromEntries(
+        Object.entries(state.playedBeats || {}).map(([k, v]) => [k, Array.from(v)])
+      )
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(s));
   } catch (e) {}
@@ -3394,6 +3459,18 @@ function loadState() {
     state.notebookRecord = s.notebookRecord || {};
     state.observedObjects = new Set(s.observedObjects || []);
     state.beatsCompleted = s.beatsCompleted || 0;
+    // Restore playedBeats; if missing (older save), reconstruct from progress
+    // as {0, 1, ..., progress-1} to preserve the "already saw N beats" feel.
+    state.playedBeats = { cashier: new Set(), nurse: new Set(), driver: new Set(), teen: new Set() };
+    if (s.playedBeats) {
+      Object.entries(s.playedBeats).forEach(([k, arr]) => {
+        state.playedBeats[k] = new Set(arr.map(Number));
+      });
+    } else {
+      Object.entries(state.progress).forEach(([k, n]) => {
+        for (let i = 0; i < n; i++) state.playedBeats[k].add(i);
+      });
+    }
     return true;
   } catch (e) { return false; }
 }
@@ -4030,7 +4107,7 @@ if ('speechSynthesis' in window) {
 
 
 // Card navigation
-const CARDS = ['doorstep', 'window', 'middle', 'register'];
+const CARDS = ['doorstep', 'window', 'dispenser', 'shelves', 'register'];
 let currentCardIdx = 0;
 let _scrollingAuto = false;
 
@@ -4048,11 +4125,15 @@ function scrollToCard(cardName) {
 }
 
 function updateCardDots() {
-  const beat = currentBeat();
-  const activeHotspotCard = (beat && HOTSPOTS[beat.hs]) ? HOTSPOTS[beat.hs].card : null;
+  const items = (typeof unplayedBeats === 'function') ? unplayedBeats() : [];
+  const cardsWithHotspot = new Set();
+  items.forEach(({ beat }) => {
+    const pos = HOTSPOTS[beat.hs];
+    if (pos) cardsWithHotspot.add(pos.card);
+  });
   document.querySelectorAll('.card-dot').forEach((dot, i) => {
     dot.classList.toggle('active', i === currentCardIdx);
-    dot.classList.toggle('has-hotspot', CARDS[i] === activeHotspotCard && i !== currentCardIdx);
+    dot.classList.toggle('has-hotspot', cardsWithHotspot.has(CARDS[i]) && i !== currentCardIdx);
   });
   const prev = document.getElementById('card-prev');
   const next = document.getElementById('card-next');
@@ -4262,6 +4343,7 @@ function bindEvents() {
       state.currentPOV = null;
       state.completed = new Set();
       state.progress = { cashier: 0, nurse: 0, driver: 0, teen: 0 };
+      state.playedBeats = { cashier: new Set(), nurse: new Set(), driver: new Set(), teen: new Set() };
       state.convergences = new Set();
       state.cpProgress = {};
       state.world = {};
@@ -4325,6 +4407,7 @@ function bindEvents() {
     state.unlocked = new Set(['cashier','nurse','driver','teen']);
     state.completed = new Set();
     state.progress = { cashier: 0, nurse: 0, driver: 0, teen: 0 };
+    state.playedBeats = { cashier: new Set(), nurse: new Set(), driver: new Set(), teen: new Set() };
     state.convergences = new Set();
     state.cpProgress = {};
     state.notebookRecord = {};

@@ -372,7 +372,7 @@
   <div class="history" id="history"></div>
 
   <div class="hint">
-    温度越高，语义越接近 · 只能猜词表内的词
+    温度越高，语义越接近
   </div>
 </div>
 
@@ -854,10 +854,9 @@ function tempClass(sim) {
 function renderRow(g, isLatest = false) {
   const rank = g.rank > 0 && g.rank <= 500 ? `#${g.rank}` : '';
   const pct = (g.sim * 100).toFixed(1) + '%';
-  const mark = g.isHint ? ' 💡' : (g.isOOV ? ' <span style="font-size:11px;opacity:0.7;">·词外</span>' : '');
+  const mark = g.isHint ? ' 💡' : '';
   const tCls = tempClass(g.sim);
-  const oovCls = g.isOOV ? 'oov' : '';
-  return `<div class="row ${tCls} ${oovCls} ${isLatest ? 'new-guess' : ''}">
+  return `<div class="row ${tCls} ${isLatest ? 'new-guess' : ''}">
     <span class="rank">${rank}</span>
     <span class="word-pill">${g.word}${mark}</span>
     <span class="pct">${pct}</span>
@@ -878,15 +877,8 @@ function submitGuess() {
   guessInput.focus();
 
   if (!WORDS[word]) {
-    // 词表外的词：尝试合成语义算相似度
+    // 词表外的词：合成语义算相似度，永远接受
     const fallback = tryFallbackSim(word, answer);
-    if (fallback === null) {
-      // 完全无关（一个字符都对应不上词表）
-      shakeInput();
-      showMessage(`「${word}」词表里完全无关`, 'err');
-      return;
-    }
-    // 接受作为一次猜测，标为词表外
     if (guessedSet.has(word)) {
       shakeInput();
       showMessage(`「${word}」猜过了`, 'err');
@@ -902,10 +894,10 @@ function submitGuess() {
     renderHistory(word);
     const icon = tempIcon(fallback);
     if (isNewBest && guesses.length >= 3) {
-      showMessage(`🔥 更热了！${word} · ${(fallback*100).toFixed(1)}% · 词外`);
+      showMessage(`🔥 更热了！${word} · ${(fallback*100).toFixed(1)}%`);
       if (navigator.vibrate) navigator.vibrate(20);
     } else {
-      showMessage(`${icon} ${word} · ${(fallback*100).toFixed(1)}% · 词外`);
+      showMessage(`${icon} ${word} · ${(fallback*100).toFixed(1)}%`);
     }
     updateHintBtn();
     return;
@@ -961,11 +953,11 @@ function synthesizeTags(word) {
 // Fallback similarity for out-of-vocab words
 // 使用 Overlap 系数 (intersection / min(|A|, |B|))，更好处理"父母包含母亲"这种情况
 function tryFallbackSim(word, ans) {
-  const synth = synthesizeTags(word);
-  if (!synth.length) return null;
-  const set1 = new Set(synth);
   const set2 = new Set(WORDS[ans] || []);
-  if (set2.size === 0) return 0;
+  if (set2.size === 0) return 0.05;
+  const synth = synthesizeTags(word);
+  if (!synth.length) return 0.03;  // 完全找不到语义线索 · 给个极低分
+  const set1 = new Set(synth);
   let inter = 0;
   for (const t of set1) if (set2.has(t)) inter++;
   const overlap = inter / Math.min(set1.size, set2.size);

@@ -359,30 +359,39 @@ function sidesForValue(v) {
   return SIDES_TABLE[Math.log2(v) % SIDES_TABLE.length];
 }
 
-function piecePath(w, h, sides) {
+function piecePath(w, h, sides, cells, K, N) {
   if (!sides) {
     const r = Math.min(w, h) * 0.09;
     return `M ${r} 0 L ${w-r} 0 Q ${w} 0, ${w} ${r} L ${w} ${h-r} Q ${w} ${h}, ${w-r} ${h} L ${r} ${h} Q 0 ${h}, 0 ${h-r} L 0 ${r} Q 0 0, ${r} 0 Z`;
   }
-  const K = Math.min(w, h) * 0.14;  // knob depth (flatter, larger body)
-  const N = Math.min(w, h) * 0.10;  // neck width
-  const midX = w / 2, midY = h / 2;
   const parts = ['M 0 0'];
-  // TOP
-  parts.push(`L ${midX-N} 0`);
-  parts.push(`C ${midX-N} ${-sides.top*K}, ${midX+N} ${-sides.top*K}, ${midX+N} 0`);
+  // TOP: cells.w bumps, left-to-right
+  for (let i = 0; i < cells.w; i++) {
+    const cx = w * (i + 0.5) / cells.w;
+    parts.push(`L ${cx - N} 0`);
+    parts.push(`C ${cx - N} ${-sides.top*K}, ${cx + N} ${-sides.top*K}, ${cx + N} 0`);
+  }
   parts.push(`L ${w} 0`);
-  // RIGHT
-  parts.push(`L ${w} ${midY-N}`);
-  parts.push(`C ${w+sides.right*K} ${midY-N}, ${w+sides.right*K} ${midY+N}, ${w} ${midY+N}`);
+  // RIGHT: cells.h bumps, top-to-bottom
+  for (let i = 0; i < cells.h; i++) {
+    const cy = h * (i + 0.5) / cells.h;
+    parts.push(`L ${w} ${cy - N}`);
+    parts.push(`C ${w + sides.right*K} ${cy - N}, ${w + sides.right*K} ${cy + N}, ${w} ${cy + N}`);
+  }
   parts.push(`L ${w} ${h}`);
-  // BOTTOM
-  parts.push(`L ${midX+N} ${h}`);
-  parts.push(`C ${midX+N} ${h+sides.bottom*K}, ${midX-N} ${h+sides.bottom*K}, ${midX-N} ${h}`);
+  // BOTTOM: cells.w bumps, right-to-left
+  for (let i = cells.w - 1; i >= 0; i--) {
+    const cx = w * (i + 0.5) / cells.w;
+    parts.push(`L ${cx + N} ${h}`);
+    parts.push(`C ${cx + N} ${h + sides.bottom*K}, ${cx - N} ${h + sides.bottom*K}, ${cx - N} ${h}`);
+  }
   parts.push(`L 0 ${h}`);
-  // LEFT
-  parts.push(`L 0 ${midY+N}`);
-  parts.push(`C ${-sides.left*K} ${midY+N}, ${-sides.left*K} ${midY-N}, 0 ${midY-N}`);
+  // LEFT: cells.h bumps, bottom-to-top
+  for (let i = cells.h - 1; i >= 0; i--) {
+    const cy = h * (i + 0.5) / cells.h;
+    parts.push(`L 0 ${cy + N}`);
+    parts.push(`C ${-sides.left*K} ${cy + N}, ${-sides.left*K} ${cy - N}, 0 ${cy - N}`);
+  }
   parts.push('Z');
   return parts.join(' ');
 }
@@ -391,11 +400,14 @@ function buildTileSVG(t, tileW, tileH) {
   const style = tierStyleFor(t.value);
   const sides = sidesForValue(t.value);
   const isSmooth = !sides;
-  const K = isSmooth ? 0 : Math.min(tileW, tileH) * 0.14;
+  // Knob size derived from a single cell so all tiles have consistent bumps
+  const cellUnit = Math.min(tileW / t.w, tileH / t.h);
+  const K = isSmooth ? 0 : cellUnit * 0.16;
+  const N = cellUnit * 0.12;
   const inset = isSmooth ? 3 : Math.ceil(K);
   const bodyW = tileW - inset * 2;
   const bodyH = tileH - inset * 2;
-  const path = piecePath(bodyW, bodyH, isSmooth ? null : sides);
+  const path = piecePath(bodyW, bodyH, isSmooth ? null : sides, {w: t.w, h: t.h}, K, N);
   return `<svg class="tile-svg" viewBox="0 0 ${tileW} ${tileH}" preserveAspectRatio="none">`
     + `<g transform="translate(${inset} ${inset})">`
     + `<path d="${path}" fill="${style.c1}"/>`
