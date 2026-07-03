@@ -426,49 +426,30 @@ function canOccupy(x, y, w, h) {
 }
 
 // Get the same-value tile in front of `t` in direction (dx, dy).
-// Relaxed: empty cells in the front row/col are skipped, so an offset partner
-// still counts as long as it's the unique tile touching our leading edge.
-// Wall cells still fail the whole check.
+// Relaxed twice:
+//   1. empty cells in the front row/col are skipped;
+//   2. different-value tiles in the front are treated as "not the merge partner" — we
+//      still merge as long as there is exactly one mergeable tile touching our edge.
+// Walls still fail the whole check (an out-of-bounds front cell means we're at the edge).
 function getFrontTile(t, dx, dy) {
-  let front = null;
+  const cells = [];
   if (dx === 1) {
-    for (let dyi = 0; dyi < t.h; dyi++) {
-      const cx = t.x + t.w, cy = t.y + dyi;
-      if (cx >= SIZE) return null;
-      const c = grid[cy][cx];
-      if (!c) continue;
-      if (front && front !== c) return null;
-      front = c;
-    }
+    for (let dyi = 0; dyi < t.h; dyi++) cells.push([t.x + t.w, t.y + dyi]);
   } else if (dx === -1) {
-    for (let dyi = 0; dyi < t.h; dyi++) {
-      const cx = t.x - 1, cy = t.y + dyi;
-      if (cx < 0) return null;
-      const c = grid[cy][cx];
-      if (!c) continue;
-      if (front && front !== c) return null;
-      front = c;
-    }
+    for (let dyi = 0; dyi < t.h; dyi++) cells.push([t.x - 1, t.y + dyi]);
   } else if (dy === 1) {
-    for (let dxi = 0; dxi < t.w; dxi++) {
-      const cx = t.x + dxi, cy = t.y + t.h;
-      if (cy >= SIZE) return null;
-      const c = grid[cy][cx];
-      if (!c) continue;
-      if (front && front !== c) return null;
-      front = c;
-    }
+    for (let dxi = 0; dxi < t.w; dxi++) cells.push([t.x + dxi, t.y + t.h]);
   } else if (dy === -1) {
-    for (let dxi = 0; dxi < t.w; dxi++) {
-      const cx = t.x + dxi, cy = t.y - 1;
-      if (cy < 0) return null;
-      const c = grid[cy][cx];
-      if (!c) continue;
-      if (front && front !== c) return null;
-      front = c;
-    }
+    for (let dxi = 0; dxi < t.w; dxi++) cells.push([t.x + dxi, t.y - 1]);
   }
-  return front;
+  const seen = new Set();
+  for (const [cx, cy] of cells) {
+    if (cx < 0 || cx >= SIZE || cy < 0 || cy >= SIZE) return null;  // wall
+    const c = grid[cy][cx];
+    if (c) seen.add(c);
+  }
+  const matches = [...seen].filter(c => canMerge(t, c));
+  return matches.length === 1 ? matches[0] : null;
 }
 
 function canMerge(a, b) {
