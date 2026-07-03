@@ -195,6 +195,30 @@
     cursor: pointer;
   }
   .overlay button:hover { background: #776e65; }
+
+  /* ===== Landscape (phones/tablets in landscape) ===== */
+  @media (orientation: landscape) and (max-height: 550px) {
+    body { padding: 8px; align-items: flex-start; }
+    .container {
+      max-width: none;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas:
+        "back    back"
+        "board   header"
+        "board   info";
+      gap: 8px 18px;
+      align-items: start;
+    }
+    .back-link { grid-area: back; margin: 0; }
+    .header { grid-area: header; flex-direction: column; align-items: stretch; gap: 8px; margin: 0; }
+    .header h1 { font-size: 28px; text-align: center; }
+    .scores { justify-content: center; }
+    .info { grid-area: info; flex-direction: column; align-items: stretch; gap: 10px; margin: 0; font-size: 12px; text-align: center; }
+    .info p { text-align: center; }
+    .board-wrap { grid-area: board; max-width: min(75vh, 380px); margin: 0; }
+  }
 </style>
 </head>
 <body>

@@ -143,14 +143,45 @@
     text-decoration: none;
     border-bottom: 1px dashed rgba(255,255,255,0.4);
   }
+
+  /* ===== Landscape (compact vertical space) ===== */
+  @media (orientation: landscape) and (max-height: 550px) {
+    body { padding: 16px 20px; }
+    header {
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      text-align: left;
+    }
+    header .logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    header .title-text { display: flex; flex-direction: column; align-items: flex-start; }
+    header h1 { font-size: 26px; margin-bottom: 2px; }
+    header p { font-size: 13px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .card { padding: 20px 18px; }
+    .card .emoji { font-size: 42px; }
+    .card h2 { font-size: 18px; }
+    .card p { font-size: 13px; }
+    footer { margin-top: 30px; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
   <header>
     <img src="lychee-logo.png" alt="荔枝" class="logo">
-    <h1>荔枝游戏</h1>
-    <p>放松一下，选一个玩</p>
+    <div class="title-text">
+      <h1>荔枝游戏</h1>
+      <p>放松一下，选一个玩</p>
+    </div>
   </header>
 
   <div class="grid">
