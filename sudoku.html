@@ -3,156 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>数独游戏</title>
+<title>星辰命盘</title>
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'Songti SC', 'Segoe UI', serif;
+    background:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(2px 2px at 80% 20%, rgba(255, 216, 155, 0.6), transparent),
+      radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1.5px 1.5px at 90% 60%, rgba(180, 140, 220, 0.5), transparent),
+      radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(ellipse at 30% 40%, rgba(120, 80, 200, 0.2), transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(200, 140, 90, 0.15), transparent 50%),
+      linear-gradient(135deg, #0f0e2a 0%, #1a1030 50%, #0a0518 100%);
+    background-size: 800px 800px, 600px 600px, 700px 700px, 500px 500px, 900px 900px, 400px 400px, 100% 100%, 100% 100%, 100% 100%;
+    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    color: #e8dcc4;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .container {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    padding: 30px;
+    background: rgba(15, 14, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(245, 200, 138, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(180, 140, 220, 0.15) inset;
+    padding: 26px;
     max-width: 560px;
     width: 100%;
   }
-  h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 8px;
-    font-size: 28px;
-  }
   .back-link {
     display: inline-block;
-    color: #764ba2;
+    color: rgba(245, 200, 138, 0.55);
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
     margin-bottom: 8px;
-    opacity: 0.75;
-    transition: opacity 0.15s;
+    letter-spacing: 2px;
   }
-  .back-link:hover { opacity: 1; }
+  .back-link:hover { color: #f5c88a; }
+  h1 {
+    text-align: center;
+    color: #f5c88a;
+    font-size: 28px;
+    letter-spacing: 10px;
+    margin-bottom: 4px;
+    text-shadow: 0 0 20px rgba(245, 200, 138, 0.4);
+  }
+  .subtitle {
+    text-align: center;
+    color: rgba(232, 220, 196, 0.6);
+    font-size: 12px;
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+  }
   .info {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    color: #555;
-    font-size: 15px;
+    margin-bottom: 12px;
+    color: rgba(232, 220, 196, 0.75);
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 0 8px;
   }
+  .info span b { color: #f5c88a; margin-left: 4px; }
   .difficulty {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     justify-content: center;
-    margin-bottom: 15px;
+    margin-bottom: 14px;
     flex-wrap: wrap;
   }
   .difficulty button {
-    padding: 6px 14px;
-    border: 2px solid #667eea;
-    background: #fff;
-    color: #667eea;
+    padding: 5px 12px;
+    border: 1px solid rgba(245, 200, 138, 0.35);
+    background: transparent;
+    color: rgba(232, 220, 196, 0.85);
     border-radius: 20px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: inherit;
     transition: all 0.2s;
   }
-  .difficulty button:hover { background: #eef; }
+  .difficulty button:hover { background: rgba(245, 200, 138, 0.1); }
   .difficulty button.active {
-    background: #667eea;
-    color: #fff;
+    background: rgba(245, 200, 138, 0.25);
+    border-color: #f5c88a;
+    color: #f5c88a;
   }
   .board {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     gap: 0;
-    border: 3px solid #333;
+    border: 2px solid rgba(245, 200, 138, 0.5);
     aspect-ratio: 1;
-    margin-bottom: 20px;
-    user-select: none;
+    margin-bottom: 18px;
+    background: rgba(0, 0, 0, 0.35);
+    position: relative;
   }
   .cell {
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: clamp(16px, 4vw, 24px);
-    font-weight: 500;
-    background: #fff;
-    border: 1px solid #ccc;
+    font-weight: 400;
+    background: transparent;
+    border: 1px solid rgba(245, 200, 138, 0.1);
     cursor: pointer;
     transition: background 0.15s;
     aspect-ratio: 1;
+    color: rgba(232, 220, 196, 0.9);
+    font-family: 'Georgia', serif;
     position: relative;
   }
-  .cell:nth-child(3n) { border-right: 2px solid #333; }
-  .cell:nth-child(9n) { border-right: 1px solid #ccc; }
-  .row-3 { border-bottom: 2px solid #333 !important; }
-  .cell.fixed { color: #222; font-weight: 700; background: #f5f7fa; }
-  .cell.selected { background: #b3d4fc !important; }
-  .cell.highlight { background: #e3edf9; }
-  .cell.same-num { background: #c6e0f5; }
-  .cell.error { color: #e74c3c; }
-  .cell:not(.fixed):hover { background: #eef4ff; }
+  .cell:nth-child(3n) { border-right: 1px solid rgba(245, 200, 138, 0.4); }
+  .cell:nth-child(9n) { border-right: 1px solid rgba(245, 200, 138, 0.1); }
+  .row-3 { border-bottom: 1px solid rgba(245, 200, 138, 0.4) !important; }
+  .cell.fixed {
+    color: #f5c88a;
+    font-weight: 500;
+    background: rgba(245, 200, 138, 0.06);
+  }
+  .cell.selected {
+    background: rgba(180, 140, 220, 0.35) !important;
+    box-shadow: 0 0 15px rgba(180, 140, 220, 0.5) inset;
+  }
+  .cell.highlight { background: rgba(180, 140, 220, 0.1); }
+  .cell.same-num { background: rgba(245, 200, 138, 0.15); }
+  .cell.error { color: #ff6b6b; text-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+  .cell:not(.fixed):hover { background: rgba(245, 200, 138, 0.1); }
   .numpad {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    gap: 6px;
-    margin-bottom: 15px;
+    gap: 5px;
+    margin-bottom: 14px;
   }
   .numpad button {
-    padding: 12px 0;
-    font-size: 18px;
-    font-weight: 600;
-    background: #667eea;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
+    padding: 10px 0;
+    font-size: 17px;
+    font-weight: 500;
+    background: rgba(180, 140, 220, 0.15);
+    color: #e8dcc4;
+    border: 1px solid rgba(245, 200, 138, 0.2);
+    border-radius: 4px;
     cursor: pointer;
+    font-family: 'Georgia', serif;
     transition: all 0.15s;
   }
-  .numpad button:hover { background: #5568d3; transform: translateY(-1px); }
+  .numpad button:hover {
+    background: rgba(180, 140, 220, 0.3);
+    color: #f5c88a;
+    border-color: rgba(245, 200, 138, 0.5);
+  }
   .actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
   }
   .actions button {
-    padding: 10px 20px;
-    font-size: 14px;
-    border: none;
-    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border: 1px solid rgba(245, 200, 138, 0.3);
+    border-radius: 4px;
     cursor: pointer;
-    background: #f0f0f0;
-    color: #333;
+    background: transparent;
+    color: rgba(232, 220, 196, 0.85);
+    font-family: inherit;
     transition: all 0.15s;
   }
-  .actions button:hover { background: #e0e0e0; }
+  .actions button:hover { background: rgba(245, 200, 138, 0.1); }
   .actions .primary {
-    background: #764ba2;
-    color: #fff;
+    background: rgba(180, 140, 220, 0.25);
+    border-color: rgba(180, 140, 220, 0.6);
+    color: #f5c88a;
   }
-  .actions .primary:hover { background: #5c3982; }
   .message {
     text-align: center;
-    padding: 10px;
+    padding: 8px;
     margin-top: 10px;
-    border-radius: 8px;
-    font-weight: 600;
-    min-height: 24px;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 22px;
+    font-size: 13px;
+    letter-spacing: 2px;
   }
-  .message.success { background: #d4edda; color: #155724; }
-  .message.error { background: #f8d7da; color: #721c24; }
+  .message.success {
+    background: rgba(140, 220, 180, 0.15);
+    color: #a0e8c0;
+    border: 1px solid rgba(140, 220, 180, 0.4);
+  }
+  .message.error {
+    background: rgba(220, 100, 100, 0.15);
+    color: #ffa0a0;
+  }
 
-  /* ===== Landscape (phones/tablets in landscape) ===== */
+  /* Reveal modal (命盘) */
+  .modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 3, 15, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .modal-mask.show { display: flex; opacity: 1; }
+  .modal {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(180, 140, 220, 0.25), transparent 60%),
+      linear-gradient(180deg, #1a0f30 0%, #0f0620 100%);
+    border: 1px solid rgba(245, 200, 138, 0.4);
+    border-radius: 4px;
+    padding: 32px 30px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 40px rgba(180, 140, 220, 0.2);
+    text-align: center;
+    animation: modalIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .star-decoration {
+    color: #f5c88a;
+    font-size: 20px;
+    letter-spacing: 10px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+  }
+  .modal h2 {
+    font-size: 24px;
+    letter-spacing: 10px;
+    color: #f5c88a;
+    margin-bottom: 24px;
+    text-shadow: 0 0 20px rgba(245, 200, 138, 0.5);
+  }
+  .main-star {
+    padding: 18px;
+    border: 1px solid rgba(245, 200, 138, 0.3);
+    margin-bottom: 22px;
+    background: rgba(0, 0, 0, 0.3);
+  }
+  .main-star .star-label {
+    display: block;
+    color: rgba(232, 220, 196, 0.55);
+    font-size: 11px;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+  .main-star .star-name {
+    display: block;
+    font-size: 32px;
+    color: #f5c88a;
+    letter-spacing: 10px;
+    text-shadow: 0 0 20px rgba(245, 200, 138, 0.6);
+    margin-bottom: 6px;
+  }
+  .main-star .star-trait {
+    display: block;
+    color: rgba(232, 220, 196, 0.7);
+    font-size: 13px;
+    letter-spacing: 3px;
+  }
+  .fortune-section {
+    text-align: left;
+    margin-bottom: 18px;
+  }
+  .fortune-section h3 {
+    font-size: 13px;
+    color: #f5c88a;
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+    padding-left: 8px;
+    border-left: 2px solid rgba(245, 200, 138, 0.6);
+  }
+  .fortune-section ul {
+    list-style: none;
+    padding-left: 8px;
+  }
+  .fortune-section li {
+    padding: 3px 0;
+    color: rgba(232, 220, 196, 0.85);
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  .fortune-section li::before {
+    content: '· ';
+    color: rgba(245, 200, 138, 0.6);
+  }
+  .poem {
+    background: rgba(180, 140, 220, 0.08);
+    border: 1px dashed rgba(245, 200, 138, 0.25);
+    padding: 16px 18px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 2;
+    color: rgba(232, 220, 196, 0.9);
+    letter-spacing: 3px;
+    white-space: pre-line;
+    font-style: italic;
+  }
+  .luck {
+    color: rgba(232, 220, 196, 0.7);
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+  }
+  .luck .stars { color: #f5c88a; letter-spacing: 4px; font-size: 16px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: center; }
+  .modal-actions button {
+    padding: 8px 20px;
+    background: transparent;
+    color: rgba(232, 220, 196, 0.9);
+    border: 1px solid rgba(245, 200, 138, 0.5);
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 3px;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .modal-actions button:hover {
+    background: rgba(245, 200, 138, 0.15);
+    color: #f5c88a;
+  }
+
+  /* Landscape */
   @media (orientation: landscape) and (max-height: 550px) {
     body { padding: 8px; align-items: flex-start; }
     .container {
@@ -172,84 +365,102 @@
       align-items: start;
     }
     .back-link { grid-area: back; margin: 0; }
-    h1 { grid-area: title; font-size: 20px; margin-bottom: 2px; }
-    .info { grid-area: info; margin-bottom: 6px; font-size: 13px; }
-    .difficulty { grid-area: diff; margin-bottom: 6px; gap: 6px; }
-    .difficulty button { padding: 4px 10px; font-size: 12px; }
+    h1 { grid-area: title; font-size: 18px; margin-bottom: 2px; letter-spacing: 6px; }
+    .subtitle { display: none; }
+    .info { grid-area: info; margin: 0; font-size: 12px; }
+    .difficulty { grid-area: diff; margin-bottom: 4px; }
+    .difficulty button { padding: 3px 8px; font-size: 11px; }
     .board { grid-area: board; width: min(70vh, 380px); margin: 0; }
     .numpad {
       grid-area: numpad;
       grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-      margin-bottom: 4px;
+      gap: 4px;
+      margin: 0;
     }
-    .numpad button { padding: 10px 0; font-size: 16px; }
+    .numpad button { padding: 8px 0; font-size: 15px; }
     .actions { grid-area: actions; gap: 6px; }
-    .actions button { padding: 6px 10px; font-size: 12px; }
-    .message { grid-area: message; margin-top: 4px; padding: 6px; font-size: 12px; min-height: 0; }
+    .actions button { padding: 5px 10px; font-size: 11px; letter-spacing: 1px; }
+    .message { grid-area: message; margin: 0; font-size: 12px; }
   }
-
-  /* ===== Small portrait (compact phones) ===== */
-  @media (max-width: 380px) {
+  @media (max-width: 480px) {
+    h1 { font-size: 22px; letter-spacing: 6px; }
     .container { padding: 20px 16px; }
-    h1 { font-size: 24px; }
-    .difficulty button { padding: 5px 10px; font-size: 12px; }
-    .numpad { gap: 4px; }
-    .numpad button { padding: 10px 0; font-size: 16px; }
-    .actions button { padding: 8px 14px; font-size: 13px; }
+    .difficulty button { padding: 4px 10px; font-size: 11px; letter-spacing: 0; }
   }
 </style>
 </head>
 <body>
 <div class="container">
   <a href="index.html" class="back-link">← 返回荔枝游戏</a>
-  <h1>数独游戏</h1>
+  <h1>星 辰 命 盘</h1>
+  <div class="subtitle">九星入盘 · 为你排一次命</div>
   <div class="info">
-    <span>⏱ 时间: <span id="timer">00:00</span></span>
-    <span>❌ 错误: <span id="mistakes">0</span></span>
+    <span>时辰 <b id="timer">00:00</b></span>
+    <span>差错 <b id="mistakes">0</b></span>
   </div>
   <div class="difficulty">
-    <button data-level="easy" class="active">简单</button>
-    <button data-level="medium">中等</button>
-    <button data-level="hard">困难</button>
-    <button data-level="expert">专家</button>
+    <button data-level="easy" class="active">初 · 星海入门</button>
+    <button data-level="medium">中 · 星象初显</button>
+    <button data-level="hard">难 · 天机深藏</button>
+    <button data-level="expert">极 · 逆天改命</button>
   </div>
   <div class="board" id="board"></div>
   <div class="numpad" id="numpad"></div>
   <div class="actions">
-    <button id="newGame" class="primary">新游戏</button>
+    <button id="newGame" class="primary">重排星盘</button>
     <button id="erase">擦除</button>
-    <button id="hint">提示</button>
-    <button id="check">检查</button>
-    <button id="solve">显示答案</button>
+    <button id="hint">天机</button>
+    <button id="check">观星</button>
   </div>
   <div class="message" id="message"></div>
 </div>
 
-<script>
-const boardEl = document.getElementById('board');
-const numpadEl = document.getElementById('numpad');
-const timerEl = document.getElementById('timer');
-const mistakesEl = document.getElementById('mistakes');
-const messageEl = document.getElementById('message');
+<div class="modal-mask" id="revealModal">
+  <div class="modal">
+    <div class="star-decoration">✦ ✧ ✦</div>
+    <h2>你 的 命 盘</h2>
+    <div class="main-star">
+      <span class="star-label">— 主 星 —</span>
+      <span class="star-name" id="mainStar"></span>
+      <span class="star-trait" id="starTrait"></span>
+    </div>
+    <div class="fortune-section">
+      <h3>宜</h3>
+      <ul id="auspiciousList"></ul>
+    </div>
+    <div class="fortune-section">
+      <h3>忌</h3>
+      <ul id="avoidList"></ul>
+    </div>
+    <div class="poem" id="poem"></div>
+    <div class="luck">
+      今日运势 · <span class="stars" id="luckStars"></span>
+    </div>
+    <div class="modal-actions">
+      <button id="reshuffleBtn">再算一卦</button>
+      <button id="newPuzzleBtn">重排星盘</button>
+    </div>
+  </div>
+</div>
 
-let puzzle = [], solution = [], userBoard = [], fixed = [];
+<script>
+// ============ Sudoku core ============
+const N = 9;
+let puzzle, solution, userBoard, fixed;
 let selected = null;
 let mistakes = 0;
 let seconds = 0;
 let timerId = null;
 let difficulty = 'easy';
-
+let solved = false;
 const DIFFICULTY = { easy: 40, medium: 32, hard: 26, expert: 22 };
 
 function createEmpty() {
-  return Array.from({length: 9}, () => Array(9).fill(0));
+  return Array.from({length: N}, () => Array(N).fill(0));
 }
 
 function isValid(g, r, c, n) {
-  for (let i = 0; i < 9; i++) {
-    if (g[r][i] === n || g[i][c] === n) return false;
-  }
+  for (let i = 0; i < N; i++) if (g[r][i] === n || g[i][c] === n) return false;
   const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
   for (let i = 0; i < 3; i++)
     for (let j = 0; j < 3; j++)
@@ -257,15 +468,15 @@ function isValid(g, r, c, n) {
   return true;
 }
 
-function solve(g) {
-  for (let r = 0; r < 9; r++) {
-    for (let c = 0; c < 9; c++) {
+function solveGrid(g) {
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
       if (g[r][c] === 0) {
         const nums = [1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
         for (const n of nums) {
           if (isValid(g, r, c, n)) {
             g[r][c] = n;
-            if (solve(g)) return true;
+            if (solveGrid(g)) return true;
             g[r][c] = 0;
           }
         }
@@ -280,8 +491,8 @@ function countSolutions(g, limit = 2) {
   let count = 0;
   function bt() {
     if (count >= limit) return;
-    for (let r = 0; r < 9; r++) {
-      for (let c = 0; c < 9; c++) {
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
         if (g[r][c] === 0) {
           for (let n = 1; n <= 9; n++) {
             if (isValid(g, r, c, n)) {
@@ -303,12 +514,10 @@ function countSolutions(g, limit = 2) {
 
 function generatePuzzle(clues) {
   const grid = createEmpty();
-  solve(grid);
+  solveGrid(grid);
   solution = grid.map(r => [...r]);
   const puz = grid.map(r => [...r]);
-  const positions = [];
-  for (let i = 0; i < 81; i++) positions.push(i);
-  positions.sort(() => Math.random() - 0.5);
+  const positions = Array.from({length: 81}, (_, i) => i).sort(() => Math.random() - 0.5);
   let removed = 0;
   const target = 81 - clues;
   for (const p of positions) {
@@ -326,10 +535,17 @@ function generatePuzzle(clues) {
   return puz;
 }
 
+// ============ Render ============
+const boardEl = document.getElementById('board');
+const numpadEl = document.getElementById('numpad');
+const timerEl = document.getElementById('timer');
+const mistakesEl = document.getElementById('mistakes');
+const messageEl = document.getElementById('message');
+
 function render() {
   boardEl.innerHTML = '';
-  for (let r = 0; r < 9; r++) {
-    for (let c = 0; c < 9; c++) {
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
       if (r === 2 || r === 5) cell.classList.add('row-3');
@@ -364,9 +580,7 @@ function applyHighlights() {
       if (i === r || j === c || (i >= br && i < br+3 && j >= bc && j < bc+3)) {
         cells[idx].classList.add('highlight');
       }
-      if (val && userBoard[i][j] === val) {
-        cells[idx].classList.add('same-num');
-      }
+      if (val && userBoard[i][j] === val) cells[idx].classList.add('same-num');
       if (userBoard[i][j] !== 0 && !fixed[i][j] && userBoard[i][j] !== solution[i][j]) {
         cells[idx].classList.add('error');
       }
@@ -376,7 +590,7 @@ function applyHighlights() {
 }
 
 function placeNumber(n) {
-  if (!selected) return;
+  if (!selected || solved) return;
   const { r, c } = selected;
   if (fixed[r][c]) return;
   if (n !== 0 && userBoard[r][c] !== n && n !== solution[r][c]) {
@@ -387,13 +601,15 @@ function placeNumber(n) {
   render();
   if (isComplete()) {
     stopTimer();
-    showMessage(`🎉 恭喜完成！用时 ${timerEl.textContent}，错误 ${mistakes} 次`, 'success');
+    solved = true;
+    showMessage('星盘归位 · 天机将现', 'success');
+    setTimeout(showReveal, 700);
   }
 }
 
 function isComplete() {
-  for (let r = 0; r < 9; r++)
-    for (let c = 0; c < 9; c++)
+  for (let r = 0; r < N; r++)
+    for (let c = 0; c < N; c++)
       if (userBoard[r][c] !== solution[r][c]) return false;
   return true;
 }
@@ -404,7 +620,8 @@ function showMessage(text, type) {
 }
 
 function newGame() {
-  showMessage('生成中...', '');
+  showMessage('星盘排布中……', '');
+  solved = false;
   setTimeout(() => {
     puzzle = generatePuzzle(DIFFICULTY[difficulty]);
     userBoard = puzzle.map(r => [...r]);
@@ -417,6 +634,7 @@ function newGame() {
     showMessage('', '');
     render();
     startTimer();
+    hideReveal();
   }, 50);
 }
 
@@ -429,11 +647,7 @@ function startTimer() {
     timerEl.textContent = `${m}:${s}`;
   }, 1000);
 }
-
-function stopTimer() {
-  if (timerId) clearInterval(timerId);
-  timerId = null;
-}
+function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 
 function buildNumpad() {
   for (let n = 1; n <= 9; n++) {
@@ -462,29 +676,24 @@ document.addEventListener('keydown', e => {
 document.getElementById('newGame').addEventListener('click', newGame);
 document.getElementById('erase').addEventListener('click', () => placeNumber(0));
 document.getElementById('hint').addEventListener('click', () => {
-  if (!selected) { showMessage('请先选择一个格子', 'error'); return; }
+  if (!selected) { showMessage('先选一格', 'error'); return; }
   const { r, c } = selected;
-  if (fixed[r][c]) return;
+  if (fixed[r][c] || solved) return;
   userBoard[r][c] = solution[r][c];
   render();
   if (isComplete()) {
-    stopTimer();
-    showMessage(`🎉 完成！用时 ${timerEl.textContent}`, 'success');
+    stopTimer(); solved = true;
+    showMessage('星盘归位 · 天机将现', 'success');
+    setTimeout(showReveal, 700);
   }
 });
 document.getElementById('check').addEventListener('click', () => {
   let errors = 0;
-  for (let r = 0; r < 9; r++)
-    for (let c = 0; c < 9; c++)
+  for (let r = 0; r < N; r++)
+    for (let c = 0; c < N; c++)
       if (userBoard[r][c] !== 0 && userBoard[r][c] !== solution[r][c]) errors++;
-  if (errors === 0) showMessage('✓ 目前填入均正确', 'success');
-  else showMessage(`✗ 发现 ${errors} 处错误`, 'error');
-});
-document.getElementById('solve').addEventListener('click', () => {
-  userBoard = solution.map(r => [...r]);
-  render();
-  stopTimer();
-  showMessage('已显示答案', '');
+  if (errors === 0) showMessage('☾ 目前无差错', 'success');
+  else showMessage(`✗ 现有 ${errors} 处错位`, 'error');
 });
 
 document.querySelectorAll('.difficulty button').forEach(btn => {
@@ -496,6 +705,110 @@ document.querySelectorAll('.difficulty button').forEach(btn => {
   });
 });
 
+// ============ Fortune (命盘揭示) ============
+const NINE_STARS = [
+  { name: '贪狼', trait: '善变敏感 · 情感丰盈' },
+  { name: '巨门', trait: '心思深沉 · 一鸣惊人' },
+  { name: '禄存', trait: '福气自来 · 稳中有喜' },
+  { name: '文曲', trait: '才思敏捷 · 笔下生花' },
+  { name: '廉贞', trait: '外柔内刚 · 遇事有骨' },
+  { name: '武曲', trait: '刚正果断 · 逢困破局' },
+  { name: '破军', trait: '开创革新 · 不循旧路' },
+  { name: '左辅', trait: '温柔守护 · 情深意长' },
+  { name: '右弼', trait: '灵动机敏 · 逢凶化吉' },
+];
+const BONUS_STAR = { name: '紫微', trait: '天生贵人 · 万物待你' };
+
+const AUSPICIOUS = [
+  '早起看晨光', '与旧友致电', '整理书桌', '尝一道新菜', '给自己写封信',
+  '慢跑十五分钟', '看一部老电影', '给家人打电话', '收藏一片落叶',
+  '重新读一本旧书', '手写一张便签', '关掉手机一小时',
+  '换一个视角看熟悉的路', '喝一杯陌生的茶', '写下今天最好的一件事',
+  '给未来的自己拍一张照', '认真地把咖啡喝完', '和陌生的猫打招呼',
+  '不着急回复消息', '把想说的话说出口', '路过书店走进去',
+];
+const AVOID = [
+  '深夜进食', '冲动消费', '争论琐事', '刷屏睡不着', '假装无所谓',
+  '把话憋在心里', '答应做不到的事', '和从前较劲', '因小事发怒',
+  '喝太多咖啡', '囤积旧邮件', '深究前任朋友圈', '在雨里想太多',
+  '否认自己的感觉', '把明天的活儿留到今晚', '和陌生人比命',
+];
+const POEMS = [
+  '你手里握着的不是硬币，\n是尚未落定的星辰。\n走慢一点，天会给你答案。',
+  '雨在天上，风在昨天。\n今天你想去哪儿，\n就往那儿去。',
+  '有些等待像一颗种子，\n埋下时看不见，\n开花时才知道是什么。',
+  '不必所有事都有答案。\n有些事，静静做完就够了。',
+  '一个人也可以是节日。\n给自己一朵花。',
+  '走过的路都算数。\n转弯也是。',
+  '最好的运气，是遇见愿意等你的人。\n包括你自己。',
+  '今天的月亮，是给愿意抬头的人的。',
+  '你比你以为的更靠近答案。\n再走一步试试。',
+  '慢就是稳，稳就是快。\n今天不必急。',
+];
+
+function mulberry32(seed) {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function generateFortune(reshuffle = false) {
+  const diffMap = { easy: 1, medium: 2, hard: 3, expert: 4 };
+  const base = seconds * 31 + mistakes * 137 + diffMap[difficulty] * 991;
+  const seed = reshuffle ? (base + Math.floor(Date.now() / 100)) : base;
+  const rand = mulberry32(seed);
+  const shuffle = arr => [...arr].sort(() => rand() - 0.5);
+
+  // Star: expert + 0 mistakes = 紫微
+  const isBonus = difficulty === 'expert' && mistakes === 0;
+  const star = isBonus ? BONUS_STAR : shuffle(NINE_STARS)[0];
+
+  const auspicious = shuffle(AUSPICIOUS).slice(0, 3);
+  const avoid = shuffle(AVOID).slice(0, 3);
+  const poem = shuffle(POEMS)[0];
+
+  // Luck 3-5 stars based on mistakes
+  let luck = 5;
+  if (mistakes >= 6) luck = 3;
+  else if (mistakes >= 3) luck = 4;
+  if (isBonus) luck = 5;
+
+  return { star, auspicious, avoid, poem, luck };
+}
+
+function renderFortune(f) {
+  document.getElementById('mainStar').textContent = f.star.name;
+  document.getElementById('starTrait').textContent = f.star.trait;
+  document.getElementById('auspiciousList').innerHTML = f.auspicious.map(t => `<li>${t}</li>`).join('');
+  document.getElementById('avoidList').innerHTML = f.avoid.map(t => `<li>${t}</li>`).join('');
+  document.getElementById('poem').textContent = f.poem;
+  document.getElementById('luckStars').textContent = '★'.repeat(f.luck) + '☆'.repeat(5 - f.luck);
+}
+
+function showReveal() {
+  const f = generateFortune();
+  renderFortune(f);
+  document.getElementById('revealModal').classList.add('show');
+}
+function hideReveal() {
+  document.getElementById('revealModal').classList.remove('show');
+}
+document.getElementById('reshuffleBtn').addEventListener('click', () => {
+  const f = generateFortune(true);
+  renderFortune(f);
+});
+document.getElementById('newPuzzleBtn').addEventListener('click', () => {
+  hideReveal();
+  newGame();
+});
+document.getElementById('revealModal').addEventListener('click', e => {
+  if (e.target.id === 'revealModal') hideReveal();
+});
+
+// ============ Boot ============
 buildNumpad();
 newGame();
 </script>

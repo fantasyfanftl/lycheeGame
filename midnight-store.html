@@ -929,6 +929,100 @@ body {
   .card-dots { bottom: 8px; }
 }
 
+
+/* ========== Live scene animations ========== */
+/* Characters breathe subtly */
+.char-body {
+  animation: char-breath 3.6s ease-in-out infinite;
+  transform-origin: center bottom;
+  transform-box: fill-box;
+}
+@keyframes char-breath {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.025); }
+}
+
+/* Oden steam rises */
+.steam {
+  animation: steam-rise 3.2s ease-in-out infinite;
+  transform-origin: center bottom;
+  transform-box: fill-box;
+}
+.steam-2 { animation-delay: 0.8s; }
+.steam-3 { animation-delay: 1.6s; }
+@keyframes steam-rise {
+  0%   { opacity: 0.55; transform: translateY(0)   scaleY(1); }
+  50%  { opacity: 0.75; transform: translateY(-6px) scaleY(1.1); }
+  100% { opacity: 0;    transform: translateY(-14px) scaleY(1.2); }
+}
+
+/* Fluorescent tube flicker */
+.tube-flicker {
+  animation: tube-flicker 4.5s steps(1, end) infinite;
+}
+@keyframes tube-flicker {
+  0%, 40%, 55%, 100% { opacity: 0.3; }
+  45%, 50%           { opacity: 0.06; }
+  47%                { opacity: 0.35; }
+}
+
+/* Lamppost glow gentle pulse */
+.lamppost-halo {
+  animation: lamp-pulse 5s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes lamp-pulse {
+  0%, 100% { opacity: 0.14; }
+  50%      { opacity: 0.22; }
+}
+
+/* Cat tail flick occasionally (via slow subtle rotation on the whole body) */
+.cat-body {
+  animation: cat-idle 8s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes cat-idle {
+  0%, 90%, 100% { transform: translateY(0); }
+  92%           { transform: translateY(-1px); }
+  95%           { transform: translateY(0); }
+}
+
+/* Clock minute hand slowly ticks (symbolic) */
+.clock-min {
+  animation: clock-tick 60s linear infinite;
+  transform-origin: 350px 70px;
+  transform-box: fill-box;
+}
+.clock-min-c4 {
+  transform-origin: 350px 70px;
+}
+@keyframes clock-tick {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Star twinkle */
+.star {
+  animation: twinkle 3s ease-in-out infinite;
+}
+.star-b { animation-delay: 1s; }
+.star-c { animation-delay: 2s; }
+@keyframes twinkle {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+/* Milk cabinet red-tinted top light gentle pulse */
+.milk-red-lamp {
+  animation: red-lamp 6s ease-in-out infinite;
+}
+@keyframes red-lamp {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 0.9; }
+}
+
 </style>
 </head>
 <body>
@@ -967,9 +1061,9 @@ body {
             <!-- Sky -->
             <rect x="0" y="0" width="400" height="380" fill="#2a3448"/>
             <!-- Stars -->
-            <circle cx="60" cy="80" r="1" fill="#f5c88a" opacity="0.8"/>
-            <circle cx="180" cy="40" r="1" fill="#f5c88a" opacity="0.6"/>
-            <circle cx="320" cy="60" r="1.2" fill="#f5c88a" opacity="0.7"/>
+            <circle class="star" cx="60" cy="80" r="1" fill="#f5c88a" opacity="0.8"/>
+            <circle class="star star-b" cx="180" cy="40" r="1" fill="#f5c88a" opacity="0.6"/>
+            <circle class="star star-c" cx="320" cy="60" r="1.2" fill="#f5c88a" opacity="0.7"/>
             <circle cx="90" cy="140" r="0.8" fill="#f5c88a" opacity="0.5"/>
             <circle cx="260" cy="160" r="1" fill="#f5c88a" opacity="0.6"/>
             <!-- Moon (crescent) -->
@@ -977,7 +1071,7 @@ body {
             <circle cx="90" cy="64" r="24" fill="#2a3448"/>
             <!-- Lamppost -->
             <line x1="330" y1="380" x2="330" y2="140" stroke="#3d2f24" stroke-width="2.5"/>
-            <circle cx="330" cy="135" r="26" fill="#f5c88a" opacity="0.14"/>
+            <circle class="lamppost-halo" cx="330" cy="135" r="26" fill="#f5c88a"/>
             <circle cx="330" cy="135" r="14" fill="#f5c88a" opacity="0.4"/>
             <circle cx="330" cy="135" r="7" fill="#f9f3e8" opacity="0.95"/>
             <!-- Sidewalk / steps -->
@@ -992,7 +1086,7 @@ body {
             <ellipse cx="130" cy="470" rx="20" ry="4.5" fill="none" stroke="#c9b48a" stroke-width="1"/>
             <text x="130" y="502" font-size="11" fill="#c9b48a" text-anchor="middle" letter-spacing="2" font-family="serif">猫 碗</text>
             <!-- Cat silhouette -->
-            <g transform="translate(85, 445)" opacity="0.75">
+            <g class="cat-body" transform="translate(85, 445)" opacity="0.75">
               <ellipse cx="0" cy="12" rx="18" ry="7" fill="#d9a760"/>
               <circle cx="-14" cy="7" r="7" fill="#d9a760"/>
               <path d="M-19 3 L-16 -3 L-13 3 Z" fill="#d9a760"/>
@@ -1047,7 +1141,7 @@ body {
             <!-- Ceiling tubes with flicker -->
             <rect x="30" y="20" width="150" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
             <rect x="220" y="20" width="150" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
-            <rect x="90" y="20" width="45" height="6" fill="#c17b52" opacity="0.3"/>
+            <rect class="tube-flicker" x="90" y="20" width="45" height="6" fill="#c17b52"/>
             <!-- Water dispenser -->
             <rect x="35" y="200" width="80" height="140" fill="#c9b48a" stroke="#3d2f24" stroke-width="1.5"/>
             <rect x="50" y="220" width="50" height="8" fill="#3d2f24" opacity="0.6"/>
@@ -1062,9 +1156,9 @@ body {
             <line x1="192" y1="235" x2="192" y2="270" stroke="#f5c88a" stroke-width="1"/>
             <line x1="206" y1="235" x2="206" y2="270" stroke="#f5c88a" stroke-width="1"/>
             <line x1="220" y1="235" x2="220" y2="270" stroke="#f5c88a" stroke-width="1"/>
-            <path d="M188 220 Q184 208 188 196 Q192 184 188 172" stroke="#c9b48a" stroke-width="2" fill="none" opacity="0.55"/>
-            <path d="M204 218 Q208 206 204 194 Q200 182 204 170" stroke="#c9b48a" stroke-width="2" fill="none" opacity="0.5"/>
-            <path d="M218 220 Q222 208 218 196 Q214 184 218 172" stroke="#c9b48a" stroke-width="2" fill="none" opacity="0.55"/>
+            <path class="steam" d="M188 220 Q184 208 188 196 Q192 184 188 172" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            <path class="steam steam-2" d="M204 218 Q208 206 204 194 Q200 182 204 170" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            <path class="steam steam-3" d="M218 220 Q222 208 218 196 Q214 184 218 172" stroke="#c9b48a" stroke-width="2" fill="none"/>
             <text x="200" y="305" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">关 东 煮</text>
             <!-- Shelves -->
             <rect x="290" y="180" width="90" height="200" fill="none" stroke="#3d2f24" stroke-width="1.5"/>
@@ -1096,14 +1190,14 @@ body {
             <!-- Clock top-right -->
             <circle cx="350" cy="70" r="26" fill="#f9f3e8" stroke="#3d2f24" stroke-width="1.5"/>
             <circle cx="350" cy="70" r="1.5" fill="#3d2f24"/>
-            <line x1="350" y1="70" x2="350" y2="52" stroke="#3d2f24" stroke-width="1.5"/>
+            <line class="clock-min" x1="350" y1="70" x2="350" y2="52" stroke="#3d2f24" stroke-width="1.5"/>
             <line x1="350" y1="70" x2="362" y2="70" stroke="#3d2f24" stroke-width="1.5"/>
             <text x="350" y="115" font-size="10" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">02 : 00</text>
             <!-- Milk cabinet -->
             <rect x="40" y="170" width="120" height="180" fill="#c9b48a" opacity="0.35" stroke="#3d2f24" stroke-width="1.5"/>
             <line x1="40" y1="230" x2="160" y2="230" stroke="#3d2f24" stroke-width="0.8"/>
             <line x1="40" y1="285" x2="160" y2="285" stroke="#3d2f24" stroke-width="0.8"/>
-            <rect x="40" y="168" width="120" height="4" fill="#c17b52" opacity="0.7"/>
+            <rect class="milk-red-lamp" x="40" y="168" width="120" height="4" fill="#c17b52"/>
             <rect x="55" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
             <rect x="75" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
             <rect x="95" y="185" width="14" height="35" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.8"/>
@@ -2640,7 +2734,7 @@ function characterSVG(id) {
   const spec = specs[id] || { body: '#3d2f24', extra: '' };
   const meta = CHARACTERS[id] || (typeof NPC !== 'undefined' && NPC[id]) || { short: id };
   return `<circle cx="30" cy="20" r="14" fill="#3d2f24"/>` +
-         `<rect x="18" y="34" width="24" height="60" fill="${spec.body}" stroke="#3d2f24" stroke-width="0.8"/>` +
+         `<rect class="char-body" x="18" y="34" width="24" height="60" fill="${spec.body}" stroke="#3d2f24" stroke-width="0.8"/>` +
          spec.extra +
          `<text x="30" y="112" font-size="9" fill="#3d2f24" text-anchor="middle" letter-spacing="1">${meta.short}</text>`;
 }
