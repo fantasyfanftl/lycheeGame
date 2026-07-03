@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>扫雷</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', -apple-system, Tahoma, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    padding: 22px;
+    max-width: 640px;
+    width: 100%;
+  }
+  .back-link {
+    display: inline-block;
+    color: #764ba2;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 6px;
+    opacity: 0.75;
+  }
+  .back-link:hover { opacity: 1; }
+  h1 { color: #333; font-size: 24px; margin-bottom: 12px; }
+  .diff {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .diff button {
+    padding: 5px 12px;
+    border: 2px solid #667eea;
+    background: #fff;
+    color: #667eea;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .diff button.active { background: #667eea; color: #fff; }
+  .info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    color: #555;
+    font-size: 14px;
+  }
+  .info .stat {
+    background: #f5f7fa;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .info .stat b { color: #764ba2; font-size: 16px; }
+  .face {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .face:hover { background: #f0f0f0; }
+  .board-wrap {
+    overflow: auto;
+    background: #d0d5e0;
+    border-radius: 8px;
+    padding: 6px;
+    margin-bottom: 8px;
+    max-width: 100%;
+  }
+  .board {
+    display: grid;
+    gap: 2px;
+    margin: 0 auto;
+  }
+  .cell {
+    width: 28px;
+    height: 28px;
+    background: #b8bfd0;
+    border: 1px solid #a0a8bc;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background 0.1s;
+  }
+  .cell:hover:not(.revealed) { background: #c8cfe0; }
+  .cell.revealed {
+    background: #eef1f8;
+    border-color: #d5dae8;
+    cursor: default;
+  }
+  .cell.mine { background: #f65e3b; color: #fff; }
+  .cell.flag { color: #d4382a; font-size: 15px; }
+  .cell[data-n="1"] { color: #1e6fea; }
+  .cell[data-n="2"] { color: #178f4c; }
+  .cell[data-n="3"] { color: #dc2f2f; }
+  .cell[data-n="4"] { color: #6b1abc; }
+  .cell[data-n="5"] { color: #7a2828; }
+  .cell[data-n="6"] { color: #0f7a7a; }
+  .cell[data-n="7"] { color: #333; }
+  .cell[data-n="8"] { color: #666; }
+  .hint {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 6px;
+  }
+  .message {
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 10px;
+    min-height: 22px;
+    font-size: 14px;
+  }
+  .message.win { background: #d4edda; color: #155724; }
+  .message.lose { background: #f8d7da; color: #721c24; }
+
+  @media (max-width: 480px) {
+    .cell { width: 26px; height: 26px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <h1>💣 扫雷</h1>
+  <div class="diff">
+    <button data-d="easy" class="active">初级 · 9×9 · 10雷</button>
+    <button data-d="medium">中级 · 16×16 · 40雷</button>
+    <button data-d="hard">高级 · 16×30 · 99雷</button>
+  </div>
+  <div class="info">
+    <span class="stat">💣 <b id="mineCount">10</b></span>
+    <button class="face" id="face">🙂</button>
+    <span class="stat">⏱ <b id="timer">0</b></span>
+  </div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+  <div class="hint">
+    电脑：<b>左键</b>翻开 · <b>右键</b>标记 · 手机：<b>点</b>翻开 · <b>长按</b>标记
+  </div>
+  <div class="message" id="message"></div>
+</div>
+
+<script>
+const DIFF = {
+  easy:   { rows: 9,  cols: 9,  mines: 10 },
+  medium: { rows: 16, cols: 16, mines: 40 },
+  hard:   { rows: 16, cols: 30, mines: 99 },
+};
+let rows, cols, total;
+let mines, revealed, flagged;
+let gameOver, won, firstMove;
+let elapsed, timerId;
+let currentDiff = 'easy';
+
+const boardEl = document.getElementById('board');
+const mineCountEl = document.getElementById('mineCount');
+const timerEl = document.getElementById('timer');
+const faceEl = document.getElementById('face');
+const messageEl = document.getElementById('message');
+
+function key(r, c) { return `${r},${c}`; }
+
+function initGame() {
+  const d = DIFF[currentDiff];
+  rows = d.rows; cols = d.cols; total = d.mines;
+  mines = new Set();
+  revealed = new Set();
+  flagged = new Set();
+  gameOver = false; won = false; firstMove = true;
+  elapsed = 0;
+  clearInterval(timerId);
+  timerEl.textContent = '0';
+  mineCountEl.textContent = total;
+  faceEl.textContent = '🙂';
+  messageEl.textContent = ''; messageEl.className = 'message';
+  boardEl.style.gridTemplateColumns = `repeat(${cols}, 28px)`;
+  boardEl.innerHTML = '';
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r; cell.dataset.c = c;
+      boardEl.appendChild(cell);
+    }
+  }
+}
+
+function placeMines(safeR, safeC) {
+  const forbidden = new Set();
+  for (let dr=-1; dr<=1; dr++)
+    for (let dc=-1; dc<=1; dc++)
+      forbidden.add(key(safeR+dr, safeC+dc));
+  const pool = [];
+  for (let r=0; r<rows; r++)
+    for (let c=0; c<cols; c++)
+      if (!forbidden.has(key(r,c))) pool.push([r,c]);
+  pool.sort(() => Math.random() - 0.5);
+  for (let i=0; i<total; i++) {
+    const [r, c] = pool[i];
+    mines.add(key(r, c));
+  }
+}
+
+function neighbors(r, c) {
+  const out = [];
+  for (let dr=-1; dr<=1; dr++)
+    for (let dc=-1; dc<=1; dc++) {
+      if (!dr && !dc) continue;
+      const nr = r+dr, nc = c+dc;
+      if (nr>=0 && nr<rows && nc>=0 && nc<cols) out.push([nr, nc]);
+    }
+  return out;
+}
+
+function countMines(r, c) {
+  let n = 0;
+  for (const [nr, nc] of neighbors(r, c)) if (mines.has(key(nr, nc))) n++;
+  return n;
+}
+
+function reveal(r, c) {
+  if (gameOver) return;
+  const k = key(r, c);
+  if (revealed.has(k) || flagged.has(k)) return;
+  if (firstMove) {
+    firstMove = false;
+    placeMines(r, c);
+    timerId = setInterval(() => { elapsed++; timerEl.textContent = elapsed; }, 1000);
+  }
+  if (mines.has(k)) {
+    revealed.add(k);
+    gameOver = true;
+    faceEl.textContent = '💀';
+    for (const m of mines) revealed.add(m);
+    render();
+    showMessage('💥 踩中了 —— 再来一局？', 'lose');
+    clearInterval(timerId);
+    return;
+  }
+  // Flood
+  const stack = [[r, c]];
+  while (stack.length) {
+    const [cr, cc] = stack.pop();
+    const ck = key(cr, cc);
+    if (revealed.has(ck) || flagged.has(ck)) continue;
+    revealed.add(ck);
+    if (countMines(cr, cc) === 0) {
+      for (const [nr, nc] of neighbors(cr, cc)) {
+        if (!revealed.has(key(nr, nc))) stack.push([nr, nc]);
+      }
+    }
+  }
+  render();
+  checkWin();
+}
+
+function toggleFlag(r, c) {
+  if (gameOver) return;
+  const k = key(r, c);
+  if (revealed.has(k)) return;
+  if (flagged.has(k)) flagged.delete(k);
+  else flagged.add(k);
+  updateMineCount();
+  render();
+}
+
+function updateMineCount() {
+  mineCountEl.textContent = total - flagged.size;
+}
+
+function render() {
+  const cells = boardEl.children;
+  for (let r=0; r<rows; r++)
+    for (let c=0; c<cols; c++) {
+      const cell = cells[r*cols + c];
+      const k = key(r, c);
+      cell.className = 'cell';
+      cell.textContent = '';
+      cell.dataset.n = '';
+      if (revealed.has(k)) {
+        cell.classList.add('revealed');
+        if (mines.has(k)) {
+          cell.classList.add('mine');
+          cell.textContent = '💣';
+        } else {
+          const n = countMines(r, c);
+          if (n > 0) { cell.textContent = n; cell.dataset.n = n; }
+        }
+      } else if (flagged.has(k)) {
+        cell.classList.add('flag');
+        cell.textContent = '🚩';
+      }
+    }
+}
+
+function checkWin() {
+  if (rows*cols - revealed.size === total) {
+    gameOver = true; won = true;
+    faceEl.textContent = '😎';
+    // Flag all mines
+    for (const m of mines) flagged.add(m);
+    updateMineCount();
+    render();
+    showMessage(`🎉 通关！用时 ${elapsed} 秒`, 'win');
+    clearInterval(timerId);
+  }
+}
+
+function showMessage(text, type) {
+  messageEl.textContent = text;
+  messageEl.className = 'message ' + (type || '');
+}
+
+// Interactions
+let longPressTimer = null;
+boardEl.addEventListener('click', e => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  reveal(+cell.dataset.r, +cell.dataset.c);
+});
+boardEl.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  toggleFlag(+cell.dataset.r, +cell.dataset.c);
+});
+boardEl.addEventListener('touchstart', e => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  clearTimeout(longPressTimer);
+  longPressTimer = setTimeout(() => {
+    toggleFlag(+cell.dataset.r, +cell.dataset.c);
+    longPressTimer = null;
+    if (navigator.vibrate) navigator.vibrate(30);
+  }, 400);
+}, { passive: true });
+boardEl.addEventListener('touchend', () => {
+  clearTimeout(longPressTimer);
+});
+boardEl.addEventListener('touchmove', () => {
+  clearTimeout(longPressTimer);
+}, { passive: true });
+
+faceEl.addEventListener('click', initGame);
+document.querySelectorAll('.diff button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.diff button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentDiff = btn.dataset.d;
+    initGame();
+  });
+});
+
+initGame();
+</script>
+</body>
+</html>
