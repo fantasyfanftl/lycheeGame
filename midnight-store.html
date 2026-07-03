@@ -1206,6 +1206,17 @@ body {
   50%      { opacity: 0.9;  fill: #f5c88a; }
 }
 
+
+/* ========== Clickable object zones ========== */
+.obj-zone {
+  cursor: pointer;
+  fill: transparent;
+  transition: fill 0.15s;
+}
+.obj-zone:hover, .obj-zone:active {
+  fill: rgba(245, 200, 138, 0.08);
+}
+
 </style>
 </head>
 <body>
@@ -1293,6 +1304,10 @@ body {
             <circle cx="375" cy="200" r="1" fill="#3d2f24"/>
             <text x="375" y="215" font-size="8" fill="#c9b48a" text-anchor="middle" letter-spacing="1" font-family="serif">铃</text>
             <text x="375" y="220" font-size="10" fill="#c9b48a" text-anchor="middle" letter-spacing="1" font-family="serif">→ 店 内</text>
+          
+            <!-- Clickable zones for objects -->
+            <rect class="obj-zone" data-hs="doorway" x="345" y="180" width="55" height="280"/>
+            <rect class="obj-zone" data-hs="catBowl" x="60" y="440" width="140" height="80"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="doorstep"></div>
           <div class="chars-layer" data-card-chars="doorstep"></div>
@@ -1333,6 +1348,8 @@ body {
             <text x="200" y="480" font-size="12" fill="#3d2f24" text-anchor="middle" letter-spacing="4" font-family="serif">窗 边 座 位</text>
             <!-- Floor line -->
             <line x1="0" y1="500" x2="400" y2="500" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+          
+            <rect class="obj-zone" data-hs="driverSeat" x="60" y="240" width="280" height="220"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="window"></div>
           <div class="chars-layer" data-card-chars="window"></div>
@@ -1388,6 +1405,10 @@ body {
             <text x="335" y="400" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">货 架</text>
             <!-- Floor -->
             <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+          
+            <rect class="obj-zone" data-hs="waterDispenser" x="30" y="195" width="90" height="180"/>
+            <rect class="obj-zone" data-hs="odenPot" x="150" y="215" width="100" height="105"/>
+            <rect class="obj-zone" data-hs="shelves" x="285" y="175" width="100" height="230"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="middle"></div>
           <div class="chars-layer" data-card-chars="middle"></div>
@@ -1457,6 +1478,11 @@ body {
             <text x="295" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
             <!-- Floor -->
             <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
+          
+            <rect class="obj-zone" data-hs="milkCabinet" x="35" y="165" width="130" height="220"/>
+            <rect class="obj-zone" data-hs="register" x="215" y="245" width="160" height="140"/>
+            <rect class="obj-zone" data-hs="radio" x="215" y="215" width="65" height="30"/>
+            <rect class="obj-zone" data-hs="phone" x="268" y="292" width="24" height="34"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="register"></div>
           <div class="chars-layer" data-card-chars="register"></div>
@@ -3684,6 +3710,40 @@ function initCardNav() {
         currentCardIdx = idx;
         updateCardDots();
       }
+// Object hints — shown as toast when player clicks something that isn't the current beat
+const OBJECT_HINTS = {
+  doorway:        '玻璃门。凌晨两点还开着。',
+  catBowl:        '猫碗。今晚有点满。',
+  driverSeat:     '窗边座位。',
+  waterDispenser: '饮水机。温水档。',
+  odenPot:        '关东煮的锅。',
+  shelves:        '货架。凌晨两点，货没什么变化。',
+  milkCabinet:    '热奶柜。上层的字很小。',
+  register:       '收银台。二维码和现金抽屉。',
+  radio:          '收音机。凌晨这时段偶尔放老歌。',
+  phone:          '有人的手机。屏幕亮着，没在看。'
+};
+
+function initObjClicks() {
+  document.querySelectorAll('.card-svg').forEach(svg => {
+    svg.addEventListener('click', (e) => {
+      const t = e.target;
+      if (!t || !t.dataset || !t.dataset.hs) return;
+      const hs = t.dataset.hs;
+      const beat = currentBeat();
+      if (beat && beat.hs === hs && !state.dialogueOpen) {
+        // Match current beat — trigger it
+        playBeat(beat);
+        return;
+      }
+      // Non-matching click — show hint
+      if (state.dialogueOpen) return;  // don't spam during dialog
+      const hint = OBJECT_HINTS[hs];
+      if (hint) toast(hint);
+    });
+  });
+}
+
     }, 100);
   });
   // Dots click
@@ -3782,6 +3842,7 @@ function bindEvents() {
 function init() {
   bindEvents();
   initCardNav();
+  initObjClicks();
   refreshSaveUI();
   render();
 }
