@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>词影</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Songti SC', 'STSong', Georgia, serif;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(180, 140, 220, 0.15), transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(230, 150, 100, 0.12), transparent 60%),
+      linear-gradient(180deg, #1a1830 0%, #0e0c1e 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #e8dcc4;
+    padding: 20px 16px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    background: rgba(15, 12, 30, 0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(220, 180, 140, 0.2);
+    border-radius: 8px;
+    padding: 22px 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .back-link {
+    display: inline-block;
+    color: rgba(220, 180, 140, 0.55);
+    text-decoration: none;
+    font-size: 12px;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+  .back-link:hover { color: #ddb887; }
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    letter-spacing: 10px;
+    color: #ddb887;
+    margin-bottom: 4px;
+    text-shadow: 0 0 20px rgba(220, 180, 140, 0.4);
+  }
+  .subtitle {
+    text-align: center;
+    color: rgba(220, 180, 140, 0.55);
+    font-size: 12px;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .answer-hint {
+    text-align: center;
+    margin: 14px 0 18px;
+    padding: 12px;
+    background: rgba(220, 180, 140, 0.05);
+    border: 1px solid rgba(220, 180, 140, 0.2);
+    border-radius: 4px;
+  }
+  .answer-hint .label {
+    display: block;
+    font-size: 11px;
+    color: rgba(220, 180, 140, 0.5);
+    letter-spacing: 4px;
+    margin-bottom: 6px;
+  }
+  .answer-blanks {
+    font-size: 26px;
+    letter-spacing: 14px;
+    color: #ddb887;
+    text-align: center;
+    padding-left: 14px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(220, 180, 140, 0.3);
+    color: #e8dcc4;
+    font-family: inherit;
+    font-size: 16px;
+    border-radius: 4px;
+    letter-spacing: 3px;
+    text-align: center;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .input-row input:focus { border-color: #ddb887; box-shadow: 0 0 12px rgba(220, 180, 140, 0.3); }
+  .input-row button {
+    padding: 10px 20px;
+    background: #ddb887;
+    color: #1a1830;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .input-row button:hover { background: #c19b6a; }
+  .input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    color: rgba(220, 180, 140, 0.7);
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .stat-row b { color: #ddb887; margin-left: 4px; }
+
+  .message {
+    text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    min-height: 24px;
+    color: rgba(220, 180, 140, 0.7);
+  }
+  .message.err { color: #ffa8a8; }
+
+  .latest {
+    background: rgba(220, 180, 140, 0.08);
+    border: 1px solid rgba(220, 180, 140, 0.35);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .latest.show { display: block; }
+  .latest .label {
+    font-size: 11px;
+    color: rgba(220, 180, 140, 0.55);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 42px 1fr 40px 60px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 6px;
+    border-bottom: 1px dashed rgba(220, 180, 140, 0.15);
+    font-size: 14px;
+  }
+  .row:last-child { border-bottom: none; }
+  .row .rank {
+    color: rgba(220, 180, 140, 0.55);
+    text-align: right;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .row .word {
+    color: #e8dcc4;
+    letter-spacing: 2px;
+  }
+  .row .word.hot { color: #ffd48a; font-weight: bold; text-shadow: 0 0 8px rgba(255, 200, 130, 0.4); }
+  .row .temp-bar {
+    height: 6px;
+    background: rgba(220, 180, 140, 0.15);
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+  .row .temp-bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .row .pct {
+    text-align: right;
+    font-family: 'Georgia', monospace;
+    font-size: 12px;
+    color: rgba(220, 180, 140, 0.8);
+  }
+  .row.new-guess {
+    background: rgba(220, 180, 140, 0.08);
+    animation: flash 0.6s;
+  }
+  @keyframes flash {
+    0% { background: rgba(220, 180, 140, 0.25); }
+    100% { background: rgba(220, 180, 140, 0.08); }
+  }
+
+  .history {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .hint {
+    text-align: center;
+    color: rgba(220, 180, 140, 0.4);
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  /* Win overlay */
+  .win-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 3, 15, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .win-modal.show { display: flex; }
+  .win-modal .box {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(220, 180, 140, 0.25), transparent 60%),
+      linear-gradient(180deg, #1a1830 0%, #0e0c1e 100%);
+    border: 1px solid rgba(220, 180, 140, 0.5);
+    border-radius: 4px;
+    padding: 30px 26px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(220, 180, 140, 0.2);
+  }
+  .win-modal h2 {
+    color: #ddb887;
+    font-size: 22px;
+    letter-spacing: 10px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 20px rgba(220, 180, 140, 0.5);
+  }
+  .win-modal .answer-reveal {
+    font-size: 34px;
+    color: #ffd48a;
+    letter-spacing: 12px;
+    margin: 16px 0;
+    text-shadow: 0 0 24px rgba(255, 200, 130, 0.5);
+  }
+  .win-modal .stats {
+    color: rgba(220, 180, 140, 0.85);
+    font-size: 14px;
+    letter-spacing: 2px;
+    line-height: 1.8;
+    margin-bottom: 22px;
+  }
+  .win-modal .stats b { color: #ffd48a; }
+  .win-modal button {
+    padding: 8px 22px;
+    background: transparent;
+    color: #ddb887;
+    border: 1px solid #ddb887;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border-radius: 2px;
+    margin: 4px;
+  }
+  .win-modal button:hover { background: rgba(220, 180, 140, 0.15); }
+
+  @media (max-width: 480px) {
+    .container { padding: 18px 14px; }
+    h1 { font-size: 22px; letter-spacing: 6px; }
+    .answer-blanks { font-size: 22px; letter-spacing: 10px; }
+    .row { grid-template-columns: 36px 1fr 34px 52px; gap: 8px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <h1>词 影</h1>
+  <div class="subtitle">— 猜一个词 · 语义越近越热 —</div>
+
+  <div class="answer-hint">
+    <span class="label">— 今日答案 · 猜猜是什么 —</span>
+    <div class="answer-blanks" id="answerBlanks"></div>
+  </div>
+
+  <div class="input-row">
+    <input type="text" id="guessInput" placeholder="输入一个词" maxlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    <button id="submitBtn">猜</button>
+  </div>
+
+  <div class="stat-row">
+    <span>已猜 <b id="guessCount">0</b> 次</span>
+    <span><button id="giveUpBtn" style="background:none;border:none;color:rgba(220,180,140,0.5);font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:2px;">放弃 · 换一题</button></span>
+  </div>
+
+  <div class="message" id="message"></div>
+
+  <div class="latest" id="latest">
+    <div class="label">— 最近一次 —</div>
+    <div id="latestRow"></div>
+  </div>
+
+  <div class="history" id="history"></div>
+
+  <div class="hint">
+    温度越高，语义越接近。词表约 200 词，只能猜表内的词
+  </div>
+</div>
+
+<div class="win-modal" id="winModal">
+  <div class="box">
+    <h2>猜 中 了</h2>
+    <div class="answer-reveal" id="winAnswer"></div>
+    <div class="stats" id="winStats"></div>
+    <button id="againBtn">再来一题</button>
+    <button id="homeBtn">回菜单</button>
+  </div>
+</div>
+
+<script>
+// ============ Vocab with semantic tags ============
+// Words tagged with common features. Jaccard overlap = similarity approx.
+const WORDS = {
+  // 天体 / 自然
+  "月亮":   ["自然","天体","夜晚","亮","高远","冷","诗意","圆"],
+  "太阳":   ["自然","天体","白天","亮","高远","热","圆","光"],
+  "星星":   ["自然","天体","夜晚","亮","小","高远","诗意","众多"],
+  "云":     ["自然","天空","软","轻","白","变幻","诗意"],
+  "云朵":   ["自然","天空","软","轻","白","变幻","诗意"],
+  "银河":   ["自然","天体","夜晚","诗意","远","众多","高远"],
+  "彩虹":   ["自然","天气","亮","诗意","短暂","雨后","色彩","高远"],
+  "流星":   ["自然","天体","夜晚","亮","短暂","高远","诗意","移动"],
+  "宇宙":   ["自然","天体","远","大","抽象","诗意","深"],
+  "天空":   ["自然","天空","高远","大","蓝","抽象","广阔"],
+  "地球":   ["自然","天体","大","圆","家园"],
+  "影子":   ["自然","光","暗","跟随","诗意","抽象","身体"],
+  "光":     ["自然","亮","抽象","诗意","热","眼睛"],
+  "阳光":   ["自然","光","亮","热","白天","温暖","诗意"],
+  "月光":   ["自然","光","亮","夜晚","冷","诗意","柔"],
+  "星光":   ["自然","光","亮","夜晚","冷","诗意","小","远"],
+  "夜晚":   ["自然","时间","夜晚","暗","诗意","静"],
+  "深夜":   ["自然","时间","夜晚","暗","静","孤独","诗意"],
+  "白天":   ["自然","时间","白天","亮","热闹"],
+  "早晨":   ["自然","时间","白天","亮","新","开始","露水"],
+  "黎明":   ["自然","时间","白天","亮","新","诗意","开始","希望"],
+  "黄昏":   ["自然","时间","夜晚","诗意","橙","柔","孤独","告别"],
+  "傍晚":   ["自然","时间","夜晚","诗意","橙","柔","家"],
+  "凌晨":   ["自然","时间","夜晚","暗","孤独","静","早"],
+
+  // 天气 / 水
+  "雨":     ["自然","天气","水","湿","声音","诗意","忧伤","落"],
+  "细雨":   ["自然","天气","水","湿","诗意","柔","春"],
+  "暴雨":   ["自然","天气","水","强","湿","声音","忧伤"],
+  "雪":     ["自然","天气","水","冷","白","诗意","软","静"],
+  "雪花":   ["自然","天气","水","冷","白","诗意","软","小"],
+  "冰":     ["自然","水","冷","硬","亮","静"],
+  "露珠":   ["自然","水","小","亮","诗意","早晨","短暂"],
+  "雾":     ["自然","天气","湿","朦胧","诗意","柔","白"],
+  "风":     ["自然","天气","声音","动","诗意","看不见","冷","暖"],
+  "台风":   ["自然","天气","风","强","破坏","大","声音"],
+  "闪电":   ["自然","天气","光","强","短暂","声音","亮"],
+  "雷":     ["自然","天气","声音","强","破坏","短暂"],
+  "海":     ["自然","水","大","蓝","深","诗意","广阔","咸"],
+  "大海":   ["自然","水","大","蓝","深","诗意","广阔","咸"],
+  "河":     ["自然","水","流动","长","家园"],
+  "河流":   ["自然","水","流动","长","家园"],
+  "湖":     ["自然","水","静","诗意","蓝","镜"],
+  "溪":     ["自然","水","流动","小","诗意","山"],
+  "泉":     ["自然","水","清","诗意","流动","山"],
+  "浪":     ["自然","水","海","动","声音"],
+  "波浪":   ["自然","水","海","动","声音"],
+  "沙滩":   ["自然","地","海","黄","温暖","记忆"],
+  "岛":     ["自然","水","孤独","诗意","远"],
+  "山":     ["自然","地","高","大","静","诗意","硬"],
+  "山峰":   ["自然","地","高","大","静","远","诗意"],
+  "森林":   ["自然","植物","绿","深","广","静","家园"],
+  "草原":   ["自然","地","绿","广","风"],
+  "沙漠":   ["自然","地","黄","热","干","广","孤独"],
+  "田野":   ["自然","地","绿","家园","乡村"],
+
+  // 植物
+  "树":     ["自然","植物","大","高","静","生命","家园"],
+  "花":     ["自然","植物","色彩","小","香","诗意","短暂","柔"],
+  "花朵":   ["自然","植物","色彩","小","香","诗意","短暂","柔"],
+  "叶子":   ["自然","植物","小","绿","诗意","落"],
+  "落叶":   ["自然","植物","小","秋","诗意","落","孤独","记忆"],
+  "草":     ["自然","植物","绿","小","柔","广"],
+  "花园":   ["人造","植物","色彩","香","家园","诗意"],
+  "玫瑰":   ["自然","植物","花","红","爱情","香","诗意"],
+  "梅":     ["自然","植物","花","冷","诗意","冬"],
+  "樱花":   ["自然","植物","花","粉","诗意","短暂","春"],
+  "松":     ["自然","植物","树","绿","高","静"],
+
+  // 动物
+  "猫":     ["生物","动物","小","柔","家居","独立","诗意"],
+  "狗":     ["生物","动物","小","忠诚","家居","热闹"],
+  "鸟":     ["生物","动物","小","飞","天空","声音","自由"],
+  "鱼":     ["生物","动物","水","小","静","游"],
+  "蝴蝶":   ["生物","动物","小","色彩","飞","诗意","短暂","花"],
+  "蜜蜂":   ["生物","动物","小","花","声音","勤劳"],
+  "蜻蜓":   ["生物","动物","小","飞","诗意","短暂"],
+  "青蛙":   ["生物","动物","小","水","声音","跳"],
+  "萤火虫": ["生物","动物","小","光","夜晚","诗意","短暂","亮"],
+
+  // 家居
+  "家":     ["人造","建筑","温暖","家庭","归","诗意"],
+  "老屋":   ["人造","建筑","家庭","记忆","诗意","过去","乡村"],
+  "屋顶":   ["人造","建筑","高","家","诗意","仰"],
+  "窗":     ["人造","建筑","家","看","透","开","诗意"],
+  "窗户":   ["人造","建筑","家","看","透","开","诗意"],
+  "门":     ["人造","建筑","家","进","出","诗意"],
+  "墙":     ["人造","建筑","家","隔","静","硬"],
+  "床":     ["人造","家居","软","睡","家","休息"],
+  "灯":     ["人造","家居","光","亮","温暖","诗意","家"],
+  "台灯":   ["人造","家居","光","亮","温暖","书桌","家"],
+  "镜子":   ["人造","家居","看","自己","冷","硬","反射"],
+  "钥匙":   ["人造","家居","小","硬","家","打开","秘密"],
+
+  // 食物
+  "咖啡":   ["人造","饮料","苦","热","深色","醒","早晨","都市"],
+  "茶":     ["人造","饮料","热","苦","淡","诗意","静","中国"],
+  "酒":     ["人造","饮料","苦","醉","孤独","诗意","热闹","红"],
+  "牛奶":   ["人造","饮料","白","甜","温","家","早晨"],
+  "水":     ["自然","饮料","水","清","无味","液体"],
+  "蛋糕":   ["人造","食物","甜","软","生日","热闹","色彩"],
+  "巧克力": ["人造","食物","甜","苦","棕","诗意","爱情"],
+  "糖":     ["人造","食物","甜","小","色彩"],
+  "面包":   ["人造","食物","软","早晨","家","温"],
+  "米饭":   ["人造","食物","白","家","中国","温"],
+  "面条":   ["人造","食物","长","家","温","中国"],
+  "苹果":   ["自然","食物","水果","红","甜","圆","小"],
+  "梨":     ["自然","食物","水果","甜","白","水"],
+
+  // 身体 / 感官
+  "眼睛":   ["生物","身体","看","小","诗意","眼泪","感官"],
+  "眼泪":   ["生物","身体","水","小","悲伤","诗意","咸","小"],
+  "手":     ["生物","身体","触","拥抱","写","诗意"],
+  "心":     ["生物","身体","诗意","情感","跳","抽象","爱"],
+  "心跳":   ["生物","身体","声音","诗意","情感","爱","短暂"],
+  "呼吸":   ["生物","身体","诗意","静","生命","循环"],
+  "血":     ["生物","身体","红","液体","诗意","强","生命"],
+  "汗":     ["生物","身体","水","咸","热","努力"],
+  "头发":   ["生物","身体","黑","长","柔","诗意"],
+  "皮肤":   ["生物","身体","软","触","感官"],
+  "嘴唇":   ["生物","身体","小","柔","红","亲吻","诗意"],
+  "微笑":   ["身体","情感","喜","诗意","温暖","脸","柔"],
+  "拥抱":   ["身体","情感","温暖","爱","接触","诗意"],
+  "亲吻":   ["身体","情感","温暖","爱","接触","诗意","嘴唇"],
+
+  // 情感 / 抽象
+  "爱":     ["情感","喜","诗意","抽象","温暖","强","关系"],
+  "恨":     ["情感","悲","抽象","强","关系","负面"],
+  "思念":   ["情感","悲","诗意","抽象","远","记忆","柔"],
+  "想念":   ["情感","悲","诗意","抽象","远","记忆","柔"],
+  "悲伤":   ["情感","悲","抽象","诗意","柔","负面"],
+  "快乐":   ["情感","喜","抽象","诗意","温暖","热闹"],
+  "孤独":   ["情感","悲","抽象","诗意","静","一","负面"],
+  "温柔":   ["情感","喜","诗意","柔","温暖","抽象"],
+  "温暖":   ["情感","喜","热","诗意","柔","家","抽象"],
+  "寒冷":   ["情感","冷","诗意","孤独","抽象","负面"],
+  "希望":   ["情感","喜","抽象","诗意","远","亮","未来"],
+  "失望":   ["情感","悲","抽象","负面","期待"],
+  "期待":   ["情感","喜","抽象","未来","诗意"],
+  "遗憾":   ["情感","悲","抽象","诗意","过去","负面"],
+  "秘密":   ["抽象","诗意","隐藏","关系","小"],
+  "谎言":   ["抽象","诗意","隐藏","负面","关系"],
+  "真相":   ["抽象","诗意","关系","强"],
+  "承诺":   ["抽象","诗意","关系","强","未来"],
+  "记忆":   ["抽象","诗意","过去","情感","柔","脑"],
+  "梦":     ["抽象","诗意","夜晚","柔","短暂","希望","脑"],
+  "梦想":   ["抽象","诗意","未来","希望","柔","个人"],
+  "岁月":   ["时间","抽象","诗意","过去","长","柔"],
+  "时光":   ["时间","抽象","诗意","过去","长","柔"],
+  "瞬间":   ["时间","抽象","诗意","短暂","小"],
+  "永恒":   ["时间","抽象","诗意","长","强"],
+  "青春":   ["时间","抽象","诗意","过去","热闹","短暂","个人"],
+  "童年":   ["时间","抽象","诗意","过去","天真","家","记忆","个人"],
+  "初恋":   ["时间","抽象","诗意","过去","爱","柔","个人","短暂"],
+  "陌生":   ["情感","抽象","远","冷","关系","负面"],
+  "熟悉":   ["情感","抽象","近","温暖","关系"],
+
+  // 关系 / 家庭
+  "母亲":   ["人","家庭","女","温暖","诗意","爱","关系"],
+  "妈妈":   ["人","家庭","女","温暖","诗意","爱","关系"],
+  "父亲":   ["人","家庭","男","家","严","关系"],
+  "爸爸":   ["人","家庭","男","家","严","关系"],
+  "孩子":   ["人","家庭","小","天真","家","关系"],
+  "朋友":   ["人","关系","温暖","陪伴"],
+  "恋人":   ["人","关系","爱","温暖","诗意"],
+  "陌生人": ["人","关系","冷","远","负面"],
+  "老师":   ["人","关系","知识","家"],
+  "家人":   ["人","家庭","温暖","关系","家"],
+
+  // 交通 / 旅行
+  "火车":   ["人造","交通","大","移动","远","诗意","离别","声音","铁"],
+  "汽车":   ["人造","交通","移动","都市","声音"],
+  "船":     ["人造","交通","水","移动","诗意","远","孤独"],
+  "飞机":   ["人造","交通","天空","移动","远","快"],
+  "自行车": ["人造","交通","小","移动","青春","诗意","轻"],
+  "公路":   ["人造","交通","长","远","旅行"],
+  "站台":   ["人造","交通","离别","等待","诗意"],
+  "旅行":   ["人造","抽象","远","移动","诗意","希望"],
+  "远方":   ["抽象","诗意","远","移动","希望","孤独"],
+  "故乡":   ["抽象","诗意","家","过去","温暖","远","记忆","乡村"],
+  "他乡":   ["抽象","诗意","远","孤独","负面"],
+
+  // 城市 / 建筑
+  "城市":   ["人造","建筑","大","热闹","都市","广"],
+  "村庄":   ["人造","建筑","小","静","乡村","诗意","家"],
+  "街道":   ["人造","建筑","长","都市","热闹"],
+  "桥":     ["人造","建筑","水","连接","诗意","长"],
+  "灯塔":   ["人造","建筑","光","海","孤独","诗意","远","亮"],
+  "教堂":   ["人造","建筑","高","静","诗意","神"],
+  "书店":   ["人造","建筑","书","静","家","小","记忆"],
+
+  // 物 / 意象
+  "书":     ["人造","家居","静","知识","小","家"],
+  "信":     ["人造","家居","字","远","诗意","关系"],
+  "邮件":   ["人造","字","远","关系","抽象"],
+  "笔":     ["人造","家居","小","字","写"],
+  "纸":     ["人造","家居","白","薄","字"],
+  "电话":   ["人造","家居","远","声音","关系"],
+  "音乐":   ["人造","抽象","声音","诗意","情感","热闹"],
+  "电影":   ["人造","抽象","诗意","故事","情感","热闹"],
+  "画":     ["人造","抽象","诗意","色彩","情感"],
+  "诗":     ["人造","抽象","诗意","字","柔","情感"],
+  "歌":     ["人造","抽象","诗意","声音","情感","热闹"],
+  "钟":     ["人造","家居","时间","声音","静"],
+  "钟表":   ["人造","家居","时间","声音","静"],
+  "伞":     ["人造","家居","雨","小","保护","诗意"],
+  "雨伞":   ["人造","家居","雨","小","保护","诗意"],
+  "口罩":   ["人造","家居","小","保护","隔"],
+  "戒指":   ["人造","家居","小","圆","爱情","诗意"],
+  "香水":   ["人造","家居","香","小","诗意","短暂"],
+  "咖啡杯": ["人造","家居","小","热","早晨","都市"],
+  "秋千":   ["人造","家居","移动","童年","诗意"],
+  "风筝":   ["人造","家居","天空","飞","童年","诗意"],
+  "烟花":   ["人造","天空","色彩","声音","短暂","热闹","诗意"],
+  "蜡烛":   ["人造","家居","光","小","短暂","诗意","温暖"],
+  "火":     ["自然","热","亮","红","短暂","诗意"],
+  "火焰":   ["自然","热","亮","红","短暂","诗意","动"],
+  "烟":     ["自然","轻","变幻","短暂","诗意","柔"],
+};
+
+// Answer candidates (curated for good semantic reach in vocab)
+const ANSWERS = [
+  "月亮", "眼泪", "咖啡", "童年", "火车",
+  "台风", "秘密", "星星", "大海", "故乡",
+  "雨伞", "电影", "母亲", "深夜", "时光",
+  "初恋", "老屋", "梦", "灯塔", "萤火虫",
+];
+
+// ============ Game state ============
+let answer = "";
+let guesses = [];  // array of { word, sim, rank }
+let guessedSet = new Set();
+let won = false;
+
+// ============ DOM ============
+const answerBlanks = document.getElementById('answerBlanks');
+const guessInput = document.getElementById('guessInput');
+const submitBtn = document.getElementById('submitBtn');
+const giveUpBtn = document.getElementById('giveUpBtn');
+const messageEl = document.getElementById('message');
+const latestEl = document.getElementById('latest');
+const latestRowEl = document.getElementById('latestRow');
+const historyEl = document.getElementById('history');
+const guessCountEl = document.getElementById('guessCount');
+const winModal = document.getElementById('winModal');
+const winAnswer = document.getElementById('winAnswer');
+const winStats = document.getElementById('winStats');
+const againBtn = document.getElementById('againBtn');
+const homeBtn = document.getElementById('homeBtn');
+
+// ============ Similarity ============
+function similarity(w1, w2) {
+  if (w1 === w2) return 1.0;
+  const t1 = new Set(WORDS[w1] || []);
+  const t2 = new Set(WORDS[w2] || []);
+  if (t1.size === 0 || t2.size === 0) return 0;
+  let inter = 0;
+  for (const t of t1) if (t2.has(t)) inter++;
+  const union = t1.size + t2.size - inter;
+  return inter / union;
+}
+
+// Compute all similarity for ranking (for the current answer)
+let allSims = [];  // array of { word, sim }, sorted desc
+function computeAllSims() {
+  allSims = [];
+  for (const w in WORDS) {
+    if (w === answer) continue;
+    allSims.push({ word: w, sim: similarity(w, answer) });
+  }
+  allSims.sort((a, b) => b.sim - a.sim);
+}
+function rankFor(word) {
+  const idx = allSims.findIndex(x => x.word === word);
+  return idx === -1 ? -1 : idx + 1;
+}
+
+// ============ Rendering ============
+function tempColor(sim) {
+  // 0 (cold blue) → 1 (hot orange)
+  if (sim >= 0.85) return '#ff9a5a';  // very hot
+  if (sim >= 0.65) return '#ffcc70';
+  if (sim >= 0.45) return '#e8dcc4';
+  if (sim >= 0.25) return '#8fb0d0';
+  return '#5878a8';
+}
+function tempIcon(sim) {
+  if (sim >= 0.85) return '🔥';
+  if (sim >= 0.65) return '🌡';
+  if (sim >= 0.45) return '😌';
+  if (sim >= 0.25) return '❄';
+  return '🧊';
+}
+
+function renderRow(g, isLatest = false) {
+  const rank = g.rank > 0 && g.rank <= 500 ? `#${g.rank}` : '';
+  const barWidth = Math.max(2, g.sim * 100);
+  const color = tempColor(g.sim);
+  const hotClass = g.sim >= 0.85 ? ' hot' : '';
+  const pct = (g.sim * 100).toFixed(1) + '%';
+  return `<div class="row ${isLatest ? 'new-guess' : ''}">
+    <span class="rank">${rank}</span>
+    <span class="word${hotClass}">${g.word}</span>
+    <div class="temp-bar"><div class="temp-bar-fill" style="width:${barWidth}%;background:${color};"></div></div>
+    <span class="pct">${pct}</span>
+  </div>`;
+}
+
+function renderHistory() {
+  const sorted = [...guesses].sort((a, b) => b.sim - a.sim);
+  historyEl.innerHTML = sorted.map(g => renderRow(g)).join('');
+}
+
+// ============ Actions ============
+function submitGuess() {
+  if (won) return;
+  const word = guessInput.value.trim();
+  if (!word) return;
+  guessInput.value = '';
+  guessInput.focus();
+
+  if (!WORDS[word]) {
+    showMessage(`「${word}」不在词表里，试试别的（词表约 200 词）`, 'err');
+    return;
+  }
+  if (guessedSet.has(word)) {
+    showMessage(`「${word}」已经猜过啦`, 'err');
+    return;
+  }
+
+  const sim = similarity(word, answer);
+  const rank = rankFor(word);
+  const g = { word, sim, rank };
+  guesses.push(g);
+  guessedSet.add(word);
+  guessCountEl.textContent = guesses.length;
+
+  // Show as latest
+  latestEl.classList.add('show');
+  latestRowEl.innerHTML = renderRow(g, true);
+
+  // Show in history
+  renderHistory();
+
+  // Show message
+  const icon = tempIcon(sim);
+  if (word === answer) {
+    winGame();
+  } else {
+    showMessage(`${icon} ${word} · ${(sim*100).toFixed(1)}%`);
+  }
+}
+
+function showMessage(t, cls = '') {
+  messageEl.textContent = t;
+  messageEl.className = 'message ' + cls;
+}
+
+function winGame() {
+  won = true;
+  winAnswer.textContent = answer;
+  const cnt = guesses.length;
+  winStats.innerHTML = `你在第 <b>${cnt}</b> 次猜中<br>` +
+    (cnt <= 5 ? '⭐ 语感强者' :
+     cnt <= 15 ? '不错，稳中有胆' :
+     cnt <= 30 ? '慢慢来的胜利' : '契而不舍');
+  winModal.classList.add('show');
+}
+
+function newRound() {
+  answer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
+  guesses = [];
+  guessedSet = new Set();
+  won = false;
+  computeAllSims();
+  answerBlanks.textContent = '_ '.repeat(answer.length).trim();
+  guessCountEl.textContent = '0';
+  latestEl.classList.remove('show');
+  historyEl.innerHTML = '';
+  showMessage('');
+  winModal.classList.remove('show');
+  guessInput.focus();
+}
+
+// ============ Events ============
+submitBtn.addEventListener('click', submitGuess);
+guessInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); submitGuess(); }
+});
+giveUpBtn.addEventListener('click', () => {
+  if (confirm(`真放弃？答案是「${answer}」。换新题目吗？`)) newRound();
+});
+againBtn.addEventListener('click', newRound);
+homeBtn.addEventListener('click', () => { window.location.href = 'index.html'; });
+
+// Boot
+newRound();
+</script>
+</body>
+</html>
