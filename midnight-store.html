@@ -1685,21 +1685,12 @@ body {
             <!-- Plastic bag stack next to counter -->
             <rect x="360" y="290" width="12" height="16" fill="#e8dcc4" stroke="#c9b48a" stroke-width="0.5" opacity="0.6"/>
             <path d="M360 290 L366 285 L372 290" stroke="#c9b48a" stroke-width="0.4" fill="none"/>
-            <!-- Radio -->
-            <rect x="220" y="220" width="55" height="18" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8" rx="2"/>
-            <circle cx="234" cy="229" r="3" fill="#3d2f24"/>
-            <circle cx="248" cy="229" r="3" fill="#3d2f24"/>
-            <line x1="258" y1="224" x2="270" y2="224" stroke="#3d2f24" stroke-width="0.6"/>
-            <line x1="258" y1="228" x2="270" y2="228" stroke="#3d2f24" stroke-width="0.6"/>
-            <line x1="258" y1="232" x2="270" y2="232" stroke="#3d2f24" stroke-width="0.6"/>
-            <text x="248" y="215" font-size="8" fill="#3d2f24" text-anchor="middle" opacity="0.6" font-family="serif">收音机</text>
-            <text x="295" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
+<text x="295" y="395" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="2" font-family="serif">收 银 台</text>
             <!-- Floor -->
             <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1" opacity="0.5"/>
           
             <rect class="obj-zone" data-hs="milkCabinet" x="35" y="165" width="130" height="220"/>
             <rect class="obj-zone" data-hs="register" x="215" y="245" width="160" height="140"/>
-            <rect class="obj-zone" data-hs="radio" x="215" y="215" width="65" height="30"/>
             <rect class="obj-zone" data-hs="phone" x="268" y="292" width="24" height="34"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="register"></div>
@@ -1799,7 +1790,6 @@ const HOTSPOTS = {
   waterDispenser: { card: 'middle',   x: 75,  y: 285 },
   odenPot:        { card: 'middle',   x: 200, y: 260 },
   shelves:        { card: 'middle',   x: 335, y: 285 },
-  radio:          { card: 'register', x: 248, y: 228 },
   milkCabinet:    { card: 'register', x: 100, y: 200 },
   register:       { card: 'register', x: 295, y: 305 },
   // Character positions (used for click-on-character hotspot beats)
@@ -3038,7 +3028,6 @@ const OBJECT_LABELS = {
   shelves: '货 架',
   milkCabinet: '热 奶 柜',
   register: '收 银 台',
-  radio: '收 音 机',
   phone: '手 机'
 };
 
@@ -3175,10 +3164,10 @@ function buildEndingLines(w) {
   lines.push('【 店 员 】');
   // 店员
   if (w.milkHelp === 'given' || w.charger === 'given' || w.doorGap === 'open' || w.catBowl === 'full' || w.odenState === 'hot') {
-    lines.push('店员摘下最后一只耳机，关掉收音机。');
+    lines.push('店员把耳机塞回耳朵，打开自己的歌单。');
     lines.push('妈的第二条消息刚到——"今天没那么难受"。');
   } else {
-    lines.push('店员摘下最后一只耳机，关掉收音机。');
+    lines.push('店员把耳机塞回耳朵，打开自己的歌单。');
     lines.push('玻璃里映出他自己的脸，比他以为的样子更疲惫一点。');
   }
   lines.push('');
@@ -4055,7 +4044,6 @@ const OBJECT_HINTS = {
   shelves:        ['货架。凌晨两点，货没什么变化。', '临期的往前排。', '灯管的影子从上面切过来。'],
   milkCabinet:    ['热奶柜。上层的字很小。', '最上层的三瓶，日期不同。', '灯是偏红的，把牛奶照粉了。'],
   register:       ['收银台。二维码和现金抽屉。', '一元硬币最前排一堆整齐的。', '柜台边有一根笔——被挪过又挪回来了。'],
-  radio:          ['收音机。凌晨这时段偶尔放老歌。', '现在放的是《春江花月夜》。', '开关的漆磨掉了。'],
   phone:          ['有人的手机。屏幕亮着，没在看。', '正在等一个"还好"以外的字。', '屏幕锁没锁——你也不该看。']
 };
 
