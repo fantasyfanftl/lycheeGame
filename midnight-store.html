@@ -1082,6 +1082,86 @@ body {
 /* Last card no right fade */
 .scene-card:last-child::after { display: none; }
 
+
+/* ========== Onboarding hint ========== */
+.onboarding-hint {
+  position: absolute;
+  bottom: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 25, 40, 0.85);
+  color: var(--paper);
+  padding: 10px 20px;
+  border: 1px solid rgba(245, 200, 138, 0.4);
+  border-radius: 3px;
+  font-size: 13px;
+  letter-spacing: 3px;
+  z-index: 15;
+  animation: onboarding-pulse 1.6s ease-in-out infinite, onboarding-bob 3s ease-in-out infinite;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+.onboarding-hint::before {
+  content: '↓';
+  margin-right: 8px;
+  color: var(--warm-glow);
+  font-size: 16px;
+}
+.onboarding-hint.dismissed {
+  animation: onboarding-fadeout 0.6s ease forwards;
+}
+@keyframes onboarding-pulse {
+  0%, 100% { border-color: rgba(245, 200, 138, 0.4); }
+  50%      { border-color: rgba(245, 200, 138, 0.9); }
+}
+@keyframes onboarding-bob {
+  0%, 100% { bottom: 130px; }
+  50%      { bottom: 138px; }
+}
+@keyframes onboarding-fadeout {
+  to { opacity: 0; transform: translateX(-50%) translateY(10px); }
+}
+
+@media (max-width: 640px) {
+  .onboarding-hint {
+    bottom: 170px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 8px 14px;
+  }
+}
+
+/* ========== Character tab: completed check mark ========== */
+.char-tab.completed::after {
+  content: '✓';
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  color: var(--warm-mid);
+  font-size: 11px;
+  font-weight: bold;
+  opacity: 0.85;
+}
+.char-tab { position: relative; }
+
+/* ========== CP counter: pulse on unlock ========== */
+.cp-counter.cp-unlock-flash {
+  animation: cp-flash 1.2s ease-out;
+}
+.cp-counter .count.cp-unlock-flash {
+  animation: cp-count-flash 1.2s ease-out;
+}
+@keyframes cp-flash {
+  0%   { color: var(--accent); text-shadow: none; }
+  30%  { color: var(--warm-glow); text-shadow: 0 0 10px rgba(245, 200, 138, 0.8); }
+  100% { color: var(--ink-mid); text-shadow: none; }
+}
+@keyframes cp-count-flash {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
 </style>
 </head>
 <body>
@@ -2392,6 +2472,12 @@ function render() {
 // ============================================================
 
 function switchPOV(char) {
+  const hint = document.getElementById('onboarding-hint');
+  if (hint && !hint.classList.contains('dismissed')) {
+    hint.classList.add('dismissed');
+    setTimeout(() => hint.remove(), 700);
+  }
+  
   if (!state.unlocked.has(char)) return;
   const cur = state.currentPOV;
   // Lock: mid-arc can't switch away
@@ -2565,6 +2651,19 @@ function contributeToCPs(source) {
 }
 
 function showCPUnlock(unlocked) {
+  if (unlocked && unlocked.length) {
+    const counter = document.querySelector('.cp-counter');
+    const count = document.getElementById('cp-count');
+    if (counter && count) {
+      counter.classList.remove('cp-unlock-flash');
+      count.classList.remove('cp-unlock-flash');
+      // Trigger reflow to restart animation
+      void counter.offsetWidth;
+      counter.classList.add('cp-unlock-flash');
+      count.classList.add('cp-unlock-flash');
+    }
+  }
+  
   const cpBox = $('dialogue-cp');
   if (unlocked.length) {
     const titles = unlocked.map(id => (CONVERGENCES[id] && CONVERGENCES[id].title) || id).join(' · ');
@@ -3510,6 +3609,16 @@ function bindEvents() {
     state.notebookRecord = {};
     state.world = {};
     showScreen('title-screen');
+    // Recreate onboarding hint for next run
+    if (!document.getElementById('onboarding-hint')) {
+      const hint = document.createElement('div');
+      hint.className = 'onboarding-hint';
+      hint.id = 'onboarding-hint';
+      hint.textContent = '选 一 个 人';
+      const gs = document.getElementById('game-screen');
+      const dlg = document.getElementById('dialogue-overlay');
+      if (gs && dlg) gs.insertBefore(hint, dlg);
+    }
     render();
   });
 }
