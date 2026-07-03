@@ -108,6 +108,29 @@
     60%  { background: rgba(255, 212, 138, 0.25); transform: scale(1.05); }
     100% { background: rgba(232, 220, 196, 0.06); transform: scale(1); }
   }
+  .board-hint {
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(50, 30, 15, 0.92);
+    color: #ffd48a;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    border: 1px solid rgba(220, 180, 140, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms, transform 220ms;
+    z-index: 15;
+    white-space: nowrap;
+    max-width: 90%;
+    text-align: center;
+  }
+  .board-hint.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
   .grid-bg {
     position: absolute;
     inset: 8px;
@@ -266,6 +289,7 @@
   <div class="board-wrap" id="boardWrap">
     <div class="grid-bg" id="gridBg"></div>
     <div class="tiles" id="tiles"></div>
+    <div class="board-hint" id="boardHint"></div>
     <div class="overlay" id="overlay">
       <h2 id="overlayTitle">合体·破阵</h2>
       <p id="overlaySub">数字块滑动合并<br>合到 2048 通关</p>
@@ -322,6 +346,28 @@ const overlayTitle = document.getElementById('overlayTitle');
 const overlaySub = document.getElementById('overlaySub');
 const startBtn = document.getElementById('startBtn');
 const continueBtn = document.getElementById('continueBtn');
+const infoEl = document.getElementById('info');
+const boardHint = document.getElementById('boardHint');
+
+let hintTimer = null;
+function showHint(text, duration = 1600) {
+  boardHint.textContent = text;
+  boardHint.classList.add('show');
+  if (hintTimer) clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => boardHint.classList.remove('show'), duration);
+}
+function hideHint() {
+  boardHint.classList.remove('show');
+  if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
+}
+
+function updateInfoText() {
+  if (inTutorial) {
+    infoEl.innerHTML = '教学·合出 <b>32</b> 结业&nbsp;·&nbsp;<span style="opacity:.65">数字变大占地更大，注意留空间</span>';
+  } else {
+    infoEl.innerHTML = '数字越大 · 占地越大 · <b>32</b>→2×1 · <b>128</b>→2×2 · <b>2048</b>→3×3 通关';
+  }
+}
 
 function setBoardSize(freshFrom = null) {
   gridBg.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
@@ -467,7 +513,7 @@ const DIR_VECS = {
 };
 
 function move(dir) {
-  if (animating || won) return;
+  if (animating || overlay.classList.contains('show')) return;
   const { dx, dy } = DIR_VECS[dir];
   saveState();
 
@@ -485,6 +531,7 @@ function move(dir) {
   const mergedIds = new Set();  // survivors of a merge this turn (can't merge again)
   const failedMergeIds = new Set();  // tiles that tried to merge but no room for new size
   let triggerExpand = 0;  // 0 = no expand; otherwise the target board size
+  let tutorialGraduated = false;
 
   for (const t of sorted) {
     if (t._removed) continue;
@@ -524,6 +571,7 @@ function move(dir) {
         didMove = true;
         if (EXPAND_AT[newV] && SIZE < EXPAND_AT[newV]) triggerExpand = EXPAND_AT[newV];
         if (newV === 2048 && !wonEver) { won = true; wonEver = true; }
+        if (inTutorial && newV === 32) tutorialGraduated = true;
       } else {
         // Merge fails, put them back and mark for shake feedback
         placeOnGrid(t);
@@ -549,6 +597,7 @@ function move(dir) {
     if (shake) {
       renderTiles(new Set(), false, shake);
       haptic(25);
+      showHint('空间不足 · 升级需要更大空隙');
     }
     return;
   }
@@ -557,7 +606,7 @@ function move(dir) {
 
   animating = true;
   renderTiles(mergedIds, false, shake);
-  if (shake) haptic(25);
+  if (shake) { haptic(25); showHint('空间不足 · 升级需要更大空隙'); }
   updateScore();
   updateUndoBtn();
 
@@ -706,7 +755,8 @@ function undo() {
 
 // ============ Game control ============
 function newGame() {
-  SIZE = INITIAL_SIZE;
+  inTutorial = !localStorage.getItem('mergeTutorialDone') && best === 0;
+  SIZE = inTutorial ? TUTORIAL_SIZE : INITIAL_SIZE;
   setBoardSize();
   tiles = [];
   grid = emptyGrid();
@@ -717,12 +767,24 @@ function newGame() {
   history = [];
   animating = false;
   tilesEl.innerHTML = '';
+  hideHint();
   spawn();
   spawn();
   renderTiles();
   updateScore();
   updateUndoBtn();
+  updateInfoText();
   overlay.classList.remove('show');
+}
+
+function showTutorialDone() {
+  overlayTitle.textContent = '出 师';
+  overlaySub.innerHTML = `合出 <b style="color:#ffd48a">32</b>！<br>32 是 2×1，之后的升级会占更大空间<br>进入正式游戏 · 5×5 起`;
+  startBtn.textContent = '开 始';
+  startBtn.className = '';
+  continueBtn.style.display = 'none';
+  overlay.classList.add('show');
+  localStorage.setItem('mergeTutorialDone', '1');
 }
 
 function showWin() {
