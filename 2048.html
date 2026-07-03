@@ -28,6 +28,8 @@
     padding: 30px 20px;
     opacity: 0;
     transition: opacity 0.6s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .screen.active { display: flex; opacity: 1; }
   .back-link {
@@ -100,6 +102,15 @@
   .paper-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(245, 200, 138, 0.35);
+  }
+  .paper-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: #d4c9b3;
+  }
+  .paper-btn:disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 12px rgba(245, 200, 138, 0.15);
   }
   .paper-btn.small { padding: 8px 18px; font-size: 13px; letter-spacing: 2px; }
 
@@ -656,6 +667,8 @@ let history;              // for undo
 let animating;
 let unlockedTiers;        // Set of clue tiers unlocked
 let gameOver;
+let clueQueue = [];
+let showingClue = false;
 
 // ============ DOM refs ============
 const boardEl = document.getElementById('board');
@@ -920,16 +933,28 @@ function checkClueUnlocks() {
 }
 
 function showClueToast(clue) {
+  clueQueue.push(clue);
+  if (!showingClue) processClueQueue();
+}
+
+function processClueQueue() {
+  if (!clueQueue.length) { showingClue = false; return; }
+  showingClue = true;
+  const clue = clueQueue.shift();
   clueToastBody.textContent = clue.text;
   clueToastFoot.textContent = `— 达成 ${clue.at} · 点击继续`;
   clueToast.classList.add('show');
+  let done = false;
   const dismiss = () => {
+    if (done) return;
+    done = true;
     clueToast.classList.remove('show');
     clueToast.removeEventListener('click', dismiss);
     clearTimeout(timer);
+    setTimeout(processClueQueue, 350);
   };
   clueToast.addEventListener('click', dismiss);
-  const timer = setTimeout(dismiss, 4000);
+  const timer = setTimeout(dismiss, 3500);
 }
 
 function updateClueBadge() {
@@ -978,6 +1003,9 @@ function newGame() {
   animating = false;
   unlockedTiers = new Set();
   gameOver = false;
+  clueQueue = [];
+  showingClue = false;
+  clueToast.classList.remove('show');
   tilesEl.innerHTML = '';
   spawn();
   spawn();
