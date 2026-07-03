@@ -912,7 +912,34 @@ function submitGuess() {
   updateHintBtn();
 }
 
-// Find character-based similar words in vocab (for suggesting on invalid guess)
+// Synthesize semantic tags for a word not in vocab (by merging tags of vocab words sharing chars)
+function synthesizeTags(word) {
+  const tags = new Set();
+  const chars = new Set(word);
+  for (const c of chars) {
+    for (const w in WORDS) {
+      if (w.includes(c)) {
+        for (const t of WORDS[w]) tags.add(t);
+      }
+    }
+  }
+  return [...tags];
+}
+
+// Fallback similarity for out-of-vocab words
+function tryFallbackSim(word, ans) {
+  const synth = synthesizeTags(word);
+  if (!synth.length) return null;
+  const set1 = new Set(synth);
+  const set2 = new Set(WORDS[ans] || []);
+  if (set2.size === 0) return 0;
+  let inter = 0;
+  for (const t of set1) if (set2.has(t)) inter++;
+  const union = set1.size + set2.size - inter;
+  return union ? inter / union : 0;
+}
+
+// Find character-based similar words in vocab (unused now — kept for potential future use)
 function findSimilarInVocab(word, limit = 3) {
   if (!word) return [];
   const chars = new Set(word);
