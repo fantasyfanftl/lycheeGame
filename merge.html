@@ -459,7 +459,7 @@ function hideHint() {
 
 function updateInfoText() {
   if (inTutorial) {
-    infoEl.innerHTML = '教学·合出 <b>16</b> 结业&nbsp;·&nbsp;<span style="opacity:.65">数字变大占地更大，注意留空间</span>';
+    infoEl.innerHTML = '教学·合出 <b>32</b> 结业&nbsp;·&nbsp;<span style="opacity:.65">数字变大占地更大，注意留空间</span>';
   } else {
     infoEl.innerHTML = '数字越大 · 占地越大 · <b>16</b>→1×2 · <b>32</b>→2×1 · <b>128</b>→2×2 · <b>1024</b>→2×3 · <b>2048</b>→3×3 通关';
   }
@@ -660,7 +660,7 @@ function move(dir) {
         didMove = true;
         if (EXPAND_AT[newV] && SIZE < EXPAND_AT[newV]) triggerExpand = EXPAND_AT[newV];
         if (newV === 2048 && !wonEver) { won = true; wonEver = true; }
-        if (inTutorial && newV === 16) tutorialGraduated = true;
+        if (inTutorial && newV === 32) tutorialGraduated = true;
       } else {
         // Merge fails, put them back and mark for shake feedback
         placeOnGrid(t);
@@ -950,7 +950,7 @@ function newGame() {
 
 function showTutorialDone() {
   overlayTitle.textContent = '出 师';
-  overlaySub.innerHTML = `合出 <b style="color:#c94a2a">16</b>！<br>16 是 1×2，之后的升级会占更大空间<br>进入正式游戏 · 5×5 起`;
+  overlaySub.innerHTML = `合出 <b style="color:#c94a2a">32</b>！<br>32 是 2×1，之后的升级会占更大空间<br>进入正式游戏 · 5×5 起`;
   startBtn.textContent = '开 始';
   startBtn.className = '';
   continueBtn.style.display = 'none';
