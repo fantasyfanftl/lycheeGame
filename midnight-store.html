@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>凌晨两点的便利店</title>
+<style>
+:root {
+  --paper: #e8dcc4;
+  --paper-warm: #f0dfba;
+  --paper-edge: #c9b48a;
+  --ink: #3d2f24;
+  --ink-mid: #6b5439;
+  --ink-light: #9a8464;
+  --night: #1a1f2c;
+  --night-mid: #2a3448;
+  --night-cool: #3a4560;
+  --warm-glow: #f5c88a;
+  --warm-mid: #d9a760;
+  --warm-deep: #a67240;
+  --accent: #c17b52;
+  --glass-cool: rgba(180, 200, 220, 0.12);
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--night);
+  color: var(--ink);
+  font-family: 'KaiTi', 'STKaiti', '楷体', 'Songti SC', 'FangSong', serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  transition: opacity 1.2s ease;
+}
+
+.screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ========== Kraft paper texture ========== */
+.paper-tex {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(139, 108, 78, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(139, 108, 78, 0.05) 0%, transparent 60%),
+    radial-gradient(circle at 40% 60%, rgba(200, 170, 130, 0.08) 0%, transparent 40%);
+  background-size: 100% 100%;
+}
+
+/* ========== Title screen ========== */
+#title-screen {
+  background: radial-gradient(ellipse at 50% 45%, #2a3548 0%, var(--night) 75%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--paper);
+}
+
+.title-content {
+  text-align: center;
+  padding: 40px;
+  max-width: 600px;
+}
+
+.title-time {
+  font-size: 14px;
+  letter-spacing: 6px;
+  color: var(--warm-glow);
+  opacity: 0.7;
+  margin-bottom: 40px;
+}
+
+.title-main {
+  font-size: 44px;
+  letter-spacing: 10px;
+  color: var(--paper);
+  text-shadow: 0 0 30px rgba(245, 200, 138, 0.25);
+  margin-bottom: 30px;
+  font-weight: normal;
+}
+
+.title-sub {
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: rgba(232, 220, 196, 0.7);
+  line-height: 1.8;
+  margin: 6px 0;
+}
+
+.title-sub2 {
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: rgba(232, 220, 196, 0.5);
+  margin-bottom: 60px;
+}
+
+.paper-btn {
+  background: var(--paper);
+  color: var(--ink);
+  border: none;
+  padding: 12px 32px;
+  font-size: 17px;
+  letter-spacing: 4px;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  box-shadow: 0 2px 12px rgba(245, 200, 138, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.paper-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 1px solid rgba(245, 200, 138, 0.3);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.paper-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(245, 200, 138, 0.35);
+}
+
+/* ========== Game screen ========== */
+#game-screen {
+  display: flex;
+  flex-direction: column;
+  background: var(--night);
+}
+
+.top-bar {
+  height: 50px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--paper-edge);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.top-title {
+  font-size: 15px;
+  letter-spacing: 4px;
+  color: var(--ink);
+  flex: 1;
+}
+
+.cp-counter {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--ink-mid);
+  margin-right: 24px;
+}
+
+.cp-counter .count {
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0 2px;
+}
+
+.notebook-btn {
+  background: none;
+  border: 1px solid var(--paper-edge);
+  color: var(--ink);
+  padding: 6px 14px;
+  font-size: 13px;
+  letter-spacing: 2px;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+}
+
+.notebook-btn:hover {
+  background: var(--paper-warm);
+  border-color: var(--ink-light);
+}
+
+.scene-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--night);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#scene-svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* SVG interactivity */
+.hotspot-target {
+  cursor: pointer;
+}
+
+.hotspot-glow {
+  animation: pulse 2.4s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.15); }
+}
+
+.char-svg {
+  cursor: default;
+  transition: opacity 0.6s ease;
+}
+
+.char-svg.dimmed {
+  opacity: 0.55;
+}
+
+.char-svg.current {
+  opacity: 1;
+}
+
+.char-svg.clickable {
+  cursor: pointer;
+}
+
+/* ========== Bottom bar ========== */
+.bottom-bar {
+  height: 108px;
+  background: var(--paper);
+  border-top: 1px solid var(--paper-edge);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.pov-indicator {
+  min-width: 180px;
+  padding: 10px 16px;
+  border-right: 1px dashed var(--paper-edge);
+  color: var(--ink-mid);
+}
+
+.pov-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.pov-name {
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: var(--ink);
+}
+
+.pov-hint {
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.55;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.char-tabs {
+  display: flex;
+  gap: 14px;
+  flex: 1;
+}
+
+.char-tab {
+  background: transparent;
+  border: 1px solid var(--paper-edge);
+  padding: 10px 14px;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  color: var(--ink);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+  opacity: 1;
+}
+
+.char-tab.locked {
+  opacity: 0.32;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.char-tab.active {
+  background: var(--warm-glow);
+  border-color: var(--warm-mid);
+  box-shadow: 0 2px 8px rgba(245, 200, 138, 0.4);
+}
+
+.char-tab.completed:not(.active) {
+  background: var(--paper-warm);
+  border-color: var(--ink-light);
+}
+
+.char-tab:not(.locked):hover {
+  transform: translateY(-2px);
+}
+
+.char-tab-icon {
+  width: 42px;
+  height: 42px;
+  margin-bottom: 4px;
+}
+
+.char-tab-name {
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.char-tab-status {
+  font-size: 10px;
+  color: var(--ink-mid);
+  opacity: 0.7;
+  margin-top: 2px;
+  letter-spacing: 1px;
+}
+
+/* ========== Dialogue overlay ========== */
+.dialogue-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 25, 40, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 40px 130px;
+  z-index: 20;
+  transition: opacity 0.5s ease;
+}
+
+.dialogue-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dialogue-box {
+  background: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 15% 25%, rgba(139, 108, 78, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, rgba(139, 108, 78, 0.07) 0%, transparent 55%);
+  border: 1px solid var(--paper-edge);
+  max-width: 780px;
+  width: 100%;
+  padding: 26px 34px 22px;
+  border-radius: 3px;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+}
+
+.dialogue-box::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 8px; right: 8px; bottom: 8px;
+  border: 1px dashed rgba(139, 108, 78, 0.25);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.dialogue-narrator {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.dialogue-title {
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: var(--ink);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--paper-edge);
+}
+
+.dialogue-text {
+  font-size: 16px;
+  line-height: 2;
+  color: var(--ink);
+  letter-spacing: 1px;
+  min-height: 100px;
+  white-space: pre-wrap;
+}
+
+.dialogue-cp {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: rgba(245, 200, 138, 0.25);
+  border-left: 3px solid var(--accent);
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--ink-mid);
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dialogue-continue {
+  margin-top: 18px;
+  padding: 8px 22px;
+  background: transparent;
+  color: var(--ink-mid);
+  border: 1px solid var(--paper-edge);
+  font-family: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 3px;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  float: right;
+}
+
+.dialogue-continue:hover {
+  background: var(--paper-warm);
+  color: var(--ink);
+}
+
+/* ========== Choices ========== */
+.choice-block {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--paper-edge);
+}
+.choice-prompt {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--ink-mid);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.choice-option {
+  display: block;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--paper-edge);
+  color: var(--ink);
+  font-family: inherit;
+  padding: 10px 14px;
+  font-size: 15px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: left;
+  transition: all 0.2s;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.choice-option:hover {
+  background: rgba(245, 200, 138, 0.3);
+  border-color: var(--accent);
+  transform: translateX(3px);
+}
+.choice-chosen {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  padding: 8px 12px;
+  border-left: 2px solid var(--accent);
+  margin-top: 6px;
+}
+.dialogue-continue:disabled,
+.dialogue-continue.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ========== Toast ========== */
+.toast {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--paper);
+  padding: 10px 22px;
+  border: 1px solid var(--paper-edge);
+  border-radius: 2px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+  z-index: 30;
+  animation: toastIn 0.5s ease, toastOut 0.5s ease 2.6s forwards;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes toastOut {
+  to { opacity: 0; transform: translate(-50%, -10px); }
+}
+
+/* ========== Notebook ========== */
+#notebook-screen {
+  background: rgba(20, 25, 40, 0.85);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.notebook {
+  background: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(139, 108, 78, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(139, 108, 78, 0.07) 0%, transparent 55%);
+  width: min(900px, 92vw);
+  max-height: 88vh;
+  padding: 40px 48px;
+  border-radius: 3px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  position: relative;
+  overflow-y: auto;
+}
+
+.notebook::before {
+  content: '';
+  position: absolute;
+  top: 12px; left: 12px; right: 12px; bottom: 12px;
+  border: 1px dashed rgba(139, 108, 78, 0.3);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.notebook-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed var(--paper-edge);
+}
+
+.notebook-title {
+  font-size: 26px;
+  letter-spacing: 6px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.notebook-sub {
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: var(--ink-mid);
+  opacity: 0.75;
+}
+
+.cp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.cp-entry {
+  border: 1px solid var(--paper-edge);
+  padding: 16px 20px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.cp-entry.locked {
+  background: transparent;
+  border-style: dashed;
+  opacity: 0.55;
+}
+
+.cp-entry-title {
+  font-size: 17px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.cp-entry.locked .cp-entry-title {
+  color: var(--ink-light);
+}
+
+.cp-entry-povs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.cp-pov {
+  padding: 10px 12px;
+  border-left: 2px solid var(--paper-edge);
+}
+
+.cp-pov-name {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--ink-mid);
+  margin-bottom: 6px;
+}
+
+.cp-pov-text {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--ink);
+  letter-spacing: 0.5px;
+}
+
+.cp-locked-msg {
+  font-size: 13px;
+  color: var(--ink-mid);
+  font-style: italic;
+  letter-spacing: 2px;
+  opacity: 0.75;
+}
+
+.notebook-close-row {
+  text-align: center;
+}
+
+/* ========== Ending ========== */
+#ending-screen {
+  background: radial-gradient(ellipse at 50% 40%, #2a3548 0%, var(--night) 80%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  color: var(--paper);
+  padding: 60px 40px 80px;
+  overflow-y: auto;
+}
+
+.ending-content {
+  max-width: 640px;
+  text-align: center;
+}
+
+.ending-time {
+  font-size: 14px;
+  letter-spacing: 6px;
+  color: var(--warm-glow);
+  opacity: 0.7;
+  margin-bottom: 40px;
+}
+
+.ending-title {
+  font-size: 24px;
+  letter-spacing: 5px;
+  color: var(--paper);
+  margin-bottom: 48px;
+  font-weight: normal;
+  line-height: 1.8;
+}
+
+.ending-text {
+  font-size: 16px;
+  letter-spacing: 2px;
+  line-height: 2.4;
+  color: rgba(232, 220, 196, 0.85);
+  margin-bottom: 60px;
+  white-space: pre-line;
+  text-align: left;
+}
+
+.ending-text .line {
+  opacity: 0;
+  animation: lineIn 1.2s ease forwards;
+}
+
+@keyframes lineIn {
+  to { opacity: 1; }
+}
+
+/* Scrollbar */
+.notebook::-webkit-scrollbar { width: 6px; }
+.notebook::-webkit-scrollbar-thumb { background: var(--paper-edge); border-radius: 3px; }
+.notebook::-webkit-scrollbar-track { background: transparent; }
+
+/* ========== Mobile (<= 640px) ========== */
+@media (max-width: 640px) {
+  .top-bar { padding: 0 12px; height: 46px; }
+  .top-title { font-size: 12px; letter-spacing: 2px; }
+  .cp-counter { font-size: 12px; margin-right: 8px; }
+  .cp-counter .count { font-size: 14px; }
+  .notebook-btn { padding: 4px 8px; font-size: 11px; letter-spacing: 1px; margin-right: 6px !important; }
+
+  .bottom-bar { height: auto; padding: 10px 12px; flex-direction: column; align-items: stretch; gap: 10px; }
+  .pov-indicator { min-width: 0; border-right: none; border-bottom: 1px dashed var(--paper-edge); padding: 8px 10px; cursor: pointer; user-select: none; border-radius: 4px; transition: background 0.15s; }
+  .pov-indicator:active { background: var(--paper-warm); }
+  .pov-hint { display: block; font-size: 11px; margin-top: 4px; opacity: 0.75; letter-spacing: 1px; font-style: normal; }
+  .scene-wrap { flex: 0 0 auto; height: 200px; }
+  .char-tabs { gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .char-tab { min-width: 68px; padding: 6px 6px; flex-shrink: 0; }
+  .char-tab-icon { width: 28px; height: 28px; margin-bottom: 2px; }
+  .char-tab-name { font-size: 11px; letter-spacing: 1px; }
+  .char-tab-status { font-size: 9px; letter-spacing: 0; margin-top: 1px; }
+
+  .dialogue-overlay { padding: 0 10px 16px; }
+  .dialogue-box { padding: 18px 18px 14px; }
+  .dialogue-narrator { font-size: 11px; letter-spacing: 3px; }
+  .dialogue-title { font-size: 16px; letter-spacing: 2px; margin-bottom: 10px; padding-bottom: 8px; }
+  .dialogue-text { font-size: 14px; line-height: 1.9; letter-spacing: 0.5px; min-height: 60px; }
+  .dialogue-cp { font-size: 12px; letter-spacing: 1px; padding: 8px 10px; }
+  .dialogue-continue { font-size: 12px; padding: 6px 16px; letter-spacing: 2px; }
+  .choice-block { margin-top: 12px; padding-top: 10px; }
+  .choice-prompt { font-size: 12px; letter-spacing: 1px; margin-bottom: 8px; }
+  .choice-option { padding: 8px 12px; font-size: 13px; letter-spacing: 0.5px; line-height: 1.5; }
+
+  .title-content { padding: 24px; }
+  .title-time { font-size: 12px; letter-spacing: 4px; margin-bottom: 26px; }
+  .title-main { font-size: 30px; letter-spacing: 6px; margin-bottom: 22px; }
+  .title-sub { font-size: 13px; letter-spacing: 2px; line-height: 1.7; }
+  .title-sub2 { font-size: 12px; margin-bottom: 40px; }
+  .paper-btn { padding: 10px 24px; font-size: 15px; letter-spacing: 3px; }
+
+  #ending-screen { padding: 40px 24px 60px; }
+  .ending-time { font-size: 12px; letter-spacing: 4px; margin-bottom: 26px; }
+  .ending-title { font-size: 18px; letter-spacing: 3px; margin-bottom: 32px; line-height: 1.7; }
+  .ending-text { font-size: 14px; letter-spacing: 1px; line-height: 2; margin-bottom: 40px; }
+
+  .notebook { padding: 24px 18px; width: 96vw; }
+  .notebook-title { font-size: 20px; letter-spacing: 4px; }
+  .notebook-sub { font-size: 11px; letter-spacing: 2px; }
+  .cp-entry { padding: 12px 14px; }
+  .cp-entry-title { font-size: 14px; letter-spacing: 2px; margin-bottom: 6px; }
+  .cp-entry-povs { grid-template-columns: 1fr; gap: 10px; }
+  .cp-pov-text { font-size: 12px; line-height: 1.7; }
+
+  .toast { font-size: 12px; letter-spacing: 2px; padding: 8px 16px; }
+}
+
+/* Very narrow (<= 380px) */
+@media (max-width: 380px) {
+  .top-title { font-size: 11px; letter-spacing: 1px; }
+  .char-tab { min-width: 60px; }
+  .char-tab-name { font-size: 10px; }
+  .title-main { font-size: 26px; letter-spacing: 4px; }
+  .dialogue-text { font-size: 13px; }
+}
+
+.hub-back-link {
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  z-index: 9999;
+  color: rgba(240, 223, 186, 0.55);
+  text-decoration: none;
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.15);
+  backdrop-filter: blur(6px);
+  transition: color 0.2s, background 0.2s;
+  user-select: none;
+}
+.hub-back-link:hover {
+  color: rgba(240, 223, 186, 0.9);
+  background: rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="hub-back-link">← 游戏中心</a>
+
+<div id="app">
+
+  <!-- ========== Title Screen ========== -->
+  <div id="title-screen" class="screen">
+    <div class="title-content">
+      <div class="title-time">01 : 47 AM</div>
+      <h1 class="title-main">凌晨两点的便利店</h1>
+      <p class="title-sub">在这座失眠的城市</p>
+      <p class="title-sub">四个陌生人，交汇成一场安静的</p>
+      <p class="title-sub2">无人知晓的温柔</p>
+      <button class="paper-btn" id="start-btn">推 门 进 去</button>
+    </div>
+  </div>
+
+  <!-- ========== Game Screen ========== -->
+  <div id="game-screen" class="screen hidden">
+
+    <div class="top-bar">
+      <div class="top-title">凌晨两点的便利店</div>
+      <div class="cp-counter"><span class="count" id="cp-count">0</span> / 15 · 交汇</div>
+      <button class="notebook-btn" id="mute-btn" title="切换环境声" style="margin-right: 10px;">🔊</button>
+      <button class="notebook-btn" id="notebook-btn">📖 图 鉴</button>
+    </div>
+
+    <div class="scene-wrap">
+      <svg id="scene-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
+        <!-- Scene art (background, store, exterior) -->
+        <g id="scene-art">
+          <!-- placeholder, filled by Edit -->
+          <rect width="1200" height="700" fill="#2a3548"/>
+          <rect x="380" y="0" width="820" height="700" fill="#e8dcc4"/>
+          <text x="600" y="360" fill="#3d2f24" font-size="20" text-anchor="middle" letter-spacing="4">场景绘制中...</text>
+        </g>
+
+        <!-- Characters (drawn on top of scene) -->
+        <g id="characters">
+          <!-- placeholder -->
+        </g>
+
+        <!-- Hotspot glows (rendered above chars) -->
+        <g id="hotspots"></g>
+      </svg>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="pov-indicator">
+        <div class="pov-label">当前视角</div>
+        <div class="pov-name" id="pov-name">—</div>
+        <div class="pov-hint" id="pov-hint">点击闪烁处继续</div>
+      </div>
+      <div class="char-tabs" id="char-tabs">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <div class="dialogue-overlay hidden" id="dialogue-overlay">
+      <div class="dialogue-box">
+        <div class="dialogue-narrator" id="dialogue-narrator"></div>
+        <div class="dialogue-title" id="dialogue-title"></div>
+        <div class="dialogue-text" id="dialogue-text"></div>
+        <div class="observations" id="observations-container"></div>
+        <div class="choice-block" id="choice-container"></div>
+        <div class="dialogue-cp" id="dialogue-cp" style="display:none"></div>
+        <button class="dialogue-continue" id="dialogue-continue">继 续 →</button>
+        <div style="clear: both"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== Notebook Screen ========== -->
+  <div id="notebook-screen" class="screen hidden">
+    <div class="notebook">
+      <div class="notebook-header">
+        <div class="notebook-title">交 汇 图 鉴</div>
+        <div class="notebook-sub">六 组 不 经 意 的 相 遇</div>
+      </div>
+      <div class="cp-list" id="cp-list"></div>
+      <div class="notebook-close-row">
+        <button class="paper-btn" id="notebook-close">合 上 笔 记 本</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Ending Screen ========== -->
+  <div id="ending-screen" class="screen hidden">
+    <div class="ending-content">
+      <div class="ending-time">03 : 00 AM</div>
+      <h2 class="ending-title" id="ending-title">而这个夜晚，终究是被谁温柔地接住了</h2>
+      <div class="ending-text" id="ending-text"></div>
+      <button class="paper-btn" id="ending-restart">再 次 推 开 那 扇 门</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// DATA — filled in by subsequent Edit calls
+// ============================================================
+
+// Character meta — 4 playable POVs
+const CHARACTERS = {
+  cashier: { name: '便利店店员', short: '店员', order: 0 },
+  nurse:   { name: '夜班护士',   short: '护士', order: 1 },
+  driver:  { name: '长途司机',   short: '司机', order: 2 },
+  teen:    { name: '少年',       short: '少年', order: 3 }
+};
+const CHAR_ORDER = ['cashier', 'nurse', 'driver', 'teen'];
+// NPC — referenced by beats/CPs but not playable
+const NPC = {
+  oldman: { name: '独居老人', short: '老人' }
+};
+
+// Hotspot scene positions (SVG coords)
+const HOTSPOTS = {
+  doorway:        { x: 410, y: 400 },
+  milkCabinet:    { x: 985, y: 305 },
+  odenPot:        { x: 780, y: 320 },
+  shelves:        { x: 900, y: 380 },
+  register:       { x: 1120, y: 455 },
+  catBowl:        { x: 285, y: 640 },
+  driverSeat:     { x: 545, y: 385 },
+  waterDispenser: { x: 690, y: 350 },
+  radio:          { x: 1055, y: 420 },
+  // Character positions (POV or NPC)
+  cashier:        { x: 1120, y: 440 },
+  nurse:          { x: 915, y: 440 },
+  driver:         { x: 545, y: 400 },
+  teen:           { x: 260, y: 595 },
+  oldman:         { x: 800, y: 440 }
+};
+
+// Beats — filled by later batches (empty scaffolds for now)
+const BEATS = {
+  cashier: [
+    {
+      hs: 'register',
+      title: '01 : 47 · 摘 下 一 只 耳 机',
+      text: '01:47。\n\n你把耳机的一只摘下来放到桌上，另一只留在耳朵里——夜班要留半只耳朵听门口的铃。\n\n店里现在没人。热饮柜有一根灯偏红，把牛奶染成粉色。你懒得报修——反正这份工你也做不了几个月。\n\n你在等家里妈发消息。她今天化疗第三次。你早上问她怎么样，她只回了两个字："还好"。你没敢再问。\n\n外面路灯照进来，把台阶上的橘猫照得半边黄半边黑。它在。碗歪了。'
+    },
+    {
+      hs: 'odenPot',
+      title: '关 东 煮',
+      text: '锅还是空的。\n\n关东煮的临期签在冰柜里排着——今晚快下架的三串鱼豆腐、两串鹌鹑蛋。\n\n你自己也饿了。你把两串鹌鹑蛋和一串鱼豆腐扔进锅里，加水开锅。\n\n吃完你把火关了，也没洗锅。汤底放凉了。\n\n凌晨这时段没人再来。',
+      effects: (w) => { w.odenState = 'cold'; },
+      cps: [{ id: 'cp3' }]
+    },
+    {
+      hs: 'catBowl',
+      title: '猫 碗',
+      text: '你出去抽烟。台阶角落那只橘猫的碗被风吹歪了。粮碗空的，旁边水碗也空了。\n\n你从饮水机接了半瓶凉水，出门倒进空水碗。顺手把歪着的粮碗也摆正。\n\n它离你两步远看着。等你转身，才走近碗边。',
+      effects: (w) => { w.catBowl = 'water'; },
+      cps: [{ id: 'cp7' }]
+    },
+    {
+      hs: 'milkCabinet',
+      title: '老 人 · 够 不 到 的 最 上 层',
+      text: '玻璃门叮的一声。老人。你把手里那半支烟掐了，回来。身上还带着冷气。\n\n他停在热奶柜前，踮脚够上层的盒装牛奶，晃了一下没够到。手抖得厉害。\n\n你抬眼看了他两秒。手搭在收银台边缘——如果他再够不到你就起身。\n\n他这次够到了。你把手收了回来。\n\n他抱着牛奶朝这边走过来，没朝你看。',
+      effects: (w) => { w.milkHelp = 'ready'; },
+      cps: [{ id: 'cp1' }]
+    },
+    {
+      hs: 'register',
+      title: '老 人 · 一 把 硬 币',
+      text: '老人拎着牛奶挪到收银台前。\n\n他从怀里掏出一个布零钱包，倒出一把硬币在台面上。一元、五毛、一毛，混在一起。他一边数一边抖。\n\n你等他数了两下，看他数不清，伸手接过硬币，几秒数好。一元硬币抽屉最前你早排整齐了。\n\n找零两毛加一枚一毛，递过去。没说话。\n\n他把硬币收好，把牛奶抱起来。',
+      effects: (w) => { w.cashService = 'normal'; },
+      cps: [{ id: 'cp2' }]
+    },
+    {
+      hs: 'register',
+      title: '护 士 · 扫 码',
+      text: '护士。她刚从饮水机那边过来——你在她进店时看见了她袖口的碘伏印。\n\n她拿了一盒热奶、一袋面包，走到收银台，递手机扫码。她的指尖有几个细小的伤口。\n\n你扫码时余光扫过她袖口。手上没停。扫完你把东西推过去，抬头淡淡问了句："袋子要吗。"\n\n她摇了下头。没说话，拿了东西就走。',
+      effects: (w) => { w.nurseCheckout = 'normal'; },
+      cps: [{ id: 'cp4' }]
+    },
+    {
+      hs: 'driverSeat',
+      title: '司 机 · 靠 窗 落 座',
+      text: '玻璃门又叮了一声。\n\n一个中年男人推门进来。深色外套，一身寒气。腰背僵直，走路时右手一直按着后腰。\n\n他没朝收银台看，径直往靠窗的座位走。坐下之后抬手反复按后腰，脸皱着。\n\n你余光瞥见他揉腰。伸手在遥控器上按了两下——窗那边的空调调高了半格。\n\n没抬头，没说话。他也没朝这边看。过了几分钟他不揉了。',
+      effects: (w) => { w.seatHeater = 'normal'; },
+      cps: [{ id: 'cp5' }]
+    },
+    {
+      hs: 'register',
+      title: '司 机 · 一 瓶 白 水',
+      text: '他站起来，走到饮料柜前站了一会儿，最后拿了一瓶最便宜的常温白水，走到收银台。\n\n指尖冻得发红。\n\n你扫完码，看到他冻红的手指。你手边有一杯自己接的温水，你往他那边推了半寸。\n\n然后又收回来——你不知道自己这算什么。\n\n他没看到那半寸。也可能看到了没说。他扫了码走了。',
+      effects: (w) => { w.driverCheckout = 'normal'; },
+      cps: [{ id: 'cp6' }]
+    },
+    {
+      hs: 'register',
+      title: '少 年 · 黑 屏 手 机',
+      text: '玻璃门第三次响。\n\n少年。那个每晚来买最便宜猫粮的孩子。帽檐压得极低。他走到货架下层，拿了最便宜那袋猫粮。\n\n他站到收银台前，掏手机——按了好几下，屏幕黑着开不开。\n\n你抬头扫了眼他手里的黑屏手机。没说话。你继续低头整理零钱——放整齐点。也算是给他一点等的时间。\n\n他会自己想办法。',
+      effects: (w) => { w.charger = 'noticed'; },
+      cps: [{ id: 'cp8' }]
+    },
+    {
+      hs: 'doorway',
+      title: '少 年 · 蹲 门 口',
+      text: '玻璃门开了一下——他没走。\n\n回头一看，他抱着膝盖蹲在门口台阶上，头埋得很低。橘猫在他脚边。外面风挺大。他连帽衫看着不厚。\n\n你偶尔从收银台后面扫一眼门口。他一直没动。橘猫也没走。\n\n你没敲玻璃，也没开门叫他。你只是留意着点动静。\n\n夜班本来就是留一只眼在门口的活。你告诉自己。',
+      effects: (w) => { w.doorGap = 'watched'; },
+      cps: [{ id: 'cp9' }]
+    }
+  ],
+  nurse: [
+    {
+      hs: 'doorway',
+      title: '进 门',
+      text: '你推门进店，身后跟着一身寒气——一个穿深色外套的中年男人，腰背僵直。你们同时停在门口，都想让对方先进。\n\n你停下脚步，侧身让了一下，等他先进。他点了个头道谢。你没说话。\n\n今晚接了七个急诊。最后一个是十八岁的女孩，跳楼。抢救完，她妈妈在走廊哭得像个孩子。你有一秒想："她哭她的，你还有病人要接。"\n\n那一秒你没让自己多停。可你会想她的眼睛。',
+      effects: (w) => { w.doorLet = 'normal'; },
+      cps: [{ id: 'cp10' }]
+    },
+    {
+      hs: 'waterDispenser',
+      title: '接 水',
+      text: '你直奔饮水区。指尖布满细小的伤口——今晚戴了太多次乳胶手套。\n\n你拧水龙头时手抖了一下。饮水机是温水档。你接了大半杯，慢慢喝。\n\n收银台那孩子低着头看手机，你没看清他表情。\n\n热气糊到你脸上。你把杯子放回去，转身去药品柜。'
+    },
+    {
+      hs: 'odenPot',
+      title: '关 东 煮 · 凉 汤 底',
+      text: '关东煮的锅在货架旁。\n\n你走过时瞥了一眼。锅里只剩几个空签子，汤底放凉了——好像有人吃过又关火了。\n\n没有热的。你没多问，从旁边货架拿了一根火腿肠、一袋面包。\n\n凌晨这时段没人再煮。你也没资格挑。',
+      effects: (w) => { w.nurseOden = 'cold'; },
+      cps: [{ id: 'cp3' }]
+    },
+    {
+      hs: 'register',
+      title: '扫 码 结 账',
+      text: '你拿好一盒热奶、一袋面包、一根火腿肠、一盒退烧药——女儿这几天感冒。你走到收银台，递手机扫码。\n\n收银员没抬头。扫完，你余光扫过他手边——一个亮着的手机屏幕，是消息。\n\n他抬头淡淡问了句："袋子要吗。"\n\n你摇了下头。没说话，拿了东西就走。',
+      effects: (w) => { w.nursePay = 'normal'; },
+      cps: [{ id: 'cp4' }]
+    },
+    {
+      hs: 'driver',
+      title: '司 机 · 掉 的 那 支 笔',
+      text: '你出门时，靠窗座位的那个男人正好起身结账。他口袋里的一支签字笔滑出来，掉在你脚边。他自己没发现。\n\n你弯腰捡起来。笔上印着你们医院的名字——你以前抢救的时候用过一模一样的。\n\n你等他走到门口，把笔递过去。没多说话。\n\n他愣了一下，"谢谢。"\n\n你摇摇头就出去了。',
+      effects: (w) => { w.penPick = 'return'; },
+      cps: [{ id: 'cp11' }]
+    },
+    {
+      hs: 'catBowl',
+      title: '喂 猫 时 路 过',
+      text: '你出门，看见台阶边一个连帽衫少年蹲着喂那只橘猫，动作很轻。橘猫蹭他的手。\n\n你放慢脚步看了一眼猫，又看了一眼少年。他察觉到，把猫往自己身边拉了拉。\n\n你没说话，继续往前走。\n\n地铁站还有八分钟。风大。',
+      effects: (w) => { w.catMeet = 'glance'; },
+      cps: [{ id: 'cp12' }]
+    },
+    {
+      hs: 'oldman',
+      title: '台 阶 上 打 滑',
+      text: '你走到街角，迎面碰到一个拎着牛奶的老人从便利店那边过来——脚下一滑，晃了一下。\n\n你停下脚步，伸手虚扶了一下他的胳膊。等他站稳了就收回手。\n\n"没事没事，谢谢啊姑娘。"\n\n你点了点头。他慢慢走远了。\n\n你继续往前走。',
+      effects: (w) => { w.elderSlip = 'ready'; },
+      cps: [{ id: 'cp13' }]
+    }
+  ],
+  driver: [
+    {
+      hs: 'doorway',
+      title: '进 门',
+      text: '你推门进店。前面有个穿白外套的护士，你们同时停在门口。\n\n你停下脚步，侧身让她先进。她点了个头，没说话。\n\n你腰背僵直，走路时右手一直按着后腰。今晚跑了十二个小时——从廊坊到南六环，最后一趟拉了一个吐了一路的乘客。你收了车，就近找了这家 24 小时的便利店歇歇脚。',
+      effects: (w) => { w.doorLetDriver = 'normal'; },
+      cps: [{ id: 'cp10' }]
+    },
+    {
+      hs: 'driverSeat',
+      title: '靠 窗 落 座',
+      text: '你没朝收银台看，径直往靠窗的座位走。坐下之后抬手反复按后腰。窗那边有点风。\n\n收银台那小子朝你这边扫了一眼，又低头。过了一会儿你听见空调按键的响——窗边慢慢暖起来了。\n\n可能是空调自动调温。你没多想。',
+      effects: (w) => { w.driverSeatState = 'normal'; },
+      cps: [{ id: 'cp5' }]
+    },
+    {
+      hs: 'register',
+      title: '一 瓶 白 水',
+      text: '你歇了十几分钟。腰不那么僵了。\n\n站起来，走到饮料柜前，拿了一瓶最便宜的常温白水，走到收银台。指尖冻得发红。\n\n扫码时你看到店员手边有一杯温水，好像动了一下杯子——又收回去了。可能是你眼花。\n\n你扫了码，拎着水回座位。',
+      effects: (w) => { w.driverBuyWater = 'normal'; },
+      cps: [{ id: 'cp6' }]
+    },
+    {
+      hs: 'nurse',
+      title: '护 士 掉 的 那 支 笔',
+      text: '你起身结账，出门前走到门口——身后有人叫你，是刚才让门的那个护士。她弯腰把一支签字笔递给你。\n\n你摸了摸口袋——账本还在，笔口袋是空的。原来是你的笔掉了。\n\n"谢谢。"\n\n她摇摇头就回去继续喝她的水了。\n\n你把笔揣好，把账本也拍了拍。',
+      effects: (w) => { w.driverPen = 'return'; },
+      cps: [{ id: 'cp11' }]
+    },
+    {
+      hs: 'teen',
+      title: '台 阶 上 蹲 着',
+      text: '你结完账推门出去。台阶上一个连帽衫少年抱着膝盖蹲着，头埋得很低，旁边蹲着橘猫。\n\n你放慢脚步看了他一眼，又看了一眼猫。他察觉到，往旁边挪了挪，给你让路。\n\n你点了个头，没说话。\n\n车停在路边。你上了车，发动，暖风开到最大。'
+      ,effects: (w) => { w.driverTeen = 'glance'; },
+      cps: [{ id: 'cp14' }]
+    },
+    {
+      hs: 'oldman',
+      title: '拎 着 东 西 下 阶',
+      text: '你正要挂挡开车，从后视镜看到便利店门口出来一个老人。他拎着牛奶和一袋点心，走得很慢，在台阶前停了一下。\n\n你放下挡，等他先下台阶。他没看到你，慢慢下了阶。\n\n你没下车帮他。你也没催。\n\n他走远了。你才挂挡，慢慢开出去。',
+      effects: (w) => { w.driverElder = 'wait'; },
+      cps: [{ id: 'cp15' }]
+    },
+    {
+      hs: 'doorway',
+      title: '开 走',
+      text: '你把车开上主路。凌晨三点的街空得像张纸。\n\n仪表盘上油还剩四分之一。够回家。\n\n后备箱里那个塑料袋——白天你老婆给你装的三个茶叶蛋，你还没吃。\n\n她说过多少次了，跑长途也得吃点热的。'
+    }
+  ],
+  teen: [
+    {
+      hs: 'catBowl',
+      title: '喂 猫',
+      text: '台阶角落，那只橘猫又缩在那里。\n\n你今天晚了半小时。它认得你的鞋——你走近它才慢慢站起来。\n\n它的粮碗和水碗都是满的。粮碗还剩着一小把，水碗满满一碗。\n\n谁弄的？你没看到。你把带来的猫粮倒了一小把在旁边，它先闻了闻新粮，又低头喝水。\n\n你蹲着，把连帽衫的帽子拉低。妈今天打了 17 个电话你没接。',
+      effects: (w) => { w.teenCat = 'observe'; },
+      cps: [{ id: 'cp7' }]
+    },
+    {
+      hs: 'doorway',
+      title: '推 门',
+      text: '猫粮袋要空了。你摸口袋，还剩十几块。\n\n推门进去，热气糊上脸。收银台那小子抬头扫了你一眼，又低头刷手机——你熟悉那种眼神，"又是这种孩子"。\n\n你不理他，直奔货架下层。'
+    },
+    {
+      hs: 'register',
+      title: '黑 屏 手 机',
+      text: '你拿了最便宜那袋猫粮，走到收银台。掏手机——按了好几下，屏幕黑着开不开。今天电池就撑到这儿了。\n\n你站着，攥着黑屏手机。收银员抬眼扫了一下你的手机，没说话，继续低头整理零钱。\n\n你从另一个口袋掏出十几块现金放在台面上。\n\n他扫了码，把猫粮推给你。你没抬头，拎着走了。',
+      effects: (w) => { w.teenPay = 'leave'; },
+      cps: [{ id: 'cp8' }]
+    },
+    {
+      hs: 'doorway',
+      title: '蹲 门 口',
+      text: '你出门，没走。\n\n抱着膝盖蹲在门口台阶上，头埋得很低。橘猫走过来蹲在你脚边。\n\n你偶尔抬头往店里瞟一眼，看到店员在看自己，赶紧低下头，更往角落里缩了缩。\n\n他没赶你，但也没搭话。\n\n外面风大。你连帽衫太薄。',
+      effects: (w) => { w.teenDoorSit = 'shy'; },
+      cps: [{ id: 'cp9' }, { id: 'cp14' }]
+    },
+    {
+      hs: 'nurse',
+      title: '护 士 路 过',
+      text: '一个穿白外套的姐姐从店里出来，走过你身边——她放慢脚步看了猫两眼，又看了你一眼。\n\n你把猫往自己身边拉了拉。\n\n她没说话，也没停，继续往前走。\n\n你没抬头。橘猫在你脚边蹭。',
+      effects: (w) => { w.teenNurse = 'wary'; },
+      cps: [{ id: 'cp12' }]
+    },
+    {
+      hs: 'oldman',
+      title: '老 人 路 过',
+      text: '一个拎着牛奶的老人从便利店那边慢慢过来。他停下脚步，蹲得吃力，看着橘猫。\n\n你抬头快速看了他一眼，又低下头，往旁边挪了挪，给他让出看猫的位置。\n\n他没伸手摸猫，只是看。他嘴里念叨了一句什么——你没听清。\n\n他站起来时膝盖响了一声。慢慢走远了。'
+    }
+  ]};
+
+// Convergences — 15 CPs across 4 POVs + 1 NPC (老人)
+// participants: who is involved. npcs: who is not-playable (auto-satisfied for CP unlock).
+// Full text (cold/default/warm tiers) filled in later batches.
+const CONVERGENCES = {
+  cp1:  { title: '一 · 老人 · 够 不 到 的 最 上 层',       participants: ['cashier','oldman'],  npcs: ['oldman'] },
+  cp2:  { title: '二 · 老人 · 现 金 结 账',                 participants: ['cashier','oldman'],  npcs: ['oldman'] },
+  cp3:  { title: '三 · 护士 · 关 东 煮 备 货',              participants: ['cashier','nurse']    },
+  cp4:  { title: '四 · 护士 · 扫 码 结 账',                 participants: ['cashier','nurse']    },
+  cp5:  { title: '五 · 司机 · 靠 窗 落 座',                 participants: ['cashier','driver']   },
+  cp6:  { title: '六 · 司机 · 一 瓶 白 水',                 participants: ['cashier','driver']   },
+  cp7:  { title: '七 · 少年 · 猫 碗 补 给',                 participants: ['cashier','teen']     },
+  cp8:  { title: '八 · 少年 · 买 猫 粮 结 账',              participants: ['cashier','teen']     },
+  cp9:  { title: '九 · 少年 · 蹲 门 口',                    participants: ['cashier','teen']     },
+  cp10: { title: '十 · 护士 × 司机 · 让 门',                participants: ['nurse','driver']     },
+  cp11: { title: '十 一 · 护士 × 司机 · 掉 的 那 支 笔',    participants: ['nurse','driver']     },
+  cp12: { title: '十 二 · 护士 × 少年 · 喂 猫 时 路 过',    participants: ['nurse','teen']       },
+  cp13: { title: '十 三 · 护士 × 老人 · 台 阶 上 打 滑',    participants: ['nurse','oldman'],    npcs: ['oldman'] },
+  cp14: { title: '十 四 · 司机 × 少年 · 台 阶 上 蹲 着',    participants: ['driver','teen']      },
+  cp15: { title: '十 五 · 司机 × 老人 · 拎 着 东 西 下 阶', participants: ['driver','oldman'],   npcs: ['oldman'] },
+  cp16: { title: '十 六 · 少年 × 老人 · 台 阶 边 看 猫',   participants: ['teen','oldman'],     npcs: ['oldman'] }
+};
+
+// Ending — placeholder, rewritten adaptively in batch 6
+const ENDING = {
+  lines: [
+    '凌晨三点。',
+    '街灯把便利店的玻璃染成一层薄薄的暖黄。',
+    '',
+    '（结局文本会在最后一批一起补——',
+    '  它会根据这一晚每个人具体做了什么，长出对应的收尾。）',
+    '',
+    '这一晚，就到这里了。'
+  ]
+};
+
+// ============================================================
+// STATE
+// ============================================================
+
+const state = {
+  screen: 'title',
+  currentPOV: null,
+  unlocked: new Set(['cashier','nurse','driver','teen']),
+  completed: new Set(),
+  progress: { cashier: 0, nurse: 0, driver: 0, teen: 0 },
+  convergences: new Set(),
+  cpProgress: {}, // { cpId: Set of chars who've contributed }
+  world: {},      // world flags — who did what at what tier
+  dialogueOpen: false,
+  notebookOpen: false
+};
+
+// per-open state (not part of `state`, just transient)
+let _currentBeat = null;
+let _currentEffective = null;
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function $(id) { return document.getElementById(id); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    if (s.id === id) s.classList.remove('hidden');
+    else s.classList.add('hidden');
+  });
+  state.screen = id.replace('-screen', '');
+}
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  $('game-screen').appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+function currentBeat() {
+  if (!state.currentPOV) return null;
+  const beats = BEATS[state.currentPOV] || [];
+  const i = state.progress[state.currentPOV];
+  return beats[i] || null;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function renderCharTabs() {
+  const wrap = $('char-tabs');
+  wrap.innerHTML = '';
+  const cur = state.currentPOV;
+  const midArc = cur && !state.completed.has(cur) && state.progress[cur] > 0;
+
+  CHAR_ORDER.forEach(id => {
+    const c = CHARACTERS[id];
+    const active = state.currentPOV === id;
+    const completed = state.completed.has(id);
+    const disabled = midArc && !active;
+
+    let status = '待 探 索';
+    if (completed) status = '已 走 完';
+    else if (active) status = midArc ? '进 行 中' : '当 前';
+
+    const btn = document.createElement('button');
+    btn.className = 'char-tab' + (active ? ' active' : '') + (completed ? ' completed' : '') + (disabled ? ' locked' : '');
+    btn.dataset.char = id;
+    btn.innerHTML = `
+      <svg class="char-tab-icon" viewBox="0 0 42 42">${charIconSVG(id)}</svg>
+      <div class="char-tab-name">${c.name}</div>
+      <div class="char-tab-status">${status}</div>
+    `;
+    if (!disabled) btn.addEventListener('click', () => switchPOV(id));
+    wrap.appendChild(btn);
+  });
+}
+
+function renderPOVIndicator() {
+  if (!state.currentPOV) {
+    $('pov-name').textContent = '—';
+    $('pov-hint').textContent = '选 一 个 人 · 走 进 这 一 晚';
+    return;
+  }
+  $('pov-name').textContent = CHARACTERS[state.currentPOV].name;
+  const beat = currentBeat();
+  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  if (!beat) {
+    $('pov-hint').textContent = '这 一 段 走 完 了 · 选 下 一 位';
+  } else if (isMobile) {
+    $('pov-hint').textContent = '· ' + (beat.title || '') + ' · 轻 点 继 续 →';
+  } else {
+    $('pov-hint').textContent = '点 击 闪 烁 处 继 续';
+  }
+}
+
+function renderHotspots() {
+  const g = $('hotspots');
+  g.innerHTML = '';
+  const beat = currentBeat();
+  if (!beat || state.dialogueOpen) return;
+
+  const pos = HOTSPOTS[beat.hs];
+  if (!pos) return;
+
+  // outer glow ring
+  const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  glow.setAttribute('cx', pos.x);
+  glow.setAttribute('cy', pos.y);
+  glow.setAttribute('r', 42);
+  glow.setAttribute('fill', 'rgba(245, 200, 138, 0.35)');
+  glow.setAttribute('class', 'hotspot-glow');
+  glow.setAttribute('pointer-events', 'none');
+  g.appendChild(glow);
+
+  // click target
+  const hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  hit.setAttribute('cx', pos.x);
+  hit.setAttribute('cy', pos.y);
+  hit.setAttribute('r', 48);
+  hit.setAttribute('fill', 'transparent');
+  hit.setAttribute('class', 'hotspot-target');
+  hit.addEventListener('click', () => triggerHotspot(beat.hs));
+  g.appendChild(hit);
+}
+
+function renderCharacters() {
+  const g = $('characters');
+  g.innerHTML = '';
+  CHAR_ORDER.forEach(id => {
+    const pos = HOTSPOTS[id];
+    const isCurrent = state.currentPOV === id;
+    const wrap = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    wrap.setAttribute('class', 'char-svg' + (isCurrent ? ' current' : ' dimmed'));
+    wrap.setAttribute('transform', `translate(${pos.x - 30}, ${pos.y - 60})`);
+    wrap.innerHTML = characterSVG(id);
+    g.appendChild(wrap);
+  });
+}
+
+function updateCPCounter() {
+  $('cp-count').textContent = state.convergences.size;
+}
+
+function render() {
+  renderCharTabs();
+  renderPOVIndicator();
+  renderHotspots();
+  renderCharacters();
+  updateCPCounter();
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+
+function switchPOV(char) {
+  if (!state.unlocked.has(char)) return;
+  const cur = state.currentPOV;
+  // Lock: mid-arc can't switch away
+  if (cur && cur !== char && state.progress[cur] > 0 && !state.completed.has(cur)) {
+    toast('先 走 完 ' + CHARACTERS[cur].name + ' 这 一 段');
+    return;
+  }
+  state.currentPOV = char;
+  if (char === 'nurse') startAmbient('nurse');
+  else stopAmbient();
+
+  // Handle empty arc (scaffold placeholder): auto-complete
+  const arcLen = (BEATS[char] || []).length;
+  if (arcLen === 0 && !state.completed.has(char)) {
+    state.completed.add(char);
+    setTimeout(() => toast(CHARACTERS[char].name + ' · 这 一 段 内 容 待 填'), 250);
+    if (state.completed.size >= CHAR_ORDER.length) {
+      setTimeout(() => { stopAmbient(); showEnding(); }, 1200);
+    }
+  }
+
+  render();
+}
+
+function triggerHotspot(hs) {
+  const beat = currentBeat();
+  if (!beat || beat.hs !== hs) return;
+  playBeat(beat);
+}
+
+function resolveBranch(beat) {
+  // If beat has branches, pick the first whose `when` returns true
+  // (or one without `when` as default). Returns an "effective" object
+  // with title/text/cps/effects potentially overridden.
+  if (!beat.branches || !beat.branches.length) return beat;
+  for (const b of beat.branches) {
+    if (!b.when || b.when(state.world)) {
+      return {
+        hs: beat.hs,
+        title: b.title || beat.title,
+        text: b.text,
+        cps: b.cps,
+        effects: b.effects,
+        // preserve choices at top-level if any
+        choices: beat.choices,
+        choicePrompt: beat.choicePrompt
+      };
+    }
+  }
+  return beat;
+}
+
+function playBeat(beat) {
+  state.dialogueOpen = true;
+  _currentBeat = beat;
+  const effective = resolveBranch(beat);
+  _currentEffective = effective;
+
+  const char = CHARACTERS[state.currentPOV];
+  $('dialogue-narrator').textContent = char.name + ' · 视角';
+  $('dialogue-title').textContent = effective.title || '';
+  $('dialogue-text').textContent = effective.text || '';
+
+  // Reset containers
+  $('observations-container').innerHTML = '';
+  $('choice-container').innerHTML = '';
+  $('dialogue-cp').style.display = 'none';
+
+  const hasChoices = effective.choices && effective.choices.length;
+
+  if (hasChoices) {
+    // Render choices; continue is disabled until picked
+    const container = $('choice-container');
+    if (effective.choicePrompt) {
+      const p = document.createElement('div');
+      p.className = 'choice-prompt';
+      p.textContent = effective.choicePrompt;
+      container.appendChild(p);
+    }
+    effective.choices.forEach((choice, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-option';
+      btn.textContent = choice.label;
+      btn.addEventListener('click', () => pickChoice(idx));
+      container.appendChild(btn);
+    });
+    setContinueEnabled(false);
+  } else {
+    // Auto-do: apply effects + track CPs immediately
+    if (effective.effects) effective.effects(state.world);
+    const unlocked = contributeToCPs(effective);
+    showCPUnlock(unlocked);
+    setContinueEnabled(true);
+  }
+
+  $('dialogue-overlay').classList.remove('hidden');
+  render();
+}
+
+function pickChoice(idx) {
+  const beat = _currentEffective;
+  const choice = beat.choices[idx];
+
+  playChoiceClick();
+  if (choice.voice) speakLine(choice.voice, 900);
+
+  // Append the choice's follow-up text to the main text
+  const textDiv = $('dialogue-text');
+  if (choice.text) {
+    textDiv.textContent = textDiv.textContent + '\n\n' + choice.text;
+  }
+
+  // Apply effects
+  if (choice.effects) choice.effects(state.world);
+
+  // Track CPs from the choice
+  const unlocked = contributeToCPs(choice);
+  showCPUnlock(unlocked);
+
+  // Replace choice UI with the "chosen" marker
+  const container = $('choice-container');
+  container.innerHTML = '';
+  const chosen = document.createElement('div');
+  chosen.className = 'choice-chosen';
+  chosen.textContent = '「 ' + choice.label + ' 」';
+  container.appendChild(chosen);
+
+  setContinueEnabled(true);
+}
+
+function contributeToCPs(source) {
+  const cps = source && source.cps;
+  if (!cps || !cps.length) return [];
+  const char = state.currentPOV;
+  const unlocked = [];
+  cps.forEach(cp => {
+    const id = cp.id || cp;
+    if (!state.cpProgress[id]) state.cpProgress[id] = new Set();
+    state.cpProgress[id].add(char);
+
+    const meta = CONVERGENCES[id];
+    if (meta && !state.convergences.has(id)) {
+      const needed = meta.participants || [];
+      const npcs = meta.npcs || [];
+      // NPCs auto-satisfy — only playable participants must contribute
+      const required = needed.filter(c => !npcs.includes(c));
+      const allDone = required.every(c => state.cpProgress[id].has(c));
+      if (allDone) {
+        state.convergences.add(id);
+        unlocked.push(id);
+      }
+    }
+  });
+  return unlocked;
+}
+
+function showCPUnlock(unlocked) {
+  const cpBox = $('dialogue-cp');
+  if (unlocked.length) {
+    const titles = unlocked.map(id => (CONVERGENCES[id] && CONVERGENCES[id].title) || id).join(' · ');
+    cpBox.textContent = '✎  记 下 一 段 交 汇 —— ' + titles;
+    cpBox.style.display = 'block';
+    playCPChime();
+  } else {
+    cpBox.style.display = 'none';
+  }
+}
+
+function setContinueEnabled(enabled) {
+  const btn = $('dialogue-continue');
+  btn.disabled = !enabled;
+  if (enabled) {
+    btn.classList.remove('disabled');
+    btn.textContent = '继 续 →';
+  } else {
+    btn.classList.add('disabled');
+    btn.textContent = '（ 先 做 出 选 择 ）';
+  }
+}
+
+function closeBeat() {
+  state.dialogueOpen = false;
+  $('dialogue-overlay').classList.add('hidden');
+
+  const c = state.currentPOV;
+  state.progress[c]++;
+
+  if (state.progress[c] >= (BEATS[c] || []).length) {
+    if (!state.completed.has(c)) {
+      state.completed.add(c);
+      playArcComplete();
+      setTimeout(() => toast(CHARACTERS[c].name + ' · 这 一 段 走 完 了'), 300);
+    }
+  }
+
+  // All 5 arcs done → ending
+  if (state.completed.size >= CHAR_ORDER.length) {
+    stopAmbient();
+    setTimeout(showEnding, 900);
+    render();
+    return;
+  }
+
+  render();
+}
+
+function showNotebook() {
+  const list = $('cp-list');
+  list.innerHTML = '';
+  Object.entries(CONVERGENCES).forEach(([id, cp]) => {
+    const unlocked = state.convergences.has(id);
+    const entry = document.createElement('div');
+    entry.className = 'cp-entry' + (unlocked ? '' : ' locked');
+    if (unlocked) {
+      entry.innerHTML = `
+        <div class="cp-entry-title">${cp.title}</div>
+        <div class="cp-locked-msg">这一晚，你确实经过了这里。</div>
+      `;
+    } else {
+      entry.innerHTML = `
+        <div class="cp-entry-title">? · 尚 未 相 遇</div>
+        <div class="cp-locked-msg">继续在不同的视角里，看这一晚有没有交汇过...</div>
+      `;
+    }
+    list.appendChild(entry);
+  });
+  $('notebook-screen').classList.remove('hidden');
+  state.notebookOpen = true;
+}
+
+function hideNotebook() {
+  $('notebook-screen').classList.add('hidden');
+  state.notebookOpen = false;
+}
+
+function showEnding() {
+  const wrap = $('ending-text');
+  wrap.innerHTML = '';
+  ENDING.lines.forEach((line, i) => {
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.textContent = line || ' ';
+    div.style.animationDelay = (0.2 + i * 0.35) + 's';
+    wrap.appendChild(div);
+  });
+  showScreen('ending-screen');
+}
+
+// ============================================================
+// SVG ART — placeholders, filled by Edit
+// ============================================================
+
+function characterSVG(id) {
+  // returns SVG inner HTML for a character figure ~ 60x120
+  return `<circle cx="30" cy="20" r="14" fill="#3d2f24"/><rect x="18" y="34" width="24" height="60" fill="#3d2f24"/><text x="30" y="72" font-size="8" fill="#e8dcc4" text-anchor="middle">${CHARACTERS[id].short}</text>`;
+}
+
+function charIconSVG(id) {
+  // returns SVG inner HTML for a tab icon ~ 42x42
+  return `<circle cx="21" cy="16" r="8" fill="#3d2f24"/><rect x="14" y="24" width="14" height="16" fill="#3d2f24"/>`;
+}
+
+// ============================================================
+// AUDIO — procedural ambient via Web Audio API
+// ============================================================
+
+const AUDIO = {
+  ctx: null,
+  master: null,
+  drone: null,        // { osc1, osc2, gain }
+  fluorTimer: null,
+  beepTimer: null,
+  muted: false,
+  currentAmbient: null
+};
+
+function ensureAudio() {
+  if (!AUDIO.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    AUDIO.ctx = new AC();
+    AUDIO.master = AUDIO.ctx.createGain();
+    AUDIO.master.gain.value = AUDIO.muted ? 0 : 0.9;
+    AUDIO.master.connect(AUDIO.ctx.destination);
+  }
+  if (AUDIO.ctx.state === 'suspended') {
+    AUDIO.ctx.resume().catch(() => {});
+  }
+  return true;
+}
+
+function startAmbient(character) {
+  if (AUDIO.currentAmbient === character) return;
+  stopAmbient(true);
+  if (!ensureAudio()) return;
+  AUDIO.currentAmbient = character;
+  if (character === 'nurse') startNurseAmbient();
+}
+
+function stopAmbient(instant) {
+  const prev = AUDIO.currentAmbient;
+  AUDIO.currentAmbient = null;
+  if (!AUDIO.ctx) return;
+  const now = AUDIO.ctx.currentTime;
+
+  if (AUDIO.drone) {
+    const d = AUDIO.drone;
+    AUDIO.drone = null;
+    try {
+      const g = d.gain.gain;
+      g.cancelScheduledValues(now);
+      g.setValueAtTime(g.value, now);
+      g.linearRampToValueAtTime(0, now + (instant ? 0.15 : 1.4));
+    } catch (e) {}
+    setTimeout(() => {
+      try { d.osc1.stop(); } catch (e) {}
+      try { d.osc2.stop(); } catch (e) {}
+    }, instant ? 200 : 1600);
+  }
+  if (AUDIO.fluorTimer) { clearTimeout(AUDIO.fluorTimer); AUDIO.fluorTimer = null; }
+  if (AUDIO.beepTimer)  { clearTimeout(AUDIO.beepTimer);  AUDIO.beepTimer  = null; }
+}
+
+function startNurseAmbient() {
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+
+  // Low drone — 55Hz + slight fifth for depth
+  const osc1 = ctx.createOscillator();
+  osc1.type = 'sine';
+  osc1.frequency.value = 55;
+
+  const osc2 = ctx.createOscillator();
+  osc2.type = 'sine';
+  osc2.frequency.value = 82.5;
+
+  // Very slow LFO on osc2 gain for a barely-alive feel
+  const lfo = ctx.createOscillator();
+  lfo.type = 'sine';
+  lfo.frequency.value = 0.08;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 0.06;
+  lfo.connect(lfoGain);
+
+  const droneGain = ctx.createGain();
+  droneGain.gain.value = 0;
+  droneGain.gain.linearRampToValueAtTime(0.18, now + 2.2);
+
+  lfoGain.connect(droneGain.gain);
+
+  osc1.connect(droneGain);
+  osc2.connect(droneGain);
+  droneGain.connect(AUDIO.master);
+
+  osc1.start();
+  osc2.start();
+  lfo.start();
+
+  AUDIO.drone = { osc1, osc2, lfo, gain: droneGain };
+
+  // Fluorescent flicker — random bursts of filtered high noise
+  const scheduleFluor = () => {
+    if (AUDIO.currentAmbient !== 'nurse') return;
+    const delay = 2800 + Math.random() * 5500;
+    AUDIO.fluorTimer = setTimeout(() => {
+      playFluorescent();
+      scheduleFluor();
+    }, delay);
+  };
+  scheduleFluor();
+
+  // Distant hospital monitor beep — very sparse
+  const scheduleBeep = () => {
+    if (AUDIO.currentAmbient !== 'nurse') return;
+    const delay = 18000 + Math.random() * 22000;
+    AUDIO.beepTimer = setTimeout(() => {
+      playHospitalBeep();
+      scheduleBeep();
+    }, delay);
+  };
+  scheduleBeep();
+}
+
+function playFluorescent() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'nurse') return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+
+  const bufferSize = Math.floor(ctx.sampleRate * 0.22);
+  const buf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 2600 + Math.random() * 1800;
+  filter.Q.value = 6;
+
+  const g = ctx.createGain();
+  g.gain.value = 0;
+  g.gain.linearRampToValueAtTime(0.10, now + 0.02);
+  g.gain.linearRampToValueAtTime(0.04, now + 0.06);
+  g.gain.linearRampToValueAtTime(0, now + 0.18);
+
+  noise.connect(filter);
+  filter.connect(g);
+  g.connect(AUDIO.master);
+  noise.start(now);
+  noise.stop(now + 0.22);
+}
+
+function playHospitalBeep() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'nurse') return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+
+  // two soft short beeps at ~1000Hz — heavily attenuated (distant memory)
+  [0, 0.28].forEach((offset) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 1000;
+
+    const g = ctx.createGain();
+    g.gain.value = 0;
+    const t0 = now + offset;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.06, t0 + 0.03);
+    g.gain.linearRampToValueAtTime(0.06, t0 + 0.12);
+    g.gain.linearRampToValueAtTime(0, t0 + 0.16);
+
+    // Low-pass to soften it (feels far)
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 1400;
+
+    osc.connect(lp);
+    lp.connect(g);
+    g.connect(AUDIO.master);
+    osc.start(t0);
+    osc.stop(t0 + 0.2);
+  });
+}
+
+function toggleMute() {
+  AUDIO.muted = !AUDIO.muted;
+  const btn = $('mute-btn');
+  if (btn) btn.textContent = AUDIO.muted ? '🔇' : '🔊';
+  if (AUDIO.ctx && AUDIO.master) {
+    const now = AUDIO.ctx.currentTime;
+    AUDIO.master.gain.cancelScheduledValues(now);
+    AUDIO.master.gain.setValueAtTime(AUDIO.master.gain.value, now);
+    AUDIO.master.gain.linearRampToValueAtTime(AUDIO.muted ? 0 : 0.9, now + 0.4);
+  }
+}
+
+// ============================================================
+// SFX — sound cues on major beats (choice / CP unlock / arc end)
+// ============================================================
+
+function playChoiceClick() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const bufSize = Math.floor(ctx.sampleRate * 0.06);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 1800;
+  filter.Q.value = 2.5;
+  const g = ctx.createGain();
+  g.gain.value = 0.16;
+  noise.connect(filter);
+  filter.connect(g);
+  g.connect(AUDIO.master);
+  noise.start(now);
+}
+
+function playCPChime() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  // A4 + E5 (perfect fifth) — soft arpeggio
+  [{ f: 440, d: 0 }, { f: 659.25, d: 0.09 }].forEach(({ f, d }) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    const g = ctx.createGain();
+    const t0 = now + d;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.24, t0 + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0008, t0 + 1.7);
+    osc.connect(g);
+    g.connect(AUDIO.master);
+    osc.start(t0);
+    osc.stop(t0 + 1.8);
+  });
+}
+
+function playArcComplete() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  // Warm major triad, slow arpeggio, long tail
+  [{ f: 261.63, d: 0 }, { f: 329.63, d: 0.22 }, { f: 392, d: 0.46 }].forEach(({ f, d }) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    const g = ctx.createGain();
+    const t0 = now + d;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.22, t0 + 0.025);
+    g.gain.exponentialRampToValueAtTime(0.0008, t0 + 2.8);
+    osc.connect(g);
+    g.connect(AUDIO.master);
+    osc.start(t0);
+    osc.stop(t0 + 2.9);
+  });
+}
+
+// ============================================================
+// VOICE — Web Speech TTS (prefer neural voices) with file/recording fallback
+// ============================================================
+
+function getZhVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const vs = speechSynthesis.getVoices();
+  if (!vs.length) return null;
+  const zh = vs.filter(v => /^zh/i.test(v.lang));
+  if (!zh.length) return null;
+  // Prefer neural / natural / online voices — much better quality
+  const neural = zh.find(v => /natural|neural|online|wavenet|studio/i.test(v.name));
+  if (neural) return neural;
+  // Prefer female-hinted zh-CN names
+  const female = zh.find(v => /xiao(xiao|yi|meng|yun|hui|mo|qi)|meijia|tingting|female/i.test(v.name));
+  if (female) return female;
+  // Fall through to whatever zh is available
+  return zh.find(v => /zh-CN/i.test(v.lang)) || zh[0];
+}
+
+function speakLine(spec, delayMs) {
+  if (AUDIO.muted) return;
+  const opts = (typeof spec === 'string') ? { text: spec } : spec;
+  if (!opts) return;
+
+  const tryFile = (url) => {
+    return new Promise((resolve, reject) => {
+      try {
+        const audio = new Audio(url);
+        audio.volume = opts.volume != null ? opts.volume : 0.95;
+        const p = audio.play();
+        if (p && p.then) p.then(() => resolve(true)).catch(reject);
+        else resolve(true);
+      } catch (e) { reject(e); }
+    });
+  };
+
+  const doTTS = () => {
+    if (!('speechSynthesis' in window) || !opts.text) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(opts.text);
+      u.lang = 'zh-CN';
+      u.rate = opts.rate != null ? opts.rate : 0.88;
+      u.pitch = opts.pitch != null ? opts.pitch : 0.95;
+      u.volume = opts.volume != null ? opts.volume : 0.9;
+      const voice = getZhVoice();
+      if (voice) u.voice = voice;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  };
+
+  const doPlay = async () => {
+    // 1. localStorage-recorded (future)
+    if (opts.key) {
+      const url = localStorage.getItem('voice.' + opts.key);
+      if (url) { tryFile(url).catch(() => {}); return; }
+    }
+    // 2. external file (future)
+    if (opts.file) {
+      try { await tryFile(opts.file); return; } catch (e) {}
+    }
+    // 3. TTS fallback (current default)
+    doTTS();
+  };
+
+  if (delayMs) setTimeout(doPlay, delayMs);
+  else doPlay();
+}
+
+// Warm up voices list (needed on some browsers)
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+function bindEvents() {
+  $('start-btn').addEventListener('click', () => {
+    ensureAudio();
+    showScreen('game-screen');
+    state.currentPOV = null;
+    render();
+  });
+  $('dialogue-continue').addEventListener('click', closeBeat);
+  $('notebook-btn').addEventListener('click', showNotebook);
+  $('notebook-close').addEventListener('click', hideNotebook);
+  $('mute-btn').addEventListener('click', toggleMute);
+
+  // Mobile: tap pov-indicator or scene to trigger current beat
+  const tryTriggerCurrent = () => {
+    if (state.dialogueOpen) return;
+    if (!state.currentPOV) return;
+    const beat = currentBeat();
+    if (beat) playBeat(beat);
+  };
+  $('pov-name').parentElement.addEventListener('click', tryTriggerCurrent);
+  document.querySelector('.scene-wrap').addEventListener('click', (e) => {
+    // Only trigger if click landed on the scene background, not on a child hotspot circle
+    if (e.target.tagName === 'svg' || e.target.classList.contains('scene-wrap')) {
+      tryTriggerCurrent();
+    }
+  });
+  $('ending-restart').addEventListener('click', () => {
+    stopAmbient(true);
+    state.currentPOV = null;
+    state.unlocked = new Set(['cashier','nurse','driver','teen']);
+    state.completed = new Set();
+    state.progress = { cashier: 0, nurse: 0, driver: 0, teen: 0 };
+    state.convergences = new Set();
+    state.cpProgress = {};
+    state.world = {};
+    showScreen('title-screen');
+    render();
+  });
+}
+
+function init() {
+  bindEvents();
+  render();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

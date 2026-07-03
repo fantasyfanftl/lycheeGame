@@ -1,0 +1,8 @@
+# Design docs and internal collaboration notes
+docs/
+
+# Common OS/editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
