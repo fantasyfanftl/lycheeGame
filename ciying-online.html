@@ -150,16 +150,30 @@
   }
   .row:hover { background: rgba(220, 180, 140, 0.08); }
   .row .rank { color: rgba(220, 180, 140, 0.4); text-align: center; font-size: 12px; font-family: 'Georgia', monospace; }
-  .row .word-pill-wrap { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+  .row .word-pill-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .row .by {
+    font-size: 11px;
+    color: rgba(220, 180, 140, 0.6);
+    letter-spacing: 1px;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 46px;
+    flex-shrink: 0;
+  }
   .row .word-pill {
-    display: block; padding: 6px 14px;
+    flex: 1;
+    padding: 6px 14px;
     background: rgba(220, 180, 140, 0.12);
     border: 1px solid rgba(220, 180, 140, 0.25);
     border-radius: 7px; color: #e8dcc4; letter-spacing: 3px;
     font-size: 15px; font-weight: 500; text-align: center;
     transition: all 0.2s;
   }
-  .row .by { font-size: 10px; color: rgba(220, 180, 140, 0.5); letter-spacing: 1px; text-align: center; padding-left: 4px; }
   .row.cold .word-pill { background: rgba(90, 130, 180, 0.15); border-color: rgba(120, 150, 200, 0.35); color: rgba(180, 200, 230, 0.85); }
   .row.cool .word-pill { background: rgba(140, 180, 200, 0.15); border-color: rgba(160, 190, 210, 0.4); color: rgba(210, 220, 235, 0.9); }
   .row.warm .word-pill { background: linear-gradient(135deg, rgba(230, 200, 130, 0.25), rgba(220, 180, 140, 0.15)); border-color: rgba(230, 200, 130, 0.6); color: #ffd48a; font-weight: 600; }
@@ -519,8 +533,8 @@ function renderHistory(newWord = null) {
     return `<div class="row ${tCls} ${isNew}">
       <span class="rank">${rank}</span>
       <div class="word-pill-wrap">
+        <span class="by">${g.by || '?'}</span>
         <span class="word-pill">${g.word}</span>
-        <span class="by">by ${g.by || '?'}</span>
       </div>
       <span class="pct">${pct}</span>
     </div>`;
