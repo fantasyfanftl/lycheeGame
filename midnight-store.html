@@ -273,6 +273,16 @@ body {
   filter: drop-shadow(0 0 6px rgba(245, 200, 138, 0.5));
 }
 
+.char-svg.arriving {
+  animation: char-arrive 0.9s ease-out;
+  transform-origin: center bottom;
+  transform-box: fill-box;
+}
+@keyframes char-arrive {
+  0%   { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 .char-svg.clickable {
   cursor: pointer;
 }
@@ -2810,29 +2820,51 @@ function renderHotspots() {
   });
 }
 
+function isCharPresent(id) {
+  // Rule: scenes are empty by default. Characters appear along their own
+  // timeline — a POV char "arrives" once their intro beat (index 0) has
+  // been played. Other POV chars appear (dimmed) once their arc completes.
+  // NPC oldman appears once a beat with sfx=doorChime has fired in the
+  // current POV, or any prior world flag has marked him arrived.
+  if (id === 'oldman') {
+    return !!(state.world && state.world.oldmanArrived);
+  }
+  const played = (state.playedBeats && state.playedBeats[id]) || new Set();
+  if (id === state.currentPOV) {
+    return played.has(0);
+  }
+  return state.completed.has(id);
+}
+
 function renderCharacters() {
   document.querySelectorAll('[data-card-chars]').forEach(el => { el.innerHTML = ''; });
   const list = CHAR_ORDER.slice();
   // NPC old man is also drawn (in whichever card he's assigned)
   if (typeof NPC !== 'undefined' && NPC.oldman) list.push('oldman');
+  if (!window._prevCharsRendered) window._prevCharsRendered = new Set();
+  const nowRendered = new Set();
   list.forEach(id => {
+    if (!isCharPresent(id)) return;
     const pos = HOTSPOTS[id];
     if (!pos) return;
     const cardEl = document.querySelector('[data-card-chars="' + pos.card + '"]');
     if (!cardEl) return;
     const isCurrent = state.currentPOV === id;
+    const isNew = !window._prevCharsRendered.has(id);
+    nowRendered.add(id);
     const svgNS = 'http://www.w3.org/2000/svg';
     const overlay = document.createElementNS(svgNS, 'svg');
     overlay.setAttribute('viewBox', '0 0 400 550');
     overlay.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     overlay.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;');
     const wrap = document.createElementNS(svgNS, 'g');
-    wrap.setAttribute('class', 'char-svg' + (isCurrent ? ' current' : ' dimmed'));
+    wrap.setAttribute('class', 'char-svg' + (isCurrent ? ' current' : ' dimmed') + (isNew ? ' arriving' : ''));
     wrap.setAttribute('transform', 'translate(' + (pos.x - 30) + ', ' + (pos.y - 60) + ')');
     wrap.innerHTML = characterSVG(id);
     overlay.appendChild(wrap);
     cardEl.appendChild(overlay);
   });
+  window._prevCharsRendered = nowRendered;
 }
 
 function updateCPCounter() {
@@ -2935,6 +2967,11 @@ function playBeat(beat) {
   // Beat-start SFX
   if (effective.sfx === 'doorChime' || (beat && beat.sfx === 'doorChime')) {
     playDoorChime();
+    // Door chime = someone entered. For cashier's milkCabinet beat this is
+    // the old man; other doorChime beats can mark different arrivals but
+    // this is the only NPC we currently model.
+    if (!state.world) state.world = {};
+    state.world.oldmanArrived = true;
   }
 
   // Reset containers
