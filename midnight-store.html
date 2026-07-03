@@ -972,6 +972,15 @@ body {
   transform: scale(1.4);
 }
 
+.card-dot.has-hotspot {
+  background: var(--warm-glow);
+  animation: card-dot-hotspot 1.4s ease-in-out infinite;
+}
+@keyframes card-dot-hotspot {
+  0%, 100% { transform: scale(1.2); box-shadow: 0 0 0 0 rgba(245, 200, 138, 0.7); }
+  50%      { transform: scale(1.5); box-shadow: 0 0 0 6px rgba(245, 200, 138, 0); }
+}
+
 .card-nav {
   position: absolute;
   top: 50%;
@@ -2760,6 +2769,7 @@ function render() {
   renderHotspots();
   renderCharacters();
   updateCPCounter();
+  if (typeof updateCardDots === 'function') updateCardDots();
 }
 
 // ============================================================
