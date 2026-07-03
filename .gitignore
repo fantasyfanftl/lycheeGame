@@ -1,6 +1,10 @@
 # Design docs and internal collaboration notes
 docs/
 
+# One-off content-injection / batch scripts (not runtime deps)
+_gen_*.js
+_batch_*.js
+
 # Common OS/editor cruft
 .DS_Store
 Thumbs.db
