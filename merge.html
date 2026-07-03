@@ -150,15 +150,27 @@
   }
   .tile {
     position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
+    transition: transform 130ms ease-out, width 130ms ease-out, height 130ms ease-out;
+  }
+  .tile-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+  }
+  .tile-num {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-weight: 700;
     font-family: 'Georgia', 'STHeiti', sans-serif;
     letter-spacing: -1px;
-    transition: transform 130ms ease-out, width 130ms ease-out, height 130ms ease-out;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    z-index: 2;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.2);
   }
   .tile.pop { animation: pop 200ms ease-out; }
   .tile.appear { animation: appear 200ms ease-out; }
@@ -183,23 +195,8 @@
     100% { opacity: 0; transform: var(--pos) scale(0.3); filter: brightness(2) drop-shadow(0 0 12px #ff5522); }
   }
 
-  /* 1×1 colors (2-16) — bright */
-  .tile-2    { background: #eee4da; color: #776e65; }
-  .tile-4    { background: #ede0c8; color: #776e65; }
-  .tile-8    { background: #f2b179; color: #f9f6f2; }
-  .tile-16   { background: #f59563; color: #f9f6f2; }
-  /* 2×1 (32-64) — horizontal bronze */
-  .tile-32   { background: linear-gradient(90deg, #f67c5f, #c65a35); color: #f9f6f2; }
-  .tile-64   { background: linear-gradient(90deg, #f65e3b, #a83f1c); color: #f9f6f2; }
-  /* 2×2 (128-1024) — warm gold */
-  .tile-128  { background: linear-gradient(135deg, #edcf72, #d4a544); color: #4a2f0f; }
-  .tile-256  { background: linear-gradient(135deg, #edcc61, #c99632); color: #4a2f0f; }
-  .tile-512  { background: linear-gradient(135deg, #edc850, #b8862a); color: #fff; }
-  .tile-1024 { background: linear-gradient(180deg, #edc53f, #8a5a1e); color: #fff; }
-  /* 3×3 (2048) — royal */
-  .tile-2048 { background: linear-gradient(135deg, #ffd48a, #c17b52 60%, #7a3a10); color: #fff;
-               box-shadow: 0 0 30px rgba(255, 200, 130, 0.6), 0 2px 8px rgba(0,0,0,0.4); }
-  .tile-super { background: #3c3a32; color: #f9f6f2; }
+  /* Only 2048 keeps a special glow — colors otherwise come from SVG fills */
+  .tile-2048 { filter: drop-shadow(0 0 24px rgba(255, 200, 130, 0.55)); }
 
   .actions {
     display: flex;
@@ -331,6 +328,84 @@ function sizeForValue(v) {
 function classForValue(v) {
   if (v > 2048) return 'tile-super';
   return `tile-${v}`;
+}
+
+// ============ Jigsaw-piece rendering ============
+const TIER_STYLE = {
+  2:    { c1:'#eee4da', c2:'#e8ddc9', txt:'#776e65', stroke:'#b8a070' },
+  4:    { c1:'#ede0c8', c2:'#dcc9a8', txt:'#776e65', stroke:'#b8a070' },
+  8:    { c1:'#f2b179', c2:'#e2925a', txt:'#f9f6f2', stroke:'#a06840' },
+  16:   { c1:'#f59563', c2:'#d97540', txt:'#f9f6f2', stroke:'#a06040' },
+  32:   { c1:'#f67c5f', c2:'#c65a35', txt:'#f9f6f2', stroke:'#8a4020' },
+  64:   { c1:'#f65e3b', c2:'#a83f1c', txt:'#f9f6f2', stroke:'#7a3010' },
+  128:  { c1:'#edcf72', c2:'#d4a544', txt:'#4a2f0f', stroke:'#8a5a20' },
+  256:  { c1:'#edcc61', c2:'#c99632', txt:'#4a2f0f', stroke:'#7a4a10' },
+  512:  { c1:'#edc850', c2:'#b8862a', txt:'#fff',    stroke:'#6a4008' },
+  1024: { c1:'#edc53f', c2:'#8a5a1e', txt:'#fff',    stroke:'#4a3008' },
+  2048: { c1:'#ffd48a', c2:'#7a3a10', txt:'#fff',    stroke:'#c94a2a' },
+};
+const SUPER_STYLE = { c1:'#4a4838', c2:'#2a281e', txt:'#f9f6f2', stroke:'#6a5a30' };
+function tierStyleFor(v) { return TIER_STYLE[v] || SUPER_STYLE; }
+
+// Per-value knob/slot pattern so identical values look identical, adjacent values differ.
+// +1 = knob out, -1 = slot in.
+const SIDES_TABLE = [
+  { top:+1, right:-1, bottom:+1, left:-1 },
+  { top:-1, right:+1, bottom:-1, left:+1 },
+  { top:+1, right:+1, bottom:-1, left:-1 },
+  { top:-1, right:-1, bottom:+1, left:+1 },
+];
+function sidesForValue(v) {
+  if (v >= 2048) return null;  // smooth "completed puzzle" edge
+  return SIDES_TABLE[Math.log2(v) % SIDES_TABLE.length];
+}
+
+function piecePath(w, h, sides) {
+  if (!sides) {
+    const r = Math.min(w, h) * 0.09;
+    return `M ${r} 0 L ${w-r} 0 Q ${w} 0, ${w} ${r} L ${w} ${h-r} Q ${w} ${h}, ${w-r} ${h} L ${r} ${h} Q 0 ${h}, 0 ${h-r} L 0 ${r} Q 0 0, ${r} 0 Z`;
+  }
+  const K = Math.min(w, h) * 0.22;  // knob depth
+  const N = Math.min(w, h) * 0.13;  // neck width
+  const midX = w / 2, midY = h / 2;
+  const parts = ['M 0 0'];
+  // TOP
+  parts.push(`L ${midX-N} 0`);
+  parts.push(`C ${midX-N} ${-sides.top*K}, ${midX+N} ${-sides.top*K}, ${midX+N} 0`);
+  parts.push(`L ${w} 0`);
+  // RIGHT
+  parts.push(`L ${w} ${midY-N}`);
+  parts.push(`C ${w+sides.right*K} ${midY-N}, ${w+sides.right*K} ${midY+N}, ${w} ${midY+N}`);
+  parts.push(`L ${w} ${h}`);
+  // BOTTOM
+  parts.push(`L ${midX+N} ${h}`);
+  parts.push(`C ${midX+N} ${h+sides.bottom*K}, ${midX-N} ${h+sides.bottom*K}, ${midX-N} ${h}`);
+  parts.push(`L 0 ${h}`);
+  // LEFT
+  parts.push(`L 0 ${midY+N}`);
+  parts.push(`C ${-sides.left*K} ${midY+N}, ${-sides.left*K} ${midY-N}, 0 ${midY-N}`);
+  parts.push('Z');
+  return parts.join(' ');
+}
+
+function buildTileSVG(t, tileW, tileH) {
+  const style = tierStyleFor(t.value);
+  const sides = sidesForValue(t.value);
+  const isSmooth = !sides;
+  const K = isSmooth ? 0 : Math.min(tileW, tileH) * 0.22;
+  const inset = isSmooth ? 4 : Math.ceil(K) + 2;
+  const bodyW = tileW - inset * 2;
+  const bodyH = tileH - inset * 2;
+  const path = piecePath(bodyW, bodyH, isSmooth ? null : sides);
+  const gid = `g${t.id}`;
+  return `<svg class="tile-svg" viewBox="0 0 ${tileW} ${tileH}" preserveAspectRatio="none">`
+    + `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0.5" y2="1">`
+    + `<stop offset="0" stop-color="${style.c1}"/>`
+    + `<stop offset="1" stop-color="${style.c2}"/>`
+    + `</linearGradient></defs>`
+    + `<g transform="translate(${inset} ${inset})">`
+    + `<path d="${path}" fill="url(#${gid})" stroke="${style.stroke}" stroke-width="1.5" stroke-linejoin="round"/>`
+    + `</g></svg>`;
 }
 
 // ============ State ============
@@ -664,15 +739,27 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
       tilesEl.appendChild(el);
     }
     el.className = 'tile ' + classForValue(t.value);
-    el.textContent = t.value;
     const tileW = t.w * cellSize + (t.w - 1) * gap;
     const tileH = t.h * cellSize + (t.h - 1) * gap;
+    const minDim = Math.min(t.w, t.h);
+    const fs = Math.floor(cellSize * (minDim === 1 ? 0.5 : minDim === 2 ? 0.42 : 0.36));
+
+    // Regenerate the SVG piece only when value/shape/rendered-size changes.
+    const rk = `${t.value}|${t.w}|${t.h}|${Math.round(tileW)}|${Math.round(tileH)}`;
+    if (el.dataset.rk !== rk) {
+      el.innerHTML = buildTileSVG(t, tileW, tileH) + '<span class="tile-num"></span>';
+      el.dataset.rk = rk;
+    }
+    const style = tierStyleFor(t.value);
+    const numEl = el.querySelector('.tile-num');
+    numEl.textContent = t.value;
+    numEl.style.color = style.txt;
+    numEl.style.fontSize = fs + 'px';
+
     const px = t.x * (cellSize + gap);
     const py = t.y * (cellSize + gap);
     el.style.width = tileW + 'px';
     el.style.height = tileH + 'px';
-    const minDim = Math.min(t.w, t.h);
-    el.style.fontSize = Math.floor(cellSize * (minDim === 1 ? 0.5 : minDim === 2 ? 0.42 : 0.36)) + 'px';
     const posTr = `translate(${px}px, ${py}px)`;
     el.style.setProperty('--pos', posTr);
     el.style.transform = posTr;

@@ -887,6 +887,18 @@ body {
 }
 
 /* ========== Scene cards ========== */
+.card-frame {
+  position: relative;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 400 / 550;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .scene-cards {
   flex: 1;
   display: flex;
@@ -1002,21 +1014,21 @@ body {
   border-color: rgba(245, 200, 138, 0.9);
   transform: translateY(-50%) scale(1.08);
 }
-.card-prev { left: 8%; }
-.card-next { right: 8%; }
+.card-prev { left: 8px; }
+.card-next { right: 8px; }
 .card-nav:disabled { opacity: 0.25; cursor: not-allowed; }
 .card-nav:disabled:hover { transform: translateY(-50%); }
 
 @media (max-width: 640px) {
   .card-nav {
     display: block;
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    font-size: 17px;
     border-width: 1.2px;
   }
-  .card-prev { left: 6%; }
-  .card-next { right: 6%; }
+  .card-prev { left: 6px; }
+  .card-next { right: 6px; }
 }
 
 @media (max-width: 640px) {
@@ -1496,6 +1508,7 @@ body {
     </div>
 
     <div class="scene-wrap">
+      <div class="card-frame">
       <div class="scene-cards" id="scene-cards">
         <!-- Card 1: 门口台阶 -->
         <div class="scene-card" data-card="doorstep">
@@ -1735,6 +1748,7 @@ body {
       <!-- Prev/Next arrows (visible on desktop) -->
       <button class="card-nav card-prev" id="card-prev" aria-label="上一张">‹</button>
       <button class="card-nav card-next" id="card-next" aria-label="下一张">›</button>
+      </div>
     </div>
     <div class="bottom-bar">
       <div class="pov-indicator">

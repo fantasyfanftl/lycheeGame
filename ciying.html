@@ -187,62 +187,61 @@
 
   .row {
     display: grid;
-    grid-template-columns: 42px 1fr 42px 62px;
-    gap: 10px;
+    grid-template-columns: 34px 1fr 64px;
+    gap: 12px;
     align-items: center;
-    padding: 12px 14px;
+    padding: 8px 14px;
     margin-bottom: 6px;
-    background: rgba(220, 180, 140, 0.06);
-    border: 1px solid rgba(220, 180, 140, 0.18);
-    border-radius: 6px;
+    background: rgba(220, 180, 140, 0.04);
+    border-radius: 8px;
     font-size: 14px;
-    transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+    transition: transform 0.15s ease, background 0.2s ease;
   }
-  .row:hover { background: rgba(220, 180, 140, 0.1); }
+  .row:hover { background: rgba(220, 180, 140, 0.08); }
   .row .rank {
-    color: rgba(220, 180, 140, 0.55);
+    color: rgba(220, 180, 140, 0.4);
     text-align: center;
     font-size: 12px;
-    letter-spacing: 1px;
+    font-family: 'Georgia', monospace;
   }
-  .row .word {
-    color: #e8dcc4;
-    letter-spacing: 2px;
-    font-size: 15px;
-    font-weight: 500;
-  }
-  .row .word.hot { color: #ffd48a; font-weight: bold; text-shadow: 0 0 8px rgba(255, 200, 130, 0.4); }
-  .row .temp-bar {
-    height: 8px;
+  .row .word-pill {
+    display: block;
+    padding: 8px 16px;
     background: rgba(220, 180, 140, 0.12);
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
+    border: 1px solid rgba(220, 180, 140, 0.25);
+    border-radius: 8px;
+    color: #e8dcc4;
+    letter-spacing: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s ease;
   }
-  .row .temp-bar-fill {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.3s;
-    box-shadow: 0 0 6px rgba(255, 200, 130, 0.3);
+  .row.cold .word-pill { background: rgba(90, 130, 180, 0.15); border-color: rgba(120, 150, 200, 0.35); color: rgba(180, 200, 230, 0.85); }
+  .row.cool .word-pill { background: rgba(140, 180, 200, 0.15); border-color: rgba(160, 190, 210, 0.4); color: rgba(210, 220, 235, 0.9); }
+  .row.warm .word-pill { background: linear-gradient(135deg, rgba(230, 200, 130, 0.25), rgba(220, 180, 140, 0.15)); border-color: rgba(230, 200, 130, 0.6); color: #ffd48a; font-weight: 600; }
+  .row.hot .word-pill {
+    background: linear-gradient(135deg, #ffd48a, #f5a76b);
+    border-color: #ffd48a;
+    color: #2a1810;
+    font-weight: 700;
+    box-shadow: 0 0 16px rgba(255, 200, 130, 0.5);
   }
   .row .pct {
     text-align: right;
     font-family: 'Georgia', monospace;
-    font-size: 13px;
-    color: rgba(220, 180, 140, 0.9);
+    font-size: 14px;
+    color: rgba(220, 180, 140, 0.85);
     font-weight: 500;
   }
+  .row.hot .pct { color: #ffd48a; font-weight: 700; }
+  .row.warm .pct { color: #ffd48a; }
   .row.new-guess {
-    background: rgba(255, 200, 130, 0.15);
-    border-color: rgba(255, 200, 130, 0.6);
-    animation: flash 0.7s;
+    animation: flash 0.8s;
   }
   @keyframes flash {
-    0% { background: rgba(255, 200, 130, 0.35); transform: scale(1.02); }
-    100% { background: rgba(255, 200, 130, 0.15); transform: scale(1); }
+    0% { background: rgba(255, 200, 130, 0.3); transform: scale(1.02); }
+    100% { background: rgba(220, 180, 140, 0.04); transform: scale(1); }
   }
 
   .history-empty {
@@ -337,7 +336,8 @@
     .container { padding: 18px 14px; }
     h1 { font-size: 22px; letter-spacing: 6px; }
     .answer-blanks { font-size: 22px; letter-spacing: 10px; }
-    .row { grid-template-columns: 36px 1fr 34px 52px; gap: 8px; font-size: 13px; }
+    .row { grid-template-columns: 28px 1fr 54px; gap: 8px; padding: 6px 10px; font-size: 13px; }
+    .row .word-pill { padding: 6px 12px; font-size: 14px; letter-spacing: 3px; }
   }
 </style>
 </head>
@@ -840,17 +840,22 @@ function tempIcon(sim) {
   return '🧊';
 }
 
+function tempClass(sim) {
+  if (sim >= 0.85) return 'hot';
+  if (sim >= 0.55) return 'warm';
+  if (sim >= 0.30) return '';
+  if (sim >= 0.15) return 'cool';
+  return 'cold';
+}
+
 function renderRow(g, isLatest = false) {
   const rank = g.rank > 0 && g.rank <= 500 ? `#${g.rank}` : '';
-  const barWidth = Math.max(2, g.sim * 100);
-  const color = tempColor(g.sim);
-  const hotClass = g.sim >= 0.85 ? ' hot' : '';
   const pct = (g.sim * 100).toFixed(1) + '%';
   const hintMark = g.isHint ? ' 💡' : '';
-  return `<div class="row ${isLatest ? 'new-guess' : ''}">
+  const tCls = tempClass(g.sim);
+  return `<div class="row ${tCls} ${isLatest ? 'new-guess' : ''}">
     <span class="rank">${rank}</span>
-    <span class="word${hotClass}">${g.word}${hintMark}</span>
-    <div class="temp-bar"><div class="temp-bar-fill" style="width:${barWidth}%;background:${color};"></div></div>
+    <span class="word-pill">${g.word}${hintMark}</span>
     <span class="pct">${pct}</span>
   </div>`;
 }
@@ -870,9 +875,7 @@ function submitGuess() {
 
   if (!WORDS[word]) {
     shakeInput();
-    const suggests = findSimilarInVocab(word, 3);
-    const suggText = suggests.length ? ` · 相似：${suggests.join(' / ')}` : '';
-    showMessage(`「${word}」不在词表${suggText}`, 'err');
+    showMessage(`「${word}」不在词表`, 'err');
     return;
   }
   if (guessedSet.has(word)) {
