@@ -1290,6 +1290,60 @@ body {
   .cp-group-header { padding: 8px 2px 6px; margin: 14px 0 8px; }
 }
 
+
+/* ========== Observation entries in notebook ========== */
+.obs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.obs-item {
+  padding: 10px 14px;
+  border: 1px dashed var(--paper-edge);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.obs-label {
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.obs-hint {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-mid);
+  padding: 2px 0 2px 10px;
+  border-left: 1px solid rgba(139, 108, 78, 0.25);
+  margin: 3px 0;
+}
+@media (max-width: 640px) {
+  .obs-label { font-size: 12px; letter-spacing: 2px; }
+  .obs-hint { font-size: 11px; padding-left: 8px; }
+  .obs-item { padding: 8px 10px; }
+}
+
+
+/* ========== Ending character section header ========== */
+.ending-text .char-header {
+  font-size: 15px;
+  letter-spacing: 6px;
+  color: var(--warm-glow);
+  margin: 20px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(232, 220, 196, 0.28);
+  opacity: 1 !important;
+  animation: charHeaderIn 1s ease forwards !important;
+}
+@keyframes charHeaderIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 640px) {
+  .ending-text .char-header { font-size: 13px; letter-spacing: 4px; margin: 14px 0 6px; }
+}
+
 </style>
 </head>
 <body>
@@ -2433,6 +2487,7 @@ const state = {
   convergences: new Set(),
   cpProgress: {}, // { cpId: Set of chars who've contributed }
   notebookRecord: {}, // { cpId: { char: chosen text } }
+  observedObjects: new Set(), // hs strings player clicked to observe
   world: {},      // world flags — who did what at what tier
   dialogueOpen: false,
   notebookOpen: false
@@ -2878,6 +2933,20 @@ function closeBeat() {
   render();
 }
 
+
+const OBJECT_LABELS = {
+  doorway: '玻 璃 门',
+  catBowl: '猫 碗',
+  driverSeat: '窗 边 座 位',
+  waterDispenser: '饮 水 机',
+  odenPot: '关 东 煮 锅',
+  shelves: '货 架',
+  milkCabinet: '热 奶 柜',
+  register: '收 银 台',
+  radio: '收 音 机',
+  phone: '手 机'
+};
+
 const CP_GROUPS = [
   { name: '一 至 九 · 与 店 员 的 每 一 个 瞬 间', cps: ['cp1','cp2','cp3','cp4','cp5','cp6','cp7','cp8','cp9'] },
   { name: '十 至 十 六 · 三 位 客 人 之 间', cps: ['cp10','cp11','cp12','cp13','cp14','cp15','cp16'] }
@@ -2920,6 +2989,28 @@ function showNotebook() {
     });
   });
 
+  // Observed objects section
+  const observed = Array.from(state.observedObjects || []);
+  if (observed.length) {
+    const obsHeader = document.createElement('div');
+    obsHeader.className = 'cp-group-header';
+    obsHeader.innerHTML = '<span class="cp-group-name">你 留 意 过 的 东 西</span>' +
+                          '<span class="cp-group-count">' + observed.length + ' / ' + Object.keys(OBJECT_LABELS).length + '</span>';
+    list.appendChild(obsHeader);
+    const obsWrap = document.createElement('div');
+    obsWrap.className = 'obs-list';
+    observed.forEach(key => {
+      const label = OBJECT_LABELS[key] || key;
+      const arr = OBJECT_HINTS[key] || [];
+      const item = document.createElement('div');
+      item.className = 'obs-item';
+      item.innerHTML = '<div class="obs-label">' + label + '</div>' +
+                        arr.map(h => '<div class="obs-hint">' + h + '</div>').join('');
+      obsWrap.appendChild(item);
+    });
+    list.appendChild(obsWrap);
+  }
+
   $('notebook-screen').classList.remove('hidden');
   state.notebookOpen = true;
 }
@@ -2935,6 +3026,7 @@ function buildEndingLines(w) {
   lines.push('街灯把便利店的玻璃染成一层薄薄的暖黄。');
   lines.push('');
 
+  lines.push('【 老 人 】');
   // 老人 (NPC)
   if (w.milkHelp === 'given' || w.cashService === 'fast' || w.elderSlip === 'help') {
     lines.push('老人回到家，把桂花糕的空袋子叠好，放进抽屉。');
@@ -2947,8 +3039,7 @@ function buildEndingLines(w) {
     lines.push('他冲着照片，什么也没说。');
   }
   lines.push('');
-
-  // 护士
+  lines.push('【 护 士 】');
   if (w.nursePay === 'remind' || w.penPick === 'comfort' || w.elderSlip === 'help' || w.catMeet === 'food') {
     lines.push('护士坐上末班地铁，头靠着车窗睡着了。');
     lines.push('手心的药盒还留着一点体温。');
@@ -2961,6 +3052,7 @@ function buildEndingLines(w) {
   }
   lines.push('');
 
+  lines.push('【 司 机 】');
   // 司机
   if (w.driverElder === 'help' || w.driverTeen === 'milk' || w.driverBuyWater === 'remind') {
     lines.push('司机把车开上主路。凌晨三点的街空得像张纸。');
@@ -2974,6 +3066,7 @@ function buildEndingLines(w) {
   }
   lines.push('');
 
+  lines.push('【 少 年 】');
   // 少年
   if (w.teenPay === 'ask' || w.teenDoorSit === 'ask' || w.teenElder === 'invite' || w.teenNurse === 'thanks' || w.driverTeen === 'milk') {
     lines.push('少年靠着便利店旁的墙角，橘猫钻进他怀里睡着了。');
@@ -2984,6 +3077,7 @@ function buildEndingLines(w) {
   }
   lines.push('');
 
+  lines.push('【 店 员 】');
   // 店员
   if (w.milkHelp === 'given' || w.charger === 'given' || w.doorGap === 'open' || w.catBowl === 'full' || w.odenState === 'hot') {
     lines.push('店员摘下最后一只耳机，关掉收音机。');
@@ -2999,6 +3093,11 @@ function buildEndingLines(w) {
   const cpCount = state.convergences.size;
   const totalCP = Object.keys(CONVERGENCES).length;
   lines.push('这一晚，图鉴里记下了 ' + cpCount + ' / ' + totalCP + ' 段相遇。');
+  const obsCount = (state.observedObjects || new Set()).size;
+  const obsTotal = 10;
+  if (obsCount > 0) {
+    lines.push('还有 ' + obsCount + ' / ' + obsTotal + ' 件小东西，被你看在眼里。');
+  }
   lines.push('');
 
   // "藏在..." list — dynamic based on world state
@@ -3082,8 +3181,11 @@ function showEnding() {
   lines.forEach((line, i) => {
     const div = document.createElement('div');
     div.className = 'line';
+    if (line && /^【.+】$/.test(line.trim())) {
+      div.classList.add('char-header');
+    }
     div.textContent = line || ' ';
-    div.style.animationDelay = (0.2 + i * 0.3) + 's';
+    div.style.animationDelay = (0.2 + i * 0.28) + 's';
     wrap.appendChild(div);
   });
   showScreen('ending-screen');
@@ -3107,7 +3209,8 @@ function saveState() {
         Object.entries(state.cpProgress).map(([k, v]) => [k, Array.from(v)])
       ),
       world: state.world || {},
-      notebookRecord: state.notebookRecord || {}
+      notebookRecord: state.notebookRecord || {},
+      observedObjects: Array.from(state.observedObjects || [])
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(s));
   } catch (e) {}
@@ -3132,6 +3235,7 @@ function loadState() {
     });
     state.world = s.world || {};
     state.notebookRecord = s.notebookRecord || {};
+    state.observedObjects = new Set(s.observedObjects || []);
     return true;
   } catch (e) { return false; }
 }
@@ -3831,9 +3935,12 @@ const _hintIdx = {};
 function nextHint(key) {
   const arr = OBJECT_HINTS[key];
   if (!arr || !arr.length) return null;
+  // Track observation
+  if (state && state.observedObjects) state.observedObjects.add(key);
   const i = _hintIdx[key] || 0;
   const hint = arr[i % arr.length];
   _hintIdx[key] = (i + 1) % arr.length;
+  saveState && saveState();
   return hint;
 }
 
