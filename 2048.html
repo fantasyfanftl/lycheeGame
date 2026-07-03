@@ -28,10 +28,17 @@
     padding: 30px 20px;
     opacity: 0;
     transition: opacity 0.6s ease;
+    overflow: hidden;
+  }
+  .screen.active { display: flex; opacity: 1; }
+  /* 长内容页允许滚动；游戏页保持固定 */
+  #screen-title, #screen-verdict, #screen-result {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
-  .screen.active { display: flex; opacity: 1; }
+  #screen-game {
+    touch-action: none;
+  }
   .back-link {
     position: absolute;
     top: 14px;
