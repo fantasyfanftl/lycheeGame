@@ -16,14 +16,13 @@
     background-attachment: fixed;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 18px;
+    padding: 50px 18px 24px;
+    color: #e8dcc4;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;
-    color: #e8dcc4;
-    overflow: hidden;
+    overflow-x: hidden;
   }
   .container {
     background: rgba(10, 10, 20, 0.65);
@@ -311,6 +310,52 @@
     line-height: 1.7;
   }
 
+  /* D-pad for touch / accessibility */
+  .dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+      ".    up   ."
+      "left .    right"
+      ".    down .";
+    gap: 6px;
+    width: 156px;
+    height: 156px;
+    margin: 12px auto;
+    touch-action: none;
+  }
+  .dpad-btn {
+    background: rgba(245, 200, 138, 0.08);
+    border: 1px solid rgba(245, 200, 138, 0.3);
+    color: rgba(232, 220, 196, 0.85);
+    border-radius: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform 0.08s ease, background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+    font-family: inherit;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dpad-btn:hover { background: rgba(245, 200, 138, 0.16); color: #f5c88a; }
+  .dpad-btn.pressed,
+  .dpad-btn:active {
+    transform: scale(0.88);
+    background: rgba(245, 200, 138, 0.35);
+    color: #f5c88a;
+    box-shadow: 0 0 16px rgba(245, 200, 138, 0.5), inset 0 0 12px rgba(245, 200, 138, 0.2);
+  }
+  .dpad-btn.up    { grid-area: up; }
+  .dpad-btn.down  { grid-area: down; }
+  .dpad-btn.left  { grid-area: left; }
+  .dpad-btn.right { grid-area: right; }
+
   @media (orientation: landscape) and (max-height: 550px) {
     .container {
       max-width: none;
@@ -391,8 +436,15 @@
     <button id="restartBtn" class="primary">重新悟道</button>
   </div>
 
+  <div class="dpad">
+    <button class="dpad-btn up"    data-dir="up"    aria-label="上">▲</button>
+    <button class="dpad-btn left"  data-dir="left"  aria-label="左">◀</button>
+    <button class="dpad-btn right" data-dir="right" aria-label="右">▶</button>
+    <button class="dpad-btn down"  data-dir="down"  aria-label="下">▼</button>
+  </div>
+
   <div class="hint">
-    方向键 / WASD / 手机滑动 · 空格暂停
+    键盘方向键 / WASD · 手机滑动棋盘 或点方向键 · 空格暂停
   </div>
 </div>
 
@@ -531,6 +583,10 @@ function showBreakthrough(idx) {
   btRealmEl.textContent = r.name;
   btTextEl.innerHTML = r.poem || '';
   breakthroughEl.classList.add('show');
+  // Big haptic on breakthrough — level up feel
+  if (navigator.vibrate) {
+    navigator.vibrate(idx >= 5 ? [40, 60, 40, 60, 120] : [30, 40, 60]);
+  }
   const dismiss = () => {
     breakthroughEl.classList.remove('show');
     breakthroughEl.removeEventListener('click', dismiss);
@@ -739,6 +795,8 @@ function roundRect(x, y, w, h, r) {
 function gameOver() {
   running = false;
   clearInterval(ticker);
+  // Death haptic — sharp
+  if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
   const idx = realmForLen(snake.length);
   const realmName = REALMS[idx].name;
   overlayTitle.textContent = '道 陨';
@@ -807,6 +865,36 @@ startBtn.addEventListener('click', () => {
 });
 pauseBtn.addEventListener('click', togglePause);
 restartBtn.addEventListener('click', newGame);
+
+// D-pad buttons — with haptic feedback
+const DPAD_DIRS = {
+  up:    {r:-1, c:0},
+  down:  {r:1,  c:0},
+  left:  {r:0,  c:-1},
+  right: {r:0,  c:1},
+};
+function haptic(ms = 15) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
+document.querySelectorAll('.dpad-btn').forEach(btn => {
+  const press = (e) => {
+    e.preventDefault();
+    const dir = btn.dataset.dir;
+    if (dirQueue.length < 2) dirQueue.push(DPAD_DIRS[dir]);
+    btn.classList.add('pressed');
+    haptic(12);
+  };
+  const release = () => btn.classList.remove('pressed');
+  btn.addEventListener('pointerdown', press);
+  btn.addEventListener('pointerup', release);
+  btn.addEventListener('pointercancel', release);
+  btn.addEventListener('pointerleave', release);
+});
+
+// Add haptic to other important buttons
+[pauseBtn, restartBtn, startBtn].forEach(b => {
+  b.addEventListener('pointerdown', () => haptic(10));
+});
 
 // Boot
 best = parseInt(localStorage.getItem('bestXiuzhen') || '0', 10);
