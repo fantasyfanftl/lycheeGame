@@ -383,13 +383,18 @@ body {
 .dialogue-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(20, 25, 40, 0.55);
+  background: linear-gradient(to top, rgba(20, 25, 40, 0.72) 0%, rgba(20, 25, 40, 0.32) 40%, rgba(20, 25, 40, 0.05) 65%, transparent 80%);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 0 40px 130px;
+  padding: 0 24px 20px;
   z-index: 20;
   transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.dialogue-overlay:not(.hidden) {
+  pointer-events: auto;
 }
 
 .dialogue-overlay.hidden {
@@ -398,17 +403,20 @@ body {
 }
 
 .dialogue-box {
-  background: var(--paper);
+  background: rgba(232, 220, 196, 0.97);
   background-image:
     radial-gradient(ellipse at 15% 25%, rgba(139, 108, 78, 0.08) 0%, transparent 55%),
     radial-gradient(ellipse at 85% 75%, rgba(139, 108, 78, 0.07) 0%, transparent 55%);
   border: 1px solid var(--paper-edge);
   max-width: 780px;
   width: 100%;
-  padding: 26px 34px 22px;
+  max-height: 68vh;
+  overflow-y: auto;
+  padding: 22px 30px 18px;
   border-radius: 3px;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
   position: relative;
+  backdrop-filter: blur(2px);
 }
 
 .dialogue-box::before {
@@ -758,8 +766,8 @@ body {
   .char-tab-name { font-size: 11px; letter-spacing: 1px; }
   .char-tab-status { font-size: 9px; letter-spacing: 0; margin-top: 1px; }
 
-  .dialogue-overlay { padding: 0 10px 16px; }
-  .dialogue-box { padding: 18px 18px 14px; }
+  .dialogue-overlay { padding: 0 8px 12px; background: linear-gradient(to top, rgba(20, 25, 40, 0.75) 0%, rgba(20, 25, 40, 0.25) 45%, transparent 75%); }
+  .dialogue-box { padding: 14px 16px 12px; max-height: 62vh; }
   .dialogue-narrator { font-size: 11px; letter-spacing: 3px; }
   .dialogue-title { font-size: 16px; letter-spacing: 2px; margin-bottom: 10px; padding-bottom: 8px; }
   .dialogue-text { font-size: 14px; line-height: 1.9; letter-spacing: 0.5px; min-height: 60px; }

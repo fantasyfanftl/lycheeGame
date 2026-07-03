@@ -440,14 +440,16 @@ let animFrame = 0;
 
 function fitCanvas() {
   const rect = canvas.getBoundingClientRect();
+  if (rect.width < 10) { setTimeout(fitCanvas, 100); return; }
   const dpr = window.devicePixelRatio || 1;
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
-  cellSize = canvas.width / CELLS;
+  cellSize = rect.width / CELLS;  // Use CSS pixels (not physical), since setTransform scales
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   render();
 }
 window.addEventListener('resize', fitCanvas);
+window.addEventListener('orientationchange', () => setTimeout(fitCanvas, 200));
 
 function realmForLen(len) {
   for (let i = REALMS.length - 1; i >= 0; i--) {
@@ -785,18 +787,13 @@ canvas.addEventListener('touchend', e => {
   const dx = t.clientX - touchStart.x;
   const dy = t.clientY - touchStart.y;
   const ax = Math.abs(dx), ay = Math.abs(dy);
-  if (Math.max(ax, ay) < 20) {
-    if (breakthroughEl.classList.contains('show')) { touchStart = null; return; }
-    if (running) togglePause();
-    else newGame();
-    touchStart = null;
-    return;
-  }
+  touchStart = null;
+  // ignore taps (avoid accidental pause)
+  if (Math.max(ax, ay) < 20) return;
   let d;
   if (ax > ay) d = dx > 0 ? {r:0,c:1} : {r:0,c:-1};
   else d = dy > 0 ? {r:1,c:0} : {r:-1,c:0};
   if (dirQueue.length < 2) dirQueue.push(d);
-  touchStart = null;
 }, { passive: true });
 
 startBtn.addEventListener('click', () => {
