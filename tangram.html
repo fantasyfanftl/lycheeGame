@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>七巧板</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Songti SC', 'STSong', 'Segoe UI', serif;
+    background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .container {
+    background: #fefbf5;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(120, 90, 60, 0.2), inset 0 0 40px rgba(200, 170, 130, 0.08);
+    padding: 22px;
+    max-width: 640px;
+    width: 100%;
+    border: 1px solid rgba(160, 130, 90, 0.25);
+  }
+  .back-link {
+    display: inline-block;
+    color: #a67240;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+  .back-link:hover { color: #6b4820; }
+  h1 {
+    color: #3d2f24;
+    font-size: 26px;
+    letter-spacing: 8px;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .subtitle {
+    text-align: center;
+    color: #907050;
+    font-size: 12px;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .target-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .target-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 8px;
+    background: transparent;
+    border: 1.5px solid rgba(160, 130, 90, 0.35);
+    color: #6b4820;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    min-width: 60px;
+  }
+  .target-btn:hover { background: rgba(200, 170, 130, 0.15); }
+  .target-btn.active {
+    background: #d4a878;
+    border-color: #a67240;
+    color: #fff;
+  }
+  .target-btn .emoji {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+
+  .canvas-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    background:
+      linear-gradient(45deg, rgba(200, 170, 130, 0.05) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(200, 170, 130, 0.05) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(200, 170, 130, 0.05) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(200, 170, 130, 0.05) 75%),
+      #faf3e6;
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    border: 1px solid rgba(160, 130, 90, 0.3);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  svg { display: block; width: 100%; height: 100%; }
+
+  .piece {
+    cursor: grab;
+    transition: filter 0.15s;
+    filter: drop-shadow(0 2px 4px rgba(80, 50, 20, 0.15));
+  }
+  .piece.selected {
+    filter: drop-shadow(0 0 8px rgba(200, 120, 60, 0.6)) drop-shadow(0 2px 4px rgba(80, 50, 20, 0.2));
+  }
+  .piece:active { cursor: grabbing; }
+  .target-silhouette {
+    fill: rgba(80, 55, 30, 0.14);
+    stroke: rgba(80, 55, 30, 0.28);
+    stroke-width: 1;
+    pointer-events: none;
+  }
+
+  .controls {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .controls button {
+    flex: 1;
+    min-width: 70px;
+    padding: 9px 0;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border: 1px solid #a67240;
+    background: transparent;
+    color: #6b4820;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .controls button:hover:not(:disabled) { background: #d4a878; color: #fff; }
+  .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .controls button.primary { background: #a67240; color: #fff; }
+  .controls button.primary:hover { background: #6b4820; }
+
+  .hint {
+    text-align: center;
+    color: #907050;
+    font-size: 11px;
+    letter-spacing: 1px;
+    line-height: 1.6;
+  }
+  .hint kbd {
+    display: inline-block;
+    padding: 1px 5px;
+    background: rgba(200, 170, 130, 0.2);
+    border: 1px solid rgba(160, 130, 90, 0.3);
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 10px;
+    color: #6b4820;
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 16px; }
+    h1 { font-size: 22px; letter-spacing: 5px; }
+    .controls button { min-width: 60px; font-size: 12px; padding: 8px 4px; }
+    .target-btn { min-width: 54px; font-size: 10px; }
+    .target-btn .emoji { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <h1>七 巧 板</h1>
+  <div class="subtitle">— 七片 · 千形 · 无穷 —</div>
+
+  <div class="target-row" id="targetRow"></div>
+
+  <div class="canvas-wrap">
+    <svg id="canvas" viewBox="0 0 400 400"></svg>
+  </div>
+
+  <div class="controls">
+    <button id="rotateBtn">↻ 旋转</button>
+    <button id="flipBtn">⇋ 翻转</button>
+    <button id="resetBtn">摊开</button>
+    <button id="clearTargetBtn" class="primary">清目标</button>
+  </div>
+
+  <div class="hint">
+    <kbd>点</kbd>选中 · <kbd>拖</kbd>移动 · 双击旋转 · 平行四边形可翻转
+  </div>
+</div>
+
+<script>
+const svg = document.getElementById('canvas');
+
+// Piece defs, centered at (0,0) so rotation is around centroid
+const U = 40;  // Unit size in SVG coords
+const SQRT2 = Math.SQRT2;
+function center(pts) {
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return pts.map(([x, y]) => [x - cx, y - cy]);
+}
+const DEFS = {
+  bigTri:   center([[0,0], [2*U, 0], [0, 2*U]]),       // legs 2u
+  medTri:   center([[0,0], [SQRT2*U, 0], [0, SQRT2*U]]),  // legs √2u
+  smallTri: center([[0,0], [U, 0], [0, U]]),           // legs u
+  square:   center([[0,0], [U, 0], [U, U], [0, U]]),
+  paralle:  center([[0,0], [U, 0], [2*U, U], [U, U]]),
+};
+
+// 7 pieces with distinct colors
+const COLORS = ['#e07a5f', '#3d5a80', '#81b29a', '#f2cc8f', '#a08fdc', '#c17b52', '#5b8ba3'];
+
+// Initial "scattered" layout — pieces placed around the canvas
+const INITIAL = [
+  { type: 'bigTri',   x: 100, y: 100, rot: 0, flipped: false },
+  { type: 'bigTri',   x: 300, y: 100, rot: 180, flipped: false },
+  { type: 'medTri',   x: 200, y: 60, rot: 45, flipped: false },
+  { type: 'smallTri', x: 60,  y: 250, rot: 0, flipped: false },
+  { type: 'smallTri', x: 340, y: 250, rot: 180, flipped: false },
+  { type: 'square',   x: 200, y: 300, rot: 0, flipped: false },
+  { type: 'paralle',  x: 200, y: 200, rot: 0, flipped: false },
+];
+
+let pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
+let selectedIdx = null;
+
+// Target silhouettes — arrangements of the 7 pieces to form silhouette shapes
+// Each entry: { name, emoji, arrangement: [{type, x, y, rot, flipped}, ...] }
+// Silhouette is rendered by drawing all pieces at target positions in dark color.
+const TARGETS = [
+  {
+    name: '正方形',
+    emoji: '⬜',
+    arrangement: [
+      { type: 'bigTri',   x: 143, y: 143, rot: 45,  flipped: false },
+      { type: 'bigTri',   x: 257, y: 257, rot: 225, flipped: false },
+      { type: 'medTri',   x: 280, y: 120, rot: 180, flipped: false },
+      { type: 'smallTri', x: 200, y: 143, rot: 315, flipped: false },
+      { type: 'smallTri', x: 143, y: 200, rot: 45,  flipped: false },
+      { type: 'square',   x: 228, y: 172, rot: 45,  flipped: false },
+      { type: 'paralle',  x: 172, y: 228, rot: 45,  flipped: false },
+    ],
+  },
+  {
+    name: '猫',
+    emoji: '🐱',
+    arrangement: [
+      { type: 'bigTri',   x: 140, y: 200, rot: 0,   flipped: false },
+      { type: 'bigTri',   x: 260, y: 200, rot: 270, flipped: false },
+      { type: 'medTri',   x: 200, y: 100, rot: 0,   flipped: false },
+      { type: 'smallTri', x: 150, y: 60,  rot: 0,   flipped: false },
+      { type: 'smallTri', x: 250, y: 60,  rot: 270, flipped: false },
+      { type: 'square',   x: 200, y: 240, rot: 0,   flipped: false },
+      { type: 'paralle',  x: 320, y: 260, rot: 0,   flipped: false },
+    ],
+  },
+  {
+    name: '船',
+    emoji: '⛵',
+    arrangement: [
+      { type: 'bigTri',   x: 130, y: 250, rot: 0,   flipped: false },
+      { type: 'bigTri',   x: 270, y: 250, rot: 270, flipped: false },
+      { type: 'medTri',   x: 200, y: 300, rot: 180, flipped: false },
+      { type: 'smallTri', x: 200, y: 160, rot: 0,   flipped: false },
+      { type: 'smallTri', x: 200, y: 90,  rot: 0,   flipped: false },
+      { type: 'square',   x: 200, y: 200, rot: 45,  flipped: false },
+      { type: 'paralle',  x: 200, y: 340, rot: 0,   flipped: false },
+    ],
+  },
+  {
+    name: '兔',
+    emoji: '🐰',
+    arrangement: [
+      { type: 'bigTri',   x: 200, y: 240, rot: 0,   flipped: false },
+      { type: 'bigTri',   x: 240, y: 220, rot: 180, flipped: false },
+      { type: 'medTri',   x: 200, y: 120, rot: 0,   flipped: false },
+      { type: 'smallTri', x: 160, y: 60,  rot: 45,  flipped: false },
+      { type: 'smallTri', x: 240, y: 60,  rot: 315, flipped: false },
+      { type: 'square',   x: 260, y: 300, rot: 45,  flipped: false },
+      { type: 'paralle',  x: 140, y: 300, rot: 90,  flipped: false },
+    ],
+  },
+  {
+    name: '人',
+    emoji: '🏃',
+    arrangement: [
+      { type: 'bigTri',   x: 180, y: 200, rot: 315, flipped: false },
+      { type: 'bigTri',   x: 220, y: 260, rot: 90,  flipped: false },
+      { type: 'medTri',   x: 200, y: 100, rot: 0,   flipped: false },
+      { type: 'smallTri', x: 250, y: 180, rot: 45,  flipped: false },
+      { type: 'smallTri', x: 260, y: 340, rot: 90,  flipped: false },
+      { type: 'square',   x: 200, y: 60,  rot: 45,  flipped: false },
+      { type: 'paralle',  x: 140, y: 340, rot: 270, flipped: false },
+    ],
+  },
+  {
+    name: '房子',
+    emoji: '🏠',
+    arrangement: [
+      { type: 'bigTri',   x: 160, y: 130, rot: 90,  flipped: false },
+      { type: 'bigTri',   x: 240, y: 130, rot: 180, flipped: false },
+      { type: 'medTri',   x: 200, y: 60,  rot: 0,   flipped: false },
+      { type: 'smallTri', x: 140, y: 220, rot: 0,   flipped: false },
+      { type: 'smallTri', x: 260, y: 220, rot: 180, flipped: false },
+      { type: 'square',   x: 200, y: 240, rot: 0,   flipped: false },
+      { type: 'paralle',  x: 200, y: 310, rot: 0,   flipped: false },
+    ],
+  },
+];
+
+let currentTarget = null;
+
+// ============ Render ============
+function pointsStr(pts) {
+  return pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
+}
+
+function pieceTransform(p) {
+  const flipScale = p.flipped ? -1 : 1;
+  return `translate(${p.x} ${p.y}) rotate(${p.rot}) scale(${flipScale} 1)`;
+}
+
+function render() {
+  let html = '';
+  // Draw target silhouette first (behind)
+  if (currentTarget) {
+    for (const slot of currentTarget.arrangement) {
+      const pts = pointsStr(DEFS[slot.type]);
+      const flipScale = slot.flipped ? -1 : 1;
+      html += `<polygon class="target-silhouette" points="${pts}"
+                        transform="translate(${slot.x} ${slot.y}) rotate(${slot.rot}) scale(${flipScale} 1)" />`;
+    }
+  }
+  // Draw pieces
+  for (const p of pieces) {
+    const pts = pointsStr(DEFS[p.type]);
+    const cls = 'piece' + (p.idx === selectedIdx ? ' selected' : '');
+    html += `<polygon class="${cls}" points="${pts}"
+                      fill="${p.color}"
+                      stroke="rgba(0,0,0,0.15)" stroke-width="1"
+                      transform="${pieceTransform(p)}"
+                      data-idx="${p.idx}" />`;
+  }
+  svg.innerHTML = html;
+}
+
+// ============ Target row ============
+function initTargetRow() {
+  const row = document.getElementById('targetRow');
+  row.innerHTML = TARGETS.map((t, i) => `
+    <button class="target-btn" data-idx="${i}">
+      <span class="emoji">${t.emoji}</span>
+      <span>${t.name}</span>
+    </button>
+  `).join('');
+  row.addEventListener('click', e => {
+    const btn = e.target.closest('.target-btn');
+    if (!btn) return;
+    const idx = +btn.dataset.idx;
+    if (currentTarget === TARGETS[idx]) {
+      currentTarget = null;
+      row.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
+    } else {
+      currentTarget = TARGETS[idx];
+      row.querySelectorAll('.target-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    }
+    render();
+  });
+}
+
+// ============ Interaction ============
+let dragging = null;
+let dragStart = null;
+let lastTapTime = 0;
+let lastTapIdx = null;
+
+function svgCoords(clientX, clientY) {
+  const rect = svg.getBoundingClientRect();
+  const sx = 400 / rect.width;
+  const sy = 400 / rect.height;
+  return { x: (clientX - rect.left) * sx, y: (clientY - rect.top) * sy };
+}
+
+svg.addEventListener('pointerdown', e => {
+  const idx = e.target.dataset ? e.target.dataset.idx : undefined;
+  if (idx === undefined || idx === '') {
+    selectedIdx = null;
+    render();
+    return;
+  }
+  const i = +idx;
+  const now = Date.now();
+  // Double-tap → rotate
+  if (lastTapIdx === i && now - lastTapTime < 350) {
+    pieces[i].rot = (pieces[i].rot + 45) % 360;
+    lastTapTime = 0;
+    lastTapIdx = null;
+    selectedIdx = i;
+    render();
+    return;
+  }
+  lastTapTime = now;
+  lastTapIdx = i;
+  selectedIdx = i;
+  const svgPos = svgCoords(e.clientX, e.clientY);
+  dragStart = { svgX: svgPos.x, svgY: svgPos.y, pieceX: pieces[i].x, pieceY: pieces[i].y };
+  dragging = pieces[i];
+  try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+  // Bring dragging piece to top by moving to end of array
+  pieces = pieces.filter(p => p !== dragging).concat([dragging]);
+  render();
+});
+
+svg.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const svgPos = svgCoords(e.clientX, e.clientY);
+  dragging.x = dragStart.pieceX + (svgPos.x - dragStart.svgX);
+  dragging.y = dragStart.pieceY + (svgPos.y - dragStart.svgY);
+  render();
+});
+
+svg.addEventListener('pointerup', e => {
+  if (dragging) {
+    try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+    dragging = null;
+    dragStart = null;
+  }
+});
+svg.addEventListener('pointercancel', () => { dragging = null; dragStart = null; });
+
+// ============ Controls ============
+document.getElementById('rotateBtn').addEventListener('click', () => {
+  if (selectedIdx === null) return;
+  pieces[selectedIdx].rot = (pieces[selectedIdx].rot + 45) % 360;
+  render();
+});
+document.getElementById('flipBtn').addEventListener('click', () => {
+  if (selectedIdx === null) return;
+  pieces[selectedIdx].flipped = !pieces[selectedIdx].flipped;
+  render();
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
+  selectedIdx = null;
+  render();
+});
+document.getElementById('clearTargetBtn').addEventListener('click', () => {
+  currentTarget = null;
+  document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
+  render();
+});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (selectedIdx === null) return;
+  if (e.key === 'r' || e.key === 'R') {
+    pieces[selectedIdx].rot = (pieces[selectedIdx].rot + 45) % 360;
+    render();
+  } else if (e.key === 'f' || e.key === 'F') {
+    pieces[selectedIdx].flipped = !pieces[selectedIdx].flipped;
+    render();
+  } else if (e.key === 'Escape') {
+    selectedIdx = null;
+    render();
+  }
+});
+
+// Boot
+initTargetRow();
+render();
+</script>
+</body>
+</html>
