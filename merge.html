@@ -378,20 +378,29 @@ function canMerge(a, b) {
   return a.value === b.value && a.w === b.w && a.h === b.h;
 }
 
-// Find valid anchor for merged tile (size nw×nh) that covers frontTile's cells
-function pickAnchor(front, nw, nh) {
-  const fx = front.x, fy = front.y, fw = front.w, fh = front.h;
-  // Try anchors from (fx - (nw-fw), fy - (nh-fh)) to (fx, fy)
-  const dxRange = nw - fw;  // 0 if same size, positive if growing
-  const dyRange = nh - fh;
+// Find valid anchor for merged tile (size nw×nh) that covers frontTile's cells.
+// Prefers keeping the collision-side edge pinned and growing back into the
+// space the pusher came from, so the merge visually happens where you'd expect.
+function pickAnchor(front, nw, nh, dx, dy) {
+  const dxRange = nw - front.w;
+  const dyRange = nh - front.h;
+  // Parallel axis: pin the edge on the movement side (right edge when pushing right, etc.)
+  // Perpendicular axis: default to front's top-left; fallback ranking handles the rest.
+  const preferX = dx > 0 ? front.x + front.w - nw : front.x;
+  const preferY = dy > 0 ? front.y + front.h - nh : front.y;
+  if (canOccupy(preferX, preferY, nw, nh)) return { x: preferX, y: preferY };
+
   const candidates = [];
-  for (let ay = fy - dyRange; ay <= fy; ay++) {
-    for (let ax = fx - dxRange; ax <= fx; ax++) {
+  for (let ay = front.y - dyRange; ay <= front.y; ay++) {
+    for (let ax = front.x - dxRange; ax <= front.x; ax++) {
+      if (ax === preferX && ay === preferY) continue;
       candidates.push({ x: ax, y: ay });
     }
   }
-  // Prefer the anchor that keeps frontTile's top-left in original position (ax=fx, ay=fy)
-  // But that's index 0 in a specific ordering. Let me just try all.
+  candidates.sort((a, b) =>
+    (Math.abs(a.x - preferX) + Math.abs(a.y - preferY)) -
+    (Math.abs(b.x - preferX) + Math.abs(b.y - preferY))
+  );
   for (const c of candidates) {
     if (canOccupy(c.x, c.y, nw, nh)) return c;
   }
