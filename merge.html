@@ -127,8 +127,20 @@
   }
   .tile.pop { animation: pop 200ms ease-out; }
   .tile.appear { animation: appear 200ms ease-out; }
+  .tile.shake-x { animation: shakeX 320ms ease-out; }
+  .tile.shake-y { animation: shakeY 320ms ease-out; }
   @keyframes pop { 0%{transform:var(--pos) scale(1);} 50%{transform:var(--pos) scale(1.1);} 100%{transform:var(--pos) scale(1);} }
   @keyframes appear { 0%{transform:var(--pos) scale(0); opacity:0;} 100%{transform:var(--pos) scale(1); opacity:1;} }
+  @keyframes shakeX {
+    0%,100% { transform: var(--pos); }
+    15%,45%,75% { transform: var(--pos) translateX(-5px); }
+    30%,60%,90% { transform: var(--pos) translateX(5px); }
+  }
+  @keyframes shakeY {
+    0%,100% { transform: var(--pos); }
+    15%,45%,75% { transform: var(--pos) translateY(-5px); }
+    30%,60%,90% { transform: var(--pos) translateY(5px); }
+  }
 
   /* 1×1 colors (2-64) — bright */
   .tile-2    { background: #eee4da; color: #776e65; }
@@ -168,47 +180,6 @@
   .actions button:hover:not(:disabled) { background: rgba(220, 180, 140, 0.1); }
   .actions button:disabled { opacity: 0.35; cursor: not-allowed; }
   .actions button.primary { background: #ddb887; color: #2c1e14; border-color: #ddb887; font-weight: 700; }
-
-  /* D-pad */
-  .dpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    grid-template-areas:
-      ".    up   ."
-      "left .    right"
-      ".    down .";
-    gap: 8px;
-    width: 200px;
-    height: 200px;
-    margin: 12px auto 6px;
-    touch-action: none;
-  }
-  .dpad-btn {
-    background: rgba(220, 180, 140, 0.08);
-    border: 1.5px solid rgba(220, 180, 140, 0.3);
-    color: rgba(232, 220, 196, 0.9);
-    border-radius: 12px;
-    font-size: 30px;
-    cursor: pointer;
-    touch-action: manipulation;
-    transition: transform 0.08s, background 0.12s, color 0.12s, box-shadow 0.12s;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .dpad-btn.pressed, .dpad-btn:active {
-    transform: scale(0.9);
-    background: rgba(220, 180, 140, 0.3);
-    color: #ffd48a;
-    box-shadow: 0 0 14px rgba(220, 180, 140, 0.4);
-  }
-  .dpad-btn.up    { grid-area: up; }
-  .dpad-btn.down  { grid-area: down; }
-  .dpad-btn.left  { grid-area: left; }
-  .dpad-btn.right { grid-area: right; }
 
   .hint {
     text-align: center;
@@ -253,7 +224,6 @@
   @media (max-width: 480px) {
     .container { padding: 16px 14px; }
     h1 { font-size: 22px; letter-spacing: 4px; }
-    .dpad { width: 190px; height: 190px; }
   }
 </style>
 </head>
@@ -453,6 +423,7 @@ function move(dir) {
   let moved = false;
   let gain = 0;
   const mergedIds = new Set();  // survivors of a merge this turn (can't merge again)
+  const failedMergeIds = new Set();  // tiles that tried to merge but no room for new size
 
   for (const t of sorted) {
     if (t._removed) continue;
@@ -492,9 +463,11 @@ function move(dir) {
         didMove = true;
         if (newV === 2048) won = true;
       } else {
-        // Merge fails, put them back
+        // Merge fails, put them back and mark for shake feedback
         placeOnGrid(t);
         placeOnGrid(front);
+        failedMergeIds.add(t.id);
+        failedMergeIds.add(front.id);
       }
     }
     if (didMove) moved = true;
@@ -502,16 +475,27 @@ function move(dir) {
 
   tiles = tiles.filter(t => !t._removed);
 
+  // Don't shake tiles that ended up successfully merging via another pairing
+  for (const id of mergedIds) failedMergeIds.delete(id);
+  const shake = failedMergeIds.size
+    ? { ids: failedMergeIds, axis: dx !== 0 ? 'x' : 'y' }
+    : null;
+
   if (!moved) {
     history.pop();
     updateUndoBtn();
+    if (shake) {
+      renderTiles(new Set(), false, shake);
+      haptic(25);
+    }
     return;
   }
 
   score += gain;
 
   animating = true;
-  renderTiles(mergedIds);
+  renderTiles(mergedIds, false, shake);
+  if (shake) haptic(25);
   updateScore();
   updateUndoBtn();
 
@@ -555,7 +539,7 @@ function hasMovesLeft() {
 }
 
 // ============ Render ============
-function renderTiles(mergedIds = new Set(), forceRefresh = false) {
+function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) {
   const wrap = boardWrap.getBoundingClientRect();
   const boardW = wrap.width - 16;  // minus padding
   const cellSize = (boardW - (SIZE - 1) * 4) / SIZE;  // 4px gap
@@ -589,6 +573,11 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false) {
       el.classList.remove('pop');
       void el.offsetHeight;
       el.classList.add('pop');
+    }
+    if (shake && shake.ids.has(t.id)) {
+      el.classList.remove('shake-x', 'shake-y');
+      void el.offsetHeight;
+      el.classList.add('shake-' + shake.axis);
     }
     if (t._new) {
       el.classList.remove('appear');
@@ -700,18 +689,7 @@ boardWrap.addEventListener('touchend', e => {
   else move(dy > 0 ? 'down' : 'up');
 }, { passive: true });
 
-// D-pad
 function haptic(ms = 12) { if (navigator.vibrate) navigator.vibrate(ms); }
-document.querySelectorAll('.dpad-btn').forEach(btn => {
-  const press = (e) => {
-    e.preventDefault();
-    move(btn.dataset.dir);
-    btn.classList.add('pressed');
-    haptic();
-    setTimeout(() => btn.classList.remove('pressed'), 100);
-  };
-  btn.addEventListener('pointerdown', press);
-});
 
 document.getElementById('restartBtn').addEventListener('click', () => {
   if (tiles && tiles.length > 2 && !confirm('重开一局？')) return;
