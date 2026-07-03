@@ -249,8 +249,9 @@ body {
 }
 
 @keyframes hotspot-ripple {
-  0%   { transform: scale(0.6); opacity: 0.95; }
-  100% { transform: scale(2.4); opacity: 0; }
+  0%   { transform: scale(0.5); opacity: 1; }
+  50%  { transform: scale(1.5); opacity: 0.7; }
+  100% { transform: scale(2.6); opacity: 0; }
 }
 
 @keyframes hotspot-dot-pulse {
@@ -767,7 +768,7 @@ body {
   .pov-indicator { min-width: 0; border-right: none; border-bottom: 1px dashed var(--paper-edge); padding: 8px 10px; cursor: pointer; user-select: none; border-radius: 4px; transition: background 0.15s; }
   .pov-indicator:active { background: var(--paper-warm); }
   .pov-hint { display: block; font-size: 11px; margin-top: 4px; opacity: 0.75; letter-spacing: 1px; font-style: normal; }
-  .scene-wrap { flex: 0 0 auto; width: 100%; aspect-ratio: 1000 / 660; background: #2a3448; }
+  .scene-wrap { flex: 1; width: 100%; min-height: 300px; background: #2a3448; }
   #game-screen { background: #1a1f2c; }
   .bottom-bar { margin-top: auto; }
   .char-tabs { gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
@@ -1195,6 +1196,16 @@ body {
   color: rgba(232, 220, 196, 0.85);
 }
 
+
+/* Phone screen subtle pulse (waiting for message) */
+.phone-screen {
+  animation: phone-pulse 4s ease-in-out infinite;
+}
+@keyframes phone-pulse {
+  0%, 100% { opacity: 0.65; fill: #f9f3e8; }
+  50%      { opacity: 0.9;  fill: #f5c88a; }
+}
+
 </style>
 </head>
 <body>
@@ -1275,6 +1286,12 @@ body {
             <!-- Glass door edge (right, connecting to interior) -->
             <rect x="350" y="180" width="50" height="270" fill="#c9b48a" opacity="0.15"/>
             <line x1="350" y1="180" x2="350" y2="450" stroke="#8b6f47" stroke-width="1.5"/>
+            <!-- Doorbell hanging above door (visual for the ding-dong sound) -->
+            <line x1="375" y1="180" x2="375" y2="188" stroke="#8b6f47" stroke-width="1"/>
+            <path d="M368 195 L368 188 Q368 182 375 182 Q382 182 382 188 L382 195 Z" fill="#f5c88a" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="375" y1="195" x2="375" y2="200" stroke="#3d2f24" stroke-width="0.6"/>
+            <circle cx="375" cy="200" r="1" fill="#3d2f24"/>
+            <text x="375" y="215" font-size="8" fill="#c9b48a" text-anchor="middle" letter-spacing="1" font-family="serif">铃</text>
             <text x="375" y="220" font-size="10" fill="#c9b48a" text-anchor="middle" letter-spacing="1" font-family="serif">→ 店 内</text>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="doorstep"></div>
@@ -1415,6 +1432,11 @@ body {
             <!-- Cash drawer -->
             <rect x="280" y="330" width="80" height="26" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
             <circle cx="320" cy="343" r="1.5" fill="#3d2f24"/>
+            <!-- Cashier's phone on counter (screen glowing) -->
+            <rect x="273" y="298" width="14" height="24" fill="#3d2f24" stroke="#3d2f24" stroke-width="0.5" rx="2"/>
+            <rect x="275" y="301" width="10" height="17" fill="#f9f3e8" opacity="0.85" class="phone-screen"/>
+            <circle cx="280" cy="320" r="1" fill="#3d2f24"/>
+            <text x="280" y="335" font-size="7" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif" opacity="0.7">手 机</text>
             <!-- Pen on counter -->
             <line x1="285" y1="270" x2="298" y2="272" stroke="#3d2f24" stroke-width="1.5"/>
             <line x1="298" y1="272" x2="300" y2="273" stroke="#c17b52" stroke-width="1.5"/>
@@ -2431,23 +2453,23 @@ function renderHotspots() {
 
   // Ripple ring
   const ring = document.createElementNS(svgNS, 'circle');
-  ring.setAttribute('cx', pos.x); ring.setAttribute('cy', pos.y); ring.setAttribute('r', 22);
+  ring.setAttribute('cx', pos.x); ring.setAttribute('cy', pos.y); ring.setAttribute('r', 26);
   ring.setAttribute('fill', 'none');
-  ring.setAttribute('stroke', 'rgba(245, 200, 138, 0.9)');
-  ring.setAttribute('stroke-width', '3');
+  ring.setAttribute('stroke', 'rgba(245, 200, 138, 0.95)');
+  ring.setAttribute('stroke-width', '3.5');
   ring.setAttribute('class', 'hotspot-ring');
   overlay.appendChild(ring);
 
   // Warm glow
   const glow = document.createElementNS(svgNS, 'circle');
-  glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y); glow.setAttribute('r', 20);
-  glow.setAttribute('fill', 'rgba(245, 200, 138, 0.55)');
+  glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y); glow.setAttribute('r', 28);
+  glow.setAttribute('fill', 'rgba(245, 200, 138, 0.6)');
   glow.setAttribute('class', 'hotspot-glow');
   overlay.appendChild(glow);
 
   // Bright center dot
   const dot = document.createElementNS(svgNS, 'circle');
-  dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y); dot.setAttribute('r', 6);
+  dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y); dot.setAttribute('r', 8);
   dot.setAttribute('fill', 'rgba(249, 243, 232, 0.95)');
   dot.setAttribute('stroke', 'rgba(193, 123, 82, 0.9)');
   dot.setAttribute('stroke-width', '1.5');
@@ -2456,7 +2478,7 @@ function renderHotspots() {
 
   // Click target (larger, invisible)
   const hit = document.createElementNS(svgNS, 'circle');
-  hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 45);
+  hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 55);
   hit.setAttribute('fill', 'transparent');
   hit.setAttribute('style', 'pointer-events:auto;cursor:pointer;');
   hit.addEventListener('click', () => triggerHotspot(beat.hs));
