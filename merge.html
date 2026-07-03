@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>合体 · 破阵</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Songti SC', 'STSong', Georgia, serif;
+    background: linear-gradient(135deg, #2c1e14 0%, #1a1108 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    color: #e8dcc4;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .container {
+    max-width: 500px;
+    width: 100%;
+    background: #3d2f1e;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    padding: 20px;
+    border: 1px solid rgba(200, 160, 100, 0.25);
+  }
+  .back-link {
+    display: inline-block;
+    color: rgba(220, 180, 140, 0.6);
+    text-decoration: none;
+    font-size: 12px;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+  .back-link:hover { color: #ddb887; }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  h1 {
+    color: #ddb887;
+    font-size: 26px;
+    letter-spacing: 6px;
+    text-shadow: 0 0 15px rgba(220, 180, 140, 0.3);
+  }
+  .scores {
+    display: flex;
+    gap: 8px;
+  }
+  .score-box {
+    background: #5c4224;
+    border: 1px solid rgba(200, 160, 100, 0.25);
+    border-radius: 4px;
+    padding: 6px 12px;
+    text-align: center;
+    min-width: 62px;
+  }
+  .score-box .label {
+    display: block;
+    font-size: 10px;
+    color: rgba(232, 220, 196, 0.55);
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+  }
+  .score-box .value {
+    display: block;
+    font-size: 18px;
+    color: #ffd48a;
+    font-weight: 700;
+  }
+
+  .info {
+    color: rgba(232, 220, 196, 0.65);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .info b { color: #ffd48a; }
+
+  .board-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    background: #5c4224;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(200, 160, 100, 0.2);
+    overflow: hidden;
+  }
+  .grid-bg {
+    position: absolute;
+    inset: 8px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 4px;
+  }
+  .cell-bg {
+    background: rgba(232, 220, 196, 0.06);
+    border-radius: 3px;
+  }
+  .tiles {
+    position: absolute;
+    inset: 8px;
+    pointer-events: none;
+  }
+  .tile {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-weight: 700;
+    font-family: 'Georgia', 'STHeiti', sans-serif;
+    letter-spacing: -1px;
+    transition: transform 130ms ease-out, width 130ms ease-out, height 130ms ease-out;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  .tile.pop { animation: pop 200ms ease-out; }
+  .tile.appear { animation: appear 200ms ease-out; }
+  @keyframes pop { 0%{transform:var(--pos) scale(1);} 50%{transform:var(--pos) scale(1.1);} 100%{transform:var(--pos) scale(1);} }
+  @keyframes appear { 0%{transform:var(--pos) scale(0); opacity:0;} 100%{transform:var(--pos) scale(1); opacity:1;} }
+
+  /* 1×1 colors (2-64) — bright */
+  .tile-2    { background: #eee4da; color: #776e65; }
+  .tile-4    { background: #ede0c8; color: #776e65; }
+  .tile-8    { background: #f2b179; color: #f9f6f2; }
+  .tile-16   { background: #f59563; color: #f9f6f2; }
+  .tile-32   { background: #f67c5f; color: #f9f6f2; }
+  .tile-64   { background: #f65e3b; color: #f9f6f2; }
+  /* 2×2 (128-1024) — warm gold */
+  .tile-128  { background: linear-gradient(135deg, #edcf72, #d4a544); color: #4a2f0f; }
+  .tile-256  { background: linear-gradient(135deg, #edcc61, #c99632); color: #4a2f0f; }
+  .tile-512  { background: linear-gradient(135deg, #edc850, #b8862a); color: #fff; }
+  .tile-1024 { background: linear-gradient(135deg, #edc53f, #a67420); color: #fff; }
+  /* 3×3 (2048) — royal */
+  .tile-2048 { background: linear-gradient(135deg, #ffd48a, #c17b52 60%, #7a3a10); color: #fff;
+               box-shadow: 0 0 30px rgba(255, 200, 130, 0.6), 0 2px 8px rgba(0,0,0,0.4); }
+  .tile-super { background: #3c3a32; color: #f9f6f2; }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .actions button {
+    flex: 1;
+    padding: 9px 0;
+    background: transparent;
+    border: 1px solid rgba(220, 180, 140, 0.35);
+    color: rgba(232, 220, 196, 0.85);
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+  .actions button:hover:not(:disabled) { background: rgba(220, 180, 140, 0.1); }
+  .actions button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .actions button.primary { background: #ddb887; color: #2c1e14; border-color: #ddb887; font-weight: 700; }
+
+  /* D-pad */
+  .dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+      ".    up   ."
+      "left .    right"
+      ".    down .";
+    gap: 8px;
+    width: 200px;
+    height: 200px;
+    margin: 12px auto 6px;
+    touch-action: none;
+  }
+  .dpad-btn {
+    background: rgba(220, 180, 140, 0.08);
+    border: 1.5px solid rgba(220, 180, 140, 0.3);
+    color: rgba(232, 220, 196, 0.9);
+    border-radius: 12px;
+    font-size: 30px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform 0.08s, background 0.12s, color 0.12s, box-shadow 0.12s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dpad-btn.pressed, .dpad-btn:active {
+    transform: scale(0.9);
+    background: rgba(220, 180, 140, 0.3);
+    color: #ffd48a;
+    box-shadow: 0 0 14px rgba(220, 180, 140, 0.4);
+  }
+  .dpad-btn.up    { grid-area: up; }
+  .dpad-btn.down  { grid-area: down; }
+  .dpad-btn.left  { grid-area: left; }
+  .dpad-btn.right { grid-area: right; }
+
+  .hint {
+    text-align: center;
+    color: rgba(232, 220, 196, 0.4);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    line-height: 1.6;
+  }
+
+  /* Overlay */
+  .overlay {
+    position: absolute;
+    inset: 8px;
+    background: rgba(50, 30, 15, 0.85);
+    backdrop-filter: blur(4px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    z-index: 20;
+    border-radius: 3px;
+  }
+  .overlay.show { display: flex; }
+  .overlay h2 { color: #ffd48a; font-size: 28px; letter-spacing: 8px; margin-bottom: 10px; }
+  .overlay p { color: rgba(232, 220, 196, 0.8); font-size: 13px; letter-spacing: 2px; margin-bottom: 20px; line-height: 1.7; }
+  .overlay button {
+    padding: 10px 22px;
+    background: #ddb887;
+    color: #2c1e14;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+  .overlay button:hover { background: #c19b6a; }
+
+  @media (max-width: 480px) {
+    .container { padding: 16px 14px; }
+    h1 { font-size: 22px; letter-spacing: 4px; }
+    .dpad { width: 190px; height: 190px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <div class="header">
+    <h1>合体·破阵</h1>
+    <div class="scores">
+      <div class="score-box"><span class="label">得分</span><span class="value" id="score">0</span></div>
+      <div class="score-box"><span class="label">最高</span><span class="value" id="best">0</span></div>
+    </div>
+  </div>
+
+  <div class="info">
+    数字越大 · 占地越大 · 合体到 <b>128</b> 变 2×2 · 合体到 <b>2048</b> 变 3×3 通关
+  </div>
+
+  <div class="board-wrap" id="boardWrap">
+    <div class="grid-bg" id="gridBg"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="overlay" id="overlay">
+      <h2 id="overlayTitle">合体·破阵</h2>
+      <p id="overlaySub">数字块滑动合并<br>合到 2048 通关</p>
+      <button id="startBtn">开 局</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="undoBtn" disabled>↩ 撤销</button>
+    <button id="restartBtn" class="primary">重开</button>
+  </div>
+
+  <div class="dpad">
+    <button class="dpad-btn up" data-dir="up">▲</button>
+    <button class="dpad-btn left" data-dir="left">◀</button>
+    <button class="dpad-btn right" data-dir="right">▶</button>
+    <button class="dpad-btn down" data-dir="down">▼</button>
+  </div>
+
+  <div class="hint">
+    方向键 / WASD / 手机滑动棋盘 或点方向键
+  </div>
+</div>
+
+<script>
+const SIZE = 5;
+
+// Tile size for a value
+function sizeForValue(v) {
+  if (v >= 2048) return { w: 3, h: 3 };
+  if (v >= 128)  return { w: 2, h: 2 };
+  return { w: 1, h: 1 };
+}
+function classForValue(v) {
+  if (v > 2048) return 'tile-super';
+  return `tile-${v}`;
+}
+
+// ============ State ============
+let tiles;      // list of active tile objects
+let grid;       // SIZE x SIZE array of tile refs (each cell)
+let nextId;
+let score, best;
+let animating;
+let won;
+let history;    // for undo (snapshot before each move)
+
+const boardWrap = document.getElementById('boardWrap');
+const gridBg = document.getElementById('gridBg');
+const tilesEl = document.getElementById('tiles');
+const scoreEl = document.getElementById('score');
+const bestEl = document.getElementById('best');
+const undoBtn = document.getElementById('undoBtn');
+const overlay = document.getElementById('overlay');
+const overlayTitle = document.getElementById('overlayTitle');
+const overlaySub = document.getElementById('overlaySub');
+const startBtn = document.getElementById('startBtn');
+
+function initBg() {
+  gridBg.innerHTML = '';
+  for (let i = 0; i < SIZE * SIZE; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell-bg';
+    gridBg.appendChild(c);
+  }
+}
+
+function emptyGrid() {
+  return Array.from({length: SIZE}, () => Array(SIZE).fill(null));
+}
+
+// ============ Grid ops ============
+function placeOnGrid(t) {
+  for (let dy = 0; dy < t.h; dy++)
+    for (let dx = 0; dx < t.w; dx++)
+      grid[t.y + dy][t.x + dx] = t;
+}
+function removeFromGrid(t) {
+  for (let dy = 0; dy < t.h; dy++)
+    for (let dx = 0; dx < t.w; dx++)
+      if (grid[t.y + dy][t.x + dx] === t) grid[t.y + dy][t.x + dx] = null;
+}
+function canOccupy(x, y, w, h) {
+  for (let dy = 0; dy < h; dy++) {
+    for (let dx = 0; dx < w; dx++) {
+      const cx = x + dx, cy = y + dy;
+      if (cx < 0 || cx >= SIZE || cy < 0 || cy >= SIZE) return false;
+      if (grid[cy][cx]) return false;
+    }
+  }
+  return true;
+}
+
+// Get tile directly in front of `t` in direction (dx, dy). Returns tile or null (wall/empty/multiple).
+function getFrontTile(t, dx, dy) {
+  let front = null;
+  if (dx === 1) {
+    for (let dyi = 0; dyi < t.h; dyi++) {
+      const cx = t.x + t.w, cy = t.y + dyi;
+      if (cx >= SIZE) return null;
+      const c = grid[cy][cx];
+      if (!c) return null;
+      if (front && front !== c) return null;
+      front = c;
+    }
+  } else if (dx === -1) {
+    for (let dyi = 0; dyi < t.h; dyi++) {
+      const cx = t.x - 1, cy = t.y + dyi;
+      if (cx < 0) return null;
+      const c = grid[cy][cx];
+      if (!c) return null;
+      if (front && front !== c) return null;
+      front = c;
+    }
+  } else if (dy === 1) {
+    for (let dxi = 0; dxi < t.w; dxi++) {
+      const cx = t.x + dxi, cy = t.y + t.h;
+      if (cy >= SIZE) return null;
+      const c = grid[cy][cx];
+      if (!c) return null;
+      if (front && front !== c) return null;
+      front = c;
+    }
+  } else if (dy === -1) {
+    for (let dxi = 0; dxi < t.w; dxi++) {
+      const cx = t.x + dxi, cy = t.y - 1;
+      if (cy < 0) return null;
+      const c = grid[cy][cx];
+      if (!c) return null;
+      if (front && front !== c) return null;
+      front = c;
+    }
+  }
+  return front;
+}
+
+function canMerge(a, b) {
+  return a.value === b.value && a.w === b.w && a.h === b.h;
+}
+
+// Find valid anchor for merged tile (size nw×nh) that covers frontTile's cells
+function pickAnchor(front, nw, nh) {
+  const fx = front.x, fy = front.y, fw = front.w, fh = front.h;
+  // Try anchors from (fx - (nw-fw), fy - (nh-fh)) to (fx, fy)
+  const dxRange = nw - fw;  // 0 if same size, positive if growing
+  const dyRange = nh - fh;
+  const candidates = [];
+  for (let ay = fy - dyRange; ay <= fy; ay++) {
+    for (let ax = fx - dxRange; ax <= fx; ax++) {
+      candidates.push({ x: ax, y: ay });
+    }
+  }
+  // Prefer the anchor that keeps frontTile's top-left in original position (ax=fx, ay=fy)
+  // But that's index 0 in a specific ordering. Let me just try all.
+  for (const c of candidates) {
+    if (canOccupy(c.x, c.y, nw, nh)) return c;
+  }
+  return null;
+}
+
+// ============ Move ============
+const DIR_VECS = {
+  up:    { dx: 0, dy: -1 },
+  down:  { dx: 0, dy: 1 },
+  left:  { dx: -1, dy: 0 },
+  right: { dx: 1, dy: 0 },
+};
+
+function move(dir) {
+  if (animating || won) return;
+  const { dx, dy } = DIR_VECS[dir];
+  saveState();
+
+  // Sort tiles: those "leading" the slide direction move first
+  const sorted = [...tiles].sort((a, b) => {
+    if (dx === 1)  return (b.x + b.w) - (a.x + a.w);
+    if (dx === -1) return a.x - b.x;
+    if (dy === 1)  return (b.y + b.h) - (a.y + a.h);
+    if (dy === -1) return a.y - b.y;
+    return 0;
+  });
+
+  let moved = false;
+  let gain = 0;
+  const mergedIds = new Set();  // survivors of a merge this turn (can't merge again)
+
+  for (const t of sorted) {
+    if (t._removed) continue;
+    let didMove = false;
+    // Slide as far as possible
+    while (true) {
+      removeFromGrid(t);
+      if (canOccupy(t.x + dx, t.y + dy, t.w, t.h)) {
+        t.x += dx; t.y += dy;
+        placeOnGrid(t);
+        didMove = true;
+      } else {
+        placeOnGrid(t);
+        break;
+      }
+    }
+    // Try merge with front
+    const front = getFrontTile(t, dx, dy);
+    if (front && !front._removed && !mergedIds.has(front.id) && canMerge(t, front)) {
+      const newV = t.value * 2;
+      const ns = sizeForValue(newV);
+      // Temporarily remove both from grid to check anchor
+      removeFromGrid(t);
+      removeFromGrid(front);
+      const anchor = pickAnchor(front, ns.w, ns.h);
+      if (anchor) {
+        // Merge!
+        t._removed = true;
+        front.value = newV;
+        front.w = ns.w;
+        front.h = ns.h;
+        front.x = anchor.x;
+        front.y = anchor.y;
+        placeOnGrid(front);
+        mergedIds.add(front.id);
+        gain += newV;
+        didMove = true;
+        if (newV === 2048) won = true;
+      } else {
+        // Merge fails, put them back
+        placeOnGrid(t);
+        placeOnGrid(front);
+      }
+    }
+    if (didMove) moved = true;
+  }
+
+  tiles = tiles.filter(t => !t._removed);
+
+  if (!moved) {
+    history.pop();
+    updateUndoBtn();
+    return;
+  }
+
+  score += gain;
+
+  animating = true;
+  renderTiles(mergedIds);
+  updateScore();
+  updateUndoBtn();
+
+  setTimeout(() => {
+    spawn();
+    renderTiles(new Set(), true);  // second render to show new spawn
+    animating = false;
+    updateUndoBtn();
+    if (won) showWin();
+    else if (!hasMovesLeft()) showLose();
+  }, 140);
+}
+
+function spawn() {
+  const empties = [];
+  for (let y = 0; y < SIZE; y++)
+    for (let x = 0; x < SIZE; x++)
+      if (!grid[y][x]) empties.push({ x, y });
+  if (empties.length === 0) return null;
+  const { x, y } = empties[Math.floor(Math.random() * empties.length)];
+  const value = Math.random() < 0.9 ? 2 : 4;
+  const t = { id: nextId++, value, x, y, w: 1, h: 1, _new: true };
+  tiles.push(t);
+  placeOnGrid(t);
+  return t;
+}
+
+function hasMovesLeft() {
+  // Any empty cell?
+  for (let y = 0; y < SIZE; y++)
+    for (let x = 0; x < SIZE; x++)
+      if (!grid[y][x]) return true;
+  // Any possible merge?
+  for (const t of tiles) {
+    for (const [dxs, dys] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+      const f = getFrontTile(t, dxs, dys);
+      if (f && canMerge(t, f)) return true;
+    }
+  }
+  return false;
+}
+
+// ============ Render ============
+function renderTiles(mergedIds = new Set(), forceRefresh = false) {
+  const wrap = boardWrap.getBoundingClientRect();
+  const boardW = wrap.width - 16;  // minus padding
+  const cellSize = (boardW - (SIZE - 1) * 4) / SIZE;  // 4px gap
+  const gap = 4;
+
+  // Preserve existing DOM elements when possible
+  const existing = new Map();
+  tilesEl.querySelectorAll('.tile').forEach(el => existing.set(el.dataset.id, el));
+
+  const seen = new Set();
+  for (const t of tiles) {
+    let el = existing.get(String(t.id));
+    if (!el) {
+      el = document.createElement('div');
+      el.dataset.id = t.id;
+      tilesEl.appendChild(el);
+    }
+    el.className = 'tile ' + classForValue(t.value);
+    el.textContent = t.value;
+    const tileW = t.w * cellSize + (t.w - 1) * gap;
+    const tileH = t.h * cellSize + (t.h - 1) * gap;
+    const px = t.x * (cellSize + gap);
+    const py = t.y * (cellSize + gap);
+    el.style.width = tileW + 'px';
+    el.style.height = tileH + 'px';
+    el.style.fontSize = Math.floor(cellSize * (t.w === 1 ? 0.5 : t.w === 2 ? 0.42 : 0.36)) + 'px';
+    const posTr = `translate(${px}px, ${py}px)`;
+    el.style.setProperty('--pos', posTr);
+    el.style.transform = posTr;
+    if (mergedIds.has(t.id)) {
+      el.classList.remove('pop');
+      void el.offsetHeight;
+      el.classList.add('pop');
+    }
+    if (t._new) {
+      el.classList.remove('appear');
+      void el.offsetHeight;
+      el.classList.add('appear');
+      t._new = false;
+    }
+    seen.add(String(t.id));
+  }
+  // Remove elements for tiles that are gone
+  for (const [id, el] of existing) {
+    if (!seen.has(id)) el.remove();
+  }
+}
+
+function updateScore() {
+  scoreEl.textContent = score;
+  if (score > best) {
+    best = score;
+    localStorage.setItem('bestMerge', best);
+  }
+  bestEl.textContent = best;
+}
+
+function updateUndoBtn() {
+  undoBtn.disabled = !history.length || animating;
+}
+
+// ============ Save / Undo ============
+function saveState() {
+  history.push({
+    tiles: tiles.map(t => ({ id: t.id, value: t.value, x: t.x, y: t.y, w: t.w, h: t.h })),
+    score,
+    nextId,
+    won,
+  });
+  if (history.length > 12) history.shift();
+}
+function undo() {
+  if (!history.length || animating) return;
+  const s = history.pop();
+  tilesEl.innerHTML = '';
+  grid = emptyGrid();
+  tiles = s.tiles.map(t => ({...t}));
+  for (const t of tiles) placeOnGrid(t);
+  score = s.score;
+  nextId = s.nextId;
+  won = s.won;
+  updateScore();
+  renderTiles();
+  updateUndoBtn();
+  overlay.classList.remove('show');
+}
+
+// ============ Game control ============
+function newGame() {
+  tiles = [];
+  grid = emptyGrid();
+  nextId = 1;
+  score = 0;
+  won = false;
+  history = [];
+  animating = false;
+  tilesEl.innerHTML = '';
+  spawn();
+  spawn();
+  renderTiles();
+  updateScore();
+  updateUndoBtn();
+  overlay.classList.remove('show');
+}
+
+function showWin() {
+  overlayTitle.textContent = '功 成';
+  overlaySub.innerHTML = `你合出了 <b style="color:#ffd48a">2048 · 曹操</b><br>得分 ${score}`;
+  startBtn.textContent = '再 来 一 局';
+  overlay.classList.add('show');
+}
+function showLose() {
+  overlayTitle.textContent = '阵 破 我 败';
+  overlaySub.innerHTML = `无路可走 · 得分 ${score}<br>再来一局？`;
+  startBtn.textContent = '再 来 一 局';
+  overlay.classList.add('show');
+}
+
+// ============ Input ============
+document.addEventListener('keydown', e => {
+  const map = {
+    ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right',
+    w:'up', s:'down', a:'left', d:'right',
+    W:'up', S:'down', A:'left', D:'right',
+  };
+  if (map[e.key]) { move(map[e.key]); e.preventDefault(); }
+});
+let touchStart = null;
+boardWrap.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  touchStart = { x: t.clientX, y: t.clientY };
+}, { passive: true });
+boardWrap.addEventListener('touchend', e => {
+  if (!touchStart) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStart.x;
+  const dy = t.clientY - touchStart.y;
+  const ax = Math.abs(dx), ay = Math.abs(dy);
+  touchStart = null;
+  if (Math.max(ax, ay) < 24) return;
+  if (ax > ay) move(dx > 0 ? 'right' : 'left');
+  else move(dy > 0 ? 'down' : 'up');
+}, { passive: true });
+
+// D-pad
+function haptic(ms = 12) { if (navigator.vibrate) navigator.vibrate(ms); }
+document.querySelectorAll('.dpad-btn').forEach(btn => {
+  const press = (e) => {
+    e.preventDefault();
+    move(btn.dataset.dir);
+    btn.classList.add('pressed');
+    haptic();
+    setTimeout(() => btn.classList.remove('pressed'), 100);
+  };
+  btn.addEventListener('pointerdown', press);
+});
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  if (tiles && tiles.length > 2 && !confirm('重开一局？')) return;
+  newGame();
+});
+document.getElementById('undoBtn').addEventListener('click', undo);
+startBtn.addEventListener('click', newGame);
+
+window.addEventListener('resize', () => renderTiles());
+
+// Boot
+best = parseInt(localStorage.getItem('bestMerge') || '0', 10);
+bestEl.textContent = best;
+initBg();
+newGame();
+</script>
+</body>
+</html>
