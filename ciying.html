@@ -834,9 +834,9 @@ function renderRow(g, isLatest = false) {
   </div>`;
 }
 
-function renderHistory() {
+function renderHistory(newWord = null) {
   const sorted = [...guesses].sort((a, b) => b.sim - a.sim);
-  historyEl.innerHTML = sorted.map(g => renderRow(g)).join('');
+  historyEl.innerHTML = sorted.map(g => renderRow(g, g.word === newWord)).join('');
 }
 
 // ============ Actions ============
@@ -849,7 +849,9 @@ function submitGuess() {
 
   if (!WORDS[word]) {
     shakeInput();
-    showMessage(`「${word}」不在词表里`, 'err');
+    const suggests = findSimilarInVocab(word, 3);
+    const suggText = suggests.length ? ` · 相似：${suggests.join(' / ')}` : '';
+    showMessage(`「${word}」不在词表${suggText}`, 'err');
     return;
   }
   if (guessedSet.has(word)) {
@@ -861,6 +863,11 @@ function submitGuess() {
   const sim = similarity(word, answer);
   const rank = rankFor(word);
   const g = { word, sim, rank };
+
+  // Detect "warmer than personal best" for celebration
+  const prevBest = guesses.length ? Math.max(...guesses.map(x => x.sim)) : -1;
+  const isNewBest = sim > prevBest && sim < 1;
+
   guesses.push(g);
   guessedSet.add(word);
   guessCountEl.textContent = guesses.length;
@@ -872,10 +879,27 @@ function submitGuess() {
   const icon = tempIcon(sim);
   if (word === answer) {
     winGame();
+  } else if (isNewBest && guesses.length >= 3) {
+    showMessage(`🔥 更热了！${word} · ${(sim*100).toFixed(1)}%`);
+    if (navigator.vibrate) navigator.vibrate(20);
   } else {
     showMessage(`${icon} ${word} · ${(sim*100).toFixed(1)}%`);
   }
   updateHintBtn();
+}
+
+// Find character-based similar words in vocab (for suggesting on invalid guess)
+function findSimilarInVocab(word, limit = 3) {
+  if (!word) return [];
+  const chars = new Set(word);
+  const scored = [];
+  for (const w in WORDS) {
+    let overlap = 0;
+    for (const c of chars) if (w.includes(c)) overlap++;
+    if (overlap > 0) scored.push({ w, overlap });
+  }
+  scored.sort((a, b) => b.overlap - a.overlap);
+  return scored.slice(0, limit).map(x => x.w);
 }
 
 function updateHintBtn() {
@@ -895,9 +919,7 @@ function useHint() {
   guesses.push(g);
   guessedSet.add(pick.word);
   guessCountEl.textContent = guesses.length;
-  latestEl.classList.add('show');
-  latestRowEl.innerHTML = renderRow(g, true);
-  renderHistory();
+  renderHistory(pick.word);
   showMessage(`💡 提示词：${pick.word} · ${(pick.sim*100).toFixed(1)}%`);
   updateHintBtn();
 }
@@ -976,7 +998,6 @@ function newRound() {
   answerCat.textContent = `${answer.length} 字 · 类别 ${dominantCategory(answer)}`;
   guessCountEl.textContent = '0';
   hintCountEl.textContent = '0';
-  latestEl.classList.remove('show');
   historyEl.innerHTML = '';
   showMessage('');
   winModal.classList.remove('show');
