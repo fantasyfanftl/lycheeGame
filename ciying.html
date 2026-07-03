@@ -113,6 +113,23 @@
   }
   .input-row button:hover { background: #c19b6a; }
   .input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .input-row button.hint {
+    background: transparent;
+    color: rgba(220, 180, 140, 0.85);
+    border: 1px solid rgba(220, 180, 140, 0.5);
+    font-weight: normal;
+    padding: 10px 14px;
+  }
+  .input-row button.hint:hover:not(:disabled) { background: rgba(220, 180, 140, 0.15); }
+  .input-row button.hint:disabled { opacity: 0.3; }
+
+  .answer-cat {
+    display: block;
+    font-size: 11px;
+    color: rgba(220, 180, 140, 0.55);
+    letter-spacing: 3px;
+    margin-top: 8px;
+  }
 
   .stat-row {
     display: flex;
@@ -298,16 +315,18 @@
   <div class="answer-hint">
     <span class="label">— 今日答案 · 猜猜是什么 —</span>
     <div class="answer-blanks" id="answerBlanks"></div>
+    <span class="answer-cat" id="answerCat"></span>
   </div>
 
   <div class="input-row">
     <input type="text" id="guessInput" placeholder="输入一个词" maxlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    <button id="hintBtn" class="hint" disabled title="猜过 5 次后可用">💡 提示</button>
     <button id="submitBtn">猜</button>
   </div>
 
   <div class="stat-row">
-    <span>已猜 <b id="guessCount">0</b> 次</span>
-    <span><button id="giveUpBtn" style="background:none;border:none;color:rgba(220,180,140,0.5);font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:2px;">放弃 · 换一题</button></span>
+    <span>已猜 <b id="guessCount">0</b> 次 · 用了 <b id="hintCount">0</b> 次提示</span>
+    <span><button id="giveUpBtn" style="background:none;border:none;color:rgba(220,180,140,0.5);font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:2px;">放弃 · 看答案</button></span>
   </div>
 
   <div class="message" id="message"></div>
@@ -329,8 +348,23 @@
     <h2>猜 中 了</h2>
     <div class="answer-reveal" id="winAnswer"></div>
     <div class="stats" id="winStats"></div>
+    <button id="shareBtn">📋 分享结果</button>
     <button id="againBtn">再来一题</button>
     <button id="homeBtn">回菜单</button>
+  </div>
+</div>
+
+<div class="win-modal" id="giveUpModal">
+  <div class="box">
+    <h2>答 案 揭 晓</h2>
+    <div class="answer-reveal" id="revealAnswer"></div>
+    <div class="stats" id="revealStats"></div>
+    <div style="text-align:left; margin: 16px 0 22px; padding: 14px; background: rgba(220,180,140,0.06); border: 1px dashed rgba(220,180,140,0.25); border-radius: 4px;">
+      <div style="font-size: 11px; color: rgba(220,180,140,0.55); letter-spacing: 3px; margin-bottom: 8px;">— 最接近答案的 5 个词 —</div>
+      <div id="revealTop5" style="font-size: 13px; line-height: 2;"></div>
+    </div>
+    <button id="revealAgainBtn">再来一题</button>
+    <button id="revealHomeBtn">回菜单</button>
   </div>
 </div>
 
