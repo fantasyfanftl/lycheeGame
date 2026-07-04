@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>七巧板 · 山水诗</title>
+<title>七巧 · 山水</title>
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -110,6 +110,26 @@
   }
   svg { display: block; width: 100%; height: 100%; }
 
+  .silhouette {
+    fill: rgba(80, 55, 30, 0.12);
+    stroke: rgba(80, 55, 30, 0.4);
+    stroke-width: 2.5;
+    stroke-dasharray: 8, 4;
+    pointer-events: none;
+  }
+  .theme-label {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
+    font-weight: 300;
+    color: rgba(120, 90, 40, 0.15);
+    letter-spacing: 4px;
+    pointer-events: none;
+    font-family: 'STKaiti', 'KaiTi', 'Songti SC', serif;
+  }
+
   .piece {
     cursor: grab;
     transition: filter 0.15s;
@@ -118,30 +138,17 @@
   .piece.selected {
     filter: drop-shadow(0 0 10px rgba(200, 120, 60, 0.7)) drop-shadow(0 2px 4px rgba(80, 50, 20, 0.2));
   }
-  .piece.snapped { filter: drop-shadow(0 0 8px rgba(180, 130, 60, 0.4)) drop-shadow(0 2px 4px rgba(80, 50, 20, 0.2)); }
   .piece:active { cursor: grabbing; }
-
-  .target-slot {
-    fill: rgba(80, 55, 30, 0.10);
-    stroke: rgba(80, 55, 30, 0.35);
-    stroke-width: 1.5;
-    stroke-dasharray: 3, 3;
-    pointer-events: none;
-  }
-  .target-slot.filled {
-    stroke-dasharray: none;
-    stroke: rgba(180, 130, 60, 0);
-    fill: transparent;
-  }
 
   .controls {
     display: flex;
     gap: 6px;
     margin-bottom: 10px;
+    flex-wrap: wrap;
   }
   .controls button {
     flex: 1;
-    min-width: 66px;
+    min-width: 60px;
     padding: 9px 0;
     font-size: 13px;
     letter-spacing: 2px;
@@ -176,7 +183,7 @@
     color: #6b4820;
   }
 
-  /* Poem overlay on win */
+  /* Poem overlay */
   .poem-modal {
     position: fixed;
     inset: 0;
@@ -247,6 +254,7 @@
     border-bottom: 1px solid rgba(160, 130, 90, 0.25);
     margin-bottom: 12px;
     white-space: pre-line;
+    font-family: 'STKaiti', 'KaiTi', 'Songti SC', serif;
   }
   .poem-modal .poet {
     font-size: 13px;
@@ -282,7 +290,7 @@
   @media (max-width: 480px) {
     .container { padding: 16px 14px; }
     h1 { font-size: 20px; letter-spacing: 4px; }
-    .controls button { min-width: 60px; font-size: 12px; padding: 8px 4px; }
+    .controls button { min-width: 56px; font-size: 12px; padding: 8px 4px; }
     .target-btn { min-width: 60px; font-size: 10px; }
     .target-btn .emoji { font-size: 18px; }
     .poem-modal .card { padding: 30px 24px; }
@@ -295,15 +303,16 @@
 <div class="container">
   <a href="index.html" class="back-link">← 返回荔枝游戏</a>
   <h1>七 巧 · 山 水</h1>
-  <div class="subtitle">— 拼一景 · 得一诗 —</div>
+  <div class="subtitle">— 拼一意 · 得一诗 —</div>
 
   <div class="progress">
-    已收诗 <b id="progressCount">0</b> / <b id="progressTotal">6</b>
+    已得诗 <b id="progressCount">0</b> / <b id="progressTotal">6</b>
   </div>
 
   <div class="target-row" id="targetRow"></div>
 
   <div class="canvas-wrap">
+    <div class="theme-label" id="themeLabel"></div>
     <svg id="canvas" viewBox="0 0 400 400"></svg>
   </div>
 
@@ -311,11 +320,11 @@
     <button id="rotateBtn">↻ 旋转</button>
     <button id="flipBtn">⇋ 翻转</button>
     <button id="resetBtn">摊开</button>
-    <button id="clearTargetBtn" class="primary">清参照</button>
+    <button id="poemBtn" class="primary">得 诗</button>
   </div>
 
   <div class="hint">
-    <kbd>点</kbd>选中 · <kbd>拖</kbd>移动 · 双击/R 旋转 · F 翻转 · 拖近吸附
+    选一景 · 把七片拼成心中的样子 · 满意后点「得诗」得一联
   </div>
 </div>
 
@@ -328,7 +337,7 @@
     <div class="poet" id="poemPoet"></div>
     <div class="actions">
       <button id="nextTargetBtn">下一景</button>
-      <button id="closePoemBtn" class="secondary">继续赏</button>
+      <button id="closePoemBtn" class="secondary">再赏</button>
     </div>
   </div>
 </div>
@@ -336,7 +345,7 @@
 <script>
 const svg = document.getElementById('canvas');
 
-// Piece geometry — centered so rotation is around centroid
+// Piece geometry — centroid-centered
 const U = 40;
 const SQRT2 = Math.SQRT2;
 function centerPts(pts) {
@@ -364,106 +373,60 @@ const INITIAL = [
   { type: 'paralle',  x: 200, y: 200, rot: 0,   flipped: false },
 ];
 
-let pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i], snapped: false, slotIdx: -1 }));
+let pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
 let selectedIdx = null;
 
-// TARGETS with poems. positions are guides — pieces will snap to these.
+// TARGETS — each has a SILHOUETTE PATH (recognizable shape) and a poem
 const TARGETS = [
   {
     name: '月', emoji: '🌙',
+    silhouette: 'M 240 100 A 130 130 0 1 0 240 300 A 100 100 0 1 1 240 100 Z',
     verse: '举 头 望 明 月\n低 头 思 故 乡',
     poet: '李白 · 静夜思',
     sub: '一片乡愁',
-    arrangement: [
-      { type: 'square',   x: 200, y: 160, rot: 45,  flipped: false },
-      { type: 'smallTri', x: 172, y: 100, rot: 315, flipped: false },
-      { type: 'smallTri', x: 228, y: 100, rot: 225, flipped: false },
-      { type: 'medTri',   x: 200, y: 240, rot: 180, flipped: false },
-      { type: 'bigTri',   x: 130, y: 300, rot: 0,   flipped: false },
-      { type: 'bigTri',   x: 270, y: 300, rot: 270, flipped: false },
-      { type: 'paralle',  x: 200, y: 340, rot: 0,   flipped: false },
-    ],
   },
   {
     name: '舟', emoji: '⛵',
+    silhouette: 'M 200 100 L 200 260 M 200 260 L 280 260 L 200 100 Z ' +
+                'M 90 260 Q 100 285 130 300 L 280 300 Q 310 285 320 260 Z',
     verse: '孤 舟 蓑 笠 翁\n独 钓 寒 江 雪',
     poet: '柳宗元 · 江雪',
     sub: '天地寂寂',
-    arrangement: [
-      { type: 'bigTri',   x: 130, y: 250, rot: 0,   flipped: false },
-      { type: 'bigTri',   x: 270, y: 250, rot: 270, flipped: false },
-      { type: 'medTri',   x: 200, y: 300, rot: 180, flipped: false },
-      { type: 'smallTri', x: 200, y: 160, rot: 0,   flipped: false },
-      { type: 'smallTri', x: 200, y: 100, rot: 0,   flipped: false },
-      { type: 'square',   x: 200, y: 200, rot: 45,  flipped: false },
-      { type: 'paralle',  x: 200, y: 340, rot: 0,   flipped: false },
-    ],
   },
   {
     name: '山', emoji: '⛰',
+    silhouette: 'M 60 320 L 140 200 L 200 250 L 250 160 L 340 320 Z',
     verse: '不 识 庐 山 真 面 目\n只 缘 身 在 此 山 中',
     poet: '苏轼 · 题西林壁',
     sub: '身在局中',
-    arrangement: [
-      { type: 'bigTri',   x: 130, y: 250, rot: 0,   flipped: false },
-      { type: 'bigTri',   x: 270, y: 250, rot: 270, flipped: false },
-      { type: 'medTri',   x: 200, y: 200, rot: 180, flipped: false },
-      { type: 'smallTri', x: 100, y: 180, rot: 0,   flipped: false },
-      { type: 'smallTri', x: 300, y: 180, rot: 180, flipped: false },
-      { type: 'square',   x: 200, y: 280, rot: 0,   flipped: false },
-      { type: 'paralle',  x: 200, y: 340, rot: 0,   flipped: false },
-    ],
   },
   {
     name: '松', emoji: '🌲',
+    silhouette: 'M 200 60 L 130 190 L 165 190 L 110 280 L 180 280 L 180 340 L 220 340 L 220 280 L 290 280 L 235 190 L 270 190 Z',
     verse: '岁 寒\n然 后 知 松 柏 之 后 凋 也',
     poet: '孔子 · 论语',
     sub: '傲雪凌霜',
-    arrangement: [
-      { type: 'bigTri',   x: 200, y: 100, rot: 180, flipped: false },
-      { type: 'medTri',   x: 200, y: 180, rot: 180, flipped: false },
-      { type: 'smallTri', x: 200, y: 240, rot: 180, flipped: false },
-      { type: 'smallTri', x: 200, y: 280, rot: 180, flipped: false },
-      { type: 'square',   x: 200, y: 320, rot: 0,   flipped: false },
-      { type: 'bigTri',   x: 130, y: 200, rot: 90,  flipped: false },
-      { type: 'paralle',  x: 270, y: 200, rot: 45,  flipped: false },
-    ],
   },
   {
     name: '亭', emoji: '⛩',
+    silhouette: 'M 80 200 L 200 90 L 320 200 L 300 220 L 300 320 L 240 320 L 240 240 L 160 240 L 160 320 L 100 320 L 100 220 Z',
     verse: '亭 亭 山 上 松\n瑟 瑟 谷 中 风',
     poet: '刘桢 · 赠从弟',
     sub: '一亭一世界',
-    arrangement: [
-      { type: 'bigTri',   x: 160, y: 130, rot: 90,  flipped: false },
-      { type: 'bigTri',   x: 240, y: 130, rot: 180, flipped: false },
-      { type: 'medTri',   x: 200, y: 70,  rot: 0,   flipped: false },
-      { type: 'smallTri', x: 140, y: 220, rot: 0,   flipped: false },
-      { type: 'smallTri', x: 260, y: 220, rot: 180, flipped: false },
-      { type: 'square',   x: 200, y: 240, rot: 0,   flipped: false },
-      { type: 'paralle',  x: 200, y: 310, rot: 0,   flipped: false },
-    ],
   },
   {
     name: '云', emoji: '☁',
+    silhouette: 'M 100 250 Q 80 200 130 190 Q 130 140 200 160 Q 240 130 290 170 Q 340 180 330 230 Q 350 270 300 280 L 130 280 Q 80 280 100 250 Z',
     verse: '行 到 水 穷 处\n坐 看 云 起 时',
     poet: '王维 · 终南别业',
     sub: '闲云自舒',
-    arrangement: [
-      { type: 'bigTri',   x: 130, y: 180, rot: 45,  flipped: false },
-      { type: 'bigTri',   x: 270, y: 180, rot: 225, flipped: false },
-      { type: 'medTri',   x: 200, y: 140, rot: 180, flipped: false },
-      { type: 'smallTri', x: 100, y: 240, rot: 45,  flipped: false },
-      { type: 'smallTri', x: 300, y: 240, rot: 225, flipped: false },
-      { type: 'square',   x: 200, y: 240, rot: 45,  flipped: false },
-      { type: 'paralle',  x: 200, y: 310, rot: 0,   flipped: false },
-    ],
   },
 ];
 
 let currentTargetIdx = -1;
-let filledSlots = new Set();
-let completedTargets = new Set(JSON.parse(localStorage.getItem('qixiaoBanPoems') || '[]'));
+let completedTargets = new Set(JSON.parse(localStorage.getItem('qixiaoBanPoems2') || '[]'));
+
+const themeLabel = document.getElementById('themeLabel');
 
 // ============ Render ============
 function pointsStr(pts) {
@@ -476,24 +439,16 @@ function pieceTransform(p) {
 
 function render() {
   let html = '';
-  // Target slot silhouettes (dashed outlines behind pieces)
+  // Silhouette background
   if (currentTargetIdx >= 0) {
-    const target = TARGETS[currentTargetIdx];
-    target.arrangement.forEach((slot, i) => {
-      const pts = pointsStr(DEFS[slot.type]);
-      const flipScale = slot.flipped ? -1 : 1;
-      const cls = filledSlots.has(i) ? 'target-slot filled' : 'target-slot';
-      html += `<polygon class="${cls}" points="${pts}"
-                        transform="translate(${slot.x} ${slot.y}) rotate(${slot.rot}) scale(${flipScale} 1)" />`;
-    });
+    const t = TARGETS[currentTargetIdx];
+    html += `<path class="silhouette" d="${t.silhouette}" />`;
   }
   // Pieces
   for (const p of pieces) {
     const pts = pointsStr(DEFS[p.type]);
-    const classes = ['piece'];
-    if (p.idx === selectedIdx) classes.push('selected');
-    if (p.snapped) classes.push('snapped');
-    html += `<polygon class="${classes.join(' ')}" points="${pts}"
+    const cls = 'piece' + (p.idx === selectedIdx ? ' selected' : '');
+    html += `<polygon class="${cls}" points="${pts}"
                       fill="${p.color}"
                       stroke="rgba(0,0,0,0.15)" stroke-width="1"
                       transform="${pieceTransform(p)}"
@@ -501,8 +456,6 @@ function render() {
   }
   svg.innerHTML = html;
 }
-
-// Optimized: update only the dragged piece's transform (no full re-render)
 function updateDraggedTransform(p) {
   const el = svg.querySelector(`[data-idx="${p.idx}"]`);
   if (el) el.setAttribute('transform', pieceTransform(p));
@@ -531,90 +484,17 @@ function initTargetRow() {
 function updateProgress() {
   document.getElementById('progressCount').textContent = completedTargets.size;
 }
-
 function refreshTargetButtons() {
   document.querySelectorAll('.target-btn').forEach((b, i) => {
     b.classList.toggle('active', i === currentTargetIdx);
     b.classList.toggle('done', completedTargets.has(TARGETS[i].name));
   });
 }
-
 function setTarget(idx) {
   currentTargetIdx = idx;
-  filledSlots = new Set();
-  // Unsnap all pieces
-  pieces.forEach(p => { p.snapped = false; p.slotIdx = -1; });
   refreshTargetButtons();
+  themeLabel.textContent = idx >= 0 ? TARGETS[idx].name : '';
   render();
-}
-
-// ============ Snap logic ============
-const SNAP_DIST = 42;   // px in SVG coords
-const SNAP_ANGLE = 30;  // degrees tolerance
-
-function angleDiff(a, b) {
-  let d = Math.abs((a - b) % 360);
-  if (d > 180) d = 360 - d;
-  return d;
-}
-
-function trySnap(piece) {
-  if (currentTargetIdx < 0) return false;
-  const target = TARGETS[currentTargetIdx];
-  let bestSlot = -1;
-  let bestDist = Infinity;
-  target.arrangement.forEach((slot, i) => {
-    if (filledSlots.has(i)) return;
-    if (slot.type !== piece.type) return;
-    const dx = piece.x - slot.x;
-    const dy = piece.y - slot.y;
-    const d = Math.sqrt(dx * dx + dy * dy);
-    if (d < SNAP_DIST && d < bestDist) {
-      // Check rotation (with type-specific symmetry allowance)
-      const symmetry = symmetryOf(piece.type);  // Multiple of what rotation makes piece look same
-      const targetRot = slot.rot % symmetry;
-      const pieceRot = piece.rot % symmetry;
-      const ad = angleDiff(pieceRot, targetRot);
-      if (ad < SNAP_ANGLE) {
-        bestSlot = i;
-        bestDist = d;
-      }
-    }
-  });
-  if (bestSlot >= 0) {
-    const slot = target.arrangement[bestSlot];
-    piece.x = slot.x;
-    piece.y = slot.y;
-    piece.rot = slot.rot;
-    piece.flipped = slot.flipped;
-    piece.snapped = true;
-    piece.slotIdx = bestSlot;
-    filledSlots.add(bestSlot);
-    if (navigator.vibrate) navigator.vibrate(15);
-    // All slots filled?
-    if (filledSlots.size === target.arrangement.length) {
-      onComplete(currentTargetIdx);
-    }
-    return true;
-  }
-  return false;
-}
-
-// Rotational symmetry period (in degrees) — pieces look same after rotating by this
-function symmetryOf(type) {
-  if (type === 'square') return 90;  // Square repeats every 90°
-  // Triangles and parallelogram: symmetric at 360° only
-  return 360;
-}
-
-function onComplete(idx) {
-  const target = TARGETS[idx];
-  completedTargets.add(target.name);
-  localStorage.setItem('qixiaoBanPoems', JSON.stringify([...completedTargets]));
-  updateProgress();
-  refreshTargetButtons();
-  // Reveal poem
-  setTimeout(() => showPoem(target), 400);
 }
 
 // ============ Poem modal ============
@@ -625,24 +505,23 @@ function showPoem(target) {
   document.getElementById('poemVerse').textContent = target.verse;
   document.getElementById('poemPoet').textContent = '— ' + target.poet;
   poemModal.classList.add('show');
+  if (navigator.vibrate) navigator.vibrate([15, 30, 15]);
 }
 function hidePoem() { poemModal.classList.remove('show'); }
 document.getElementById('closePoemBtn').addEventListener('click', hidePoem);
 document.getElementById('nextTargetBtn').addEventListener('click', () => {
   hidePoem();
-  // Find next uncompleted target
   const next = TARGETS.findIndex((t, i) => i > currentTargetIdx && !completedTargets.has(t.name));
   const wrap = TARGETS.findIndex(t => !completedTargets.has(t.name));
-  const targetIdx = next >= 0 ? next : (wrap >= 0 ? wrap : 0);
+  const targetIdx = next >= 0 ? next : (wrap >= 0 ? wrap : (currentTargetIdx + 1) % TARGETS.length);
   resetPieces();
   setTarget(targetIdx);
 });
 poemModal.addEventListener('click', e => { if (e.target === poemModal) hidePoem(); });
 
 function resetPieces() {
-  pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i], snapped: false, slotIdx: -1 }));
+  pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
   selectedIdx = null;
-  filledSlots = new Set();
 }
 
 // ============ Interaction ============
@@ -668,10 +547,7 @@ svg.addEventListener('pointerdown', e => {
   const i = +idx;
   const now = Date.now();
   if (lastTapIdx === i && now - lastTapTime < 350) {
-    // Double-tap → rotate
     pieces[i].rot = (pieces[i].rot + 45) % 360;
-    pieces[i].snapped = false;
-    if (pieces[i].slotIdx >= 0) { filledSlots.delete(pieces[i].slotIdx); pieces[i].slotIdx = -1; }
     lastTapTime = 0; lastTapIdx = null;
     selectedIdx = i;
     render();
@@ -683,14 +559,7 @@ svg.addEventListener('pointerdown', e => {
   const svgPos = svgCoords(e.clientX, e.clientY);
   dragStart = { svgX: svgPos.x, svgY: svgPos.y, pieceX: pieces[i].x, pieceY: pieces[i].y };
   dragging = pieces[i];
-  // Unsnap on grab
-  if (dragging.snapped) {
-    filledSlots.delete(dragging.slotIdx);
-    dragging.snapped = false;
-    dragging.slotIdx = -1;
-  }
   try { svg.setPointerCapture(e.pointerId); } catch (_) {}
-  // Bring to top
   pieces = pieces.filter(p => p !== dragging).concat([dragging]);
   render();
 });
@@ -700,16 +569,14 @@ svg.addEventListener('pointermove', e => {
   const svgPos = svgCoords(e.clientX, e.clientY);
   dragging.x = dragStart.pieceX + (svgPos.x - dragStart.svgX);
   dragging.y = dragStart.pieceY + (svgPos.y - dragStart.svgY);
-  updateDraggedTransform(dragging);  // Optimized: don't re-render everything
+  updateDraggedTransform(dragging);
 });
 
 svg.addEventListener('pointerup', e => {
   if (dragging) {
     try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
-    trySnap(dragging);
     dragging = null;
     dragStart = null;
-    render();
   }
 });
 svg.addEventListener('pointercancel', () => { dragging = null; dragStart = null; });
@@ -717,24 +584,29 @@ svg.addEventListener('pointercancel', () => { dragging = null; dragStart = null;
 // Controls
 document.getElementById('rotateBtn').addEventListener('click', () => {
   if (selectedIdx === null) return;
-  const p = pieces[selectedIdx];
-  p.rot = (p.rot + 45) % 360;
-  if (p.snapped) { filledSlots.delete(p.slotIdx); p.snapped = false; p.slotIdx = -1; }
+  pieces[selectedIdx].rot = (pieces[selectedIdx].rot + 45) % 360;
   render();
 });
 document.getElementById('flipBtn').addEventListener('click', () => {
   if (selectedIdx === null) return;
-  const p = pieces[selectedIdx];
-  p.flipped = !p.flipped;
-  if (p.snapped) { filledSlots.delete(p.slotIdx); p.snapped = false; p.slotIdx = -1; }
+  pieces[selectedIdx].flipped = !pieces[selectedIdx].flipped;
   render();
 });
 document.getElementById('resetBtn').addEventListener('click', () => {
   resetPieces();
   render();
 });
-document.getElementById('clearTargetBtn').addEventListener('click', () => {
-  setTarget(-1);
+document.getElementById('poemBtn').addEventListener('click', () => {
+  if (currentTargetIdx < 0) {
+    alert('先在上面选一景');
+    return;
+  }
+  const target = TARGETS[currentTargetIdx];
+  completedTargets.add(target.name);
+  localStorage.setItem('qixiaoBanPoems2', JSON.stringify([...completedTargets]));
+  updateProgress();
+  refreshTargetButtons();
+  showPoem(target);
 });
 
 // Keyboard

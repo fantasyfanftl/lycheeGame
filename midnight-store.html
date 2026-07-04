@@ -3409,57 +3409,105 @@ function playBeat(beat) {
   const effective = resolveBranch(beat);
   _currentEffective = effective;
 
+  // Beat-start SFX (fires for both inline + modal paths)
+  if (effective.sfx === 'doorChime' || (beat && beat.sfx === 'doorChime')) {
+    playDoorChime();
+    if (!state.world) state.world = {};
+    state.world.oldmanArrived = true;
+  }
+
+  const hasChoices = effective.choices && effective.choices.length;
+  // Choice beats use in-scene cue + inline pills; narrative beats keep modal.
+  if (hasChoices) {
+    playInlineBeat(effective);
+    render();
+    return;
+  }
+
   const char = CHARACTERS[state.currentPOV];
   $('dialogue-narrator').textContent = char.name + ' · 视角';
   $('dialogue-title').textContent = effective.title || '';
   $('dialogue-text').innerHTML = renderTextWithQuotes(effective.text || '');
-
-  // Beat-start SFX
-  if (effective.sfx === 'doorChime' || (beat && beat.sfx === 'doorChime')) {
-    playDoorChime();
-    // Door chime = someone entered. For cashier's milkCabinet beat this is
-    // the old man; other doorChime beats can mark different arrivals but
-    // this is the only NPC we currently model.
-    if (!state.world) state.world = {};
-    state.world.oldmanArrived = true;
-  }
 
   // Reset containers
   $('observations-container').innerHTML = '';
   $('choice-container').innerHTML = '';
   $('dialogue-cp').style.display = 'none';
 
-  const hasChoices = effective.choices && effective.choices.length;
-
-  if (hasChoices) {
-    // Render choices; continue is disabled until picked
-    const container = $('choice-container');
-    if (effective.choicePrompt) {
-      const p = document.createElement('div');
-      p.className = 'choice-prompt';
-      p.textContent = effective.choicePrompt;
-      container.appendChild(p);
-    }
-    effective.choices.forEach((choice, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'choice-option';
-      btn.textContent = choice.label;
-      btn.addEventListener('click', () => pickChoice(idx));
-      container.appendChild(btn);
-    });
-    setContinueEnabled(false);
-  } else {
-    // Auto-do: apply effects + track CPs immediately
-    if (effective.effects) effective.effects(state.world);
-    const unlocked = contributeToCPs(effective);
-    recordNotebook(effective.cps, effective.text);
-    showCPUnlock(unlocked);
-    setContinueEnabled(true);
-  }
+  // Auto-do: apply effects + track CPs immediately
+  if (effective.effects) effective.effects(state.world);
+  const unlocked = contributeToCPs(effective);
+  recordNotebook(effective.cps, effective.text);
+  showCPUnlock(unlocked);
+  setContinueEnabled(true);
 
   $('dialogue-overlay').classList.remove('hidden');
   render();
 }
+
+// ========== Inline beat mode (choice beats — no modal overlay) ==========
+function playInlineBeat(effective) {
+  const panel = $('inline-panel');
+  const cue = $('inline-cue');
+  const subtitle = $('inline-subtitle');
+  const choicesEl = $('inline-choices');
+  const cont = $('inline-continue');
+
+  // Cue text: use choicePrompt if present, else fallback to a short beat title
+  cue.textContent = effective.choicePrompt || ('· ' + (effective.title || '') + ' ·');
+  cue.classList.remove('hidden');
+  subtitle.classList.add('hidden');
+  subtitle.innerHTML = '';
+  cont.classList.add('hidden');
+
+  choicesEl.innerHTML = '';
+  effective.choices.forEach((choice, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'inline-choice-btn';
+    btn.textContent = choice.label;
+    btn.addEventListener('click', () => pickInlineChoice(idx));
+    choicesEl.appendChild(btn);
+  });
+
+  panel.classList.remove('hidden');
+}
+
+function pickInlineChoice(idx) {
+  const beat = _currentEffective;
+  const choice = beat.choices[idx];
+
+  playChoiceClick();
+  if (choice.voice) speakLine(choice.voice, 900);
+
+  if (choice.effects) choice.effects(state.world);
+  const unlocked = contributeToCPs(choice);
+  recordNotebook(choice.cps, choice.text);
+  showCPUnlock(unlocked);
+
+  // Replace choices with subtitle showing the chosen line's follow-up text
+  const cue = $('inline-cue');
+  const subtitle = $('inline-subtitle');
+  const choicesEl = $('inline-choices');
+  const cont = $('inline-continue');
+
+  choicesEl.innerHTML = '';
+  cue.textContent = '「 ' + choice.label + ' 」';
+  if (choice.text) {
+    subtitle.innerHTML = renderTextWithQuotes(choice.text);
+    subtitle.classList.remove('hidden');
+  }
+  cont.classList.remove('hidden');
+}
+
+function dismissInlineBeat() {
+  const panel = $('inline-panel');
+  const cont = $('inline-continue');
+  if (panel.classList.contains('hidden')) return;
+  if (cont.classList.contains('hidden')) return; // still on choice step
+  panel.classList.add('hidden');
+  closeBeat();
+}
+
 
 function pickChoice(idx) {
   
@@ -3572,6 +3620,7 @@ function closeBeat() {
 
   state.dialogueOpen = false;
   $('dialogue-overlay').classList.add('hidden');
+  $('inline-panel').classList.add('hidden');
 
   const c = state.currentPOV;
   if (_currentBeatIndex >= 0) {
@@ -4870,6 +4919,9 @@ function bindEvents() {
     });
   }
   $('dialogue-continue').addEventListener('click', closeBeat);
+  // Inline beat: tap continue chip or subtitle to dismiss
+  $('inline-continue').addEventListener('click', dismissInlineBeat);
+  $('inline-subtitle').addEventListener('click', dismissInlineBeat);
   $('notebook-btn').addEventListener('click', showNotebook);
   $('notebook-close').addEventListener('click', hideNotebook);
   $('mute-btn').addEventListener('click', toggleMute);
