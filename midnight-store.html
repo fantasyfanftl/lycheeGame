@@ -3271,17 +3271,13 @@ function renderHotspots() {
 }
 
 function isCharPresent(id) {
-  // Rule: scenes are empty by default. Characters appear along their own
-  // timeline — a POV char "arrives" once their intro beat (index 0) has
-  // been played. Other POV chars appear (dimmed) once their arc completes.
-  // NPC oldman appears once a beat with sfx=doorChime has fired in the
-  // current POV, or any prior world flag has marked him arrived.
+  // First-person rule: the current POV is the viewer — they don't see
+  // themselves in the scene. NPC oldman appears once a doorChime beat has
+  // fired. Other POV chars appear (dimmed) once their arc completes — as
+  // "this is who else is here in the same night" — but never the viewer.
+  if (id === state.currentPOV) return false;
   if (id === 'oldman') {
     return !!(state.world && state.world.oldmanArrived);
-  }
-  const played = (state.playedBeats && state.playedBeats[id]) || new Set();
-  if (id === state.currentPOV) {
-    return played.has(0);
   }
   return state.completed.has(id);
 }
