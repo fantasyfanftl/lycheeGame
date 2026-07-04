@@ -685,76 +685,303 @@
 </div>
 
 <script>
-// ============ Story ============
-const STORY = {
-  intro: [
-    '凌晨三点二十分，京沪列车因暴雪停驻山中。',
-    '头等舱第 7 号包厢——沈老爷倒在血泊里，胸前一枚针眼。',
-    '房门反锁，钥匙就在他自己的胸袋。',
-    '',
-    '你是同车的年轻检察官。风雪短时不停，车上没有别人可以求助。',
-    '',
-    '每查清一处地方（数独盘的每一个 3×3 宫），',
-    '你就能收获一条线索。凑齐所有线索，指出凶手。',
-  ],
-  clues: [
-    // 9 boxes: (top-left, top-mid, top-right, mid-left, mid-mid, mid-right, bot-left, bot-mid, bot-right)
-    { loc: '头等舱 · 7 号包厢', text: '死者手背有一枚细小针眼。血液已冷。' },
-    { loc: '餐车',              text: '案发前，餐车咖啡杯上有一抹口红——沈眉自称她昨晚从未来过餐车。' },
-    { loc: '尾车厢',            text: '一张被撕碎的旧报纸：四十年前，沈家老宅逼一位女佣堕胎，女佣自尽于井中。' },
-    { loc: '卧铺 A · 沈眉铺位', text: '沈眉的行李里，一本日记写着"父亲最近对我说过一件事"，页面后被撕掉。' },
-    { loc: '走廊监控',          text: '案发前六分钟，走廊监控被人切断电源。有人熟悉车厢线路。' },
-    { loc: '卧铺 B · 陆璟铺位', text: '陆璟的旅行包里，有医用注射器与一小瓶胰岛素——他自称不是糖尿病人。' },
-    { loc: '洗手间',            text: '洗手池边的手绢沾血，血型与死者一致。手绢一角绣着"陈"字。' },
-    { loc: '车长室 · 通讯',      text: '车长通讯记录被删除了一段。删除时间与走廊断电重合。' },
-    { loc: '车尾平台',          text: '一张揉皱的旧车票，姓名栏写着"陈璟"。车上没有姓陈的人。' },
-  ],
-  suspects: [
-    { id: 'meiyan',  name: '沈眉',   role: '女大学生 · 20 岁', avatar: '🎀',
-      desc: '死者独女 · 遗产唯一继承人 · 昨夜情绪反常' },
-    { id: 'lujing',  name: '陆璟',   role: '医学生 · 24 岁', avatar: '🩺',
-      desc: '同车 · 学医出身 · 与沈家素不相识' },
-    { id: 'aru',     name: '阿茹',   role: '售票员 · 26 岁', avatar: '🎫',
-      desc: '沉稳内敛 · 熟悉车厢每一处线路' },
-    { id: 'wangtao', name: '王涛',   role: '商务乘客 · 43 岁', avatar: '💼',
-      desc: '偶然同车 · 频繁通话 · 目的可疑' },
-  ],
-  methods: [
-    { id: 'injection', name: '药物注射', desc: '手背针眼 · 使用胰岛素让心脏骤停' },
-    { id: 'suffocate', name: '枕头窒息', desc: '压迫口鼻 · 应留下挣扎痕迹' },
-    { id: 'poison',    name: '心药加毒', desc: '在死者常服的药片里做手脚' },
-  ],
-  answer: { suspect: 'lujing', method: 'injection' },
-  correct: [
-    '你转向陆璟。',
-    '"你不姓陆。你叫陈璟。"',
-    '',
-    '他没有说话。你继续。',
-    '"四十年前，沈老爷让人赶走了怀着他孩子的女佣。',
-    ' 你母亲在生下你之后自尽。',
-    ' 她姓陈——你从她的姓，改了名。"',
-    '',
-    '"你今晚在车上等他，用胰岛素注射他。',
-    ' 一个健康人被注射高剂量胰岛素，看起来就像是自然的心脏骤停。',
-    ' 你是医学生，你懂。"',
-    '',
-    '陆璟低下头，慢慢地把那枚旧车票，从口袋里放到桌上。',
-    '"我等了四十年。"',
-    '',
-    '——雪停了。案件了结。',
-  ],
-  wrong: (sName, mName) => [
-    `你说是${sName}，用${mName}。`,
-    '',
-    '车厢里，只有沈眉低声的抽泣。',
-    '',
-    '真相并非如此——凶手是陆璟，用胰岛素注射。',
-    '他是沈老爷四十年前那次不认账的私生子。',
-    '你漏看了那张署名"陈璟"的旧车票。',
-    '',
-    '也许你需要再来一次。',
-  ],
-};
+// ============ Stories (multi-case) ============
+const STORIES = [
+  {
+    name: '雪夜列车',
+    emoji: '❄',
+    subtitle: '京沪线 · 山中停驻 · 一夜风雪',
+    intro: [
+      '凌晨三点二十分，京沪列车因暴雪停驻山中。',
+      '头等舱第 7 号包厢——沈老爷倒在血泊里，胸前一枚针眼。',
+      '房门反锁，钥匙就在他自己的胸袋。',
+      '',
+      '你是同车的年轻检察官。风雪短时不停，车上没有别人可以求助。',
+    ],
+    clues: [
+      { loc: '头等舱 · 7 号包厢', text: '死者手背有一枚细小针眼。血液已冷。' },
+      { loc: '餐车',              text: '案发前，餐车咖啡杯上有一抹口红——沈眉自称她昨晚从未来过餐车。' },
+      { loc: '尾车厢',            text: '一张被撕碎的旧报纸：四十年前，沈家老宅逼一位女佣堕胎，女佣自尽于井中。' },
+      { loc: '卧铺 A · 沈眉铺位', text: '沈眉的行李里，一本日记写着"父亲最近对我说过一件事"，页面后被撕掉。' },
+      { loc: '走廊监控',          text: '案发前六分钟，走廊监控被人切断电源。' },
+      { loc: '卧铺 B · 陆璟铺位', text: '陆璟的旅行包里，有医用注射器与一小瓶胰岛素——他自称不是糖尿病人。' },
+      { loc: '洗手间',            text: '洗手池边的手绢沾血，血型与死者一致。手绢一角绣着"陈"字。' },
+      { loc: '车长室 · 通讯',      text: '车长通讯记录被删除了一段。删除时间与走廊断电重合。' },
+      { loc: '车尾平台',          text: '一张揉皱的旧车票，姓名栏写着"陈璟"。车上没有姓陈的人。' },
+    ],
+    suspects: [
+      { id: 'meiyan',  name: '沈眉',   role: '女大学生 · 20 岁', avatar: '🎀',
+        desc: '死者独女 · 遗产唯一继承人 · 昨夜情绪反常' },
+      { id: 'lujing',  name: '陆璟',   role: '医学生 · 24 岁', avatar: '🩺',
+        desc: '同车 · 学医出身 · 与沈家素不相识' },
+      { id: 'aru',     name: '阿茹',   role: '售票员 · 26 岁', avatar: '🎫',
+        desc: '沉稳内敛 · 熟悉车厢每一处线路' },
+      { id: 'wangtao', name: '王涛',   role: '商务乘客 · 43 岁', avatar: '💼',
+        desc: '偶然同车 · 频繁通话 · 目的可疑' },
+    ],
+    methods: [
+      { id: 'injection', name: '药物注射', desc: '手背针眼 · 使用胰岛素让心脏骤停' },
+      { id: 'suffocate', name: '枕头窒息', desc: '压迫口鼻 · 应留下挣扎痕迹' },
+      { id: 'poison',    name: '心药加毒', desc: '在死者常服的药片里做手脚' },
+    ],
+    answer: { suspect: 'lujing', method: 'injection' },
+    correct: [
+      '你转向陆璟。"你不姓陆。你叫陈璟。"',
+      '',
+      '"四十年前，沈老爷让人赶走了怀着他孩子的女佣。你母亲在生下你之后自尽。她姓陈——你从她的姓，改了名。"',
+      '',
+      '"你今晚在车上等他，用胰岛素注射他。一个健康人被注射高剂量胰岛素，看起来就像是自然的心脏骤停。你是医学生，你懂。"',
+      '',
+      '陆璟低下头，把那枚旧车票，从口袋里放到桌上。"我等了四十年。"',
+      '',
+      '——雪停了。案件了结。',
+    ],
+    wrong: (sName, mName) => [
+      `你说是${sName}，用${mName}。`,
+      '真相并非如此——凶手是陆璟，用胰岛素注射。',
+      '他是沈老爷四十年前那次不认账的私生子。',
+      '你漏看了那张署名"陈璟"的旧车票。',
+    ],
+  },
+
+  {
+    name: '紫云庄',
+    emoji: '🏮',
+    subtitle: '1935 · 江南老宅 · 遗产之夜',
+    intro: [
+      '民国二十四年，江南紫云庄。',
+      '老家主李伯钧于书房暴毙，房门反锁，指纹只有他一人的。',
+      '',
+      '你是外来的年轻律师，本来是来处理遗嘱纠纷，',
+      '被临时拉进破案。',
+    ],
+    clues: [
+      { loc: '书房内',    text: '老爷手中紧握一枚玉扳指——那扳指是李绫小时候的玩物。' },
+      { loc: '前厅',      text: '李承业今日上午与父亲大吵后摔门而去。' },
+      { loc: '茶室',      text: '老爷常用的茶盏被人清洗过，只留残余的甜香味。' },
+      { loc: '花园',      text: '花坛边一枚半旧鞋跟印——李绫日常穿的绣鞋纹路。' },
+      { loc: '账房',      text: '账簿显示老爷正在拟修改遗嘱，收信人栏写着"绫"字。' },
+      { loc: '后院药圃',   text: '砒霜藏在花匠工具里，最近有人动过。' },
+      { loc: '卧室',      text: '苏雨薇一直在楼上"练字"，笔洗里的墨水是干的。' },
+      { loc: '西侧走廊',   text: '老管家昨夜曾去镇上药铺，说是自己胃疼。' },
+      { loc: '阁楼',      text: '阁楼上一封未寄的信：李绫写给远方外婆的家书，提到"血脉重认"。' },
+    ],
+    suspects: [
+      { id: 'chengye',  name: '李承业', role: '长子 · 32 岁', avatar: '👔',
+        desc: '因遗产之争与父亲交恶多年' },
+      { id: 'yuwei',    name: '苏雨薇', role: '二房 · 26 岁', avatar: '🌸',
+        desc: '老爷续弦 · 年轻貌美 · 表情深不可测' },
+      { id: 'chenfu',   name: '陈福',   role: '老管家 · 60 岁', avatar: '🎩',
+        desc: '服侍李家四十年 · 忠心耿耿' },
+      { id: 'ling',     name: '李绫',   role: '侄女 · 19 岁', avatar: '🎋',
+        desc: '温柔知书达理 · 常与老爷谈心' },
+    ],
+    methods: [
+      { id: 'poison',  name: '砒霜下茶', desc: '在老爷常用茶盏里下毒' },
+      { id: 'pillow',  name: '枕头闷杀', desc: '趁午睡时压嘴致窒息' },
+      { id: 'dagger',  name: '匕首伪装', desc: '用匕首刺穿伪装成心脏病' },
+    ],
+    answer: { suspect: 'ling', method: 'poison' },
+    correct: [
+      '你转向李绫。"你不是侄女。你是老爷失散多年那个私生女的女儿。"',
+      '',
+      '她手里的玉扳指还在颤，"外婆临终告诉我。老爷最近想认下这脉，把部分遗产留给我。"',
+      '',
+      '"可你怕这份施舍被家族反对撤回。所以趁老爷还没告诉别人，先把他毒死——遗嘱还没改，你已到手的那部分反倒稳了。"',
+      '',
+      '她慢慢抬头。"我等这份认可等了十九年。可他偏偏想公开——那我宁可他没说过。"',
+      '',
+      '——雨还在下。庄园里第一次这么静。',
+    ],
+    wrong: (sName, mName) => [
+      `你说是${sName}，用${mName}。`,
+      '真相并非如此——凶手是李绫，用砒霜下茶。',
+      '她是李伯钧多年前那个私生女的女儿。',
+      '你漏看了阁楼那封"血脉重认"的家书。',
+    ],
+  },
+
+  {
+    name: '海燕号',
+    emoji: '🚢',
+    subtitle: '1987 · 沪港航线 · 第三夜',
+    intro: [
+      '豪华邮轮"海燕号"，从上海开往香港。',
+      '第三夜，头等舱套房。',
+      '黄金大亨石老板被发现死在浴缸旁，头部有淤伤，脚下一只吹风机滴着水。',
+      '',
+      '你是刚刚上船的年轻记者，船长临时委托你调查——',
+      '毕竟船到香港还要两天。',
+    ],
+    clues: [
+      { loc: '头等舱套房', text: '石老板半身浸在水中，浴缸边一只湿透的吹风机。' },
+      { loc: '走廊监控',   text: '走廊监控在案发前 12 分钟被人拔掉电源。' },
+      { loc: '餐厅',      text: '晚餐时石老板神情紧张，餐后没喝完他一贯的红酒。' },
+      { loc: '甲板',      text: '船长室发现一封警告信：字迹遒劲、女性笔锋。' },
+      { loc: '舞厅',      text: '沈曼那晚喝了很多酒，一个人躲在角落。' },
+      { loc: '桌牌室',    text: '王坤和石老板的赌桌欠债表：王坤欠石 200 万美金。' },
+      { loc: '员工休息室', text: '阿超白天来过头等舱送冰，说过"石老板小费给得不多"。' },
+      { loc: '邮件室',    text: '石老板发出的最后一封电报是给何雅的：只写了"我错了"。' },
+      { loc: '甲板尾',    text: '一双湿透的女人高跟鞋，43 码，与何雅的鞋码一致。' },
+    ],
+    suspects: [
+      { id: 'shenman', name: '沈曼', role: '情妇 · 35 岁 · 舞女出身', avatar: '💋',
+        desc: '被石老板包养多年，最近感情冷淡' },
+      { id: 'heya',    name: '何雅', role: '前妻 · 42 岁 · 银行高管', avatar: '💼',
+        desc: '离婚时被石老板算计得很惨' },
+      { id: 'wangkun', name: '王坤', role: '生意伙伴 · 50 岁', avatar: '🎩',
+        desc: '和石老板赌债缠身 · 精明商人' },
+      { id: 'achao',   name: '阿超', role: '客房服务生 · 25 岁', avatar: '🎫',
+        desc: '表面老实 · 一直被石老板挑剔' },
+    ],
+    methods: [
+      { id: 'electro', name: '电击溺水', desc: '把带电吹风机扔入浴缸' },
+      { id: 'drown',   name: '按头溺毙', desc: '强行按压头部入水' },
+      { id: 'pill',    name: '安眠药过量', desc: '在酒中混入过量安眠药' },
+    ],
+    answer: { suspect: 'heya', method: 'electro' },
+    correct: [
+      '你把那封"我错了"的电报递到何雅面前。',
+      '"他后悔了，是吗？可是太晚了。"',
+      '',
+      '"你上船不是为了旅游。你是来做最后一件事的。"',
+      '"你等他洗澡，深夜潜入套房，把吹风机扔进浴缸。他没时间挣扎。"',
+      '',
+      '"离婚那年他分走了你所有存款，逼你从零开始。这几年你隐忍不发——上船，是终点。"',
+      '',
+      '何雅平静地看着窗外的海。"我一直等他说这句道歉。他终究是说了。可惜——晚了两天。"',
+      '',
+      '——邮轮继续向南。',
+    ],
+    wrong: (sName, mName) => [
+      `你说是${sName}，用${mName}。`,
+      '真相并非如此——凶手是何雅，用带电吹风机。',
+      '她是石老板的前妻，为多年前离婚的清算而来。',
+      '你漏看了甲板尾那双湿高跟鞋和最后那封电报。',
+    ],
+  },
+
+  {
+    name: '灵鹫寺',
+    emoji: '🏯',
+    subtitle: '深山古寺 · 一夜狂风',
+    intro: [
+      '灵鹫寺，深山千年古刹。',
+      '子夜狂风，一声钟响不合时辰。',
+      '知客僧循声上禅房——住持慧远端坐蒲团，口吐白沫，人已凉透。',
+      '',
+      '你是山下来的官员，为查一桩民案借宿寺中。',
+      '现在，得先破另一桩。',
+    ],
+    clues: [
+      { loc: '住持禅房',   text: '桌上一盏残茶，杯底沉着白色粉末。' },
+      { loc: '前殿钟楼',   text: '钟绳一根新绳，绳末带着微微药香。' },
+      { loc: '藏经阁',    text: '慧远近日翻阅《律宗》，页角标注多处：关于长辈亡后继任规矩。' },
+      { loc: '斋堂厨房',   text: '砒霜配药本是了尘保管，最近少了一小罐——他说自己胃疼。' },
+      { loc: '井边',      text: '陈施主昨日在井边打水时，摔了那盏他自己带的紫砂茶盏。' },
+      { loc: '偏院',      text: '妙净夜间去偏院捡回慧远失落的念珠，路上遇见了尘。' },
+      { loc: '钟楼上',    text: '守门人阿谷傍晚检查钟楼时，说"钟绳有点旧"，之后不见他更换。' },
+      { loc: '禅房外院',   text: '院门有一枚僧鞋泥印——纹样与了尘的僧鞋一致。' },
+      { loc: '茶房',      text: '茶房账本显示了尘今日单独为慧远沏茶，无他人在场。' },
+    ],
+    suspects: [
+      { id: 'miaojing', name: '妙净', role: '小僧 · 17 岁', avatar: '🧑‍🦲',
+        desc: '慧远收养 · 一心向佛' },
+      { id: 'leochen',  name: '了尘', role: '老僧 · 52 岁', avatar: '📿',
+        desc: '慧远师弟 · 素来觊觎住持位' },
+      { id: 'chenshi',  name: '陈施主', role: '香客 · 40 岁', avatar: '👤',
+        desc: '常年供养寺庙 · 生意人' },
+      { id: 'agu',      name: '阿谷',  role: '守门人 · 30 岁', avatar: '🚪',
+        desc: '哑巴 · 只在寺中打杂十余年' },
+    ],
+    methods: [
+      { id: 'poison',   name: '毒茶暗下', desc: '砒霜混入慧远常用的茶中' },
+      { id: 'strangle', name: '钟绳勒杀', desc: '趁禅坐时从背后勒住' },
+      { id: 'cliff',    name: '推下悬崖', desc: '寺后山崖 · 假装失足' },
+    ],
+    answer: { suspect: 'leochen', method: 'poison' },
+    correct: [
+      '你合十向了尘一礼："师父手中经卷，讲的是继任之礼。你比谁都清楚。"',
+      '',
+      '"砒霜在你手上多年，是压舱之物；今日你亲自沏茶。院门那枚泥印，是你的。"',
+      '',
+      '了尘转过念珠，"师兄这几十年，遮我一头风。我等这个位子——等到我自己都忘了当初为何要等。"',
+      '',
+      '他缓缓起身，"只是等到了才发现，什么也没剩下。"',
+      '',
+      '——山钟不再响了。',
+    ],
+    wrong: (sName, mName) => [
+      `你说是${sName}，用${mName}。`,
+      '真相并非如此——凶手是了尘，用砒霜毒茶。',
+      '他觊觎住持之位多年，今日亲自沏茶下手。',
+      '你漏看了禅房外那枚僧鞋泥印。',
+    ],
+  },
+
+  {
+    name: '明诚校园',
+    emoji: '🎓',
+    subtitle: '2019 · 明诚大学 · 毕业前夜',
+    intro: [
+      '明诚大学 · 毕业前一夜。',
+      '公寓楼下，林雨躺在草地上。',
+      '警方初判为跳楼——但顶楼没有她的指纹，鞋子也没脱。',
+      '',
+      '你是同校研究生，认识她。',
+      '导员把破案交给你——因为你旁听过刑侦。',
+    ],
+    clues: [
+      { loc: '林雨宿舍',   text: '林雨的电脑桌面开着一份 email 草稿：抬头写着"陈教授学术不端".' },
+      { loc: '公寓楼顶',   text: '楼顶没有林雨指纹，只有——一副中年男性掌纹。' },
+      { loc: '楼下草坪',   text: '林雨的高跟鞋整齐穿在脚上，指甲无挣扎痕迹。' },
+      { loc: '男友周浩宿舍', text: '周浩当晚在打游戏，五个队友作证。' },
+      { loc: '师姐王倩房间', text: '王倩因林雨抢了她保研名额痛哭过一次，但案发时她在图书馆。' },
+      { loc: '实验楼',    text: '陈教授办公室的门禁记录显示 22:47 有他的进出记录——距案发只差 8 分钟。' },
+      { loc: '茶水间',    text: '茶水间的清洁记录：晚 23:00 有一杯打翻的红酒渍——但学生禁酒。' },
+      { loc: '走廊监控',   text: '11 楼监控在 22:50 之后失灵 40 分钟。技术组说是"人为切断"。' },
+      { loc: '林雨手机',   text: '最后一条短信来自陈教授："今晚我上来找你谈谈，别告诉别人。"' },
+    ],
+    suspects: [
+      { id: 'zhangwei', name: '张薇', role: '室友 · 22 岁', avatar: '🎀',
+        desc: '林雨最好的朋友 · 案发时说自己在洗澡' },
+      { id: 'zhouhao',  name: '周浩', role: '男友 · 23 岁', avatar: '🎮',
+        desc: '当晚在打游戏 · 队友作证' },
+      { id: 'chenprof', name: '陈教授', role: '导师 · 45 岁', avatar: '📖',
+        desc: '林雨的学术指导 · 论文合作者' },
+      { id: 'wangqian', name: '王倩', role: '师姐 · 24 岁', avatar: '💔',
+        desc: '曾因保研名额与林雨冲突' },
+    ],
+    methods: [
+      { id: 'drug',    name: '毒酒灌下', desc: '先灌毒酒使人失去意识，再推下楼' },
+      { id: 'push',    name: '直接推下', desc: '楼顶正面对峙' },
+      { id: 'throat',  name: '掐颈致死', desc: '再伪造坠楼现场' },
+    ],
+    answer: { suspect: 'chenprof', method: 'drug' },
+    correct: [
+      '你把那杯红酒的化验报告放在陈教授面前。',
+      '"她要举报你剽窃她的实验数据。"',
+      '',
+      '"你上门谈判，红酒是你带来的。她喝下时已经晕了。"',
+      '"然后你把她背上顶楼，让'跳楼'看起来像是压力太大。"',
+      '',
+      '陈教授沉默了很久，"那篇论文让我评上了长江学者。她不能毁掉这些。"',
+      '',
+      '你摇头，"她可以。所以你选择让她'不能'。"',
+      '',
+      '——第二天，明诚大学毕业典礼取消。',
+    ],
+    wrong: (sName, mName) => [
+      `你说是${sName}，用${mName}。`,
+      '真相并非如此——凶手是陈教授，用毒酒灌下再推楼。',
+      '他要掩盖学术剽窃 · 林雨即将举报他。',
+      '你漏看了茶水间那滩红酒渍和林雨手机上最后一条短信。',
+    ],
+  },
+];
+
+let currentStoryIdx = 0;
+const STORY_ALIAS = () => STORIES[currentStoryIdx];
 
 // ============ Sudoku core ============
 const N = 9;
@@ -927,7 +1154,7 @@ function checkBoxUnlocks() {
     if (unlockedBoxes.has(bi)) continue;
     if (isBoxComplete(bi)) {
       unlockedBoxes.add(bi);
-      queueClueToast(STORY.clues[bi]);
+      queueClueToast(STORIES[currentStoryIdx].clues[bi]);
     }
   }
   searchedEl.textContent = unlockedBoxes.size;
@@ -1068,7 +1295,7 @@ document.getElementById('closeClueBtn').addEventListener('click', () => clueModa
 clueModal.addEventListener('click', e => { if (e.target === clueModal) clueModal.classList.remove('show'); });
 
 function renderClueList() {
-  clueList.innerHTML = STORY.clues.map((c, i) => {
+  clueList.innerHTML = STORIES[currentStoryIdx].clues.map((c, i) => {
     const unlocked = unlockedBoxes.has(i);
     return `<div class="clue-item">
       <span class="clue-location">${c.loc}</span>
@@ -1084,7 +1311,7 @@ function initVerdict() {
   document.getElementById('verdictSub').textContent =
     `你已搜清 ${unlockedBoxes.size}/9 处 · 差错 ${mistakes} 次。凶手是谁？用了什么手法？`;
   const sg = document.getElementById('suspectGrid');
-  sg.innerHTML = STORY.suspects.map(s => `
+  sg.innerHTML = STORIES[currentStoryIdx].suspects.map(s => `
     <button class="choice" data-sus="${s.id}">
       <div class="avatar">${s.avatar}</div>
       <div class="name">${s.name}</div>
@@ -1100,7 +1327,7 @@ function initVerdict() {
     });
   });
   const mg = document.getElementById('methodGrid');
-  mg.innerHTML = STORY.methods.map(m => `
+  mg.innerHTML = STORIES[currentStoryIdx].methods.map(m => `
     <button class="choice" data-mtd="${m.id}">
       <div class="name">${m.name}</div>
       <div class="desc">${m.desc}</div>
@@ -1122,19 +1349,19 @@ function updateSubmit() {
 }
 
 function submitVerdict() {
-  const correct = selectedSuspect === STORY.answer.suspect && selectedMethod === STORY.answer.method;
+  const correct = selectedSuspect === STORIES[currentStoryIdx].answer.suspect && selectedMethod === STORIES[currentStoryIdx].answer.method;
   const titleEl = document.getElementById('resultTitle');
   const bodyEl = document.getElementById('resultBody');
   if (correct) {
     titleEl.textContent = '真 相 大 白';
     titleEl.className = 'result-title win';
-    bodyEl.innerHTML = STORY.correct.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+    bodyEl.innerHTML = STORIES[currentStoryIdx].correct.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
   } else {
-    const sName = STORY.suspects.find(s => s.id === selectedSuspect).name;
-    const mName = STORY.methods.find(m => m.id === selectedMethod).name;
+    const sName = STORIES[currentStoryIdx].suspects.find(s => s.id === selectedSuspect).name;
+    const mName = STORIES[currentStoryIdx].methods.find(m => m.id === selectedMethod).name;
     titleEl.textContent = '你 错 了';
     titleEl.className = 'result-title lose';
-    bodyEl.innerHTML = STORY.wrong(sName, mName).map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+    bodyEl.innerHTML = STORIES[currentStoryIdx].wrong(sName, mName).map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
   }
   showScreen('screen-result');
 }
@@ -1155,7 +1382,7 @@ document.getElementById('startBtn').addEventListener('click', () => {
 
 // ============ Init ============
 function initIntro() {
-  introText.innerHTML = STORY.intro.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+  introText.innerHTML = STORIES[currentStoryIdx].intro.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
 }
 function initSnow() {
   const snowEl = document.getElementById('snow');
