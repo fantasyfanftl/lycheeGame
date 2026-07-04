@@ -547,28 +547,40 @@ function svgCoords(clientX, clientY) {
 svg.addEventListener('pointerdown', e => {
   const idx = e.target.dataset ? e.target.dataset.idx : undefined;
   if (idx === undefined || idx === '') {
-    selectedIdx = null;
-    render();
+    if (selectedIdx !== null) {
+      selectedIdx = null;
+      // Just remove selected class, no full render
+      svg.querySelectorAll('.piece.selected').forEach(el => el.classList.remove('selected'));
+    }
     return;
   }
   const i = +idx;
   const now = Date.now();
   if (lastTapIdx === i && now - lastTapTime < 350) {
+    // Double-tap → rotate (needs full render for transform update via re-position)
     pieces[i].rot = (pieces[i].rot + 45) % 360;
     lastTapTime = 0; lastTapIdx = null;
     selectedIdx = i;
-    render();
+    // Just update this piece's transform, no full render
+    updateDraggedTransform(pieces[i]);
     return;
   }
   lastTapTime = now;
   lastTapIdx = i;
+
+  // Update selection via DOM directly (no re-render)
   selectedIdx = i;
+  svg.querySelectorAll('.piece.selected').forEach(el => el.classList.remove('selected'));
+  e.target.classList.add('selected');
+  e.target.classList.add('dragging');
+
+  // Raise to top via DOM (no re-render)
+  svg.appendChild(e.target);
+
   const svgPos = svgCoords(e.clientX, e.clientY);
   dragStart = { svgX: svgPos.x, svgY: svgPos.y, pieceX: pieces[i].x, pieceY: pieces[i].y };
   dragging = pieces[i];
   try { svg.setPointerCapture(e.pointerId); } catch (_) {}
-  pieces = pieces.filter(p => p !== dragging).concat([dragging]);
-  render();
 });
 
 svg.addEventListener('pointermove', e => {
@@ -582,11 +594,27 @@ svg.addEventListener('pointermove', e => {
 svg.addEventListener('pointerup', e => {
   if (dragging) {
     try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+    // Snap to 5px grid for cleaner alignment
+    dragging.x = Math.round(dragging.x / 5) * 5;
+    dragging.y = Math.round(dragging.y / 5) * 5;
+    updateDraggedTransform(dragging);
+    // Remove dragging class
+    const el = svg.querySelector(`[data-idx="${dragging.idx}"]`);
+    if (el) el.classList.remove('dragging');
+    // Sync pieces array order with DOM order (dragged is now last)
+    pieces = pieces.filter(p => p !== dragging).concat([dragging]);
     dragging = null;
     dragStart = null;
   }
 });
-svg.addEventListener('pointercancel', () => { dragging = null; dragStart = null; });
+svg.addEventListener('pointercancel', () => {
+  if (dragging) {
+    const el = svg.querySelector(`[data-idx="${dragging.idx}"]`);
+    if (el) el.classList.remove('dragging');
+  }
+  dragging = null;
+  dragStart = null;
+});
 
 // Controls
 document.getElementById('rotateBtn').addEventListener('click', () => {
