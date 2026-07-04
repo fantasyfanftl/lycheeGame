@@ -643,7 +643,7 @@
 <!-- Game -->
 <div id="screen-game" class="screen">
   <div class="game-header">
-    <span class="game-title">❄ 雪夜列车 · 车厢搜查图</span>
+    <span class="game-title" id="gameTitle">❄ 雪夜列车 · 案发现场</span>
     <button class="clue-btn" id="clueBtn">线索簿 <span class="badge" id="clueBadge">0/9</span></button>
   </div>
   <div class="info">
@@ -1416,6 +1416,28 @@ document.getElementById('startBtn').addEventListener('click', () => {
 });
 
 // ============ Init ============
+function initCasePicker() {
+  const el = document.getElementById('casePicker');
+  el.innerHTML = STORIES.map((s, i) => `
+    <button class="case-btn ${i === currentStoryIdx ? 'active' : ''}" data-idx="${i}">
+      <span class="case-emoji">${s.emoji}</span>
+      <span class="case-name">${s.name}</span>
+      <span class="case-sub">${s.subtitle}</span>
+    </button>
+  `).join('');
+  el.addEventListener('click', e => {
+    const btn = e.target.closest('.case-btn');
+    if (!btn) return;
+    currentStoryIdx = +btn.dataset.idx;
+    el.querySelectorAll('.case-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    initIntro();
+    // Update title header to match selected case
+    document.getElementById('titleMain').textContent = STORIES[currentStoryIdx].name.split('').join(' ');
+    document.getElementById('titleSub').textContent = STORIES[currentStoryIdx].subtitle;
+    document.getElementById('titleTime').textContent = '— 你 选 中 了 —';
+  });
+}
 function initIntro() {
   introText.innerHTML = STORIES[currentStoryIdx].intro.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
 }
@@ -1434,6 +1456,7 @@ function initSnow() {
   }
 }
 
+initCasePicker();
 initIntro();
 initSnow();
 buildNumpad();
