@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>逻辑推理挑战</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+  padding: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.topbar {
+  max-width: 640px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
+  flex-wrap: wrap;
+}
+
+.back-link {
+  color: #fff;
+  font-size: 13px;
+  text-decoration: none;
+  background: rgba(255,255,255,0.18);
+  padding: 6px 12px;
+  border-radius: 16px;
+}
+
+.meta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.container { max-width: 640px; margin: 0 auto; }
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.category {
+  display: inline-block;
+  background: #f3e8ff;
+  color: #764ba2;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.question {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #222;
+  margin-bottom: 16px;
+  white-space: pre-line;
+}
+
+.sequence {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.seq-box {
+  aspect-ratio: 1;
+  background: #fafafa;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: #bbb;
+  font-weight: 300;
+}
+
+.seq-box svg { width: 82%; height: 82%; }
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.option {
+  background: #f5f5f7;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.option:hover:not(:disabled) {
+  background: #ede9fe;
+  border-color: #a78bfa;
+}
+
+.option:disabled { cursor: default; }
+
+.letter {
+  background: #764ba2;
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.option.selected.correct, .option.reveal-correct {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+.option.selected.correct .letter, .option.reveal-correct .letter {
+  background: #22c55e;
+}
+
+.option.selected.wrong {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+.option.selected.wrong .letter { background: #ef4444; }
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.option-grid .option {
+  flex-direction: column;
+  padding: 8px 6px;
+  gap: 6px;
+  align-items: center;
+}
+
+.option-grid .letter { align-self: flex-start; }
+
+.option-grid svg {
+  width: 100%;
+  max-width: 70px;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+@media (max-width: 400px) {
+  .option-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.explanation {
+  background: #f8f7fc;
+  border-left: 4px solid #764ba2;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #444;
+  white-space: pre-line;
+}
+
+.explanation h4 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.explanation.right h4 { color: #22c55e; }
+.explanation.wrong h4 { color: #ef4444; }
+
+.next-btn {
+  width: 100%;
+  background: #764ba2;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-size: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.next-btn:active { transform: scale(0.98); background: #653d8f; }
+
+.result-title {
+  font-size: 22px;
+  color: #764ba2;
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.result-score {
+  font-size: 48px;
+  text-align: center;
+  color: #333;
+  margin: 16px 0;
+  font-weight: 700;
+}
+
+.result-score small { font-size: 20px; color: #999; font-weight: 400; }
+
+.result-desc {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  padding: 0 8px;
+}
+
+@media (max-width: 480px) {
+  .question { font-size: 15px; }
+  .option { font-size: 13px; padding: 11px 12px; }
+  .seq-box { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <div class="meta">
+    <span id="progress">—</span>
+    <span id="score">得分 0</span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="card" id="app"></div>
+</div>
+
+<script>
+// ===== SVG 生成器（图形推理题用）=====
+
+function svgArrow(deg) {
+  return `<svg viewBox="0 0 80 80"><g transform="rotate(${-deg} 40 40)"><line x1="20" y1="40" x2="58" y2="40" stroke="#333" stroke-width="3"/><rect x="14" y="34" width="10" height="12" fill="#333"/><polygon points="64,40 52,32 52,48" fill="none" stroke="#333" stroke-width="2.5" stroke-linejoin="round"/></g></svg>`;
+}
+
+function svgQuadrant(pos) {
+  const paths = [
+    "M40,40 L40,10 A30,30 0 0,1 70,40 Z",
+    "M40,40 L70,40 A30,30 0 0,1 40,70 Z",
+    "M40,40 L40,70 A30,30 0 0,1 10,40 Z",
+    "M40,40 L10,40 A30,30 0 0,1 40,10 Z"
+  ];
+  return `<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="white" stroke="#333" stroke-width="2"/><path d="${paths[pos]}" fill="#333"/><line x1="10" y1="40" x2="70" y2="40" stroke="#333" stroke-width="1.5"/><line x1="40" y1="10" x2="40" y2="70" stroke="#333" stroke-width="1.5"/></svg>`;
+}
+
+function svgSquares(n) {
+  // 按顺时针顺序填充: TL, TR, BR, BL
+  const cells = [
+    '<rect x="4" y="4" width="26" height="26" fill="#333"/>',
+    '<rect x="30" y="4" width="26" height="26" fill="#333"/>',
+    '<rect x="30" y="30" width="26" height="26" fill="#333"/>',
+    '<rect x="4" y="30" width="26" height="26" fill="#333"/>'
+  ];
+  let s = '';
+  for (let i = 0; i < n; i++) s += cells[i];
+  return `<svg viewBox="0 0 60 60">${s}<rect x="4" y="4" width="52" height="52" fill="none" stroke="#333" stroke-width="2"/><line x1="30" y1="4" x2="30" y2="56" stroke="#333" stroke-width="1"/><line x1="4" y1="30" x2="56" y2="30" stroke="#333" stroke-width="1"/></svg>`;
+}
+
+// ===== 题库 =====
+
+const QUESTIONS = [
+  {
+    type: 'text',
+    category: '真话与谎言',
+    question: '在一个神秘岛上，骑士只说真话，骗子只说谎话。你遇到了 A、B 两个人。\n\nA 说："我们两个都是骗子。"\n\n请判断 A 和 B 分别是什么？',
+    options: [
+      'A 是骑士，B 是骑士',
+      'A 是骑士，B 是骗子',
+      'A 是骗子，B 是骑士',
+      'A 是骗子，B 是骗子'
+    ],
+    correct: 2,
+    explanation: '假设 A 是骑士（只说真话），那么"我们两个都是骗子"应该为真——但骑士不是骗子，矛盾。\n\n所以 A 只能是骗子。既然 A 是骗子，那"我们两个都是骗子"就是谎话，意味着"两个都是骗子"为假，即至少有一个不是骗子。\n\nA 已经是骗子，所以 B 必须是骑士。'
+  },
+  {
+    type: 'text',
+    category: '经典逻辑',
+    question: '桌上有 3 个盒子，分别贴着"苹果"、"橘子"、"苹果和橘子"三种标签。已知：所有标签都贴错了。\n\n你只能选一个盒子拿出一个水果（不能看盒内），怎样才能确定所有盒子的内容？',
+    options: [
+      '从贴"苹果"标签的盒子拿',
+      '从贴"橘子"标签的盒子拿',
+      '从贴"苹果和橘子"标签的盒子拿',
+      '至少要拿两次才能确定'
+    ],
+    correct: 2,
+    explanation: '关键在于："苹果和橘子"这个标签既然贴错了，那这个盒子里就绝不是混合装，只可能是单一品种。\n\n从"苹果和橘子"标签的盒子拿一个：\n• 若拿出苹果 → 该盒是纯苹果盒。\n• 剩下贴"橘子"和"苹果"标签的盒子中：贴"橘子"的不能是橘子（贴错）、也不能是苹果（已确定），只能是混合装；那贴"苹果"的必然是橘子。\n\n一次搞定！'
+  },
+  {
+    type: 'text',
+    category: '数列规律',
+    question: '观察下面的数列，找出问号处的数字：\n\n2, 6, 12, 20, 30, ?',
+    options: ['40', '42', '44', '36'],
+    correct: 1,
+    explanation: '规律一（差值法）：相邻两项差为 4、6、8、10、12（等差递增 2），下一项 = 30 + 12 = 42。\n\n规律二（通项法）：n×(n+1) →\n1×2=2，2×3=6，3×4=12，4×5=20，5×6=30，6×7=42 ✓'
+  },
+  {
+    type: 'text',
+    category: '推理演绎',
+    question: '三个人 A、B、C 站成一列。A 在最后能看到 B 和 C 的帽子；B 在中间能看到 C 的帽子；C 最前面谁都看不到。\n\n有 3 顶白帽、2 顶黑帽，从中选 3 顶戴上。\n\n• A 说："我不知道我戴什么颜色。"\n• B 听了说："我也不知道。"\n• C 听了说："我知道了！"\n\nC 戴什么颜色？',
+    options: ['白色', '黑色', '五五概率', '无法判断'],
+    correct: 0,
+    explanation: '第一步：A 看不出自己的颜色 → 说明 B、C 不都是黑色（否则黑帽共 2 顶都用完，A 必是白）。\n\n第二步：B 听懂了 A 的话，又能看到 C：\n• 若 C 是黑色，那 B 立刻能推出自己必是白色（因为 B、C 不能都是黑）。\n• 但 B 也说不知道 → 说明 C 不可能是黑色。\n\n所以 C 推出：我戴的是白色。'
+  },
+  {
+    type: 'text',
+    category: '概率悖论',
+    question: '一个家庭有两个孩子。已知"其中至少有一个是男孩"，那么"两个都是男孩"的概率是多少？',
+    options: ['1/2', '1/3', '1/4', '2/3'],
+    correct: 1,
+    explanation: '两个孩子的性别组合等概率有 4 种：\n（男男）（男女）（女男）（女女）各 1/4。\n\n条件"至少一个男孩"排除了"女女"，剩下三种等可能组合：（男男）（男女）（女男）。\n\n其中"男男"只占 1 种 → 概率 = 1/3。\n\n这是经典的"两孩子问题"，很多人凭直觉会答 1/2，但那是错的。'
+  },
+  {
+    type: 'text',
+    category: '经典逻辑',
+    question: '农夫要带一只狼、一只羊、一颗白菜过河。船每次只能带一样。\n\n• 狼和羊单独在一起，狼会吃羊。\n• 羊和白菜单独在一起，羊会吃白菜。\n\n最少需要过河（含返回）多少次？',
+    options: ['5 次', '6 次', '7 次', '8 次'],
+    correct: 2,
+    explanation: '过河 7 次的方案：\n\n① 带【羊】过去（对岸：羊）\n② 空船返回\n③ 带【狼】过去（对岸：狼、羊）\n④ 带【羊】回来（对岸：狼）\n⑤ 带【白菜】过去（对岸：狼、白菜）\n⑥ 空船返回\n⑦ 带【羊】过去 ✓\n\n关键技巧：第 4 步把羊又带回来，是很多人想不到的。'
+  },
+  {
+    type: 'text',
+    category: '推理演绎',
+    question: '三个女孩 A、B、C 分别穿红、黄、蓝三种不同颜色的衣服。已知：\n\n• A 说："我不穿红色。"\n• 穿蓝色衣服的女孩说："C 穿黄色。"\n• C 说："B 不穿黄色。"\n\n三句话都为真。A 穿什么颜色？',
+    options: ['红色', '黄色', '蓝色', '无法确定'],
+    correct: 2,
+    explanation: '排除法验证：\n\n若 A 穿黄色 → 那穿蓝的是 B 或 C。穿蓝的说"C 穿黄"，但 A 才穿黄，矛盾。\n\n若 A 穿蓝色 → A 就是那个说"C 穿黄"的人，所以 C 穿黄色，剩下 B 穿红色。验证 C 说的"B 不穿黄色"✓ 成立。\n\n结论：A 蓝、B 红、C 黄。'
+  },
+  {
+    type: 'text',
+    category: '数列规律',
+    question: '这是著名的"外观数列"（Look-and-say），找出下一项：\n\n1, 11, 21, 1211, 111221, ?',
+    options: ['312211', '213211', '112233', '311221'],
+    correct: 0,
+    explanation: '每一项是"读出"前一项的方式：\n\n• 1 → "一个1" → 11\n• 11 → "两个1" → 21\n• 21 → "一个2，一个1" → 1211\n• 1211 → "一个1，一个2，两个1" → 111221\n• 111221 → "三个1，两个2，一个1" → 312211 ✓'
+  },
+  {
+    type: 'text',
+    category: '概率悖论',
+    question: '经典"蒙提霍尔问题"：\n\n三扇门后有一辆车和两只山羊。你选了门 1。主持人（知道门后是什么）打开了有山羊的门 3，然后问你：要不要换到门 2？\n\n换门还是不换，赢车的概率更大？',
+    options: [
+      '换门（赢率 2/3）',
+      '不换（赢率更大）',
+      '一样（各 1/2）',
+      '无法计算'
+    ],
+    correct: 0,
+    explanation: '一开始你选中车的概率 = 1/3，选中羊的概率 = 2/3。\n\n情况一：你一开始就选中了车（概率 1/3）→ 换门 = 输。\n情况二：你一开始选中了羊（概率 2/3）→ 主持人必然打开另一只羊 → 剩下的门必是车 → 换门 = 赢。\n\n换门赢率 = 2/3，是不换（1/3）的两倍。\n\n关键：主持人知道答案，他的"打开"不是随机的，包含了额外信息。'
+  },
+  {
+    type: 'text',
+    category: '真话与谎言',
+    question: '三个嫌疑人 A、B、C，只有一人是凶手。他们各说一句话：\n\n• A："我不是凶手。"\n• B："C 才是凶手。"\n• C："B 在说谎。"\n\n已知三人中只有一人说真话。谁是凶手？',
+    options: ['A', 'B', 'C', '无法判断'],
+    correct: 0,
+    explanation: '逐一假设：\n\n【假设 A 是凶手】\n• A："我不是凶手" → 假\n• B："C 是凶手" → 假\n• C："B 在说谎" → 真 ✓\n只有 C 说真话，符合条件！\n\n【假设 B 是凶手】\nA 真、B 假、C 真 → 两人说真，不符。\n\n【假设 C 是凶手】\nA 真、B 真、C 假 → 两人说真，不符。\n\n所以 A 是凶手。'
+  },
+
+  // ===== 图形推理题 =====
+
+  {
+    type: 'graphical',
+    category: '图形推理',
+    question: '观察下面 3 个图形的变化规律，从 A、B、C、D 中选出接下来应该是哪一个：',
+    sequence: [svgArrow(0), svgArrow(45), svgArrow(90), '?'],
+    options: [svgArrow(135), svgArrow(180), svgArrow(-45), svgArrow(225)],
+    correct: 0,
+    isSvgOptions: true,
+    explanation: '规律：图形每次沿逆时针方向旋转 45°。\n\n0° → 45° → 90° → ?\n\n下一个应该继续旋转 45°，即 135°。\n\n选项 A 就是箭头旋转到 135° 位置（指向左上方）的样子。'
+  },
+  {
+    type: 'graphical',
+    category: '图形推理',
+    question: '观察圆内阴影的变化规律，选出接下来的图形：',
+    sequence: [svgQuadrant(0), svgQuadrant(1), svgQuadrant(2), '?'],
+    options: [svgQuadrant(3), svgQuadrant(0), svgQuadrant(1), svgQuadrant(2)],
+    correct: 0,
+    isSvgOptions: true,
+    explanation: '规律：阴影部分按顺时针方向依次移动一个象限。\n\n右上 → 右下 → 左下 → ?\n\n下一个位置应该是【左上】，正好构成一个完整的顺时针循环。'
+  },
+  {
+    type: 'graphical',
+    category: '图形推理',
+    question: '观察方格中阴影格数的变化规律，选出接下来的图形：',
+    sequence: [svgSquares(1), svgSquares(2), svgSquares(3), '?'],
+    options: [svgSquares(4), svgSquares(2), svgSquares(0), svgSquares(3)],
+    correct: 0,
+    isSvgOptions: true,
+    explanation: '规律：阴影方格的数量依次为 1 → 2 → 3 → ?，按顺时针方向依次填充。\n\n第 4 个应该是 4 格全部涂黑。\n\n这种"数量递增"是图形推理里最基础也最常考的一类。'
+  }
+];
+
+// ===== 游戏状态 =====
+
+let currentIdx = 0;
+let score = 0;
+let answered = false;
+
+const app = document.getElementById('app');
+const progressEl = document.getElementById('progress');
+const scoreEl = document.getElementById('score');
+
+function updateMeta() {
+  progressEl.textContent = `第 ${currentIdx + 1} / ${QUESTIONS.length} 题`;
+  scoreEl.textContent = `得分 ${score}`;
+}
+
+function render() {
+  if (currentIdx >= QUESTIONS.length) {
+    renderResult();
+    return;
+  }
+  updateMeta();
+  answered = false;
+  const q = QUESTIONS[currentIdx];
+
+  let sequenceHtml = '';
+  if (q.type === 'graphical') {
+    sequenceHtml = `<div class="sequence">${
+      q.sequence.map(s => `<div class="seq-box">${s === '?' ? '?' : s}</div>`).join('')
+    }</div>`;
+  }
+
+  let optionsHtml;
+  if (q.isSvgOptions) {
+    optionsHtml = `<div class="option-grid">${
+      q.options.map((opt, i) => `
+        <button class="option" data-idx="${i}">
+          <span class="letter">${'ABCD'[i]}</span>
+          ${opt}
+        </button>`).join('')
+    }</div>`;
+  } else {
+    optionsHtml = `<div class="options">${
+      q.options.map((opt, i) => `
+        <button class="option" data-idx="${i}">
+          <span class="letter">${'ABCD'[i]}</span>
+          <span>${opt}</span>
+        </button>`).join('')
+    }</div>`;
+  }
+
+  app.innerHTML = `
+    <div class="category">${q.category}</div>
+    <div class="question">${q.question}</div>
+    ${sequenceHtml}
+    ${optionsHtml}
+    <div id="feedback"></div>
+  `;
+
+  app.querySelectorAll('.option').forEach(btn => {
+    btn.addEventListener('click', () => selectAnswer(parseInt(btn.dataset.idx)));
+  });
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[currentIdx];
+  const isCorrect = idx === q.correct;
+  if (isCorrect) score++;
+
+  app.querySelectorAll('.option').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === idx) {
+      btn.classList.add('selected', isCorrect ? 'correct' : 'wrong');
+    } else if (i === q.correct) {
+      btn.classList.add('reveal-correct');
+    }
+  });
+
+  updateMeta();
+
+  const feedback = document.getElementById('feedback');
+  const label = isCorrect ? '✓ 答对了！' : `✗ 答错了，正确答案是 ${'ABCD'[q.correct]}`;
+  feedback.innerHTML = `
+    <div class="explanation ${isCorrect ? 'right' : 'wrong'}">
+      <h4>${label}</h4>
+      <div>${q.explanation}</div>
+    </div>
+    <button class="next-btn" id="nextBtn">${
+      currentIdx === QUESTIONS.length - 1 ? '🎯 查看最终结果' : '下一题 →'
+    }</button>
+  `;
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    currentIdx++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // 滚动到解析处
+  setTimeout(() => {
+    feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+function renderResult() {
+  const total = QUESTIONS.length;
+  const pct = score / total;
+  let title, desc;
+  if (pct === 1) {
+    title = '🏆 完美！逻辑大师';
+    desc = '全部答对！你的推理能力堪称顶尖，福尔摩斯看了都要竖大拇指。';
+  } else if (pct >= 0.8) {
+    title = '🎖 高手水平';
+    desc = '相当出色的推理能力，具备严密的逻辑思维。回顾一下错题就更完美了。';
+  } else if (pct >= 0.6) {
+    title = '👍 不错';
+    desc = '有一定的逻辑基础，再多练习几次就能上一个台阶。';
+  } else if (pct >= 0.4) {
+    title = '🌱 及格';
+    desc = '基础还在，但需要更细致地分析条件。多看看解析，思路会更清晰。';
+  } else {
+    title = '📚 继续加油';
+    desc = '别灰心，逻辑思维需要慢慢培养。仔细看每题的解析，再来一次会有收获！';
+  }
+
+  app.innerHTML = `
+    <div class="result-title">${title}</div>
+    <div class="result-score">${score} <small>/ ${total}</small></div>
+    <div class="result-desc">${desc}</div>
+    <button class="next-btn" id="restartBtn">🔄 再挑战一次</button>
+  `;
+
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    currentIdx = 0;
+    score = 0;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  progressEl.textContent = '挑战完成';
+  scoreEl.textContent = `得分 ${score}`;
+}
+
+render();
+</script>
+
+</body>
+</html>
