@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>合并小镇 · 动物大合体</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #7dd3fc 0%, #bfdbfe 50%, #e0e7ff 100%);
+  color: #1f2937;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#app {
+  max-width: 480px;
+  height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #a7f3d0 0%, #7dd3fc 100%);
+  box-shadow: 0 0 30px rgba(0,0,0,0.15);
+}
+.screen {
+  position: absolute; inset: 0;
+  display: none;
+  flex-direction: column;
+}
+.screen.active { display: flex; }
+.back-link {
+  position: fixed; top: 6px; left: 8px; z-index: 500;
+  color: #764ba2; font-size: 12px; text-decoration: none;
+  background: rgba(255,255,255,0.85); padding: 4px 10px; border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ============ 顶栏 ============ */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 40px 12px 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(255,255,255,0.6);
+  z-index: 10;
+  flex-shrink: 0;
+}
+.topbar .title {
+  font-weight: 900; font-size: 18px; color: #4338ca;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+}
+.icon-btn {
+  border: none; background: white; border-radius: 12px;
+  padding: 6px 12px; font-size: 16px; cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.1s;
+  min-width: 40px;
+  font-weight: bold;
+  color: #4338ca;
+}
+.icon-btn:active { transform: scale(0.94); }
+.icon-btn.small { padding: 4px 10px; font-size: 13px; min-width: 32px; }
+
+/* ============ 地图 ============ */
+#mapArea {
+  flex: 1; position: relative;
+  background:
+    radial-gradient(ellipse at 25% 25%, #86efac 0, transparent 12%),
+    radial-gradient(ellipse at 75% 30%, #86efac 0, transparent 14%),
+    radial-gradient(ellipse at 55% 55%, #86efac 0, transparent 15%),
+    radial-gradient(ellipse at 20% 78%, #fde68a 0, transparent 10%),
+    radial-gradient(ellipse at 80% 82%, #fde68a 0, transparent 10%),
+    linear-gradient(180deg, #7dd3fc 0%, #67e8f9 60%, #a7f3d0 100%);
+  overflow: hidden;
+}
+#mapArea::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 60% 15%, white 4px, transparent 5px),
+    radial-gradient(circle at 25% 45%, white 6px, transparent 7px),
+    radial-gradient(circle at 82% 55%, white 5px, transparent 6px),
+    radial-gradient(circle at 45% 70%, white 4px, transparent 5px);
+  opacity: 0.6;
+}
+.town-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s;
+  z-index: 2;
+}
+.town-node:active { transform: translate(-50%, -50%) scale(0.92); }
+.town-node.locked { cursor: not-allowed; opacity: 0.65; }
+.town-node.next::after {
+  content: "NEW!";
+  position: absolute; top: -12px; right: -18px;
+  background: #ef4444; color: white; font-size: 10px;
+  padding: 2px 6px; border-radius: 8px;
+  animation: bounce 1s infinite;
+  font-weight: bold;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.town-marker {
+  font-size: 36px; line-height: 1;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25));
+}
+.town-label {
+  background: white; border-radius: 10px; padding: 2px 8px;
+  font-size: 12px; font-weight: bold; margin-top: -4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  color: #1f2937; white-space: nowrap;
+  display: inline-block;
+}
+.town-stars {
+  font-size: 11px; color: #f59e0b; margin-top: 2px;
+  text-shadow: 0 1px 0 white;
+  letter-spacing: 1px;
+}
+
+/* ============ 游戏 ============ */
+#gameScreen { background: linear-gradient(180deg, #fef3c7 0%, #fed7aa 100%); }
+#objectiveBar {
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.85);
+  border-bottom: 2px solid #fde68a;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+#objectiveBar .obj-label { color: #78716c; font-size: 11px; }
+#objectiveBar .obj-value { font-weight: bold; color: #b45309; font-size: 14px; }
+#objectiveBar .obj-progress { color: #059669; font-weight: bold; font-size: 13px; }
+#boardWrap {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 6px; min-height: 0;
+}
+#board {
+  display: block;
+  touch-action: none;
+  border-radius: 14px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.1);
+}
+#controlBar {
+  padding: 10px 14px 14px;
+  display: flex; gap: 10px; align-items: center;
+  background: rgba(255,255,255,0.85);
+  flex-shrink: 0;
+}
+.big-btn {
+  border: none;
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
+  color: white; font-weight: bold; padding: 12px 16px;
+  border-radius: 14px; font-size: 15px; cursor: pointer;
+  box-shadow: 0 3px 0 #b45309, 0 4px 8px rgba(0,0,0,0.15);
+  flex: 1; transition: all 0.1s;
+}
+.big-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b45309; }
+.big-btn.secondary {
+  background: linear-gradient(180deg, #a78bfa, #7c3aed);
+  box-shadow: 0 3px 0 #5b21b6, 0 4px 8px rgba(0,0,0,0.15);
+  flex: 0 0 auto;
+}
+.big-btn.secondary:active { box-shadow: 0 1px 0 #5b21b6; }
+
+/* ============ 弹窗 ============ */
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  display: none; align-items: center; justify-content: center;
+  z-index: 100; padding: 20px;
+}
+.modal.active { display: flex; }
+.modal-box {
+  background: white; border-radius: 20px; padding: 24px 20px;
+  max-width: 320px; width: 100%;
+  text-align: center;
+  animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+@keyframes pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.modal h2 { color: #4338ca; margin-bottom: 8px; font-size: 22px; }
+#resultStars { font-size: 40px; color: #f59e0b; margin: 12px 0; letter-spacing: 4px; }
+#resultStats { margin: 12px 0; line-height: 1.9; color: #4b5563; font-size: 14px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions .big-btn { flex: 1; }
+
+/* ============ 成就/图鉴 ============ */
+.list-wrap { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+.ach-item {
+  display: flex; align-items: center; gap: 12px;
+  background: white; margin: 8px 12px; padding: 12px;
+  border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+.ach-item.done {
+  background: linear-gradient(90deg, #fef3c7 0%, white 60%);
+  border: 2px solid #fbbf24;
+}
+.ach-icon {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; border-radius: 12px;
+  background: #f3f4f6; flex-shrink: 0;
+}
+.ach-item.done .ach-icon { background: #fef3c7; }
+.ach-body { flex: 1; min-width: 0; }
+.ach-name { font-weight: bold; font-size: 15px; }
+.ach-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+#dexList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; padding: 12px;
+}
+.dex-item {
+  background: white; padding: 14px 8px;
+  border-radius: 12px; text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+.dex-item.locked { opacity: 0.5; }
+.dex-icon {
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; border-radius: 12px;
+  margin: 0 auto 6px;
+}
+.dex-name { font-weight: bold; font-size: 13px; }
+.dex-lvl { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+/* ============ Toast ============ */
+.toast {
+  position: fixed; top: 25%; left: 50%;
+  transform: translate(-50%, -12px);
+  background: rgba(31,41,55,0.92); color: white;
+  padding: 10px 18px; border-radius: 14px;
+  font-size: 14px; z-index: 200;
+  opacity: 0; transition: all 0.25s;
+  pointer-events: none;
+  max-width: 80%; text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============ Loading / Empty ============ */
+.empty-hint {
+  text-align: center; padding: 40px 20px; color: #78716c;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<a href="index.html" class="back-link">← 返回荔枝游戏</a>
+
+<div id="app">
+  <!-- 地图 -->
+  <section id="mapScreen" class="screen active">
+    <div class="topbar">
+      <button id="dexBtn" class="icon-btn small">📖 图鉴</button>
+      <div class="title">🌈 合并小镇</div>
+      <button id="achBtn" class="icon-btn small">🏆 成就</button>
+    </div>
+    <div id="mapArea"></div>
+  </section>
+
+  <!-- 游戏 -->
+  <section id="gameScreen" class="screen">
+    <div class="topbar">
+      <button id="backToMap" class="icon-btn small">← 地图</button>
+      <div class="title" id="townTitle">小镇</div>
+      <button id="resetTownBtn" class="icon-btn small">🔄</button>
+    </div>
+    <div id="objectiveBar">
+      <div>
+        <div class="obj-label">🎯 本关目标</div>
+        <div class="obj-value" id="objText"></div>
+      </div>
+      <div id="objProgress" class="obj-progress"></div>
+    </div>
+    <div id="boardWrap"><canvas id="board"></canvas></div>
+    <div id="controlBar">
+      <button id="spawnBtn" class="big-btn">🥚 生蛋 (0)</button>
+      <button id="hintBtn" class="big-btn secondary">💡</button>
+    </div>
+  </section>
+
+  <!-- 成就 -->
+  <section id="achScreen" class="screen">
+    <div class="topbar">
+      <button class="icon-btn small back-map">← 地图</button>
+      <div class="title">🏆 成就</div>
+      <div style="width:56px"></div>
+    </div>
+    <div class="list-wrap" id="achList"></div>
+  </section>
+
+  <!-- 图鉴 -->
+  <section id="dexScreen" class="screen">
+    <div class="topbar">
+      <button class="icon-btn small back-map">← 地图</button>
+      <div class="title">📖 动物图鉴</div>
+      <div style="width:56px"></div>
+    </div>
+    <div class="list-wrap"><div id="dexList"></div></div>
+  </section>
+</div>
+
+<!-- 通关弹窗 -->
+<div id="resultModal" class="modal">
+  <div class="modal-box">
+    <h2 id="resultTitle">🎉 通关!</h2>
+    <div id="resultStars">★★★</div>
+    <div id="resultStats"></div>
+    <div class="modal-actions">
+      <button class="big-btn secondary" id="resultAgain">再玩</button>
+      <button class="big-btn" id="resultNext">返回地图</button>
+    </div>
+  </div>
+</div>
+
+<!-- 重置确认 -->
+<div id="confirmModal" class="modal">
+  <div class="modal-box">
+    <h2>⚠️ 重置小镇?</h2>
+    <div id="resultStats">当前小镇的进度会全部清空,通关记录保留。</div>
+    <div class="modal-actions">
+      <button class="big-btn secondary" onclick="closeConfirm()">取消</button>
+      <button class="big-btn" onclick="doResetTown()">确认重置</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* =====================================================
+   配置数据
+===================================================== */
+const ANIMALS = [
+  { emoji: '🥚', name: '蛋',       color: '#fef3c7', border: '#fbbf24' },
+  { emoji: '🐭', name: '小鼠',     color: '#e5e7eb', border: '#9ca3af' },
+  { emoji: '🐹', name: '仓鼠',     color: '#fde68a', border: '#f59e0b' },
+  { emoji: '🐰', name: '兔子',     color: '#fce7f3', border: '#ec4899' },
+  { emoji: '🐱', name: '小猫',     color: '#fed7aa', border: '#f97316' },
+  { emoji: '🐶', name: '小狗',     color: '#ddd6fe', border: '#8b5cf6' },
+  { emoji: '🦊', name: '狐狸',     color: '#fdba74', border: '#ea580c' },
+  { emoji: '🐼', name: '熊猫',     color: '#f3f4f6', border: '#111827' },
+  { emoji: '🐯', name: '老虎',     color: '#fecaca', border: '#dc2626' },
+  { emoji: '🦁', name: '狮子',     color: '#fef08a', border: '#ca8a04' },
+  { emoji: '🐘', name: '大象',     color: '#d1d5db', border: '#4b5563' },
+  { emoji: '🐉', name: '神龙',     color: '#a7f3d0', border: '#059669' },
+];
+const MAX_LEVEL = ANIMALS.length - 1; // 11
+
+// 10 个小镇 (id, 名字, 目标, 地图坐标 x/y %)
+const TOWNS = [
+  { id: 't1',  name: '新手村',  desc: '合成到 兔子',           goal: { type: 'reach', level: 3 },              x: 48, y: 63 },
+  { id: 't2',  name: '喵喵村',  desc: '合成出 小猫',           goal: { type: 'reach', level: 4 },              x: 20, y: 50 },
+  { id: 't3',  name: '卡普村',  desc: '同时拥有 3 只小猫',     goal: { type: 'own',   level: 4, count: 3 },    x: 18, y: 76 },
+  { id: 't4',  name: '滨海村',  desc: '合成出 狐狸',           goal: { type: 'reach', level: 6 },              x: 46, y: 85 },
+  { id: 't5',  name: '月湖村',  desc: '累计合成 30 次',        goal: { type: 'merges', count: 30 },            x: 74, y: 52 },
+  { id: 't6',  name: '财主村',  desc: '合成出 熊猫',           goal: { type: 'reach', level: 7 },              x: 52, y: 33 },
+  { id: 't7',  name: '无仓村',  desc: '同时拥有 2 只老虎',     goal: { type: 'own',   level: 8, count: 2 },    x: 20, y: 20 },
+  { id: 't8',  name: '冬眠村',  desc: '合成出 狮子',           goal: { type: 'reach', level: 9 },              x: 80, y: 22 },
+  { id: 't9',  name: '多多岛',  desc: '合成出 大象',           goal: { type: 'reach', level: 10 },             x: 78, y: 80 },
+  { id: 't10', name: '天猫岛',  desc: '合成出 神龙',           goal: { type: 'reach', level: MAX_LEVEL },      x: 14, y: 92 },
+];
+
+// 成就
+const ACHIEVEMENTS = [
+  { id: 'a_first',      icon: '✨', name: '初次合成',   desc: '完成第一次合成',            check: s => s.totalMerges >= 1 },
+  { id: 'a_reach_cat',  icon: '🐱', name: '喵星人',    desc: '合成出小猫 (Lv.4)',        check: s => s.maxLevel >= 4 },
+  { id: 'a_reach_fox',  icon: '🦊', name: '狡黠',      desc: '合成出狐狸 (Lv.6)',        check: s => s.maxLevel >= 6 },
+  { id: 'a_reach_tig',  icon: '🐯', name: '山中之王',   desc: '合成出老虎 (Lv.8)',        check: s => s.maxLevel >= 8 },
+  { id: 'a_reach_ele',  icon: '🐘', name: '庞然大物',   desc: '合成出大象 (Lv.10)',       check: s => s.maxLevel >= 10 },
+  { id: 'a_dragon',     icon: '🐉', name: '神龙降世',   desc: '合成出神龙 (Lv.11)',       check: s => s.maxLevel >= 11 },
+  { id: 'a_clear_1',    icon: '🎯', name: '初出茅庐',   desc: '通关第一个小镇',           check: s => countCleared(s) >= 1 },
+  { id: 'a_clear_3',    icon: '🚶', name: '渐入佳境',   desc: '通关 3 个小镇',            check: s => countCleared(s) >= 3 },
+  { id: 'a_clear_5',    icon: '🏃', name: '半程英雄',   desc: '通关 5 个小镇',            check: s => countCleared(s) >= 5 },
+  { id: 'a_clear_all',  icon: '👑', name: '合体大师',   desc: '通关所有 10 个小镇',       check: s => countCleared(s) >= 10 },
+  { id: 'a_merge_50',   icon: '🔨', name: '勤劳的手',   desc: '累计合成 50 次',           check: s => s.totalMerges >= 50 },
+  { id: 'a_merge_200',  icon: '⭐', name: '合成达人',   desc: '累计合成 200 次',          check: s => s.totalMerges >= 200 },
+  { id: 'a_merge_500',  icon: '🌟', name: '合成宗师',   desc: '累计合成 500 次',          check: s => s.totalMerges >= 500 },
+  { id: 'a_3star',      icon: '⭐', name: '三星强者',   desc: '任意小镇获得 3 星评价',    check: s => Object.values(s.towns).some(t => t.stars >= 3) },
+];
+
+const COLS = 6, ROWS = 8;
+const SAVE_KEY = 'mergeTown_save_v1';
+
+/* =====================================================
+   存档
+===================================================== */
+let save = defaultSave();
+
+function defaultSave() {
+  return {
+    version: 1,
+    totalMerges: 0,
+    totalSpawns: 0,
+    maxLevel: 0,
+    towns: {},           // id => { board, spawns, merges, cleared, stars, bestSpawns }
+    achievements: {},    // id => true
+  };
+}
+
+function loadSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s && s.version === 1) save = Object.assign(defaultSave(), s);
+  } catch (e) {
+    console.warn('load save failed', e);
+  }
+}
+
+function persist() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
+  catch (e) { console.warn('save failed', e); }
+}
+
+function countCleared(s) {
+  return Object.values(s.towns).filter(t => t.cleared).length;
+}
+
+function newBoard() {
+  const b = [];
+  for (let r = 0; r < ROWS; r++) b.push(new Array(COLS).fill(null));
+  return b;
+}
+
+function getTownState(id) {
+  if (!save.towns[id]) {
+    save.towns[id] = {
+      board: newBoard(),
+      spawns: 0,
+      merges: 0,
+      cleared: false,
+      stars: 0,
+      bestSpawns: null,
+    };
+    // 初始送 4 个蛋,免得完全空场
+    const st = save.towns[id];
+    for (let i = 0; i < 4; i++) placeRandomEgg(st);
+  }
+  return save.towns[id];
+}
+
+function placeRandomEgg(st) {
+  const empties = [];
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (st.board[r][c] === null) empties.push([r, c]);
+  if (!empties.length) return false;
+  const [r, c] = empties[Math.floor(Math.random() * empties.length)];
+  st.board[r][c] = 0;
+  st.spawns++;
+  save.totalSpawns++;
+  return true;
+}
+
+/* =====================================================
+   屏幕切换
+===================================================== */
+let currentTownId = null;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'mapScreen')  renderMap();
+  if (id === 'achScreen')  renderAch();
+  if (id === 'dexScreen')  renderDex();
+  if (id === 'gameScreen') { resizeBoard(); drawBoard(); updateObjective(); updateSpawnBtn(); }
+}
+
+document.getElementById('achBtn').onclick = () => showScreen('achScreen');
+document.getElementById('dexBtn').onclick = () => showScreen('dexScreen');
+document.getElementById('backToMap').onclick = () => showScreen('mapScreen');
+document.querySelectorAll('.back-map').forEach(b => b.onclick = () => showScreen('mapScreen'));
+
+/* =====================================================
+   地图
+===================================================== */
+function isTownUnlocked(idx) {
+  if (idx === 0) return true;
+  const prev = save.towns[TOWNS[idx - 1].id];
+  return !!(prev && prev.cleared);
+}
+
+function renderMap() {
+  const area = document.getElementById('mapArea');
+  area.innerHTML = '';
+  let nextIdx = -1;
+  for (let i = 0; i < TOWNS.length; i++) {
+    if (isTownUnlocked(i) && !(save.towns[TOWNS[i].id]?.cleared)) { nextIdx = i; break; }
+  }
+  TOWNS.forEach((t, i) => {
+    const unlocked = isTownUnlocked(i);
+    const st = save.towns[t.id];
+    const stars = st ? st.stars : 0;
+    const node = document.createElement('div');
+    node.className = 'town-node' + (unlocked ? '' : ' locked') + (i === nextIdx ? ' next' : '');
+    node.style.left = t.x + '%';
+    node.style.top = t.y + '%';
+    node.innerHTML =
+      '<div class="town-marker">' + (unlocked ? (st?.cleared ? '🏰' : '🏘️') : '🔒') + '</div>' +
+      '<div class="town-label">' + t.name + '</div>' +
+      '<div class="town-stars">' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>';
+    if (unlocked) node.onclick = () => enterTown(t.id);
+    else node.onclick = () => toast('通关上一个小镇解锁');
+    area.appendChild(node);
+  });
+}
+
+function enterTown(id) {
+  currentTownId = id;
+  getTownState(id);
+  const cfg = TOWNS.find(t => t.id === id);
+  document.getElementById('townTitle').textContent = cfg.name;
+  showScreen('gameScreen');
+}
+
+/* =====================================================
+   Canvas 渲染
+===================================================== */
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
+let TILE = 50, PAD = 8;
+let boardW, boardH;
+
+function resizeBoard() {
+  const wrap = document.getElementById('boardWrap');
+  const availW = wrap.clientWidth - 12;
+  const availH = wrap.clientHeight - 12;
+  TILE = Math.floor(Math.min(availW / COLS, availH / ROWS));
+  TILE = Math.max(TILE, 40);
+  PAD = 6;
+  boardW = COLS * TILE + PAD * 2;
+  boardH = ROWS * TILE + PAD * 2;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.style.width = boardW + 'px';
+  canvas.style.height = boardH + 'px';
+  canvas.width = boardW * dpr;
+  canvas.height = boardH * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', () => {
+  if (document.getElementById('gameScreen').classList.contains('active')) {
+    resizeBoard(); drawBoard();
+  }
+});
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+let dragState = null; // {fromR, fromC, level, x, y, offX, offY}
+let hintPair = null;  // {a:{r,c}, b:{r,c}, until}
+
+function drawBoard() {
+  const st = getTownState(currentTownId);
+  ctx.clearRect(0, 0, boardW, boardH);
+
+  // 板底
+  const grad = ctx.createLinearGradient(0, 0, 0, boardH);
+  grad.addColorStop(0, '#fff7ed');
+  grad.addColorStop(1, '#ffedd5');
+  ctx.fillStyle = grad;
+  roundRect(0, 0, boardW, boardH, 14);
+  ctx.fill();
+
+  // 网格
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const x = PAD + c * TILE, y = PAD + r * TILE;
+      ctx.fillStyle = ((r + c) % 2) ? '#fef3c7' : '#fde68a';
+      roundRect(x + 2, y + 2, TILE - 4, TILE - 4, 8);
+      ctx.fill();
+    }
+  }
+
+  // 提示高亮
+  if (hintPair && performance.now() < hintPair.until) {
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3;
+    for (const p of [hintPair.a, hintPair.b]) {
+      const x = PAD + p.c * TILE, y = PAD + p.r * TILE;
+      roundRect(x + 3, y + 3, TILE - 6, TILE - 6, 8);
+      ctx.stroke();
+    }
+  } else {
+    hintPair = null;
+  }
+
+  // 物品
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const lvl = st.board[r][c];
+      if (lvl === null) continue;
+      if (dragState && dragState.fromR === r && dragState.fromC === c) continue;
+      const cx = PAD + c * TILE + TILE / 2;
+      const cy = PAD + r * TILE + TILE / 2;
+      drawItem(cx, cy, lvl, 1);
+    }
+  }
+
+  // 拖拽目标提示
+  if (dragState) {
+    const tc = pixelToTile(dragState.x, dragState.y);
+    if (tc) {
+      const tgt = st.board[tc.r][tc.c];
+      let color = '#3b82f6';
+      if (tgt === null) color = '#3b82f6';
+      else if (tgt === dragState.level && dragState.level < MAX_LEVEL) color = '#10b981';
+      else color = '#f59e0b';
+      const x = PAD + tc.c * TILE, y = PAD + tc.r * TILE;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 4;
+      roundRect(x + 3, y + 3, TILE - 6, TILE - 6, 8);
+      ctx.stroke();
+    }
+    // 拖拽物件
+    drawItem(dragState.x, dragState.y, dragState.level, 1.15);
+  }
+}
+
+function drawItem(cx, cy, level, scale) {
+  const a = ANIMALS[level];
+  const size = TILE * 0.82 * scale;
+  // 阴影
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  roundRect(cx - size/2 + 1, cy - size/2 + 3, size, size, 10);
+  ctx.fill();
+  // 本体
+  ctx.fillStyle = a.color;
+  roundRect(cx - size/2, cy - size/2, size, size, 10);
+  ctx.fill();
+  ctx.strokeStyle = a.border;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // 表情
+  ctx.font = Math.floor(size * 0.65) + "px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(a.emoji, cx, cy + size * 0.04);
+  // 级别徽章
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.font = 'bold ' + Math.max(9, Math.floor(size * 0.18)) + "px system-ui, sans-serif";
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText(level, cx - size/2 + 3, cy - size/2 + 2);
+}
+
+function pixelToTile(x, y) {
+  const c = Math.floor((x - PAD) / TILE);
+  const r = Math.floor((y - PAD) / TILE);
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return null;
+  return { r, c };
+}
+
+function eventToCanvas(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = boardW / rect.width;
+  const scaleY = boardH / rect.height;
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY,
+  };
+}
+
+/* =====================================================
+   交互
+===================================================== */
+canvas.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  const p = eventToCanvas(e);
+  const tc = pixelToTile(p.x, p.y);
+  if (!tc) return;
+  const st = getTownState(currentTownId);
+  const lvl = st.board[tc.r][tc.c];
+  if (lvl === null) return;
+  const cx = PAD + tc.c * TILE + TILE / 2;
+  const cy = PAD + tc.r * TILE + TILE / 2;
+  dragState = {
+    fromR: tc.r, fromC: tc.c, level: lvl,
+    x: p.x, y: p.y,
+    offX: cx - p.x, offY: cy - p.y,
+  };
+  try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+  drawBoard();
+});
+
+canvas.addEventListener('pointermove', e => {
+  if (!dragState) return;
+  e.preventDefault();
+  const p = eventToCanvas(e);
+  dragState.x = p.x + dragState.offX;
+  dragState.y = p.y + dragState.offY;
+  drawBoard();
+});
+
+canvas.addEventListener('pointerup', e => {
+  if (!dragState) return;
+  e.preventDefault();
+  const p = eventToCanvas(e);
+  const tc = pixelToTile(p.x + dragState.offX, p.y + dragState.offY);
+  const st = getTownState(currentTownId);
+  const from = { r: dragState.fromR, c: dragState.fromC };
+  const drop = dragState;
+  dragState = null;
+  if (tc) {
+    if (!(tc.r === from.r && tc.c === from.c)) {
+      const target = st.board[tc.r][tc.c];
+      if (target === null) {
+        // 移动
+        st.board[tc.r][tc.c] = drop.level;
+        st.board[from.r][from.c] = null;
+      } else if (target === drop.level && drop.level < MAX_LEVEL) {
+        // 合成
+        const newLvl = drop.level + 1;
+        st.board[tc.r][tc.c] = newLvl;
+        st.board[from.r][from.c] = null;
+        st.merges++;
+        save.totalMerges++;
+        if (newLvl > save.maxLevel) save.maxLevel = newLvl;
+        checkGoal();
+        checkAchievements();
+      } else {
+        // 交换 (级别不同 或 已到顶级)
+        st.board[tc.r][tc.c] = drop.level;
+        st.board[from.r][from.c] = target;
+      }
+      persist();
+    }
+  }
+  drawBoard();
+});
+
+canvas.addEventListener('pointercancel', () => { dragState = null; drawBoard(); });
+
+/* =====================================================
+   按钮
+===================================================== */
+document.getElementById('spawnBtn').onclick = () => {
+  const st = getTownState(currentTownId);
+  if (st.cleared) { toast('本关已通关,试试下一关吧'); return; }
+  const ok = placeRandomEgg(st);
+  if (!ok) { toast('板子满了!先合成腾空间'); return; }
+  persist();
+  updateSpawnBtn();
+  drawBoard();
+};
+
+document.getElementById('hintBtn').onclick = () => {
+  const st = getTownState(currentTownId);
+  // 找一对相同的
+  const map = {};
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const l = st.board[r][c];
+      if (l === null || l === MAX_LEVEL) continue;
+      if (!map[l]) map[l] = [];
+      map[l].push({ r, c });
+    }
+  }
+  // 优先高等级(合成更有价值)
+  const keys = Object.keys(map).map(Number).sort((a, b) => b - a);
+  for (const k of keys) {
+    if (map[k].length >= 2) {
+      hintPair = { a: map[k][0], b: map[k][1], until: performance.now() + 1500 };
+      drawBoard();
+      // 持续重画到消失
+      const iv = setInterval(() => {
+        if (!hintPair || performance.now() > hintPair.until) {
+          clearInterval(iv);
+          drawBoard();
+        } else drawBoard();
+      }, 100);
+      return;
+    }
+  }
+  toast('板上没有可合成的对子,试试生蛋');
+};
+
+document.getElementById('resetTownBtn').onclick = () => {
+  document.getElementById('confirmModal').classList.add('active');
+};
+function closeConfirm() { document.getElementById('confirmModal').classList.remove('active'); }
+function doResetTown() {
+  const wasCleared = save.towns[currentTownId]?.cleared;
+  const wasStars = save.towns[currentTownId]?.stars || 0;
+  const wasBest = save.towns[currentTownId]?.bestSpawns;
+  save.towns[currentTownId] = {
+    board: newBoard(), spawns: 0, merges: 0,
+    cleared: wasCleared || false,
+    stars: wasStars,
+    bestSpawns: wasBest,
+  };
+  const st = save.towns[currentTownId];
+  for (let i = 0; i < 4; i++) placeRandomEgg(st);
+  persist();
+  closeConfirm();
+  drawBoard();
+  updateObjective();
+  updateSpawnBtn();
+  toast('小镇已重置');
+}
+
+/* =====================================================
+   目标 / 通关
+===================================================== */
+function goalProgress(st, goal) {
+  if (goal.type === 'reach') {
+    let cur = 0;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++)
+      if (st.board[r][c] !== null && st.board[r][c] > cur) cur = st.board[r][c];
+    return { cur, max: goal.level, done: cur >= goal.level };
+  }
+  if (goal.type === 'own') {
+    let cnt = 0;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++)
+      if (st.board[r][c] === goal.level) cnt++;
+    return { cur: cnt, max: goal.count, done: cnt >= goal.count };
+  }
+  if (goal.type === 'merges') {
+    return { cur: st.merges, max: goal.count, done: st.merges >= goal.count };
+  }
+}
+
+function updateObjective() {
+  const cfg = TOWNS.find(t => t.id === currentTownId);
+  const st = getTownState(currentTownId);
+  document.getElementById('objText').textContent = cfg.desc;
+  const p = goalProgress(st, cfg.goal);
+  let text;
+  if (cfg.goal.type === 'reach') text = 'Lv.' + p.cur + ' / Lv.' + p.max;
+  else if (cfg.goal.type === 'own') text = p.cur + ' / ' + p.max + ' 只';
+  else text = p.cur + ' / ' + p.max;
+  document.getElementById('objProgress').textContent = text;
+}
+
+function updateSpawnBtn() {
+  const st = getTownState(currentTownId);
+  document.getElementById('spawnBtn').textContent = '🥚 生蛋 (' + st.spawns + ')';
+}
+
+function checkGoal() {
+  updateObjective();
+  updateSpawnBtn();
+  const cfg = TOWNS.find(t => t.id === currentTownId);
+  const st = getTownState(currentTownId);
+  const p = goalProgress(st, cfg.goal);
+  if (!p.done) return;
+  const wasCleared = st.cleared;
+  st.cleared = true;
+  // 星级评价 —— 按生蛋数,越少越好
+  const th = spawnThresholds(cfg);
+  const spawns = st.spawns;
+  const newStars = spawns <= th[0] ? 3 : spawns <= th[1] ? 2 : 1;
+  if (newStars > st.stars) st.stars = newStars;
+  if (st.bestSpawns === null || spawns < st.bestSpawns) st.bestSpawns = spawns;
+  persist();
+  showResult(cfg, newStars, spawns, st.merges, !wasCleared);
+}
+
+function spawnThresholds(cfg) {
+  // 返回 [3星阈值, 2星阈值];超过 2星阈值就是 1 星
+  const g = cfg.goal;
+  if (g.type === 'reach') {
+    // 合成到 Lv.N 至少需要 2^N 个蛋(极限)。留出宽裕。
+    const base = Math.pow(2, g.level);
+    return [Math.ceil(base * 1.4), Math.ceil(base * 2.2)];
+  }
+  if (g.type === 'own') {
+    const base = g.count * Math.pow(2, g.level);
+    return [Math.ceil(base * 1.4), Math.ceil(base * 2.2)];
+  }
+  if (g.type === 'merges') {
+    return [Math.ceil(g.count * 1.2), Math.ceil(g.count * 1.8)];
+  }
+  return [999, 999];
+}
+
+function showResult(cfg, stars, spawns, merges, isFirstClear) {
+  document.getElementById('resultTitle').textContent = isFirstClear ? '🎉 首次通关!' : '🎉 又通一次!';
+  document.getElementById('resultStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+  document.getElementById('resultStats').innerHTML =
+    '<div><b>' + cfg.name + '</b> · ' + cfg.desc + '</div>' +
+    '<div>🥚 消耗蛋: <b>' + spawns + '</b></div>' +
+    '<div>✨ 合成次数: <b>' + merges + '</b></div>';
+  document.getElementById('resultModal').classList.add('active');
+}
+document.getElementById('resultNext').onclick = () => {
+  document.getElementById('resultModal').classList.remove('active');
+  showScreen('mapScreen');
+};
+document.getElementById('resultAgain').onclick = () => {
+  document.getElementById('resultModal').classList.remove('active');
+};
+
+/* =====================================================
+   成就
+===================================================== */
+let achToastQueue = [];
+function checkAchievements() {
+  for (const a of ACHIEVEMENTS) {
+    if (!save.achievements[a.id] && a.check(save)) {
+      save.achievements[a.id] = true;
+      achToastQueue.push(a);
+    }
+  }
+  if (achToastQueue.length) drainAchToasts();
+  persist();
+}
+function drainAchToasts() {
+  if (!achToastQueue.length) return;
+  const a = achToastQueue.shift();
+  toast('🏆 成就解锁 · ' + a.name);
+  if (achToastQueue.length) setTimeout(drainAchToasts, 2200);
+}
+function renderAch() {
+  const list = document.getElementById('achList');
+  const done = ACHIEVEMENTS.filter(a => save.achievements[a.id]).length;
+  list.innerHTML = '<div style="text-align:center;padding:10px;color:#4338ca;font-weight:bold;">已解锁 ' + done + ' / ' + ACHIEVEMENTS.length + '</div>' +
+    ACHIEVEMENTS.map(a => {
+      const has = save.achievements[a.id];
+      return '<div class="ach-item' + (has ? ' done' : '') + '">' +
+        '<div class="ach-icon">' + (has ? a.icon : '🔒') + '</div>' +
+        '<div class="ach-body">' +
+          '<div class="ach-name">' + a.name + '</div>' +
+          '<div class="ach-desc">' + a.desc + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+}
+
+/* =====================================================
+   图鉴
+===================================================== */
+function renderDex() {
+  const list = document.getElementById('dexList');
+  list.innerHTML = ANIMALS.map((a, i) => {
+    const unlocked = save.maxLevel >= i || i === 0;
+    return '<div class="dex-item' + (unlocked ? '' : ' locked') + '">' +
+      '<div class="dex-icon" style="background:' + (unlocked ? a.color : '#e5e7eb') +
+        ';border:2px solid ' + (unlocked ? a.border : '#9ca3af') + '">' +
+        (unlocked ? a.emoji : '❓') +
+      '</div>' +
+      '<div class="dex-name">' + (unlocked ? a.name : '???') + '</div>' +
+      '<div class="dex-lvl">Lv.' + i + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* =====================================================
+   Toast
+===================================================== */
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 300);
+  }, 1800);
+}
+
+/* =====================================================
+   启动
+===================================================== */
+loadSave();
+showScreen('mapScreen');
+
+// 全局函数(供 HTML onclick 使用)
+window.closeConfirm = closeConfirm;
+window.doResetTown = doResetTown;
+</script>
+</body>
+</html>
