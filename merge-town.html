@@ -36,25 +36,25 @@ body {
 /* ============ 顶栏 ============ */
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 38px 12px 8px;
+  padding: 42px 14px 12px;
   background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
   backdrop-filter: blur(10px);
   border-bottom: 2px solid rgba(255,255,255,0.6);
   z-index: 10; flex-shrink: 0;
 }
 .topbar .title {
-  font-weight: 900; font-size: 18px; color: #4338ca;
+  font-weight: 900; font-size: 22px; color: #4338ca;
   letter-spacing: 1px;
   text-shadow: 0 1px 2px rgba(255,255,255,0.8);
 }
 .icon-btn {
   border: none; background: white; border-radius: 12px;
-  padding: 6px 12px; font-size: 14px; cursor: pointer;
+  padding: 8px 14px; font-size: 16px; cursor: pointer;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: transform 0.1s; font-weight: bold; color: #4338ca;
 }
 .icon-btn:active { transform: scale(0.94); }
-.icon-btn.small { padding: 4px 10px; font-size: 12px; }
+.icon-btn.small { padding: 6px 12px; font-size: 14px; }
 
 /* ============ 地图 ============ */
 #mapArea {
@@ -104,12 +104,12 @@ body {
 /* ============ 游戏 ============ */
 #gameScreen { background: linear-gradient(180deg, #86efac 0%, #4ade80 100%); }
 #statsBar {
-  padding: 8px 12px; background: rgba(0,0,0,0.35); color: white;
+  padding: 10px 14px; background: rgba(0,0,0,0.35); color: white;
   display: flex; justify-content: space-around; align-items: center;
-  font-size: 13px; font-weight: bold; flex-shrink: 0;
+  font-size: 16px; font-weight: bold; flex-shrink: 0;
 }
-#statsBar b { color: #fbbf24; margin: 0 3px; font-size: 15px; }
-#statsBar .goal { color: #a7f3d0; font-size: 11px; }
+#statsBar b { color: #fbbf24; margin: 0 4px; font-size: 20px; }
+#statsBar .goal { color: #a7f3d0; font-size: 14px; }
 #boardWrap {
   flex: 1; display: flex; align-items: center; justify-content: center;
   padding: 8px; min-height: 0;
@@ -120,18 +120,18 @@ body {
   box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
 }
 #shopBar {
-  padding: 10px; display: flex; gap: 8px;
+  padding: 12px; display: flex; gap: 10px;
   background: rgba(0,0,0,0.4); flex-shrink: 0;
 }
 .shop-btn {
   flex: 1; border: 3px solid transparent;
   background: linear-gradient(180deg, #fbbf24, #d97706);
-  color: white; padding: 8px 4px;
-  border-radius: 12px; font-weight: bold;
+  color: white; padding: 12px 6px;
+  border-radius: 14px; font-weight: bold;
   cursor: pointer; transition: all 0.1s;
   box-shadow: 0 3px 0 rgba(0,0,0,0.3);
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  min-height: 60px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  min-height: 82px;
 }
 .shop-btn.selected {
   border-color: white;
@@ -140,10 +140,10 @@ body {
 }
 .shop-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .shop-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
-.shop-btn .s-emoji { font-size: 22px; line-height: 1; }
-.shop-btn .s-name { font-size: 10px; opacity: 0.9; }
-.shop-btn .s-price { font-size: 12px; background: rgba(0,0,0,0.35); padding: 1px 6px; border-radius: 8px; }
-.shop-btn.tool { background: linear-gradient(180deg, #a78bfa, #7c3aed); flex: 0 0 60px; }
+.shop-btn .s-emoji { font-size: 32px; line-height: 1; }
+.shop-btn .s-name { font-size: 13px; opacity: 0.95; }
+.shop-btn .s-price { font-size: 15px; background: rgba(0,0,0,0.35); padding: 2px 8px; border-radius: 10px; }
+.shop-btn.tool { background: linear-gradient(180deg, #a78bfa, #7c3aed); flex: 0 0 74px; }
 
 /* ============ 弹窗 ============ */
 .modal {

@@ -216,6 +216,15 @@ body {
 
 .next-btn:active { transform: scale(0.98); background: #653d8f; }
 
+.next-btn.secondary {
+  background: #f5f3ff;
+  color: #764ba2;
+  margin-top: 8px;
+  border: 1px solid #d9c9f2;
+}
+
+.next-btn.secondary:active { background: #ede4ff; }
+
 .result-title {
   font-size: 22px;
   color: #764ba2;
@@ -243,6 +252,69 @@ body {
   padding: 0 8px;
 }
 
+/* ===== 开始屏 ===== */
+.start-title {
+  font-size: 24px;
+  color: #764ba2;
+  text-align: center;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.start-subtitle {
+  text-align: center;
+  color: #777;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.cat-btn {
+  background: #f7f4fc;
+  border: 2px solid #e8dff5;
+  border-radius: 12px;
+  padding: 14px 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.15s;
+  color: #333;
+}
+.cat-btn:hover {
+  background: #ede4ff;
+  border-color: #a78bfa;
+  transform: translateY(-1px);
+}
+.cat-btn:active { transform: translateY(0); }
+.cat-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+.cat-count {
+  font-size: 11px;
+  color: #764ba2;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.cat-desc {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.4;
+}
+.cat-btn.full-width {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  border: none;
+  color: #fff;
+}
+.cat-btn.full-width .cat-label { color: #fff; font-size: 17px; }
+.cat-btn.full-width .cat-count { color: rgba(255,255,255,0.95); }
+.cat-btn.full-width .cat-desc { color: rgba(255,255,255,0.88); }
+
 @media (max-width: 480px) {
   .question { font-size: 15px; }
   .option { font-size: 13px; padding: 11px 12px; }
@@ -256,7 +328,7 @@ body {
   <a href="index.html" class="back-link">← 返回荔枝游戏</a>
   <div class="meta">
     <span id="progress">—</span>
-    <span id="score">得分 0</span>
+    <span id="score"></span>
   </div>
 </div>
 
@@ -265,7 +337,9 @@ body {
 </div>
 
 <script>
-// ===== SVG 生成器（图形推理题用）=====
+// ============================================================
+//  SVG 生成器（图形推理题用）
+// ============================================================
 
 function svgArrow(deg) {
   return `<svg viewBox="0 0 80 80"><g transform="rotate(${-deg} 40 40)"><line x1="20" y1="40" x2="58" y2="40" stroke="#333" stroke-width="3"/><rect x="14" y="34" width="10" height="12" fill="#333"/><polygon points="64,40 52,32 52,48" fill="none" stroke="#333" stroke-width="2.5" stroke-linejoin="round"/></g></svg>`;
@@ -282,7 +356,6 @@ function svgQuadrant(pos) {
 }
 
 function svgSquares(n) {
-  // 按顺时针顺序填充: TL, TR, BR, BL
   const cells = [
     '<rect x="4" y="4" width="26" height="26" fill="#333"/>',
     '<rect x="30" y="4" width="26" height="26" fill="#333"/>',
@@ -294,141 +367,352 @@ function svgSquares(n) {
   return `<svg viewBox="0 0 60 60">${s}<rect x="4" y="4" width="52" height="52" fill="none" stroke="#333" stroke-width="2"/><line x1="30" y1="4" x2="30" y2="56" stroke="#333" stroke-width="1"/><line x1="4" y1="30" x2="56" y2="30" stroke="#333" stroke-width="1"/></svg>`;
 }
 
-// ===== 题库 =====
+function svgClock(deg) {
+  return `<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="white" stroke="#333" stroke-width="2"/><g transform="rotate(${deg} 40 40)"><line x1="40" y1="40" x2="40" y2="16" stroke="#333" stroke-width="3" stroke-linecap="round"/></g><circle cx="40" cy="40" r="2.5" fill="#333"/></svg>`;
+}
 
-const QUESTIONS = [
+function svgNested(n) {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const r = 30 - i * 7;
+    if (r > 0) s += `<circle cx="40" cy="40" r="${r}" fill="none" stroke="#333" stroke-width="2"/>`;
+  }
+  return `<svg viewBox="0 0 80 80">${s}</svg>`;
+}
+
+function svgGridDot(row, col) {
+  const cell = 20, start = 10;
+  const cx = start + col * cell + cell/2;
+  const cy = start + row * cell + cell/2;
+  let g = '';
+  for (let i = 0; i <= 3; i++) {
+    g += `<line x1="${start}" y1="${start+i*cell}" x2="${start+3*cell}" y2="${start+i*cell}" stroke="#999" stroke-width="1"/>`;
+    g += `<line x1="${start+i*cell}" y1="${start}" x2="${start+i*cell}" y2="${start+3*cell}" stroke="#999" stroke-width="1"/>`;
+  }
+  return `<svg viewBox="0 0 80 80">${g}<circle cx="${cx}" cy="${cy}" r="6" fill="#333"/></svg>`;
+}
+
+// ============================================================
+//  分类定义
+// ============================================================
+
+const CATEGORIES = [
+  {id: 'all',        label: '🎲 全部混合',   desc: '所有题目随机抽 20 道', fullWidth: true},
+  {id: 'logic',      label: '🧠 逻辑思辨',   desc: '真假话·演绎·概率·批判思考'},
+  {id: 'graphical',  label: '🔷 图形推理',   desc: '旋转·翻转·数量·规律'},
+  {id: 'finance',    label: '💰 金融投资',   desc: '利率·估值·风险·行为金融'},
+  {id: 'economics',  label: '📈 经济学',     desc: '供需·机会成本·沉没成本'},
+  {id: 'politics',   label: '🏛 政治国际',   desc: '国际组织·政体·权力制衡'},
+  {id: 'quick',      label: '⚡ 快速反应',   desc: '心算·直觉陷阱'}
+];
+
+// ============================================================
+//  题库
+// ============================================================
+
+const ALL_QUESTIONS = [
+
+  // ========== 原有 · 逻辑推理 ==========
   {
-    type: 'text',
-    category: '真话与谎言',
+    type: 'text', group: 'logic', category: '真话与谎言',
     question: '在一个神秘岛上，骑士只说真话，骗子只说谎话。你遇到了 A、B 两个人。\n\nA 说："我们两个都是骗子。"\n\n请判断 A 和 B 分别是什么？',
-    options: [
-      'A 是骑士，B 是骑士',
-      'A 是骑士，B 是骗子',
-      'A 是骗子，B 是骑士',
-      'A 是骗子，B 是骗子'
-    ],
+    options: ['A 是骑士，B 是骑士', 'A 是骑士，B 是骗子', 'A 是骗子，B 是骑士', 'A 是骗子，B 是骗子'],
     correct: 2,
     explanation: '假设 A 是骑士（只说真话），那么"我们两个都是骗子"应该为真——但骑士不是骗子，矛盾。\n\n所以 A 只能是骗子。既然 A 是骗子，那"我们两个都是骗子"就是谎话，意味着"两个都是骗子"为假，即至少有一个不是骗子。\n\nA 已经是骗子，所以 B 必须是骑士。'
   },
   {
-    type: 'text',
-    category: '经典逻辑',
+    type: 'text', group: 'logic', category: '经典逻辑',
     question: '桌上有 3 个盒子，分别贴着"苹果"、"橘子"、"苹果和橘子"三种标签。已知：所有标签都贴错了。\n\n你只能选一个盒子拿出一个水果（不能看盒内），怎样才能确定所有盒子的内容？',
-    options: [
-      '从贴"苹果"标签的盒子拿',
-      '从贴"橘子"标签的盒子拿',
-      '从贴"苹果和橘子"标签的盒子拿',
-      '至少要拿两次才能确定'
-    ],
+    options: ['从贴"苹果"标签的盒子拿', '从贴"橘子"标签的盒子拿', '从贴"苹果和橘子"标签的盒子拿', '至少要拿两次才能确定'],
     correct: 2,
     explanation: '关键在于："苹果和橘子"这个标签既然贴错了，那这个盒子里就绝不是混合装，只可能是单一品种。\n\n从"苹果和橘子"标签的盒子拿一个：\n• 若拿出苹果 → 该盒是纯苹果盒。\n• 剩下贴"橘子"和"苹果"标签的盒子中：贴"橘子"的不能是橘子（贴错）、也不能是苹果（已确定），只能是混合装；那贴"苹果"的必然是橘子。\n\n一次搞定！'
   },
   {
-    type: 'text',
-    category: '数列规律',
+    type: 'text', group: 'logic', category: '数列规律',
     question: '观察下面的数列，找出问号处的数字：\n\n2, 6, 12, 20, 30, ?',
     options: ['40', '42', '44', '36'],
     correct: 1,
     explanation: '规律一（差值法）：相邻两项差为 4、6、8、10、12（等差递增 2），下一项 = 30 + 12 = 42。\n\n规律二（通项法）：n×(n+1) →\n1×2=2，2×3=6，3×4=12，4×5=20，5×6=30，6×7=42 ✓'
   },
   {
-    type: 'text',
-    category: '推理演绎',
+    type: 'text', group: 'logic', category: '推理演绎',
     question: '三个人 A、B、C 站成一列。A 在最后能看到 B 和 C 的帽子；B 在中间能看到 C 的帽子；C 最前面谁都看不到。\n\n有 3 顶白帽、2 顶黑帽，从中选 3 顶戴上。\n\n• A 说："我不知道我戴什么颜色。"\n• B 听了说："我也不知道。"\n• C 听了说："我知道了！"\n\nC 戴什么颜色？',
     options: ['白色', '黑色', '五五概率', '无法判断'],
     correct: 0,
     explanation: '第一步：A 看不出自己的颜色 → 说明 B、C 不都是黑色（否则黑帽共 2 顶都用完，A 必是白）。\n\n第二步：B 听懂了 A 的话，又能看到 C：\n• 若 C 是黑色，那 B 立刻能推出自己必是白色（因为 B、C 不能都是黑）。\n• 但 B 也说不知道 → 说明 C 不可能是黑色。\n\n所以 C 推出：我戴的是白色。'
   },
   {
-    type: 'text',
-    category: '概率悖论',
+    type: 'text', group: 'logic', category: '概率悖论',
     question: '一个家庭有两个孩子。已知"其中至少有一个是男孩"，那么"两个都是男孩"的概率是多少？',
     options: ['1/2', '1/3', '1/4', '2/3'],
     correct: 1,
     explanation: '两个孩子的性别组合等概率有 4 种：\n（男男）（男女）（女男）（女女）各 1/4。\n\n条件"至少一个男孩"排除了"女女"，剩下三种等可能组合：（男男）（男女）（女男）。\n\n其中"男男"只占 1 种 → 概率 = 1/3。\n\n这是经典的"两孩子问题"，很多人凭直觉会答 1/2，但那是错的。'
   },
   {
-    type: 'text',
-    category: '经典逻辑',
+    type: 'text', group: 'logic', category: '经典逻辑',
     question: '农夫要带一只狼、一只羊、一颗白菜过河。船每次只能带一样。\n\n• 狼和羊单独在一起，狼会吃羊。\n• 羊和白菜单独在一起，羊会吃白菜。\n\n最少需要过河（含返回）多少次？',
     options: ['5 次', '6 次', '7 次', '8 次'],
     correct: 2,
     explanation: '过河 7 次的方案：\n\n① 带【羊】过去（对岸：羊）\n② 空船返回\n③ 带【狼】过去（对岸：狼、羊）\n④ 带【羊】回来（对岸：狼）\n⑤ 带【白菜】过去（对岸：狼、白菜）\n⑥ 空船返回\n⑦ 带【羊】过去 ✓\n\n关键技巧：第 4 步把羊又带回来，是很多人想不到的。'
   },
   {
-    type: 'text',
-    category: '推理演绎',
+    type: 'text', group: 'logic', category: '推理演绎',
     question: '三个女孩 A、B、C 分别穿红、黄、蓝三种不同颜色的衣服。已知：\n\n• A 说："我不穿红色。"\n• 穿蓝色衣服的女孩说："C 穿黄色。"\n• C 说："B 不穿黄色。"\n\n三句话都为真。A 穿什么颜色？',
     options: ['红色', '黄色', '蓝色', '无法确定'],
     correct: 2,
     explanation: '排除法验证：\n\n若 A 穿黄色 → 那穿蓝的是 B 或 C。穿蓝的说"C 穿黄"，但 A 才穿黄，矛盾。\n\n若 A 穿蓝色 → A 就是那个说"C 穿黄"的人，所以 C 穿黄色，剩下 B 穿红色。验证 C 说的"B 不穿黄色"✓ 成立。\n\n结论：A 蓝、B 红、C 黄。'
   },
   {
-    type: 'text',
-    category: '数列规律',
+    type: 'text', group: 'logic', category: '数列规律',
     question: '这是著名的"外观数列"（Look-and-say），找出下一项：\n\n1, 11, 21, 1211, 111221, ?',
     options: ['312211', '213211', '112233', '311221'],
     correct: 0,
     explanation: '每一项是"读出"前一项的方式：\n\n• 1 → "一个1" → 11\n• 11 → "两个1" → 21\n• 21 → "一个2，一个1" → 1211\n• 1211 → "一个1，一个2，两个1" → 111221\n• 111221 → "三个1，两个2，一个1" → 312211 ✓'
   },
   {
-    type: 'text',
-    category: '概率悖论',
+    type: 'text', group: 'logic', category: '概率悖论',
     question: '经典"蒙提霍尔问题"：\n\n三扇门后有一辆车和两只山羊。你选了门 1。主持人（知道门后是什么）打开了有山羊的门 3，然后问你：要不要换到门 2？\n\n换门还是不换，赢车的概率更大？',
-    options: [
-      '换门（赢率 2/3）',
-      '不换（赢率更大）',
-      '一样（各 1/2）',
-      '无法计算'
-    ],
+    options: ['换门（赢率 2/3）', '不换（赢率更大）', '一样（各 1/2）', '无法计算'],
     correct: 0,
     explanation: '一开始你选中车的概率 = 1/3，选中羊的概率 = 2/3。\n\n情况一：你一开始就选中了车（概率 1/3）→ 换门 = 输。\n情况二：你一开始选中了羊（概率 2/3）→ 主持人必然打开另一只羊 → 剩下的门必是车 → 换门 = 赢。\n\n换门赢率 = 2/3，是不换（1/3）的两倍。\n\n关键：主持人知道答案，他的"打开"不是随机的，包含了额外信息。'
   },
   {
-    type: 'text',
-    category: '真话与谎言',
+    type: 'text', group: 'logic', category: '真话与谎言',
     question: '三个嫌疑人 A、B、C，只有一人是凶手。他们各说一句话：\n\n• A："我不是凶手。"\n• B："C 才是凶手。"\n• C："B 在说谎。"\n\n已知三人中只有一人说真话。谁是凶手？',
     options: ['A', 'B', 'C', '无法判断'],
     correct: 0,
     explanation: '逐一假设：\n\n【假设 A 是凶手】\n• A："我不是凶手" → 假\n• B："C 是凶手" → 假\n• C："B 在说谎" → 真 ✓\n只有 C 说真话，符合条件！\n\n【假设 B 是凶手】\nA 真、B 假、C 真 → 两人说真，不符。\n\n【假设 C 是凶手】\nA 真、B 真、C 假 → 两人说真，不符。\n\n所以 A 是凶手。'
   },
 
-  // ===== 图形推理题 =====
-
+  // ========== 新 · 逻辑思辨 ==========
   {
-    type: 'graphical',
-    category: '图形推理',
+    type: 'text', group: 'logic', category: '逻辑思辨',
+    question: '前提：所有猫都是哺乳动物。所有哺乳动物都需要氧气。\n结论：所有猫都需要氧气。\n\n这个推理属于哪种类型？',
+    options: ['归纳推理', '演绎推理', '类比推理', '因果推理'],
+    correct: 1,
+    explanation: '这是经典的"三段论"（Syllogism），属于演绎推理：\n\n大前提：所有 M 是 P（哺乳动物需要氧气）\n小前提：所有 S 是 M（猫是哺乳动物）\n结论：所有 S 是 P（猫需要氧气）\n\n演绎推理的特点：只要前提为真、推理形式有效，结论必然为真。\n\n对比归纳推理是"从个别到一般"，结论只是概率性的。'
+  },
+  {
+    type: 'text', group: 'logic', category: '逻辑思辨',
+    question: '统计显示"冰淇淋销量高的月份，溺水事件也多"。最合理的解释是？',
+    options: ['吃冰淇淋容易导致溺水', '溺水后人们爱买冰淇淋', '两者都受夏季高温这个"第三因素"影响', '纯属巧合，没有关系'],
+    correct: 2,
+    explanation: '经典陷阱："相关性 ≠ 因果性"。\n\n夏天来了 → 大家吃冰淇淋（↑）；\n夏天来了 → 大家去游泳（↑ → 溺水↑）。\n\n真正的原因是共同变量【夏季】，冰淇淋和溺水之间毫无因果关系。\n\n看到相关数据时，一定要问："有没有隐藏的第三变量？"这是数据分析和读新闻的基本功。'
+  },
+  {
+    type: 'text', group: 'logic', category: '逻辑思辨',
+    question: '二战时，工程师统计返航战机的弹孔分布：机翼弹孔多，发动机弹孔少。有人建议加固机翼，但统计学家 Abraham Wald 建议加固发动机。为什么？',
+    options: ['发动机比机翼更贵', '幸存者偏差：发动机中弹的飞机根本没能飞回来', '机翼已经足够坚固', '样本数据错误'],
+    correct: 1,
+    explanation: '这是"幸存者偏差"（Survivorship Bias）的经典案例。\n\n统计的是【回来的】飞机——它们能回来说明中弹位置不致命。发动机中弹的飞机全都坠毁了，根本不在样本里。\n\n所以真正的致命位置是【看起来完好的】发动机，应该加固它。\n\n生活中处处是幸存者偏差：\n"辍学的都是亿万富翁"（没成功的辍学生没人提）；\n"读中医治好病"（治不好的病人不再发朋友圈）。'
+  },
+  {
+    type: 'text', group: 'logic', category: '逻辑思辨',
+    question: '已知："如果下雨，那么地面湿。"\n观察到：地面没有湿。\n\n可以严格推出的结论是？',
+    options: ['一定下雨了', '没有下雨', '可能下雨也可能没下', '无法判断'],
+    correct: 1,
+    explanation: '这是逻辑学的"否定后件式"（Modus Tollens）：\n\n"若 P → Q" 逻辑上等价于其【逆否命题】"若 ¬Q → ¬P"。\n\n"下雨 → 地湿" 等价于 "地不湿 → 没下雨"。\n\n所以观察到地面不湿，可以严格推出：没有下雨。\n\n注意区别：观察到"地面湿"不能推出"下雨了"（可能有洒水、水管漏水等原因），那叫"肯定后件谬误"。'
+  },
+  {
+    type: 'text', group: 'logic', category: '逻辑思辨',
+    question: '一个抽奖广告写着："已经有 10000 人中奖！"你被吸引想去参与。你最应该问的关键问题是什么？',
+    options: ['奖品价值是多少', '总参与人数是多少（即中奖率）', '主办方是谁', '截止日期什么时候'],
+    correct: 1,
+    explanation: '这是"忽略基础率"（Base Rate Neglect）的典型场景。\n\n"10000 人中奖"听起来很多，但：\n• 若总参与 100 万人 → 中奖率 1%（尚可）\n• 若总参与 1 亿人 → 中奖率 0.01%（几乎中不了）\n\n绝对数字（分子）没有分母时是无意义的。\n\n看到"90% 顾客满意"要问总样本；看到"3 人得病"要问基数——这是识别信息陷阱的关键。'
+  },
+
+  // ========== 金融投资 ==========
+  {
+    type: 'text', group: 'finance', category: '金融投资',
+    question: '你把 1 万元存入年利率 6% 的账户（复利计息），大约多少年后本金会翻倍？',
+    options: ['6 年', '9 年', '12 年', '18 年'],
+    correct: 2,
+    explanation: '这是著名的"72 法则"（Rule of 72）：\n\n翻倍所需年数 ≈ 72 ÷ 年利率\n\n72 ÷ 6 = 12 年 ✓\n\n验证：1 × 1.06^12 ≈ 2.012\n\n这个简易公式对 4-15% 的利率非常准确，是投资理财必备的心算技巧。年化 8% → 9 年翻倍；12% → 6 年。'
+  },
+  {
+    type: 'text', group: 'finance', category: '金融投资',
+    question: '股票 A 的市盈率（P/E）为 10 倍，股票 B 为 30 倍。同行业下，以下说法哪个通常成立？',
+    options: ['A 更贵', 'B 一定被低估', 'A 相对便宜，或市场对其成长预期较低', 'B 一定会跌'],
+    correct: 2,
+    explanation: '市盈率 = 股价 ÷ 每股收益，代表"以当前盈利要多少年才能回本"。\n\n• P/E 低（如 10）→ 相对便宜，或市场认为其成长性有限\n• P/E 高（如 30）→ 相对昂贵，或市场对其高成长有预期\n\n单看 P/E 不能完全判断好坏，需结合行业增长、公司质地、盈利可持续性综合分析。\n\n"便宜"不等于"值得买"，"贵"也不等于"该卖"。'
+  },
+  {
+    type: 'text', group: 'finance', category: '金融投资',
+    question: '央行加息（提高基准利率）时，以下哪项一般会下跌？',
+    options: ['银行存款利息', '已发行的固定利率债券价格', '本币汇率', '借贷成本'],
+    correct: 1,
+    explanation: '债券价格与利率反向变动，这是金融市场最基本的关系之一。\n\n加息后，市场上新发行的债券利率更高。旧的固定利率债券相对不吸引，价格必须下跌才能被买家接受（收益率上升 → 价格下跌）。\n\n其他项：存款利息 ↑、本币汇率通常 ↑（吸引热钱流入）、借贷成本 ↑。\n\n加息通常还会打压股市（尤其成长股，因为未来现金流的折现值缩水）。'
+  },
+  {
+    type: 'text', group: 'finance', category: '金融投资',
+    question: '当前通胀率年 3%，你的存款年利率是 2%。5 年后你的实际购买力如何？',
+    options: ['上升约 10%', '基本不变', '下降约 5%', '下降约 15%'],
+    correct: 2,
+    explanation: '实际利率 ≈ 名义利率 − 通胀率 = 2% − 3% = −1%\n\n5 年累计购买力变化 ≈ (0.99)^5 − 1 ≈ −4.9%，约下降 5%。\n\n启示：把钱只放银行长期跑不赢通胀。理财必须考虑"实际收益率"，不是账户余额的数字增长。\n\n这也是为什么高通胀期人们会抢购资产（房产、黄金、股票）——现金在贬值。'
+  },
+  {
+    type: 'text', group: 'finance', category: '金融投资',
+    question: '"不要把所有鸡蛋放在同一个篮子里"——分散投资的核心原理是什么？',
+    options: ['收益最大化', '降低非系统性（个别公司/行业）风险', '消除所有风险', '保证不亏损'],
+    correct: 1,
+    explanation: '分散投资通过持有不完全相关的资产，能显著降低"非系统性风险"：单个公司破产、某个行业衰退的风险。\n\n但它无法消除"系统性风险"（如金融危机、全球衰退），因为这类风险会同时影响所有资产。\n\n经典建议：不同资产类别（股/债/房/黄金）+ 不同地域 + 不同行业。\n\n马科维茨的"现代投资组合理论"因这个原理获得诺贝尔奖。'
+  },
+  {
+    type: 'text', group: 'finance', category: '金融投资',
+    question: '张三花 100 万买了套房，两年后市价跌到 80 万。他坚持不卖，说"不卖就不算亏"。他的心理属于？',
+    options: ['理性长期投资', '沉没成本谬误', '损失厌恶 / 处置效应', '分散风险'],
+    correct: 2,
+    explanation: '心理学家 Kahneman 和 Tversky 提出的"损失厌恶"（Loss Aversion）：\n\n人对损失的痛苦感 ≈ 同等收益快乐感的 2 倍。\n\n"不卖就不算亏"是回避"确认"损失的心理防御，但账面亏损 20 万已经真实存在。\n\n延伸："处置效应"——投资者倾向早早卖掉赚钱的（怕失去），死拽着亏钱的（不愿承认错），结果长期收益反被拉低。'
+  },
+
+  // ========== 经济学 ==========
+  {
+    type: 'text', group: 'economics', category: '经济学',
+    question: '小明放弃了 8 万年薪的工作去读研，学费一年 3 万，生活费假设不变。他读一年研的"机会成本"约为多少？',
+    options: ['3 万', '8 万', '11 万', '5 万'],
+    correct: 2,
+    explanation: '机会成本 = 显性成本（直接花钱）+ 隐性成本（放弃的收益）\n\n= 3 万学费 + 8 万放弃的薪水 = 11 万\n\n经济学的核心洞见：任何选择都有"未做另一件事的代价"。真正的成本从来不只是账面数字。\n\n这也是为什么"免费"从来不真正免费——你付出的是时间、注意力、机会。'
+  },
+  {
+    type: 'text', group: 'economics', category: '经济学',
+    question: '中国生产手机和 T 恤都比越南效率高（绝对优势），那么两国应该如何贸易？',
+    options: ['中国两样都自己生产，不进口', '越南什么都不该做', '各自专注"相对优势更大"的产品，互相贸易', '完全无法贸易'],
+    correct: 2,
+    explanation: '这是经济学家李嘉图（Ricardo）的"比较优势理论"：\n\n即使一国在所有领域都有绝对优势，两国按【相对优势】分工仍能双赢。\n\n中国生产手机的相对效率优势更大 → 专注手机；\n越南生产 T 恤的相对劣势更小 → 专注 T 恤；\n再互相贸易，两国总产出比"各自全做"更多。\n\n这是自由贸易理论的基石，也是全球化分工的经济学理由。'
+  },
+  {
+    type: 'text', group: 'economics', category: '经济学',
+    question: '一部电影已经花了 2 亿元制作，上映预估票房 5000 万。以下哪种决策符合经济学理性？',
+    options: ['已经投入 2 亿了，必须上映挽回损失', '若发行成本 < 5000 万，就应该上映', '不能上映，因为一定亏损', '必须重拍以避免亏损'],
+    correct: 1,
+    explanation: '2 亿制作费已经是"沉没成本"（Sunk Cost）——已花出、无法收回，不应影响未来决策。\n\n理性决策只看"边际"：未来的收益 vs 未来的成本。\n\n只要发行成本（宣发、拷贝、渠道费）< 5000 万预估票房，就有边际盈利，应该上映。\n\n"因为投入了那么多所以要坚持"是最常见的沉没成本谬误——恋爱、创业、买股票都常见。'
+  },
+  {
+    type: 'text', group: 'economics', category: '经济学',
+    question: '一个公园免费向所有人开放，很快草地被踩坏、垃圾遍地。这在经济学中叫什么？',
+    options: ['规模效应', '公地悲剧', '通货膨胀', '完全竞争'],
+    correct: 1,
+    explanation: '"公地悲剧"（Tragedy of the Commons）由 Hardin 1968 年提出：\n\n人人可用但无人负责的公共资源，容易被过度使用/破坏。个体的理性（多用一点没关系）导致集体的灾难。\n\n经典案例：过度捕捞的公海渔场、污染的空气、被过度放牧的公共草场、拥堵的公共道路。\n\n解决方案：确立产权（私有化）、政府监管（配额/罚款）、社区自治管理（Ostrom 获诺奖的研究）。'
+  },
+  {
+    type: 'text', group: 'economics', category: '经济学',
+    question: '根据基础的供需理论，政府大幅提高最低工资，最可能出现什么？',
+    options: ['低技能岗位数量增加', '所有工人都受益，无副作用', '部分低技能岗位减少或被自动化替代', '失业率必然下降'],
+    correct: 2,
+    explanation: '劳动力也是"商品"，工资是它的"价格"。\n\n价格被强制抬高 → 需求量下降。工资 ↑ → 企业雇用低技能劳动力成本 ↑ → 减少雇用、外包、或用机器/AI 替代。\n\n注：真实效应存在学术争议（Card-Krueger 研究等），中度提高最低工资的负面效应可能不显著，但选择题考的是基础微观经济学模型。\n\n在职者受益，可能被雇用的边缘工人受损——这是政策的常见权衡。'
+  },
+
+  // ========== 政治国际 ==========
+  {
+    type: 'text', group: 'politics', category: '政治国际',
+    question: '联合国安理会常任理事国（拥有否决权）是哪五个国家？',
+    options: ['美、英、法、德、俄', '美、英、法、俄、中', '美、英、法、俄、日', '美、英、德、中、俄'],
+    correct: 1,
+    explanation: '联合国安理会五个常任理事国（P5）：\n美国、英国、法国、俄罗斯、中国\n\n这五国基本对应二战主要战胜国。任何一国投否决票，实质性决议就无法通过。\n\n德国、日本、印度、巴西是长期"入常"候选国（G4），但因五常一致同意的门槛极高，至今未能扩容。'
+  },
+  {
+    type: 'text', group: 'politics', category: '政治国际',
+    question: '议会制（如英国、日本）和总统制（如美国）最本质的区别是什么？',
+    options: ['是否举行选举', '有无宪法', '行政首脑是否由议会产生并对议会负责', '是否两党制'],
+    correct: 2,
+    explanation: '核心区别在"权力来源"：\n\n• 议会制：行政首脑（首相）由议会多数党产生，对议会负责。议会可通过"不信任案"解散政府。\n• 总统制：总统由选民（或选举人团）直接产生，独立于议会，任期固定，不对议会负责。\n\n还有介于两者之间的"半总统制"（如法国、俄罗斯），总统 + 总理并存，权责分割复杂。'
+  },
+  {
+    type: 'text', group: 'politics', category: '政治国际',
+    question: '在美国的国会两院制下，以下哪项是参议院（Senate）独有的权力？',
+    options: ['提出财政预算议案', '批准总统提名的大法官/内阁成员', '提议弹劾总统', '宣战'],
+    correct: 1,
+    explanation: '美国国会两院分工：\n\n参议院独有：批准总统提名（大法官、大使、内阁部长）、批准国际条约、【审判】弹劾案。\n\n众议院独有：提出财政预算议案、【提议】弹劾案（起诉方）。\n\n宣战权是两院共同权力。这种分工体现了"制衡"（checks and balances）设计——重要人事不让总统独断，钱袋子由更接近民意的众议院把关。'
+  },
+  {
+    type: 'text', group: 'politics', category: '政治国际',
+    question: '"多数人的暴政"（Tyranny of the Majority）主要指什么？',
+    options: ['独裁政府压迫民众', '选举舞弊', '民主制度下多数人可能通过合法程序侵犯少数人权益', '议会内部腐败'],
+    correct: 2,
+    explanation: '由 Tocqueville（《论美国的民主》）和 J.S.Mill 提出的重要警告：\n\n即使民主制度也可能出问题——多数人可以合法地压迫少数人（种族、宗教、观点少数派）。\n\n"51% 投票支持"的决定，如果侵犯基本权利，仍然是不义。\n\n这就是为什么现代宪政民主设有：宪法权利清单、司法审查、少数派保护条款——限制多数决的边界。民主 ≠ 无限多数决。'
+  },
+
+  // ========== 快速反应 ==========
+  {
+    type: 'text', group: 'quick', category: '快速反应',
+    question: '一件商品打 8 折后，再打 8 折。相当于原价打几折？',
+    options: ['6 折', '6.4 折', '7 折', '8 折'],
+    correct: 1,
+    explanation: '两次折扣不能简单相加。\n\n0.8 × 0.8 = 0.64，即 6.4 折。\n\n举例：原价 100 元 → 80 元 → 64 元。\n\n很多商场促销"折上折"利用这个心理错觉，让顾客感觉便宜比实际大。\n\n心算捷径：两次都 X 折，相当于 X² 折。9 折两次 ≈ 8.1 折，7 折两次 = 4.9 折。'
+  },
+  {
+    type: 'text', group: 'quick', category: '快速反应',
+    question: '一辆车往返 A、B 两地，去时时速 60 km/h，回时时速 40 km/h。全程平均时速是多少？',
+    options: ['50 km/h', '48 km/h', '52 km/h', '45 km/h'],
+    correct: 1,
+    explanation: '直觉答案 (60+40)/2 = 50 是错的！\n\n平均速度 = 总路程 ÷ 总时间，不是速度的算术平均。\n\n设单程 120 km：\n• 去时：120/60 = 2 小时\n• 回时：120/40 = 3 小时\n• 总时：5 小时，总程：240 km\n• 平均：240/5 = 48 km/h\n\n公式（调和平均）：2ab/(a+b) = 2×60×40/100 = 48\n\n慢的时段占了更多时间，把平均拉低了。'
+  },
+  {
+    type: 'text', group: 'quick', category: '快速反应',
+    question: '1 + 2 + 3 + ... + 100 = ?（10 秒内答出）',
+    options: ['4950', '5000', '5050', '5100'],
+    correct: 2,
+    explanation: '据说小学生高斯 10 岁时想出的方法：\n\n配对求和：(1+100) + (2+99) + ... + (50+51)\n每对都是 101，共 50 对 → 101 × 50 = 5050\n\n通用公式：1 到 n 之和 = n(n+1)/2\n\n100 × 101 / 2 = 5050 ✓\n\n这个"首尾配对"思路在数列题里超好用。'
+  },
+
+  // ========== 原有 · 图形推理 ==========
+  {
+    type: 'graphical', group: 'graphical', category: '图形推理',
     question: '观察下面 3 个图形的变化规律，从 A、B、C、D 中选出接下来应该是哪一个：',
     sequence: [svgArrow(0), svgArrow(45), svgArrow(90), '?'],
     options: [svgArrow(135), svgArrow(180), svgArrow(-45), svgArrow(225)],
-    correct: 0,
-    isSvgOptions: true,
+    correct: 0, isSvgOptions: true,
     explanation: '规律：图形每次沿逆时针方向旋转 45°。\n\n0° → 45° → 90° → ?\n\n下一个应该继续旋转 45°，即 135°。\n\n选项 A 就是箭头旋转到 135° 位置（指向左上方）的样子。'
   },
   {
-    type: 'graphical',
-    category: '图形推理',
+    type: 'graphical', group: 'graphical', category: '图形推理',
     question: '观察圆内阴影的变化规律，选出接下来的图形：',
     sequence: [svgQuadrant(0), svgQuadrant(1), svgQuadrant(2), '?'],
     options: [svgQuadrant(3), svgQuadrant(0), svgQuadrant(1), svgQuadrant(2)],
-    correct: 0,
-    isSvgOptions: true,
+    correct: 0, isSvgOptions: true,
     explanation: '规律：阴影部分按顺时针方向依次移动一个象限。\n\n右上 → 右下 → 左下 → ?\n\n下一个位置应该是【左上】，正好构成一个完整的顺时针循环。'
   },
   {
-    type: 'graphical',
-    category: '图形推理',
+    type: 'graphical', group: 'graphical', category: '图形推理',
     question: '观察方格中阴影格数的变化规律，选出接下来的图形：',
     sequence: [svgSquares(1), svgSquares(2), svgSquares(3), '?'],
     options: [svgSquares(4), svgSquares(2), svgSquares(0), svgSquares(3)],
-    correct: 0,
-    isSvgOptions: true,
+    correct: 0, isSvgOptions: true,
     explanation: '规律：阴影方格的数量依次为 1 → 2 → 3 → ?，按顺时针方向依次填充。\n\n第 4 个应该是 4 格全部涂黑。\n\n这种"数量递增"是图形推理里最基础也最常考的一类。'
+  },
+
+  // ========== 新 · 图形推理 ==========
+  {
+    type: 'graphical', group: 'graphical', category: '图形推理',
+    question: '观察下面 3 个钟表指针的位置变化规律，选出接下来的图形：',
+    sequence: [svgClock(0), svgClock(90), svgClock(180), '?'],
+    options: [svgClock(270), svgClock(0), svgClock(315), svgClock(225)],
+    correct: 0, isSvgOptions: true,
+    explanation: '指针位置依次为：12 点 → 3 点 → 6 点 → ?\n\n每次顺时针旋转 90°，下一个应该指向【9 点】方向（指向左方），完成一次完整的顺时针循环。'
+  },
+  {
+    type: 'graphical', group: 'graphical', category: '图形推理',
+    question: '观察图中同心圆数量的变化规律，选出接下来的图形：',
+    sequence: [svgNested(1), svgNested(2), svgNested(3), '?'],
+    options: [svgNested(4), svgNested(2), svgNested(5), svgNested(3)],
+    correct: 0, isSvgOptions: true,
+    explanation: '同心圆的数量依次为 1 → 2 → 3 → ?\n\n下一个应为【4 个】同心圆嵌套。规律：每次多套一个圆。'
+  },
+  {
+    type: 'graphical', group: 'graphical', category: '图形推理',
+    question: '观察黑点在 3×3 方格中的位置变化，选出接下来的图形：',
+    sequence: [svgGridDot(0,0), svgGridDot(0,2), svgGridDot(2,2), '?'],
+    options: [svgGridDot(2,0), svgGridDot(1,1), svgGridDot(0,0), svgGridDot(0,1)],
+    correct: 0, isSvgOptions: true,
+    explanation: '黑点沿方格的四个角按顺时针方向移动：\n\n左上 → 右上 → 右下 → ?\n\n下一个应该在【左下】角，完成一次顺时针循环。'
   }
 ];
 
-// ===== 游戏状态 =====
+// ============================================================
+//  游戏状态与逻辑
+// ============================================================
 
+let activeQuestions = [];
 let currentIdx = 0;
 let score = 0;
 let answered = false;
@@ -437,19 +721,74 @@ const app = document.getElementById('app');
 const progressEl = document.getElementById('progress');
 const scoreEl = document.getElementById('score');
 
-function updateMeta() {
-  progressEl.textContent = `第 ${currentIdx + 1} / ${QUESTIONS.length} 题`;
-  scoreEl.textContent = `得分 ${score}`;
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-function render() {
-  if (currentIdx >= QUESTIONS.length) {
+function updateMeta() {
+  if (activeQuestions.length === 0) {
+    progressEl.textContent = `题库 ${ALL_QUESTIONS.length} 题`;
+    scoreEl.textContent = '';
+  } else {
+    progressEl.textContent = `第 ${currentIdx + 1} / ${activeQuestions.length} 题`;
+    scoreEl.textContent = `得分 ${score}`;
+  }
+}
+
+// ---- 开始屏 ----
+function renderStart() {
+  activeQuestions = [];
+  currentIdx = 0;
+  score = 0;
+  updateMeta();
+
+  const counts = { all: ALL_QUESTIONS.length };
+  ALL_QUESTIONS.forEach(q => counts[q.group] = (counts[q.group] || 0) + 1);
+
+  const cards = CATEGORIES.map(c => `
+    <button class="cat-btn ${c.fullWidth ? 'full-width' : ''}" data-id="${c.id}">
+      <div class="cat-label">${c.label}</div>
+      <div class="cat-count">共 ${counts[c.id] || 0} 题</div>
+      <div class="cat-desc">${c.desc}</div>
+    </button>
+  `).join('');
+
+  app.innerHTML = `
+    <div class="start-title">🎯 逻辑推理挑战</div>
+    <div class="start-subtitle">选一个方向开始训练思维</div>
+    <div class="cat-grid">${cards}</div>
+  `;
+
+  app.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => startCategory(btn.dataset.id));
+  });
+}
+
+function startCategory(id) {
+  if (id === 'all') {
+    activeQuestions = shuffle(ALL_QUESTIONS).slice(0, Math.min(20, ALL_QUESTIONS.length));
+  } else {
+    activeQuestions = shuffle(ALL_QUESTIONS.filter(q => q.group === id));
+  }
+  currentIdx = 0;
+  score = 0;
+  renderQuestion();
+}
+
+// ---- 题目屏 ----
+function renderQuestion() {
+  if (currentIdx >= activeQuestions.length) {
     renderResult();
     return;
   }
-  updateMeta();
   answered = false;
-  const q = QUESTIONS[currentIdx];
+  updateMeta();
+  const q = activeQuestions[currentIdx];
 
   let sequenceHtml = '';
   if (q.type === 'graphical') {
@@ -493,17 +832,14 @@ function render() {
 function selectAnswer(idx) {
   if (answered) return;
   answered = true;
-  const q = QUESTIONS[currentIdx];
+  const q = activeQuestions[currentIdx];
   const isCorrect = idx === q.correct;
   if (isCorrect) score++;
 
   app.querySelectorAll('.option').forEach((btn, i) => {
     btn.disabled = true;
-    if (i === idx) {
-      btn.classList.add('selected', isCorrect ? 'correct' : 'wrong');
-    } else if (i === q.correct) {
-      btn.classList.add('reveal-correct');
-    }
+    if (i === idx) btn.classList.add('selected', isCorrect ? 'correct' : 'wrong');
+    else if (i === q.correct) btn.classList.add('reveal-correct');
   });
 
   updateMeta();
@@ -516,24 +852,22 @@ function selectAnswer(idx) {
       <div>${q.explanation}</div>
     </div>
     <button class="next-btn" id="nextBtn">${
-      currentIdx === QUESTIONS.length - 1 ? '🎯 查看最终结果' : '下一题 →'
+      currentIdx === activeQuestions.length - 1 ? '🎯 查看最终结果' : '下一题 →'
     }</button>
   `;
 
   document.getElementById('nextBtn').addEventListener('click', () => {
     currentIdx++;
-    render();
+    renderQuestion();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // 滚动到解析处
-  setTimeout(() => {
-    feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 100);
+  setTimeout(() => feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
 }
 
+// ---- 结果屏 ----
 function renderResult() {
-  const total = QUESTIONS.length;
+  const total = activeQuestions.length;
   const pct = score / total;
   let title, desc;
   if (pct === 1) {
@@ -557,21 +891,28 @@ function renderResult() {
     <div class="result-title">${title}</div>
     <div class="result-score">${score} <small>/ ${total}</small></div>
     <div class="result-desc">${desc}</div>
-    <button class="next-btn" id="restartBtn">🔄 再挑战一次</button>
+    <button class="next-btn" id="restartBtn">🔄 再挑一局同类型</button>
+    <button class="next-btn secondary" id="menuBtn">☰ 换个类型</button>
   `;
 
+  progressEl.textContent = '挑战完成';
+
   document.getElementById('restartBtn').addEventListener('click', () => {
+    activeQuestions = shuffle(activeQuestions);
     currentIdx = 0;
     score = 0;
-    render();
+    renderQuestion();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  progressEl.textContent = '挑战完成';
-  scoreEl.textContent = `得分 ${score}`;
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    renderStart();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 }
 
-render();
+// ---- 启动 ----
+renderStart();
 </script>
 
 </body>
