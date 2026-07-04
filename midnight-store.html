@@ -451,7 +451,7 @@ body {
   backdrop-filter: blur(8px);
   border: 1px solid rgba(245, 200, 138, 0.35);
   max-width: 480px;
-  max-height: 220px;
+  max-height: 130px;
   overflow-y: auto;
   animation: inline-fade-up 0.4s ease-out;
   white-space: pre-wrap;
@@ -507,7 +507,7 @@ body {
 @media (max-width: 640px) {
   .inline-panel { bottom: 40px; }
   .inline-cue { font-size: 11px; letter-spacing: 3px; padding: 4px 12px; }
-  .inline-subtitle { font-size: 12.5px; padding: 10px 14px; line-height: 1.7; max-height: 160px; }
+  .inline-subtitle { font-size: 12.5px; padding: 10px 14px; line-height: 1.7; max-height: 108px; }
   .inline-choice-btn { font-size: 12.5px; padding: 8px 12px; }
 }
 
@@ -3093,6 +3093,8 @@ const state = {
 let _currentBeat = null;
 let _currentEffective = null;
 let _currentBeatIndex = -1;
+let _inlinePages = [];
+let _inlinePageIdx = 0;
 
 // ============================================================
 // HELPERS
@@ -3420,6 +3422,41 @@ function playBeat(beat) {
 }
 
 // ========== Inline beat mode (all beats — no modal overlay) ==========
+function setInlineSubtitleText(text) {
+  const subtitle = $('inline-subtitle');
+  if (!text) {
+    subtitle.classList.add('hidden');
+    subtitle.innerHTML = '';
+    return;
+  }
+  subtitle.innerHTML = renderTextWithQuotes(text);
+  subtitle.classList.remove('hidden');
+  // Restart fade-in animation on each page change
+  subtitle.style.animation = 'none';
+  void subtitle.offsetWidth;
+  subtitle.style.animation = '';
+}
+
+function loadInlinePages(text) {
+  const paras = String(text || '')
+    .split(/\n\n+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+  _inlinePages = paras;
+  _inlinePageIdx = 0;
+  setInlineSubtitleText(paras[0] || '');
+}
+
+// Returns true if we advanced to a new page; false if we were already on the last one.
+function advanceInlinePage() {
+  if (_inlinePageIdx + 1 < _inlinePages.length) {
+    _inlinePageIdx++;
+    setInlineSubtitleText(_inlinePages[_inlinePageIdx]);
+    return true;
+  }
+  return false;
+}
+
 function playInlineBeat(effective) {
   const panel = $('inline-panel');
   const cue = $('inline-cue');
@@ -3427,6 +3464,9 @@ function playInlineBeat(effective) {
   const choicesEl = $('inline-choices');
   const cont = $('inline-continue');
   const hasChoices = effective.choices && effective.choices.length;
+
+  _inlinePages = [];
+  _inlinePageIdx = 0;
 
   if (hasChoices) {
     // Choice beat: cue = prompt, show choices, no subtitle/continue yet
@@ -3444,7 +3484,7 @@ function playInlineBeat(effective) {
       choicesEl.appendChild(btn);
     });
   } else {
-    // Narrative beat: apply effects immediately, then show text as subtitle
+    // Narrative beat: apply effects immediately, then page through the text
     if (effective.effects) effective.effects(state.world);
     const unlocked = contributeToCPs(effective);
     recordNotebook(effective.cps, effective.text);
@@ -3456,13 +3496,8 @@ function playInlineBeat(effective) {
     } else {
       cue.classList.add('hidden');
     }
-    if (effective.text) {
-      subtitle.innerHTML = renderTextWithQuotes(effective.text);
-      subtitle.classList.remove('hidden');
-    } else {
-      subtitle.classList.add('hidden');
-    }
     choicesEl.innerHTML = '';
+    loadInlinePages(effective.text);
     cont.classList.remove('hidden');
   }
 
@@ -3481,18 +3516,14 @@ function pickInlineChoice(idx) {
   recordNotebook(choice.cps, choice.text);
   showCPUnlock(unlocked);
 
-  // Replace choices with subtitle showing the chosen line's follow-up text
+  // Replace choices with paged subtitle for the chosen line's follow-up text
   const cue = $('inline-cue');
-  const subtitle = $('inline-subtitle');
   const choicesEl = $('inline-choices');
   const cont = $('inline-continue');
 
   choicesEl.innerHTML = '';
   cue.textContent = '「 ' + choice.label + ' 」';
-  if (choice.text) {
-    subtitle.innerHTML = renderTextWithQuotes(choice.text);
-    subtitle.classList.remove('hidden');
-  }
+  loadInlinePages(choice.text);
   cont.classList.remove('hidden');
 }
 
@@ -3501,6 +3532,9 @@ function dismissInlineBeat() {
   const cont = $('inline-continue');
   if (panel.classList.contains('hidden')) return;
   if (cont.classList.contains('hidden')) return; // still on choice step
+  // Advance to next paragraph if any remain
+  if (advanceInlinePage()) return;
+  // Last paragraph — close the beat
   panel.classList.add('hidden');
   closeBeat();
 }

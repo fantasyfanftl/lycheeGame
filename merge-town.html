@@ -448,6 +448,20 @@ const TOWNS = [
     '.......',
     '..###..'
   ]},
+  { id:'t11', name:'大都会', x:52, y:10, startCoins: 5000, layout: [
+    '........',
+    '..####..',
+    '........',
+    '........',
+    '.#....#.',
+    '.#....#.',
+    '........',
+    '........',
+    '.#....#.',
+    '.#....#.',
+    '..####..',
+    '........'
+  ]},
 ];
 
 /* =====================================================
@@ -463,7 +477,8 @@ const ACHIEVEMENTS = [
   { id:'a_clear_1',  icon:'🎯', name:'初出茅庐',   desc:'通关第一个村庄',           check:s => countCleared(s) >= 1 },
   { id:'a_clear_3',  icon:'🚶', name:'渐入佳境',   desc:'通关 3 个村庄',            check:s => countCleared(s) >= 3 },
   { id:'a_clear_5',  icon:'🏃', name:'半程英雄',   desc:'通关 5 个村庄',            check:s => countCleared(s) >= 5 },
-  { id:'a_clear_all',icon:'👑', name:'求合体大师', desc:'通关全部 10 个村庄',        check:s => countCleared(s) >= 10 },
+  { id:'a_clear_all',icon:'👑', name:'求合体大师', desc:'通关全部 11 个村庄',        check:s => countCleared(s) >= 11 },
+  { id:'a_metro',    icon:'🏙️', name:'大都会主',  desc:'通关 大都会',              check:s => !!s.towns.t11?.cleared },
   { id:'a_chain3',   icon:'⚡', name:'三连击',    desc:'一次放置触发 3 段连锁',     check:s => s.maxChain >= 3 },
   { id:'a_chain5',   icon:'💥', name:'五连爆炸',   desc:'一次放置触发 5 段连锁',     check:s => s.maxChain >= 5 },
   { id:'a_merge_100',icon:'⭐', name:'勤劳',      desc:'累计合成 100 次',           check:s => s.totalMerges >= 100 },
