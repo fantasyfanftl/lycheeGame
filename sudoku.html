@@ -1411,6 +1411,8 @@ document.getElementById('replayBtn').addEventListener('click', () => { newGame()
 document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'index.html'; });
 
 document.getElementById('startBtn').addEventListener('click', () => {
+  const s = STORIES[currentStoryIdx];
+  document.getElementById('gameTitle').textContent = `${s.emoji} ${s.name} · 案发现场`;
   newGame();
   showScreen('screen-game');
 });
