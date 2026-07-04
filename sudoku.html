@@ -589,20 +589,23 @@
 
 <!-- Title -->
 <div id="screen-title" class="screen active">
-  <div class="title-time">凌晨 · 三时 · 二十分</div>
-  <h1 class="title-main">雪 夜 列 车</h1>
-  <div class="title-sub">京沪线 · 山中停驻 · 一夜风雪</div>
+  <div class="title-time" id="titleTime">— 请 选 一 桩 案 子 —</div>
+  <h1 class="title-main" id="titleMain">案 卷 待 阅</h1>
+  <div class="title-sub" id="titleSub">五桩案子 · 五种时代 · 五种人心</div>
+
+  <div class="case-picker" id="casePicker"></div>
+
   <div class="intro-text" id="introText"></div>
   <div class="rules-card">
     <div class="rules-header">— 你 需 要 知 道 —</div>
     <ul>
-      <li>眼前的数独盘 = <b>车厢搜查图</b></li>
+      <li>眼前的数独盘 = <b>案发现场搜查图</b></li>
       <li>每填对一个 <b>3×3 宫</b> → 搜清一处地方，掉出一条<b>线索</b></li>
       <li>凑齐九处线索后，进入<b>推理定案</b>：指出凶手 · 说明手法</li>
       <li>也可以随时点<b>"推理定案"</b>提前指控——你有把握就下</li>
     </ul>
   </div>
-  <button class="cold-btn" id="startBtn">登 车 调 查</button>
+  <button class="cold-btn" id="startBtn">开 始 调 查</button>
 </div>
 
 <!-- Game -->
