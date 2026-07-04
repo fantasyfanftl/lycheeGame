@@ -451,8 +451,11 @@ body {
   backdrop-filter: blur(8px);
   border: 1px solid rgba(245, 200, 138, 0.35);
   max-width: 480px;
+  max-height: 220px;
+  overflow-y: auto;
   animation: inline-fade-up 0.4s ease-out;
   white-space: pre-wrap;
+  cursor: pointer;
 }
 .inline-subtitle.hidden { display: none; }
 
@@ -504,7 +507,7 @@ body {
 @media (max-width: 640px) {
   .inline-panel { bottom: 40px; }
   .inline-cue { font-size: 11px; letter-spacing: 3px; padding: 4px 12px; }
-  .inline-subtitle { font-size: 12.5px; padding: 10px 14px; line-height: 1.7; }
+  .inline-subtitle { font-size: 12.5px; padding: 10px 14px; line-height: 1.7; max-height: 160px; }
   .inline-choice-btn { font-size: 12.5px; padding: 8px 12px; }
 }
 
@@ -3412,58 +3415,56 @@ function playBeat(beat) {
     state.world.oldmanArrived = true;
   }
 
-  const hasChoices = effective.choices && effective.choices.length;
-  // Choice beats use in-scene cue + inline pills; narrative beats keep modal.
-  if (hasChoices) {
-    playInlineBeat(effective);
-    render();
-    return;
-  }
-
-  const char = CHARACTERS[state.currentPOV];
-  $('dialogue-narrator').textContent = char.name + ' · 视角';
-  $('dialogue-title').textContent = effective.title || '';
-  $('dialogue-text').innerHTML = renderTextWithQuotes(effective.text || '');
-
-  // Reset containers
-  $('observations-container').innerHTML = '';
-  $('choice-container').innerHTML = '';
-  $('dialogue-cp').style.display = 'none';
-
-  // Auto-do: apply effects + track CPs immediately
-  if (effective.effects) effective.effects(state.world);
-  const unlocked = contributeToCPs(effective);
-  recordNotebook(effective.cps, effective.text);
-  showCPUnlock(unlocked);
-  setContinueEnabled(true);
-
-  $('dialogue-overlay').classList.remove('hidden');
+  playInlineBeat(effective);
   render();
 }
 
-// ========== Inline beat mode (choice beats — no modal overlay) ==========
+// ========== Inline beat mode (all beats — no modal overlay) ==========
 function playInlineBeat(effective) {
   const panel = $('inline-panel');
   const cue = $('inline-cue');
   const subtitle = $('inline-subtitle');
   const choicesEl = $('inline-choices');
   const cont = $('inline-continue');
+  const hasChoices = effective.choices && effective.choices.length;
 
-  // Cue text: use choicePrompt if present, else fallback to a short beat title
-  cue.textContent = effective.choicePrompt || ('· ' + (effective.title || '') + ' ·');
-  cue.classList.remove('hidden');
-  subtitle.classList.add('hidden');
-  subtitle.innerHTML = '';
-  cont.classList.add('hidden');
+  if (hasChoices) {
+    // Choice beat: cue = prompt, show choices, no subtitle/continue yet
+    cue.textContent = effective.choicePrompt || ('· ' + (effective.title || '') + ' ·');
+    cue.classList.remove('hidden');
+    subtitle.classList.add('hidden');
+    subtitle.innerHTML = '';
+    cont.classList.add('hidden');
+    choicesEl.innerHTML = '';
+    effective.choices.forEach((choice, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'inline-choice-btn';
+      btn.textContent = choice.label;
+      btn.addEventListener('click', () => pickInlineChoice(idx));
+      choicesEl.appendChild(btn);
+    });
+  } else {
+    // Narrative beat: apply effects immediately, then show text as subtitle
+    if (effective.effects) effective.effects(state.world);
+    const unlocked = contributeToCPs(effective);
+    recordNotebook(effective.cps, effective.text);
+    showCPUnlock(unlocked);
 
-  choicesEl.innerHTML = '';
-  effective.choices.forEach((choice, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'inline-choice-btn';
-    btn.textContent = choice.label;
-    btn.addEventListener('click', () => pickInlineChoice(idx));
-    choicesEl.appendChild(btn);
-  });
+    if (effective.title) {
+      cue.textContent = '· ' + effective.title + ' ·';
+      cue.classList.remove('hidden');
+    } else {
+      cue.classList.add('hidden');
+    }
+    if (effective.text) {
+      subtitle.innerHTML = renderTextWithQuotes(effective.text);
+      subtitle.classList.remove('hidden');
+    } else {
+      subtitle.classList.add('hidden');
+    }
+    choicesEl.innerHTML = '';
+    cont.classList.remove('hidden');
+  }
 
   panel.classList.remove('hidden');
 }

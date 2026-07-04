@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>求合体 · 三消合成</title>
+<title>求合体 · 建造小镇</title>
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -331,17 +331,17 @@ body {
    物品链 (0..10, 共 11 级)
 ===================================================== */
 const ITEMS = [
-  { emoji: '🌱', name: '小草',   color: '#d1fae5', border: '#10b981', price: 5 },
-  { emoji: '🌿', name: '灌木',   color: '#a7f3d0', border: '#059669', price: 30 },
-  { emoji: '🌲', name: '小树',   color: '#6ee7b7', border: '#047857', price: 200 },
-  { emoji: '🌳', name: '大树',   color: '#34d399', border: '#065f46', price: null },
-  { emoji: '🏕️', name: '草房',   color: '#fde68a', border: '#d97706', price: null },
-  { emoji: '🏠', name: '小毡房', color: '#fbbf24', border: '#b45309', price: null },
-  { emoji: '🏘️', name: '大毡房', color: '#f59e0b', border: '#92400e', price: null },
-  { emoji: '🏛️', name: '宫殿',   color: '#fca5a5', border: '#b91c1c', price: null },
-  { emoji: '🕌', name: '金字塔', color: '#f9a8d4', border: '#9d174d', price: null },
-  { emoji: '🗼', name: '光之塔', color: '#c4b5fd', border: '#5b21b6', price: null },
-  { emoji: '💎', name: '大宝箱', color: '#7dd3fc', border: '#0369a1', price: null },
+  { emoji: '🧱', name: '砖块',   color: '#fecaca', border: '#b91c1c', price: 5 },
+  { emoji: '🪵', name: '木材',   color: '#fed7aa', border: '#c2410c', price: 30 },
+  { emoji: '⛺', name: '帐篷',   color: '#d9f99d', border: '#65a30d', price: 200 },
+  { emoji: '🛖', name: '茅屋',   color: '#fef08a', border: '#a16207', price: null },
+  { emoji: '🏚️', name: '木屋',   color: '#d6d3d1', border: '#78716c', price: null },
+  { emoji: '🏠', name: '民房',   color: '#fde68a', border: '#d97706', price: null },
+  { emoji: '🏡', name: '别墅',   color: '#fca5a5', border: '#dc2626', price: null },
+  { emoji: '🏢', name: '公寓楼', color: '#93c5fd', border: '#1e40af', price: null },
+  { emoji: '🏬', name: '大厦',   color: '#a5b4fc', border: '#4338ca', price: null },
+  { emoji: '🕍', name: '教堂',   color: '#d8b4fe', border: '#7c3aed', price: null },
+  { emoji: '🏰', name: '城堡',   color: '#fcd34d', border: '#b45309', price: null },
 ];
 const MAX_LEVEL = ITEMS.length - 1;
 const MERGE_COIN = lvl => Math.pow(3, lvl) * 2;       // 合成到 Lv.N 奖励金币
@@ -455,11 +455,11 @@ const TOWNS = [
 ===================================================== */
 const ACHIEVEMENTS = [
   { id:'a_first',    icon:'✨', name:'初次合体',   desc:'完成第一次合成',           check:s => s.totalMerges >= 1 },
-  { id:'a_bigtree',  icon:'🌳', name:'绿化能手',   desc:'合成出 大树 (Lv.3)',       check:s => s.maxLevel >= 3 },
-  { id:'a_house',    icon:'🏕️', name:'置业',      desc:'合成出 草房 (Lv.4)',       check:s => s.maxLevel >= 4 },
-  { id:'a_palace',   icon:'🏛️', name:'王侯将相',  desc:'合成出 宫殿 (Lv.7)',       check:s => s.maxLevel >= 7 },
-  { id:'a_tower',    icon:'🗼', name:'高塔之光',   desc:'合成出 光之塔 (Lv.9)',     check:s => s.maxLevel >= 9 },
-  { id:'a_chest',    icon:'💎', name:'大宝藏',    desc:'合成出 大宝箱 (Lv.10)',     check:s => s.maxLevel >= 10 },
+  { id:'a_bigtree',  icon:'🛖', name:'搭窝达人',   desc:'合成出 茅屋 (Lv.3)',       check:s => s.maxLevel >= 3 },
+  { id:'a_house',    icon:'🏚️', name:'置业',      desc:'合成出 木屋 (Lv.4)',       check:s => s.maxLevel >= 4 },
+  { id:'a_palace',   icon:'🏢', name:'都市白领',   desc:'合成出 公寓楼 (Lv.7)',      check:s => s.maxLevel >= 7 },
+  { id:'a_tower',    icon:'🕍', name:'神圣殿堂',   desc:'合成出 教堂 (Lv.9)',        check:s => s.maxLevel >= 9 },
+  { id:'a_chest',    icon:'🏰', name:'城堡之王',   desc:'合成出 城堡 (Lv.10)',       check:s => s.maxLevel >= 10 },
   { id:'a_clear_1',  icon:'🎯', name:'初出茅庐',   desc:'通关第一个村庄',           check:s => countCleared(s) >= 1 },
   { id:'a_clear_3',  icon:'🚶', name:'渐入佳境',   desc:'通关 3 个村庄',            check:s => countCleared(s) >= 3 },
   { id:'a_clear_5',  icon:'🏃', name:'半程英雄',   desc:'通关 5 个村庄',            check:s => countCleared(s) >= 5 },
