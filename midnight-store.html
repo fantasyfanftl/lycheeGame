@@ -1524,7 +1524,13 @@ body {
         <div class="scene-card" data-card="doorstep">
           <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg">
             <!-- Sky -->
-            <rect x="0" y="0" width="400" height="380" fill="#2a3448"/>
+            <rect x="0" y="0" width="400" height="330" fill="#2a3448"/>
+            <!-- Distant buildings silhouette -->
+            <path d="M0 320 L0 260 L30 260 L30 240 L60 240 L60 270 L110 270 L110 220 L140 220 L140 250 L200 250 L200 270 L260 270 L260 210 L280 210 L280 250 L340 250 L340 270 L400 270 L400 320 Z" fill="#1e2637" opacity="0.9"/>
+            <!-- Random lit windows in silhouette -->
+            <rect x="40" y="245" width="4" height="4" fill="#f5c88a" opacity="0.7"/>
+            <rect x="120" y="230" width="4" height="4" fill="#f5c88a" opacity="0.5"/>
+            <rect x="285" y="220" width="4" height="4" fill="#f5c88a" opacity="0.6"/>
             <!-- Stars -->
             <circle class="star" cx="60" cy="80" r="1" fill="#f5c88a" opacity="0.8"/>
             <circle class="star star-b" cx="180" cy="40" r="1" fill="#f5c88a" opacity="0.6"/>
@@ -1532,48 +1538,78 @@ body {
             <circle cx="90" cy="140" r="0.8" fill="#f5c88a" opacity="0.5"/>
             <circle cx="260" cy="160" r="1" fill="#f5c88a" opacity="0.6"/>
             <!-- Moon (crescent) -->
-            <circle cx="80" cy="70" r="26" fill="#f5c88a" opacity="0.85"/>
-            <circle cx="90" cy="64" r="24" fill="#2a3448"/>
-            <!-- Lamppost -->
-            <line x1="330" y1="380" x2="330" y2="140" stroke="#3d2f24" stroke-width="2.5"/>
-            <circle class="lamppost-halo" cx="330" cy="135" r="26" fill="#f5c88a"/>
-            <circle cx="330" cy="135" r="14" fill="#f5c88a" opacity="0.4"/>
-            <circle cx="330" cy="135" r="7" fill="#f9f3e8" opacity="0.95"/>
-            <!-- Sidewalk / steps -->
-            <line x1="0" y1="380" x2="400" y2="380" stroke="#c9b48a" stroke-width="0.8" opacity="0.5"/>
-            <line x1="0" y1="410" x2="400" y2="410" stroke="#c9b48a" stroke-width="1"/>
-            <line x1="0" y1="435" x2="400" y2="435" stroke="#c9b48a" stroke-width="1"/>
-            <line x1="0" y1="460" x2="400" y2="460" stroke="#c9b48a" stroke-width="1"/>
-            <!-- Ground fill (dark below) -->
-            <rect x="0" y="460" width="400" height="90" fill="#1e2637"/>
-            <!-- Cat bowl -->
-            <ellipse cx="130" cy="472" rx="20" ry="5" fill="#3d2f24" opacity="0.6"/>
-            <ellipse cx="130" cy="470" rx="20" ry="4.5" fill="none" stroke="#c9b48a" stroke-width="1"/>
-            <text x="130" y="502" font-size="11" fill="#c9b48a" text-anchor="middle" letter-spacing="2" font-family="serif">猫 碗</text>
-            <!-- Small plastic bag / receipt on ground -->
-            <path d="M245 445 Q250 442 254 446 Q256 452 250 454 Q244 452 245 445 Z" fill="#e8dcc4" opacity="0.35" stroke="#c9b48a" stroke-width="0.5"/>
+            <circle cx="60" cy="70" r="26" fill="#f5c88a" opacity="0.85"/>
+            <circle cx="70" cy="64" r="24" fill="#2a3448"/>
 
-            <!-- Cat silhouette -->
-            <g class="cat-body" transform="translate(85, 445)" opacity="0.75">
-              <ellipse cx="0" cy="12" rx="18" ry="7" fill="#d9a760"/>
-              <circle cx="-14" cy="7" r="7" fill="#d9a760"/>
-              <path d="M-19 3 L-16 -3 L-13 3 Z" fill="#d9a760"/>
-              <path d="M-11 3 L-8 -3 L-5 3 Z" fill="#d9a760"/>
+            <!-- Store awning + sign above door -->
+            <rect x="200" y="180" width="200" height="30" fill="#c17b52" stroke="#3d2f24" stroke-width="1"/>
+            <rect x="230" y="185" width="140" height="20" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.6"/>
+            <text x="300" y="199" font-size="11" fill="#3d2f24" text-anchor="middle" letter-spacing="4" font-family="serif">2 4 · 便 利 店</text>
+
+            <!-- Glass door (right) with warm interior glow -->
+            <rect x="240" y="210" width="120" height="230" fill="#f5c88a" opacity="0.35"/>
+            <rect x="240" y="210" width="120" height="230" fill="none" stroke="#8b6f47" stroke-width="1.5"/>
+            <line x1="300" y1="210" x2="300" y2="440" stroke="#8b6f47" stroke-width="1.2"/>
+            <rect x="304" y="315" width="4" height="20" fill="#8b6f47"/>
+            <rect x="292" y="315" width="4" height="20" fill="#8b6f47"/>
+            <!-- Interior blur hint through glass -->
+            <line x1="270" y1="280" x2="270" y2="410" stroke="#c9b48a" stroke-width="8" opacity="0.35"/>
+            <line x1="335" y1="280" x2="335" y2="410" stroke="#c9b48a" stroke-width="6" opacity="0.35"/>
+            <!-- Doorbell above door -->
+            <line x1="330" y1="210" x2="330" y2="220" stroke="#8b6f47" stroke-width="1"/>
+            <path d="M323 226 L323 220 Q323 214 330 214 Q337 214 337 220 L337 226 Z" fill="#f5c88a" stroke="#3d2f24" stroke-width="0.8"/>
+            <line x1="330" y1="226" x2="330" y2="230" stroke="#3d2f24" stroke-width="0.6"/>
+            <circle cx="330" cy="230" r="1" fill="#3d2f24"/>
+            <!-- Open sign hanging inside window -->
+            <rect x="378" y="240" width="18" height="10" fill="#c17b52" stroke="#3d2f24" stroke-width="0.4" transform="rotate(-4 387 245)"/>
+
+            <!-- Lamppost (right, tall) -->
+            <line x1="360" y1="440" x2="360" y2="150" stroke="#3d2f24" stroke-width="2.5"/>
+            <path d="M360 155 L370 145 L378 145" fill="none" stroke="#3d2f24" stroke-width="2"/>
+            <circle class="lamppost-halo" cx="378" cy="150" r="26" fill="#f5c88a"/>
+            <circle cx="378" cy="150" r="14" fill="#f5c88a" opacity="0.4"/>
+            <circle cx="378" cy="150" r="6" fill="#f9f3e8" opacity="0.95"/>
+
+            <!-- ==== Perspective sidewalk (dark asphalt, receding) ==== -->
+            <polygon points="0,550 400,550 400,435 0,435" fill="#3d3a4a" opacity="0.85"/>
+            <!-- Curb / step edge -->
+            <rect x="0" y="428" width="400" height="8" fill="#4a4a5a" opacity="0.7"/>
+            <line x1="0" y1="435" x2="400" y2="435" stroke="#5a5568" stroke-width="1"/>
+            <!-- Crack lines converging in perspective -->
+            <line x1="140" y1="435" x2="130" y2="550" stroke="#5a5568" stroke-width="0.5" opacity="0.4"/>
+            <line x1="260" y1="435" x2="270" y2="550" stroke="#5a5568" stroke-width="0.5" opacity="0.4"/>
+            <line x1="0" y1="490" x2="400" y2="490" stroke="#5a5568" stroke-width="0.4" opacity="0.35"/>
+            <!-- Puddle reflecting lamppost (small, center-front) -->
+            <ellipse cx="240" cy="510" rx="36" ry="7" fill="#5a6580" opacity="0.55"/>
+            <ellipse cx="240" cy="509" rx="30" ry="4" fill="#f5c88a" opacity="0.18"/>
+
+            <!-- Cat bowl (foreground low-left) -->
+            <ellipse cx="80" cy="510" rx="28" ry="7" fill="#3d2f24" opacity="0.65"/>
+            <ellipse cx="80" cy="508" rx="28" ry="6" fill="none" stroke="#c9b48a" stroke-width="1.2"/>
+            <ellipse cx="80" cy="509" rx="20" ry="4" fill="#a0c4d8" opacity="0.35"/>
+
+            <!-- Cat silhouette next to bowl -->
+            <g class="cat-body" transform="translate(140, 490)" opacity="0.85">
+              <ellipse cx="0" cy="12" rx="20" ry="8" fill="#d9a760"/>
+              <circle cx="-16" cy="6" r="8" fill="#d9a760"/>
+              <path d="M-22 1 L-19 -6 L-16 1 Z" fill="#d9a760"/>
+              <path d="M-13 1 L-10 -6 L-7 1 Z" fill="#d9a760"/>
+              <line x1="18" y1="14" x2="30" y2="10" stroke="#d9a760" stroke-width="2.5"/>
             </g>
-            <!-- Glass door edge (right, connecting to interior) -->
-            <rect x="350" y="180" width="50" height="270" fill="#c9b48a" opacity="0.15"/>
-            <line x1="350" y1="180" x2="350" y2="450" stroke="#8b6f47" stroke-width="1.5"/>
-            <!-- Doorbell hanging above door (visual for the ding-dong sound) -->
-            <line x1="375" y1="180" x2="375" y2="188" stroke="#8b6f47" stroke-width="1"/>
-            <path d="M368 195 L368 188 Q368 182 375 182 Q382 182 382 188 L382 195 Z" fill="#f5c88a" stroke="#3d2f24" stroke-width="1"/>
-            <line x1="375" y1="195" x2="375" y2="200" stroke="#3d2f24" stroke-width="0.6"/>
-            <circle cx="375" cy="200" r="1" fill="#3d2f24"/>
-            <text x="375" y="215" font-size="8" fill="#c9b48a" text-anchor="middle" letter-spacing="1" font-family="serif">铃</text>
-            <text x="375" y="220" font-size="10" fill="#c9b48a" text-anchor="middle" letter-spacing="1" font-family="serif">→ 店 内</text>
-          
-            <!-- Clickable zones for objects -->
-            <rect class="obj-zone" data-hs="doorway" x="345" y="180" width="55" height="280"/>
-            <rect class="obj-zone" data-hs="catBowl" x="60" y="440" width="140" height="80"/>
+
+            <!-- Fire hydrant / metal pole between door and lamppost -->
+            <rect x="185" y="410" width="10" height="30" fill="#c17b52" stroke="#3d2f24" stroke-width="0.8"/>
+            <rect x="182" y="405" width="16" height="8" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.6"/>
+            <circle cx="190" cy="425" r="2" fill="#3d2f24"/>
+
+            <!-- Discarded plastic bag / receipt on sidewalk -->
+            <path d="M195 500 Q202 496 208 502 Q212 510 204 512 Q194 510 195 500 Z" fill="#e8dcc4" opacity="0.4" stroke="#c9b48a" stroke-width="0.4"/>
+            <!-- Cigarette butt near curb -->
+            <rect x="335" y="518" width="6" height="1.5" fill="#f9f3e8" opacity="0.8"/>
+            <rect x="341" y="518" width="1.5" height="1.5" fill="#3d2f24" opacity="0.6"/>
+
+            <rect class="obj-zone" data-hs="doorway" x="235" y="205" width="130" height="235"/>
+            <rect class="obj-zone" data-hs="catBowl" x="45" y="480" width="140" height="55"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="doorstep"></div>
           <div class="chars-layer" data-card-chars="doorstep"></div>
