@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>七巧板</title>
+<title>七巧板 · 山水诗</title>
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Songti SC', 'STSong', 'Segoe UI', serif;
+    font-family: 'Songti SC', 'STSong', 'Songti TC', Georgia, serif;
     background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
     min-height: 100vh;
     display: flex;
@@ -21,9 +21,9 @@
   }
   .container {
     background: #fefbf5;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 20px 60px rgba(120, 90, 60, 0.2), inset 0 0 40px rgba(200, 170, 130, 0.08);
-    padding: 22px;
+    padding: 20px;
     max-width: 640px;
     width: 100%;
     border: 1px solid rgba(160, 130, 90, 0.25);
@@ -37,44 +37,39 @@
     letter-spacing: 2px;
   }
   .back-link:hover { color: #6b4820; }
-  h1 {
-    color: #3d2f24;
-    font-size: 26px;
-    letter-spacing: 8px;
-    margin-bottom: 4px;
-    text-align: center;
-  }
-  .subtitle {
+  h1 { color: #3d2f24; font-size: 22px; letter-spacing: 6px; margin-bottom: 4px; text-align: center; }
+  .subtitle { text-align: center; color: #907050; font-size: 12px; letter-spacing: 3px; margin-bottom: 14px; font-style: italic; }
+
+  .progress {
     text-align: center;
     color: #907050;
-    font-size: 12px;
-    letter-spacing: 3px;
-    margin-bottom: 16px;
-    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
   }
+  .progress b { color: #a67240; font-weight: 700; }
 
   .target-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     gap: 6px;
-    justify-content: center;
-    flex-wrap: wrap;
     margin-bottom: 14px;
   }
   .target-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px 8px;
+    padding: 6px 4px;
     background: transparent;
     border: 1.5px solid rgba(160, 130, 90, 0.35);
     color: #6b4820;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-family: inherit;
     font-size: 11px;
     letter-spacing: 1px;
     transition: all 0.2s;
-    min-width: 60px;
+    position: relative;
   }
   .target-btn:hover { background: rgba(200, 170, 130, 0.15); }
   .target-btn.active {
@@ -82,24 +77,34 @@
     border-color: #a67240;
     color: #fff;
   }
-  .target-btn .emoji {
-    font-size: 20px;
-    margin-bottom: 2px;
+  .target-btn.done {
+    background: #e8d4a8;
+    border-color: #a67240;
   }
+  .target-btn.done::after {
+    content: '✓';
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 10px;
+    color: #a67240;
+    font-weight: bold;
+  }
+  .target-btn .emoji { font-size: 20px; margin-bottom: 2px; }
 
   .canvas-wrap {
     position: relative;
     aspect-ratio: 1;
     background:
-      linear-gradient(45deg, rgba(200, 170, 130, 0.05) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(200, 170, 130, 0.05) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(200, 170, 130, 0.05) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(200, 170, 130, 0.05) 75%),
+      linear-gradient(45deg, rgba(200, 170, 130, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(200, 170, 130, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(200, 170, 130, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(200, 170, 130, 0.06) 75%),
       #faf3e6;
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    background-size: 24px 24px;
+    background-position: 0 0, 0 12px, 12px -12px, -12px 0;
     border: 1px solid rgba(160, 130, 90, 0.3);
-    border-radius: 4px;
+    border-radius: 6px;
     margin-bottom: 12px;
     overflow: hidden;
   }
@@ -111,25 +116,32 @@
     filter: drop-shadow(0 2px 4px rgba(80, 50, 20, 0.15));
   }
   .piece.selected {
-    filter: drop-shadow(0 0 8px rgba(200, 120, 60, 0.6)) drop-shadow(0 2px 4px rgba(80, 50, 20, 0.2));
+    filter: drop-shadow(0 0 10px rgba(200, 120, 60, 0.7)) drop-shadow(0 2px 4px rgba(80, 50, 20, 0.2));
   }
+  .piece.snapped { filter: drop-shadow(0 0 8px rgba(180, 130, 60, 0.4)) drop-shadow(0 2px 4px rgba(80, 50, 20, 0.2)); }
   .piece:active { cursor: grabbing; }
-  .target-silhouette {
-    fill: rgba(80, 55, 30, 0.14);
-    stroke: rgba(80, 55, 30, 0.28);
-    stroke-width: 1;
+
+  .target-slot {
+    fill: rgba(80, 55, 30, 0.10);
+    stroke: rgba(80, 55, 30, 0.35);
+    stroke-width: 1.5;
+    stroke-dasharray: 3, 3;
     pointer-events: none;
+  }
+  .target-slot.filled {
+    stroke-dasharray: none;
+    stroke: rgba(180, 130, 60, 0);
+    fill: transparent;
   }
 
   .controls {
     display: flex;
     gap: 6px;
     margin-bottom: 10px;
-    flex-wrap: wrap;
   }
   .controls button {
     flex: 1;
-    min-width: 70px;
+    min-width: 66px;
     padding: 9px 0;
     font-size: 13px;
     letter-spacing: 2px;
@@ -164,20 +176,130 @@
     color: #6b4820;
   }
 
+  /* Poem overlay on win */
+  .poem-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(60, 45, 30, 0.7);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .poem-modal.show { display: flex; opacity: 1; }
+  .poem-modal .card {
+    background: #fefbf5;
+    border: 2px solid #a67240;
+    border-radius: 6px;
+    padding: 40px 34px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    position: relative;
+    animation: cardIn 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .poem-modal .seal {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 30px;
+    height: 30px;
+    background: #a67240;
+    color: #fff;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    letter-spacing: -1px;
+    line-height: 1.2;
+    transform: rotate(3deg);
+  }
+  .poem-modal .theme {
+    font-size: 30px;
+    letter-spacing: 6px;
+    color: #6b4820;
+    margin-bottom: 6px;
+  }
+  .poem-modal .theme-sub {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: #a67240;
+    margin-bottom: 22px;
+    font-style: italic;
+  }
+  .poem-modal .verse {
+    font-size: 20px;
+    line-height: 2.2;
+    color: #3d2f24;
+    letter-spacing: 4px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(160, 130, 90, 0.25);
+    border-bottom: 1px solid rgba(160, 130, 90, 0.25);
+    margin-bottom: 12px;
+    white-space: pre-line;
+  }
+  .poem-modal .poet {
+    font-size: 13px;
+    color: #a67240;
+    letter-spacing: 2px;
+    margin-bottom: 22px;
+    font-style: italic;
+  }
+  .poem-modal .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .poem-modal button {
+    padding: 8px 22px;
+    background: #a67240;
+    color: #fff;
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .poem-modal button:hover { background: #6b4820; }
+  .poem-modal button.secondary {
+    background: transparent;
+    color: #6b4820;
+    border: 1px solid #a67240;
+  }
+  .poem-modal button.secondary:hover { background: rgba(200, 170, 130, 0.2); }
+
   @media (max-width: 480px) {
-    .container { padding: 16px; }
-    h1 { font-size: 22px; letter-spacing: 5px; }
+    .container { padding: 16px 14px; }
+    h1 { font-size: 20px; letter-spacing: 4px; }
     .controls button { min-width: 60px; font-size: 12px; padding: 8px 4px; }
-    .target-btn { min-width: 54px; font-size: 10px; }
+    .target-btn { min-width: 60px; font-size: 10px; }
     .target-btn .emoji { font-size: 18px; }
+    .poem-modal .card { padding: 30px 24px; }
+    .poem-modal .theme { font-size: 24px; }
+    .poem-modal .verse { font-size: 17px; letter-spacing: 3px; }
   }
 </style>
 </head>
 <body>
 <div class="container">
   <a href="index.html" class="back-link">← 返回荔枝游戏</a>
-  <h1>七 巧 板</h1>
-  <div class="subtitle">— 七片 · 千形 · 无穷 —</div>
+  <h1>七 巧 · 山 水</h1>
+  <div class="subtitle">— 拼一景 · 得一诗 —</div>
+
+  <div class="progress">
+    已收诗 <b id="progressCount">0</b> / <b id="progressTotal">6</b>
+  </div>
 
   <div class="target-row" id="targetRow"></div>
 
@@ -189,141 +311,164 @@
     <button id="rotateBtn">↻ 旋转</button>
     <button id="flipBtn">⇋ 翻转</button>
     <button id="resetBtn">摊开</button>
-    <button id="clearTargetBtn" class="primary">清目标</button>
+    <button id="clearTargetBtn" class="primary">清参照</button>
   </div>
 
   <div class="hint">
-    <kbd>点</kbd>选中 · <kbd>拖</kbd>移动 · 双击旋转 · 平行四边形可翻转
+    <kbd>点</kbd>选中 · <kbd>拖</kbd>移动 · 双击/R 旋转 · F 翻转 · 拖近吸附
+  </div>
+</div>
+
+<div class="poem-modal" id="poemModal">
+  <div class="card">
+    <div class="seal">得<br>诗</div>
+    <div class="theme" id="poemTheme"></div>
+    <div class="theme-sub" id="poemSub"></div>
+    <div class="verse" id="poemVerse"></div>
+    <div class="poet" id="poemPoet"></div>
+    <div class="actions">
+      <button id="nextTargetBtn">下一景</button>
+      <button id="closePoemBtn" class="secondary">继续赏</button>
+    </div>
   </div>
 </div>
 
 <script>
 const svg = document.getElementById('canvas');
 
-// Piece defs, centered at (0,0) so rotation is around centroid
-const U = 40;  // Unit size in SVG coords
+// Piece geometry — centered so rotation is around centroid
+const U = 40;
 const SQRT2 = Math.SQRT2;
-function center(pts) {
+function centerPts(pts) {
   const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
   const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
   return pts.map(([x, y]) => [x - cx, y - cy]);
 }
 const DEFS = {
-  bigTri:   center([[0,0], [2*U, 0], [0, 2*U]]),       // legs 2u
-  medTri:   center([[0,0], [SQRT2*U, 0], [0, SQRT2*U]]),  // legs √2u
-  smallTri: center([[0,0], [U, 0], [0, U]]),           // legs u
-  square:   center([[0,0], [U, 0], [U, U], [0, U]]),
-  paralle:  center([[0,0], [U, 0], [2*U, U], [U, U]]),
+  bigTri:   centerPts([[0,0], [2*U, 0], [0, 2*U]]),
+  medTri:   centerPts([[0,0], [SQRT2*U, 0], [0, SQRT2*U]]),
+  smallTri: centerPts([[0,0], [U, 0], [0, U]]),
+  square:   centerPts([[0,0], [U, 0], [U, U], [0, U]]),
+  paralle:  centerPts([[0,0], [U, 0], [2*U, U], [U, U]]),
 };
 
-// 7 pieces with distinct colors
 const COLORS = ['#e07a5f', '#3d5a80', '#81b29a', '#f2cc8f', '#a08fdc', '#c17b52', '#5b8ba3'];
 
-// Initial "scattered" layout — pieces placed around the canvas
 const INITIAL = [
-  { type: 'bigTri',   x: 100, y: 100, rot: 0, flipped: false },
-  { type: 'bigTri',   x: 300, y: 100, rot: 180, flipped: false },
-  { type: 'medTri',   x: 200, y: 60, rot: 45, flipped: false },
-  { type: 'smallTri', x: 60,  y: 250, rot: 0, flipped: false },
+  { type: 'bigTri',   x: 80,  y: 90,  rot: 0,   flipped: false },
+  { type: 'bigTri',   x: 320, y: 90,  rot: 90,  flipped: false },
+  { type: 'medTri',   x: 200, y: 60,  rot: 45,  flipped: false },
+  { type: 'smallTri', x: 60,  y: 250, rot: 0,   flipped: false },
   { type: 'smallTri', x: 340, y: 250, rot: 180, flipped: false },
-  { type: 'square',   x: 200, y: 300, rot: 0, flipped: false },
-  { type: 'paralle',  x: 200, y: 200, rot: 0, flipped: false },
+  { type: 'square',   x: 200, y: 300, rot: 0,   flipped: false },
+  { type: 'paralle',  x: 200, y: 200, rot: 0,   flipped: false },
 ];
 
-let pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
+let pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i], snapped: false, slotIdx: -1 }));
 let selectedIdx = null;
 
-// Target silhouettes — arrangements of the 7 pieces to form silhouette shapes
-// Each entry: { name, emoji, arrangement: [{type, x, y, rot, flipped}, ...] }
-// Silhouette is rendered by drawing all pieces at target positions in dark color.
+// TARGETS with poems. positions are guides — pieces will snap to these.
 const TARGETS = [
   {
-    name: '正方形',
-    emoji: '⬜',
+    name: '月', emoji: '🌙',
+    verse: '举 头 望 明 月\n低 头 思 故 乡',
+    poet: '李白 · 静夜思',
+    sub: '一片乡愁',
     arrangement: [
-      { type: 'bigTri',   x: 143, y: 143, rot: 45,  flipped: false },
-      { type: 'bigTri',   x: 257, y: 257, rot: 225, flipped: false },
-      { type: 'medTri',   x: 280, y: 120, rot: 180, flipped: false },
-      { type: 'smallTri', x: 200, y: 143, rot: 315, flipped: false },
-      { type: 'smallTri', x: 143, y: 200, rot: 45,  flipped: false },
-      { type: 'square',   x: 228, y: 172, rot: 45,  flipped: false },
-      { type: 'paralle',  x: 172, y: 228, rot: 45,  flipped: false },
+      { type: 'square',   x: 200, y: 160, rot: 45,  flipped: false },
+      { type: 'smallTri', x: 172, y: 100, rot: 315, flipped: false },
+      { type: 'smallTri', x: 228, y: 100, rot: 225, flipped: false },
+      { type: 'medTri',   x: 200, y: 240, rot: 180, flipped: false },
+      { type: 'bigTri',   x: 130, y: 300, rot: 0,   flipped: false },
+      { type: 'bigTri',   x: 270, y: 300, rot: 270, flipped: false },
+      { type: 'paralle',  x: 200, y: 340, rot: 0,   flipped: false },
     ],
   },
   {
-    name: '猫',
-    emoji: '🐱',
-    arrangement: [
-      { type: 'bigTri',   x: 140, y: 200, rot: 0,   flipped: false },
-      { type: 'bigTri',   x: 260, y: 200, rot: 270, flipped: false },
-      { type: 'medTri',   x: 200, y: 100, rot: 0,   flipped: false },
-      { type: 'smallTri', x: 150, y: 60,  rot: 0,   flipped: false },
-      { type: 'smallTri', x: 250, y: 60,  rot: 270, flipped: false },
-      { type: 'square',   x: 200, y: 240, rot: 0,   flipped: false },
-      { type: 'paralle',  x: 320, y: 260, rot: 0,   flipped: false },
-    ],
-  },
-  {
-    name: '船',
-    emoji: '⛵',
+    name: '舟', emoji: '⛵',
+    verse: '孤 舟 蓑 笠 翁\n独 钓 寒 江 雪',
+    poet: '柳宗元 · 江雪',
+    sub: '天地寂寂',
     arrangement: [
       { type: 'bigTri',   x: 130, y: 250, rot: 0,   flipped: false },
       { type: 'bigTri',   x: 270, y: 250, rot: 270, flipped: false },
       { type: 'medTri',   x: 200, y: 300, rot: 180, flipped: false },
       { type: 'smallTri', x: 200, y: 160, rot: 0,   flipped: false },
-      { type: 'smallTri', x: 200, y: 90,  rot: 0,   flipped: false },
+      { type: 'smallTri', x: 200, y: 100, rot: 0,   flipped: false },
       { type: 'square',   x: 200, y: 200, rot: 45,  flipped: false },
       { type: 'paralle',  x: 200, y: 340, rot: 0,   flipped: false },
     ],
   },
   {
-    name: '兔',
-    emoji: '🐰',
+    name: '山', emoji: '⛰',
+    verse: '不 识 庐 山 真 面 目\n只 缘 身 在 此 山 中',
+    poet: '苏轼 · 题西林壁',
+    sub: '身在局中',
     arrangement: [
-      { type: 'bigTri',   x: 200, y: 240, rot: 0,   flipped: false },
-      { type: 'bigTri',   x: 240, y: 220, rot: 180, flipped: false },
-      { type: 'medTri',   x: 200, y: 120, rot: 0,   flipped: false },
-      { type: 'smallTri', x: 160, y: 60,  rot: 45,  flipped: false },
-      { type: 'smallTri', x: 240, y: 60,  rot: 315, flipped: false },
-      { type: 'square',   x: 260, y: 300, rot: 45,  flipped: false },
-      { type: 'paralle',  x: 140, y: 300, rot: 90,  flipped: false },
+      { type: 'bigTri',   x: 130, y: 250, rot: 0,   flipped: false },
+      { type: 'bigTri',   x: 270, y: 250, rot: 270, flipped: false },
+      { type: 'medTri',   x: 200, y: 200, rot: 180, flipped: false },
+      { type: 'smallTri', x: 100, y: 180, rot: 0,   flipped: false },
+      { type: 'smallTri', x: 300, y: 180, rot: 180, flipped: false },
+      { type: 'square',   x: 200, y: 280, rot: 0,   flipped: false },
+      { type: 'paralle',  x: 200, y: 340, rot: 0,   flipped: false },
     ],
   },
   {
-    name: '人',
-    emoji: '🏃',
+    name: '松', emoji: '🌲',
+    verse: '岁 寒\n然 后 知 松 柏 之 后 凋 也',
+    poet: '孔子 · 论语',
+    sub: '傲雪凌霜',
     arrangement: [
-      { type: 'bigTri',   x: 180, y: 200, rot: 315, flipped: false },
-      { type: 'bigTri',   x: 220, y: 260, rot: 90,  flipped: false },
-      { type: 'medTri',   x: 200, y: 100, rot: 0,   flipped: false },
-      { type: 'smallTri', x: 250, y: 180, rot: 45,  flipped: false },
-      { type: 'smallTri', x: 260, y: 340, rot: 90,  flipped: false },
-      { type: 'square',   x: 200, y: 60,  rot: 45,  flipped: false },
-      { type: 'paralle',  x: 140, y: 340, rot: 270, flipped: false },
+      { type: 'bigTri',   x: 200, y: 100, rot: 180, flipped: false },
+      { type: 'medTri',   x: 200, y: 180, rot: 180, flipped: false },
+      { type: 'smallTri', x: 200, y: 240, rot: 180, flipped: false },
+      { type: 'smallTri', x: 200, y: 280, rot: 180, flipped: false },
+      { type: 'square',   x: 200, y: 320, rot: 0,   flipped: false },
+      { type: 'bigTri',   x: 130, y: 200, rot: 90,  flipped: false },
+      { type: 'paralle',  x: 270, y: 200, rot: 45,  flipped: false },
     ],
   },
   {
-    name: '房子',
-    emoji: '🏠',
+    name: '亭', emoji: '⛩',
+    verse: '亭 亭 山 上 松\n瑟 瑟 谷 中 风',
+    poet: '刘桢 · 赠从弟',
+    sub: '一亭一世界',
     arrangement: [
       { type: 'bigTri',   x: 160, y: 130, rot: 90,  flipped: false },
       { type: 'bigTri',   x: 240, y: 130, rot: 180, flipped: false },
-      { type: 'medTri',   x: 200, y: 60,  rot: 0,   flipped: false },
+      { type: 'medTri',   x: 200, y: 70,  rot: 0,   flipped: false },
       { type: 'smallTri', x: 140, y: 220, rot: 0,   flipped: false },
       { type: 'smallTri', x: 260, y: 220, rot: 180, flipped: false },
       { type: 'square',   x: 200, y: 240, rot: 0,   flipped: false },
       { type: 'paralle',  x: 200, y: 310, rot: 0,   flipped: false },
     ],
   },
+  {
+    name: '云', emoji: '☁',
+    verse: '行 到 水 穷 处\n坐 看 云 起 时',
+    poet: '王维 · 终南别业',
+    sub: '闲云自舒',
+    arrangement: [
+      { type: 'bigTri',   x: 130, y: 180, rot: 45,  flipped: false },
+      { type: 'bigTri',   x: 270, y: 180, rot: 225, flipped: false },
+      { type: 'medTri',   x: 200, y: 140, rot: 180, flipped: false },
+      { type: 'smallTri', x: 100, y: 240, rot: 45,  flipped: false },
+      { type: 'smallTri', x: 300, y: 240, rot: 225, flipped: false },
+      { type: 'square',   x: 200, y: 240, rot: 45,  flipped: false },
+      { type: 'paralle',  x: 200, y: 310, rot: 0,   flipped: false },
+    ],
+  },
 ];
 
-let currentTarget = null;
+let currentTargetIdx = -1;
+let filledSlots = new Set();
+let completedTargets = new Set(JSON.parse(localStorage.getItem('qixiaoBanPoems') || '[]'));
 
 // ============ Render ============
 function pointsStr(pts) {
   return pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
 }
-
 function pieceTransform(p) {
   const flipScale = p.flipped ? -1 : 1;
   return `translate(${p.x} ${p.y}) rotate(${p.rot}) scale(${flipScale} 1)`;
@@ -331,20 +476,24 @@ function pieceTransform(p) {
 
 function render() {
   let html = '';
-  // Draw target silhouette first (behind)
-  if (currentTarget) {
-    for (const slot of currentTarget.arrangement) {
+  // Target slot silhouettes (dashed outlines behind pieces)
+  if (currentTargetIdx >= 0) {
+    const target = TARGETS[currentTargetIdx];
+    target.arrangement.forEach((slot, i) => {
       const pts = pointsStr(DEFS[slot.type]);
       const flipScale = slot.flipped ? -1 : 1;
-      html += `<polygon class="target-silhouette" points="${pts}"
+      const cls = filledSlots.has(i) ? 'target-slot filled' : 'target-slot';
+      html += `<polygon class="${cls}" points="${pts}"
                         transform="translate(${slot.x} ${slot.y}) rotate(${slot.rot}) scale(${flipScale} 1)" />`;
-    }
+    });
   }
-  // Draw pieces
+  // Pieces
   for (const p of pieces) {
     const pts = pointsStr(DEFS[p.type]);
-    const cls = 'piece' + (p.idx === selectedIdx ? ' selected' : '');
-    html += `<polygon class="${cls}" points="${pts}"
+    const classes = ['piece'];
+    if (p.idx === selectedIdx) classes.push('selected');
+    if (p.snapped) classes.push('snapped');
+    html += `<polygon class="${classes.join(' ')}" points="${pts}"
                       fill="${p.color}"
                       stroke="rgba(0,0,0,0.15)" stroke-width="1"
                       transform="${pieceTransform(p)}"
@@ -353,28 +502,147 @@ function render() {
   svg.innerHTML = html;
 }
 
+// Optimized: update only the dragged piece's transform (no full re-render)
+function updateDraggedTransform(p) {
+  const el = svg.querySelector(`[data-idx="${p.idx}"]`);
+  if (el) el.setAttribute('transform', pieceTransform(p));
+}
+
 // ============ Target row ============
 function initTargetRow() {
   const row = document.getElementById('targetRow');
-  row.innerHTML = TARGETS.map((t, i) => `
-    <button class="target-btn" data-idx="${i}">
+  document.getElementById('progressTotal').textContent = TARGETS.length;
+  updateProgress();
+  row.innerHTML = TARGETS.map((t, i) => {
+    const doneCls = completedTargets.has(t.name) ? 'done' : '';
+    return `<button class="target-btn ${doneCls}" data-idx="${i}">
       <span class="emoji">${t.emoji}</span>
       <span>${t.name}</span>
-    </button>
-  `).join('');
+    </button>`;
+  }).join('');
   row.addEventListener('click', e => {
     const btn = e.target.closest('.target-btn');
     if (!btn) return;
     const idx = +btn.dataset.idx;
-    if (currentTarget === TARGETS[idx]) {
-      currentTarget = null;
-      row.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
-    } else {
-      currentTarget = TARGETS[idx];
-      row.querySelectorAll('.target-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-    }
-    render();
+    setTarget(idx === currentTargetIdx ? -1 : idx);
   });
+}
+
+function updateProgress() {
+  document.getElementById('progressCount').textContent = completedTargets.size;
+}
+
+function refreshTargetButtons() {
+  document.querySelectorAll('.target-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === currentTargetIdx);
+    b.classList.toggle('done', completedTargets.has(TARGETS[i].name));
+  });
+}
+
+function setTarget(idx) {
+  currentTargetIdx = idx;
+  filledSlots = new Set();
+  // Unsnap all pieces
+  pieces.forEach(p => { p.snapped = false; p.slotIdx = -1; });
+  refreshTargetButtons();
+  render();
+}
+
+// ============ Snap logic ============
+const SNAP_DIST = 42;   // px in SVG coords
+const SNAP_ANGLE = 30;  // degrees tolerance
+
+function angleDiff(a, b) {
+  let d = Math.abs((a - b) % 360);
+  if (d > 180) d = 360 - d;
+  return d;
+}
+
+function trySnap(piece) {
+  if (currentTargetIdx < 0) return false;
+  const target = TARGETS[currentTargetIdx];
+  let bestSlot = -1;
+  let bestDist = Infinity;
+  target.arrangement.forEach((slot, i) => {
+    if (filledSlots.has(i)) return;
+    if (slot.type !== piece.type) return;
+    const dx = piece.x - slot.x;
+    const dy = piece.y - slot.y;
+    const d = Math.sqrt(dx * dx + dy * dy);
+    if (d < SNAP_DIST && d < bestDist) {
+      // Check rotation (with type-specific symmetry allowance)
+      const symmetry = symmetryOf(piece.type);  // Multiple of what rotation makes piece look same
+      const targetRot = slot.rot % symmetry;
+      const pieceRot = piece.rot % symmetry;
+      const ad = angleDiff(pieceRot, targetRot);
+      if (ad < SNAP_ANGLE) {
+        bestSlot = i;
+        bestDist = d;
+      }
+    }
+  });
+  if (bestSlot >= 0) {
+    const slot = target.arrangement[bestSlot];
+    piece.x = slot.x;
+    piece.y = slot.y;
+    piece.rot = slot.rot;
+    piece.flipped = slot.flipped;
+    piece.snapped = true;
+    piece.slotIdx = bestSlot;
+    filledSlots.add(bestSlot);
+    if (navigator.vibrate) navigator.vibrate(15);
+    // All slots filled?
+    if (filledSlots.size === target.arrangement.length) {
+      onComplete(currentTargetIdx);
+    }
+    return true;
+  }
+  return false;
+}
+
+// Rotational symmetry period (in degrees) — pieces look same after rotating by this
+function symmetryOf(type) {
+  if (type === 'square') return 90;  // Square repeats every 90°
+  // Triangles and parallelogram: symmetric at 360° only
+  return 360;
+}
+
+function onComplete(idx) {
+  const target = TARGETS[idx];
+  completedTargets.add(target.name);
+  localStorage.setItem('qixiaoBanPoems', JSON.stringify([...completedTargets]));
+  updateProgress();
+  refreshTargetButtons();
+  // Reveal poem
+  setTimeout(() => showPoem(target), 400);
+}
+
+// ============ Poem modal ============
+const poemModal = document.getElementById('poemModal');
+function showPoem(target) {
+  document.getElementById('poemTheme').textContent = target.name;
+  document.getElementById('poemSub').textContent = target.sub;
+  document.getElementById('poemVerse').textContent = target.verse;
+  document.getElementById('poemPoet').textContent = '— ' + target.poet;
+  poemModal.classList.add('show');
+}
+function hidePoem() { poemModal.classList.remove('show'); }
+document.getElementById('closePoemBtn').addEventListener('click', hidePoem);
+document.getElementById('nextTargetBtn').addEventListener('click', () => {
+  hidePoem();
+  // Find next uncompleted target
+  const next = TARGETS.findIndex((t, i) => i > currentTargetIdx && !completedTargets.has(t.name));
+  const wrap = TARGETS.findIndex(t => !completedTargets.has(t.name));
+  const targetIdx = next >= 0 ? next : (wrap >= 0 ? wrap : 0);
+  resetPieces();
+  setTarget(targetIdx);
+});
+poemModal.addEventListener('click', e => { if (e.target === poemModal) hidePoem(); });
+
+function resetPieces() {
+  pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i], snapped: false, slotIdx: -1 }));
+  selectedIdx = null;
+  filledSlots = new Set();
 }
 
 // ============ Interaction ============
@@ -399,11 +667,12 @@ svg.addEventListener('pointerdown', e => {
   }
   const i = +idx;
   const now = Date.now();
-  // Double-tap → rotate
   if (lastTapIdx === i && now - lastTapTime < 350) {
+    // Double-tap → rotate
     pieces[i].rot = (pieces[i].rot + 45) % 360;
-    lastTapTime = 0;
-    lastTapIdx = null;
+    pieces[i].snapped = false;
+    if (pieces[i].slotIdx >= 0) { filledSlots.delete(pieces[i].slotIdx); pieces[i].slotIdx = -1; }
+    lastTapTime = 0; lastTapIdx = null;
     selectedIdx = i;
     render();
     return;
@@ -414,8 +683,14 @@ svg.addEventListener('pointerdown', e => {
   const svgPos = svgCoords(e.clientX, e.clientY);
   dragStart = { svgX: svgPos.x, svgY: svgPos.y, pieceX: pieces[i].x, pieceY: pieces[i].y };
   dragging = pieces[i];
+  // Unsnap on grab
+  if (dragging.snapped) {
+    filledSlots.delete(dragging.slotIdx);
+    dragging.snapped = false;
+    dragging.slotIdx = -1;
+  }
   try { svg.setPointerCapture(e.pointerId); } catch (_) {}
-  // Bring dragging piece to top by moving to end of array
+  // Bring to top
   pieces = pieces.filter(p => p !== dragging).concat([dragging]);
   render();
 });
@@ -425,52 +700,52 @@ svg.addEventListener('pointermove', e => {
   const svgPos = svgCoords(e.clientX, e.clientY);
   dragging.x = dragStart.pieceX + (svgPos.x - dragStart.svgX);
   dragging.y = dragStart.pieceY + (svgPos.y - dragStart.svgY);
-  render();
+  updateDraggedTransform(dragging);  // Optimized: don't re-render everything
 });
 
 svg.addEventListener('pointerup', e => {
   if (dragging) {
     try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+    trySnap(dragging);
     dragging = null;
     dragStart = null;
+    render();
   }
 });
 svg.addEventListener('pointercancel', () => { dragging = null; dragStart = null; });
 
-// ============ Controls ============
+// Controls
 document.getElementById('rotateBtn').addEventListener('click', () => {
   if (selectedIdx === null) return;
-  pieces[selectedIdx].rot = (pieces[selectedIdx].rot + 45) % 360;
+  const p = pieces[selectedIdx];
+  p.rot = (p.rot + 45) % 360;
+  if (p.snapped) { filledSlots.delete(p.slotIdx); p.snapped = false; p.slotIdx = -1; }
   render();
 });
 document.getElementById('flipBtn').addEventListener('click', () => {
   if (selectedIdx === null) return;
-  pieces[selectedIdx].flipped = !pieces[selectedIdx].flipped;
+  const p = pieces[selectedIdx];
+  p.flipped = !p.flipped;
+  if (p.snapped) { filledSlots.delete(p.slotIdx); p.snapped = false; p.slotIdx = -1; }
   render();
 });
 document.getElementById('resetBtn').addEventListener('click', () => {
-  pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
-  selectedIdx = null;
+  resetPieces();
   render();
 });
 document.getElementById('clearTargetBtn').addEventListener('click', () => {
-  currentTarget = null;
-  document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
-  render();
+  setTarget(-1);
 });
 
 // Keyboard
 document.addEventListener('keydown', e => {
   if (selectedIdx === null) return;
   if (e.key === 'r' || e.key === 'R') {
-    pieces[selectedIdx].rot = (pieces[selectedIdx].rot + 45) % 360;
-    render();
+    document.getElementById('rotateBtn').click();
   } else if (e.key === 'f' || e.key === 'F') {
-    pieces[selectedIdx].flipped = !pieces[selectedIdx].flipped;
-    render();
+    document.getElementById('flipBtn').click();
   } else if (e.key === 'Escape') {
-    selectedIdx = null;
-    render();
+    selectedIdx = null; render();
   }
 });
 
