@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>合并小镇 · 动物大合体</title>
+<title>求合体 · 三消合成</title>
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
-  background: linear-gradient(180deg, #7dd3fc 0%, #bfdbfe 50%, #e0e7ff 100%);
+  background: #0f172a;
   color: #1f2937;
   user-select: none;
   -webkit-user-select: none;
@@ -22,30 +22,25 @@ body {
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, #a7f3d0 0%, #7dd3fc 100%);
-  box-shadow: 0 0 30px rgba(0,0,0,0.15);
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
 }
-.screen {
-  position: absolute; inset: 0;
-  display: none;
-  flex-direction: column;
-}
+.screen { position: absolute; inset: 0; display: none; flex-direction: column; }
 .screen.active { display: flex; }
 .back-link {
   position: fixed; top: 6px; left: 8px; z-index: 500;
   color: #764ba2; font-size: 12px; text-decoration: none;
   background: rgba(255,255,255,0.85); padding: 4px 10px; border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
 /* ============ 顶栏 ============ */
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 40px 12px 10px;
+  padding: 38px 12px 8px;
   background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
   backdrop-filter: blur(10px);
   border-bottom: 2px solid rgba(255,255,255,0.6);
-  z-index: 10;
-  flex-shrink: 0;
+  z-index: 10; flex-shrink: 0;
 }
 .topbar .title {
   font-weight: 900; font-size: 18px; color: #4338ca;
@@ -54,25 +49,22 @@ body {
 }
 .icon-btn {
   border: none; background: white; border-radius: 12px;
-  padding: 6px 12px; font-size: 16px; cursor: pointer;
+  padding: 6px 12px; font-size: 14px; cursor: pointer;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: transform 0.1s;
-  min-width: 40px;
-  font-weight: bold;
-  color: #4338ca;
+  transition: transform 0.1s; font-weight: bold; color: #4338ca;
 }
 .icon-btn:active { transform: scale(0.94); }
-.icon-btn.small { padding: 4px 10px; font-size: 13px; min-width: 32px; }
+.icon-btn.small { padding: 4px 10px; font-size: 12px; }
 
 /* ============ 地图 ============ */
 #mapArea {
   flex: 1; position: relative;
   background:
-    radial-gradient(ellipse at 25% 25%, #86efac 0, transparent 12%),
-    radial-gradient(ellipse at 75% 30%, #86efac 0, transparent 14%),
-    radial-gradient(ellipse at 55% 55%, #86efac 0, transparent 15%),
-    radial-gradient(ellipse at 20% 78%, #fde68a 0, transparent 10%),
-    radial-gradient(ellipse at 80% 82%, #fde68a 0, transparent 10%),
+    radial-gradient(ellipse 70px 50px at 25% 22%, #86efac 0, transparent 100%),
+    radial-gradient(ellipse 90px 60px at 75% 30%, #86efac 0, transparent 100%),
+    radial-gradient(ellipse 110px 70px at 55% 58%, #86efac 0, transparent 100%),
+    radial-gradient(ellipse 70px 50px at 18% 78%, #fde68a 0, transparent 100%),
+    radial-gradient(ellipse 80px 55px at 82% 82%, #fde68a 0, transparent 100%),
     linear-gradient(180deg, #7dd3fc 0%, #67e8f9 60%, #a7f3d0 100%);
   overflow: hidden;
 }
@@ -83,91 +75,75 @@ body {
     radial-gradient(circle at 25% 45%, white 6px, transparent 7px),
     radial-gradient(circle at 82% 55%, white 5px, transparent 6px),
     radial-gradient(circle at 45% 70%, white 4px, transparent 5px);
-  opacity: 0.6;
+  opacity: 0.55;
 }
 .town-node {
   position: absolute;
   transform: translate(-50%, -50%);
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.15s;
-  z-index: 2;
+  text-align: center; cursor: pointer;
+  transition: transform 0.15s; z-index: 2;
 }
 .town-node:active { transform: translate(-50%, -50%) scale(0.92); }
 .town-node.locked { cursor: not-allowed; opacity: 0.65; }
 .town-node.next::after {
-  content: "NEW!";
-  position: absolute; top: -12px; right: -18px;
+  content: "NEW"; position: absolute; top: -12px; right: -22px;
   background: #ef4444; color: white; font-size: 10px;
   padding: 2px 6px; border-radius: 8px;
-  animation: bounce 1s infinite;
-  font-weight: bold;
+  animation: bounce 1s infinite; font-weight: bold;
 }
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-.town-marker {
-  font-size: 36px; line-height: 1;
-  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25));
-}
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.town-marker { font-size: 34px; line-height: 1; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25)); }
 .town-label {
   background: white; border-radius: 10px; padding: 2px 8px;
   font-size: 12px; font-weight: bold; margin-top: -4px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  color: #1f2937; white-space: nowrap;
-  display: inline-block;
+  color: #1f2937; white-space: nowrap; display: inline-block;
 }
-.town-stars {
-  font-size: 11px; color: #f59e0b; margin-top: 2px;
-  text-shadow: 0 1px 0 white;
-  letter-spacing: 1px;
-}
+.town-stars { font-size: 11px; color: #f59e0b; margin-top: 2px; text-shadow: 0 1px 0 white; letter-spacing: 1px; }
 
 /* ============ 游戏 ============ */
-#gameScreen { background: linear-gradient(180deg, #fef3c7 0%, #fed7aa 100%); }
-#objectiveBar {
-  padding: 10px 14px;
-  background: rgba(255,255,255,0.85);
-  border-bottom: 2px solid #fde68a;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 13px;
-  flex-shrink: 0;
+#gameScreen { background: linear-gradient(180deg, #86efac 0%, #4ade80 100%); }
+#statsBar {
+  padding: 8px 12px; background: rgba(0,0,0,0.35); color: white;
+  display: flex; justify-content: space-around; align-items: center;
+  font-size: 13px; font-weight: bold; flex-shrink: 0;
 }
-#objectiveBar .obj-label { color: #78716c; font-size: 11px; }
-#objectiveBar .obj-value { font-weight: bold; color: #b45309; font-size: 14px; }
-#objectiveBar .obj-progress { color: #059669; font-weight: bold; font-size: 13px; }
+#statsBar b { color: #fbbf24; margin: 0 3px; font-size: 15px; }
+#statsBar .goal { color: #a7f3d0; font-size: 11px; }
 #boardWrap {
   flex: 1; display: flex; align-items: center; justify-content: center;
-  padding: 6px; min-height: 0;
+  padding: 8px; min-height: 0;
 }
 #board {
-  display: block;
-  touch-action: none;
-  border-radius: 14px;
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.1);
+  display: block; touch-action: manipulation;
+  border-radius: 12px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
 }
-#controlBar {
-  padding: 10px 14px 14px;
-  display: flex; gap: 10px; align-items: center;
-  background: rgba(255,255,255,0.85);
-  flex-shrink: 0;
+#shopBar {
+  padding: 10px; display: flex; gap: 8px;
+  background: rgba(0,0,0,0.4); flex-shrink: 0;
 }
-.big-btn {
-  border: none;
-  background: linear-gradient(180deg, #fbbf24, #f59e0b);
-  color: white; font-weight: bold; padding: 12px 16px;
-  border-radius: 14px; font-size: 15px; cursor: pointer;
-  box-shadow: 0 3px 0 #b45309, 0 4px 8px rgba(0,0,0,0.15);
-  flex: 1; transition: all 0.1s;
+.shop-btn {
+  flex: 1; border: 3px solid transparent;
+  background: linear-gradient(180deg, #fbbf24, #d97706);
+  color: white; padding: 8px 4px;
+  border-radius: 12px; font-weight: bold;
+  cursor: pointer; transition: all 0.1s;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-height: 60px;
 }
-.big-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b45309; }
-.big-btn.secondary {
-  background: linear-gradient(180deg, #a78bfa, #7c3aed);
-  box-shadow: 0 3px 0 #5b21b6, 0 4px 8px rgba(0,0,0,0.15);
-  flex: 0 0 auto;
+.shop-btn.selected {
+  border-color: white;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.3), 0 0 12px rgba(255,255,255,0.8);
+  transform: translateY(-2px);
 }
-.big-btn.secondary:active { box-shadow: 0 1px 0 #5b21b6; }
+.shop-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.shop-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
+.shop-btn .s-emoji { font-size: 22px; line-height: 1; }
+.shop-btn .s-name { font-size: 10px; opacity: 0.9; }
+.shop-btn .s-price { font-size: 12px; background: rgba(0,0,0,0.35); padding: 1px 6px; border-radius: 8px; }
+.shop-btn.tool { background: linear-gradient(180deg, #a78bfa, #7c3aed); flex: 0 0 60px; }
 
 /* ============ 弹窗 ============ */
 .modal {
@@ -178,32 +154,37 @@ body {
 .modal.active { display: flex; }
 .modal-box {
   background: white; border-radius: 20px; padding: 24px 20px;
-  max-width: 320px; width: 100%;
-  text-align: center;
+  max-width: 320px; width: 100%; text-align: center;
   animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 20px 60px rgba(0,0,0,0.25);
 }
-@keyframes pop {
-  from { transform: scale(0.5); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+@keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .modal h2 { color: #4338ca; margin-bottom: 8px; font-size: 22px; }
-#resultStars { font-size: 40px; color: #f59e0b; margin: 12px 0; letter-spacing: 4px; }
-#resultStats { margin: 12px 0; line-height: 1.9; color: #4b5563; font-size: 14px; }
-.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+#resultStars { font-size: 40px; color: #f59e0b; margin: 10px 0; letter-spacing: 4px; }
+#resultStats { margin: 10px 0; line-height: 1.9; color: #4b5563; font-size: 14px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 14px; }
 .modal-actions .big-btn { flex: 1; }
+.big-btn {
+  border: none; background: linear-gradient(180deg, #fbbf24, #f59e0b);
+  color: white; font-weight: bold; padding: 12px 16px;
+  border-radius: 14px; font-size: 15px; cursor: pointer;
+  box-shadow: 0 3px 0 #b45309; transition: all 0.1s;
+}
+.big-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b45309; }
+.big-btn.secondary {
+  background: linear-gradient(180deg, #a78bfa, #7c3aed);
+  box-shadow: 0 3px 0 #5b21b6;
+}
+.big-btn.secondary:active { box-shadow: 0 1px 0 #5b21b6; }
 
 /* ============ 成就/图鉴 ============ */
-.list-wrap { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+.list-wrap { flex: 1; overflow-y: auto; padding-bottom: 20px; background: linear-gradient(180deg, #dbeafe, #e0e7ff); }
 .ach-item {
   display: flex; align-items: center; gap: 12px;
   background: white; margin: 8px 12px; padding: 12px;
-  border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
-.ach-item.done {
-  background: linear-gradient(90deg, #fef3c7 0%, white 60%);
-  border: 2px solid #fbbf24;
-}
+.ach-item.done { background: linear-gradient(90deg, #fef3c7 0%, white 60%); border: 2px solid #fbbf24; }
 .ach-icon {
   width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
@@ -216,20 +197,19 @@ body {
 .ach-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
 
 #dexList {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 10px; padding: 12px;
 }
 .dex-item {
   background: white; padding: 14px 8px;
   border-radius: 12px; text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 .dex-item.locked { opacity: 0.5; }
 .dex-icon {
   width: 56px; height: 56px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 32px; border-radius: 12px;
+  font-size: 30px; border-radius: 12px;
   margin: 0 auto 6px;
 }
 .dex-name { font-weight: bold; font-size: 13px; }
@@ -237,22 +217,27 @@ body {
 
 /* ============ Toast ============ */
 .toast {
-  position: fixed; top: 25%; left: 50%;
+  position: fixed; top: 22%; left: 50%;
   transform: translate(-50%, -12px);
-  background: rgba(31,41,55,0.92); color: white;
+  background: rgba(31,41,55,0.95); color: white;
   padding: 10px 18px; border-radius: 14px;
   font-size: 14px; z-index: 200;
   opacity: 0; transition: all 0.25s;
   pointer-events: none;
-  max-width: 80%; text-align: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  max-width: 82%; text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-/* ============ Loading / Empty ============ */
-.empty-hint {
-  text-align: center; padding: 40px 20px; color: #78716c;
-  font-size: 14px;
+.float {
+  position: fixed; pointer-events: none;
+  color: #fbbf24; font-weight: bold; font-size: 18px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  animation: floatUp 1s ease-out forwards;
+  z-index: 150;
+}
+@keyframes floatUp {
+  0% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -50px); }
 }
 </style>
 </head>
@@ -264,7 +249,7 @@ body {
   <section id="mapScreen" class="screen active">
     <div class="topbar">
       <button id="dexBtn" class="icon-btn small">📖 图鉴</button>
-      <div class="title">🌈 合并小镇</div>
+      <div class="title">🌈 求合体</div>
       <button id="achBtn" class="icon-btn small">🏆 成就</button>
     </div>
     <div id="mapArea"></div>
@@ -274,21 +259,17 @@ body {
   <section id="gameScreen" class="screen">
     <div class="topbar">
       <button id="backToMap" class="icon-btn small">← 地图</button>
-      <div class="title" id="townTitle">小镇</div>
+      <div class="title" id="townTitle">村庄</div>
       <button id="resetTownBtn" class="icon-btn small">🔄</button>
     </div>
-    <div id="objectiveBar">
-      <div>
-        <div class="obj-label">🎯 本关目标</div>
-        <div class="obj-value" id="objText"></div>
-      </div>
-      <div id="objProgress" class="obj-progress"></div>
+    <div id="statsBar">
+      <span>💰<b id="coinsVal">0</b></span>
+      <span>🎯<b id="scoreVal">0</b></span>
+      <span>👣<b id="stepsVal">0</b></span>
+      <span class="goal" id="fillVal">0/0</span>
     </div>
     <div id="boardWrap"><canvas id="board"></canvas></div>
-    <div id="controlBar">
-      <button id="spawnBtn" class="big-btn">🥚 生蛋 (0)</button>
-      <button id="hintBtn" class="big-btn secondary">💡</button>
-    </div>
+    <div id="shopBar"></div>
   </section>
 
   <!-- 成就 -->
@@ -305,10 +286,16 @@ body {
   <section id="dexScreen" class="screen">
     <div class="topbar">
       <button class="icon-btn small back-map">← 地图</button>
-      <div class="title">📖 动物图鉴</div>
+      <div class="title">📖 合成表</div>
       <div style="width:56px"></div>
     </div>
-    <div class="list-wrap"><div id="dexList"></div></div>
+    <div class="list-wrap">
+      <div id="dexList"></div>
+      <div style="padding:12px 16px;color:#4338ca;font-size:12px;line-height:1.6;">
+        💡 规则:3 个相同物品「横 / 竖 / 折」相连 (不含斜向) 即可合体升级。<br>
+        目标:把整张地图铺满物品即可通关。
+      </div>
+    </div>
   </section>
 </div>
 
@@ -320,7 +307,7 @@ body {
     <div id="resultStats"></div>
     <div class="modal-actions">
       <button class="big-btn secondary" id="resultAgain">再玩</button>
-      <button class="big-btn" id="resultNext">返回地图</button>
+      <button class="big-btn" id="resultNext">下一关</button>
     </div>
   </div>
 </div>
@@ -328,11 +315,11 @@ body {
 <!-- 重置确认 -->
 <div id="confirmModal" class="modal">
   <div class="modal-box">
-    <h2>⚠️ 重置小镇?</h2>
-    <div id="resultStats">当前小镇的进度会全部清空,通关记录保留。</div>
+    <h2>⚠️ 重来一局?</h2>
+    <div id="resultStats">当前村庄的进度会清空,通关记录和历史星级保留。</div>
     <div class="modal-actions">
       <button class="big-btn secondary" onclick="closeConfirm()">取消</button>
-      <button class="big-btn" onclick="doResetTown()">确认重置</button>
+      <button class="big-btn" onclick="doResetTown()">确认</button>
     </div>
   </div>
 </div>
@@ -341,58 +328,150 @@ body {
 'use strict';
 
 /* =====================================================
-   配置数据
+   物品链 (0..10, 共 11 级)
 ===================================================== */
-const ANIMALS = [
-  { emoji: '🥚', name: '蛋',       color: '#fef3c7', border: '#fbbf24' },
-  { emoji: '🐭', name: '小鼠',     color: '#e5e7eb', border: '#9ca3af' },
-  { emoji: '🐹', name: '仓鼠',     color: '#fde68a', border: '#f59e0b' },
-  { emoji: '🐰', name: '兔子',     color: '#fce7f3', border: '#ec4899' },
-  { emoji: '🐱', name: '小猫',     color: '#fed7aa', border: '#f97316' },
-  { emoji: '🐶', name: '小狗',     color: '#ddd6fe', border: '#8b5cf6' },
-  { emoji: '🦊', name: '狐狸',     color: '#fdba74', border: '#ea580c' },
-  { emoji: '🐼', name: '熊猫',     color: '#f3f4f6', border: '#111827' },
-  { emoji: '🐯', name: '老虎',     color: '#fecaca', border: '#dc2626' },
-  { emoji: '🦁', name: '狮子',     color: '#fef08a', border: '#ca8a04' },
-  { emoji: '🐘', name: '大象',     color: '#d1d5db', border: '#4b5563' },
-  { emoji: '🐉', name: '神龙',     color: '#a7f3d0', border: '#059669' },
+const ITEMS = [
+  { emoji: '🌱', name: '小草',   color: '#d1fae5', border: '#10b981', price: 5 },
+  { emoji: '🌿', name: '灌木',   color: '#a7f3d0', border: '#059669', price: 30 },
+  { emoji: '🌲', name: '小树',   color: '#6ee7b7', border: '#047857', price: 200 },
+  { emoji: '🌳', name: '大树',   color: '#34d399', border: '#065f46', price: null },
+  { emoji: '🏕️', name: '草房',   color: '#fde68a', border: '#d97706', price: null },
+  { emoji: '🏠', name: '小毡房', color: '#fbbf24', border: '#b45309', price: null },
+  { emoji: '🏘️', name: '大毡房', color: '#f59e0b', border: '#92400e', price: null },
+  { emoji: '🏛️', name: '宫殿',   color: '#fca5a5', border: '#b91c1c', price: null },
+  { emoji: '🕌', name: '金字塔', color: '#f9a8d4', border: '#9d174d', price: null },
+  { emoji: '🗼', name: '光之塔', color: '#c4b5fd', border: '#5b21b6', price: null },
+  { emoji: '💎', name: '大宝箱', color: '#7dd3fc', border: '#0369a1', price: null },
 ];
-const MAX_LEVEL = ANIMALS.length - 1; // 11
+const MAX_LEVEL = ITEMS.length - 1;
+const MERGE_COIN = lvl => Math.pow(3, lvl) * 2;       // 合成到 Lv.N 奖励金币
+const MERGE_SCORE = lvl => Math.pow(2, lvl) * 10;     // 合成到 Lv.N 奖励分数
 
-// 10 个小镇 (id, 名字, 目标, 地图坐标 x/y %)
+/* =====================================================
+   村庄配置
+   layout: 二维字符串,每个字符 = '.' 空地  '#' 障碍物  ' ' 忽略(留白)
+===================================================== */
 const TOWNS = [
-  { id: 't1',  name: '新手村',  desc: '合成到 兔子',           goal: { type: 'reach', level: 3 },              x: 48, y: 63 },
-  { id: 't2',  name: '喵喵村',  desc: '合成出 小猫',           goal: { type: 'reach', level: 4 },              x: 20, y: 50 },
-  { id: 't3',  name: '卡普村',  desc: '同时拥有 3 只小猫',     goal: { type: 'own',   level: 4, count: 3 },    x: 18, y: 76 },
-  { id: 't4',  name: '滨海村',  desc: '合成出 狐狸',           goal: { type: 'reach', level: 6 },              x: 46, y: 85 },
-  { id: 't5',  name: '月湖村',  desc: '累计合成 30 次',        goal: { type: 'merges', count: 30 },            x: 74, y: 52 },
-  { id: 't6',  name: '财主村',  desc: '合成出 熊猫',           goal: { type: 'reach', level: 7 },              x: 52, y: 33 },
-  { id: 't7',  name: '无仓村',  desc: '同时拥有 2 只老虎',     goal: { type: 'own',   level: 8, count: 2 },    x: 20, y: 20 },
-  { id: 't8',  name: '冬眠村',  desc: '合成出 狮子',           goal: { type: 'reach', level: 9 },              x: 80, y: 22 },
-  { id: 't9',  name: '多多岛',  desc: '合成出 大象',           goal: { type: 'reach', level: 10 },             x: 78, y: 80 },
-  { id: 't10', name: '天猫岛',  desc: '合成出 神龙',           goal: { type: 'reach', level: MAX_LEVEL },      x: 14, y: 92 },
+  { id:'t1', name:'新手村', x:48, y:63, startCoins: 200, layout: [
+    '.....',
+    '.....',
+    '.....',
+    '.....',
+    '.....',
+    '.....'
+  ]},
+  { id:'t2', name:'卡普村', x:18, y:76, startCoins: 350, layout: [
+    '......',
+    '......',
+    '......',
+    '......',
+    '......',
+    '......'
+  ]},
+  { id:'t3', name:'喵喵村', x:20, y:50, startCoins: 450, layout: [
+    '......',
+    '..##..',
+    '......',
+    '......',
+    '..##..',
+    '......',
+    '......'
+  ]},
+  { id:'t4', name:'滨海村', x:46, y:85, startCoins: 500, layout: [
+    '......',
+    '......',
+    '#....#',
+    '......',
+    '......',
+    '#....#',
+    '......',
+    '......'
+  ]},
+  { id:'t5', name:'月湖村', x:74, y:52, startCoins: 700, layout: [
+    '.......',
+    '.......',
+    '..###..',
+    '..###..',
+    '..###..',
+    '.......',
+    '.......',
+    '.......'
+  ]},
+  { id:'t6', name:'财主村', x:52, y:33, startCoins: 900, layout: [
+    '.......',
+    '.......',
+    '.#...#.',
+    '.......',
+    '.......',
+    '.#...#.',
+    '.......',
+    '.......'
+  ]},
+  { id:'t7', name:'无仓村', x:20, y:20, startCoins: 1000, layout: [
+    '.......',
+    '.......',
+    '.......',
+    '...#...',
+    '.......',
+    '.......',
+    '.......',
+    '.......'
+  ]},
+  { id:'t8', name:'冬眠村', x:80, y:22, startCoins: 1200, layout: [
+    '.......',
+    '..#.#..',
+    '.......',
+    '.......',
+    '...#...',
+    '.......',
+    '.......',
+    '..#.#..',
+    '.......'
+  ]},
+  { id:'t9', name:'多多岛', x:78, y:80, startCoins: 500, layout: [
+    '.....',
+    '.....',
+    '.....',
+    '.....',
+    '.....',
+    '.....'
+  ]},
+  { id:'t10', name:'天猫岛', x:14, y:92, startCoins: 2000, layout: [
+    '..###..',
+    '.......',
+    '.......',
+    '#.....#',
+    '.......',
+    '.......',
+    '#.....#',
+    '.......',
+    '.......',
+    '..###..'
+  ]},
 ];
 
-// 成就
+/* =====================================================
+   成就
+===================================================== */
 const ACHIEVEMENTS = [
-  { id: 'a_first',      icon: '✨', name: '初次合成',   desc: '完成第一次合成',            check: s => s.totalMerges >= 1 },
-  { id: 'a_reach_cat',  icon: '🐱', name: '喵星人',    desc: '合成出小猫 (Lv.4)',        check: s => s.maxLevel >= 4 },
-  { id: 'a_reach_fox',  icon: '🦊', name: '狡黠',      desc: '合成出狐狸 (Lv.6)',        check: s => s.maxLevel >= 6 },
-  { id: 'a_reach_tig',  icon: '🐯', name: '山中之王',   desc: '合成出老虎 (Lv.8)',        check: s => s.maxLevel >= 8 },
-  { id: 'a_reach_ele',  icon: '🐘', name: '庞然大物',   desc: '合成出大象 (Lv.10)',       check: s => s.maxLevel >= 10 },
-  { id: 'a_dragon',     icon: '🐉', name: '神龙降世',   desc: '合成出神龙 (Lv.11)',       check: s => s.maxLevel >= 11 },
-  { id: 'a_clear_1',    icon: '🎯', name: '初出茅庐',   desc: '通关第一个小镇',           check: s => countCleared(s) >= 1 },
-  { id: 'a_clear_3',    icon: '🚶', name: '渐入佳境',   desc: '通关 3 个小镇',            check: s => countCleared(s) >= 3 },
-  { id: 'a_clear_5',    icon: '🏃', name: '半程英雄',   desc: '通关 5 个小镇',            check: s => countCleared(s) >= 5 },
-  { id: 'a_clear_all',  icon: '👑', name: '合体大师',   desc: '通关所有 10 个小镇',       check: s => countCleared(s) >= 10 },
-  { id: 'a_merge_50',   icon: '🔨', name: '勤劳的手',   desc: '累计合成 50 次',           check: s => s.totalMerges >= 50 },
-  { id: 'a_merge_200',  icon: '⭐', name: '合成达人',   desc: '累计合成 200 次',          check: s => s.totalMerges >= 200 },
-  { id: 'a_merge_500',  icon: '🌟', name: '合成宗师',   desc: '累计合成 500 次',          check: s => s.totalMerges >= 500 },
-  { id: 'a_3star',      icon: '⭐', name: '三星强者',   desc: '任意小镇获得 3 星评价',    check: s => Object.values(s.towns).some(t => t.stars >= 3) },
+  { id:'a_first',    icon:'✨', name:'初次合体',   desc:'完成第一次合成',           check:s => s.totalMerges >= 1 },
+  { id:'a_bigtree',  icon:'🌳', name:'绿化能手',   desc:'合成出 大树 (Lv.3)',       check:s => s.maxLevel >= 3 },
+  { id:'a_house',    icon:'🏕️', name:'置业',      desc:'合成出 草房 (Lv.4)',       check:s => s.maxLevel >= 4 },
+  { id:'a_palace',   icon:'🏛️', name:'王侯将相',  desc:'合成出 宫殿 (Lv.7)',       check:s => s.maxLevel >= 7 },
+  { id:'a_tower',    icon:'🗼', name:'高塔之光',   desc:'合成出 光之塔 (Lv.9)',     check:s => s.maxLevel >= 9 },
+  { id:'a_chest',    icon:'💎', name:'大宝藏',    desc:'合成出 大宝箱 (Lv.10)',     check:s => s.maxLevel >= 10 },
+  { id:'a_clear_1',  icon:'🎯', name:'初出茅庐',   desc:'通关第一个村庄',           check:s => countCleared(s) >= 1 },
+  { id:'a_clear_3',  icon:'🚶', name:'渐入佳境',   desc:'通关 3 个村庄',            check:s => countCleared(s) >= 3 },
+  { id:'a_clear_5',  icon:'🏃', name:'半程英雄',   desc:'通关 5 个村庄',            check:s => countCleared(s) >= 5 },
+  { id:'a_clear_all',icon:'👑', name:'求合体大师', desc:'通关全部 10 个村庄',        check:s => countCleared(s) >= 10 },
+  { id:'a_chain3',   icon:'⚡', name:'三连击',    desc:'一次放置触发 3 段连锁',     check:s => s.maxChain >= 3 },
+  { id:'a_chain5',   icon:'💥', name:'五连爆炸',   desc:'一次放置触发 5 段连锁',     check:s => s.maxChain >= 5 },
+  { id:'a_merge_100',icon:'⭐', name:'勤劳',      desc:'累计合成 100 次',           check:s => s.totalMerges >= 100 },
+  { id:'a_merge_500',icon:'🌟', name:'合成宗师',   desc:'累计合成 500 次',           check:s => s.totalMerges >= 500 },
+  { id:'a_3star',    icon:'🏆', name:'完美主义',   desc:'任意村庄获得 3 星',        check:s => Object.values(s.towns).some(t => t.stars >= 3) },
 ];
 
-const COLS = 6, ROWS = 8;
-const SAVE_KEY = 'mergeTown_save_v1';
+const SAVE_KEY = 'qiuHeTi_save_v1';
 
 /* =====================================================
    存档
@@ -403,10 +482,10 @@ function defaultSave() {
   return {
     version: 1,
     totalMerges: 0,
-    totalSpawns: 0,
     maxLevel: 0,
-    towns: {},           // id => { board, spawns, merges, cleared, stars, bestSpawns }
-    achievements: {},    // id => true
+    maxChain: 0,
+    towns: {},          // id => {board, coins, score, steps, cleared, stars, bestSteps}
+    achievements: {},
   };
 }
 
@@ -416,70 +495,85 @@ function loadSave() {
     if (!raw) return;
     const s = JSON.parse(raw);
     if (s && s.version === 1) save = Object.assign(defaultSave(), s);
-  } catch (e) {
-    console.warn('load save failed', e);
-  }
+  } catch (e) { console.warn(e); }
 }
-
 function persist() {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
-  catch (e) { console.warn('save failed', e); }
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch(e) {}
 }
-
 function countCleared(s) {
   return Object.values(s.towns).filter(t => t.cleared).length;
 }
 
-function newBoard() {
+/* =====================================================
+   Town State
+===================================================== */
+function townCfg(id) { return TOWNS.find(t => t.id === id); }
+
+function townDims(cfg) {
+  const rows = cfg.layout.length;
+  let cols = 0;
+  for (const row of cfg.layout) cols = Math.max(cols, row.length);
+  return { rows, cols };
+}
+function isObstacle(cfg, r, c) {
+  const row = cfg.layout[r];
+  if (!row) return true;
+  const ch = row[c];
+  return ch === '#';
+}
+function isPlayable(cfg, r, c) {
+  const row = cfg.layout[r];
+  if (!row) return false;
+  const ch = row[c];
+  return ch === '.';
+}
+
+function newBoard(cfg) {
+  const { rows, cols } = townDims(cfg);
   const b = [];
-  for (let r = 0; r < ROWS; r++) b.push(new Array(COLS).fill(null));
+  for (let r = 0; r < rows; r++) b.push(new Array(cols).fill(null));
   return b;
+}
+function countPlayableTiles(cfg) {
+  let n = 0;
+  for (let r = 0; r < cfg.layout.length; r++) {
+    for (let c = 0; c < cfg.layout[r].length; c++) {
+      if (cfg.layout[r][c] === '.') n++;
+    }
+  }
+  return n;
 }
 
 function getTownState(id) {
   if (!save.towns[id]) {
+    const cfg = townCfg(id);
     save.towns[id] = {
-      board: newBoard(),
-      spawns: 0,
-      merges: 0,
+      board: newBoard(cfg),
+      coins: cfg.startCoins,
+      score: 0,
+      steps: 0,
       cleared: false,
       stars: 0,
-      bestSpawns: null,
+      bestSteps: null,
     };
-    // 初始送 4 个蛋,免得完全空场
-    const st = save.towns[id];
-    for (let i = 0; i < 4; i++) placeRandomEgg(st);
   }
   return save.towns[id];
-}
-
-function placeRandomEgg(st) {
-  const empties = [];
-  for (let r = 0; r < ROWS; r++)
-    for (let c = 0; c < COLS; c++)
-      if (st.board[r][c] === null) empties.push([r, c]);
-  if (!empties.length) return false;
-  const [r, c] = empties[Math.floor(Math.random() * empties.length)];
-  st.board[r][c] = 0;
-  st.spawns++;
-  save.totalSpawns++;
-  return true;
 }
 
 /* =====================================================
    屏幕切换
 ===================================================== */
 let currentTownId = null;
+let selectedLevel = 0;
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if (id === 'mapScreen')  renderMap();
-  if (id === 'achScreen')  renderAch();
-  if (id === 'dexScreen')  renderDex();
-  if (id === 'gameScreen') { resizeBoard(); drawBoard(); updateObjective(); updateSpawnBtn(); }
+  if (id === 'mapScreen') renderMap();
+  if (id === 'achScreen') renderAch();
+  if (id === 'dexScreen') renderDex();
+  if (id === 'gameScreen') { renderShop(); resizeBoard(); drawBoard(); updateStats(); }
 }
-
 document.getElementById('achBtn').onclick = () => showScreen('achScreen');
 document.getElementById('dexBtn').onclick = () => showScreen('dexScreen');
 document.getElementById('backToMap').onclick = () => showScreen('mapScreen');
@@ -493,7 +587,6 @@ function isTownUnlocked(idx) {
   const prev = save.towns[TOWNS[idx - 1].id];
   return !!(prev && prev.cleared);
 }
-
 function renderMap() {
   const area = document.getElementById('mapArea');
   area.innerHTML = '';
@@ -514,16 +607,15 @@ function renderMap() {
       '<div class="town-label">' + t.name + '</div>' +
       '<div class="town-stars">' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>';
     if (unlocked) node.onclick = () => enterTown(t.id);
-    else node.onclick = () => toast('通关上一个小镇解锁');
+    else node.onclick = () => toast('通关上一个村庄解锁');
     area.appendChild(node);
   });
 }
-
 function enterTown(id) {
   currentTownId = id;
   getTownState(id);
-  const cfg = TOWNS.find(t => t.id === id);
-  document.getElementById('townTitle').textContent = cfg.name;
+  document.getElementById('townTitle').textContent = townCfg(id).name;
+  selectedLevel = 0;
   showScreen('gameScreen');
 }
 
@@ -532,18 +624,23 @@ function enterTown(id) {
 ===================================================== */
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
-let TILE = 50, PAD = 8;
-let boardW, boardH;
+let TILE = 48, PAD = 6;
+let boardW = 0, boardH = 0;
+let curRows = 0, curCols = 0;
 
 function resizeBoard() {
+  if (!currentTownId) return;
+  const cfg = townCfg(currentTownId);
+  const { rows, cols } = townDims(cfg);
+  curRows = rows; curCols = cols;
   const wrap = document.getElementById('boardWrap');
-  const availW = wrap.clientWidth - 12;
-  const availH = wrap.clientHeight - 12;
-  TILE = Math.floor(Math.min(availW / COLS, availH / ROWS));
-  TILE = Math.max(TILE, 40);
+  const availW = wrap.clientWidth - 16;
+  const availH = wrap.clientHeight - 16;
+  TILE = Math.floor(Math.min(availW / cols, availH / rows));
+  TILE = Math.max(TILE, 36);
   PAD = 6;
-  boardW = COLS * TILE + PAD * 2;
-  boardH = ROWS * TILE + PAD * 2;
+  boardW = cols * TILE + PAD * 2;
+  boardH = rows * TILE + PAD * 2;
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = boardW + 'px';
   canvas.style.height = boardH + 'px';
@@ -556,7 +653,6 @@ window.addEventListener('resize', () => {
     resizeBoard(); drawBoard();
   }
 });
-
 function roundRect(x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -567,349 +663,360 @@ function roundRect(x, y, w, h, r) {
   ctx.closePath();
 }
 
-let dragState = null; // {fromR, fromC, level, x, y, offX, offY}
-let hintPair = null;  // {a:{r,c}, b:{r,c}, until}
+let flashCells = [];  // {r,c,t0,dur} 合成成功时短暂高亮
 
 function drawBoard() {
+  if (!currentTownId) return;
+  const cfg = townCfg(currentTownId);
   const st = getTownState(currentTownId);
   ctx.clearRect(0, 0, boardW, boardH);
 
   // 板底
   const grad = ctx.createLinearGradient(0, 0, 0, boardH);
-  grad.addColorStop(0, '#fff7ed');
-  grad.addColorStop(1, '#ffedd5');
+  grad.addColorStop(0, '#78350f');
+  grad.addColorStop(1, '#92400e');
   ctx.fillStyle = grad;
   roundRect(0, 0, boardW, boardH, 14);
   ctx.fill();
 
-  // 网格
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
+  const now = performance.now();
+  for (let r = 0; r < curRows; r++) {
+    for (let c = 0; c < curCols; c++) {
       const x = PAD + c * TILE, y = PAD + r * TILE;
-      ctx.fillStyle = ((r + c) % 2) ? '#fef3c7' : '#fde68a';
-      roundRect(x + 2, y + 2, TILE - 4, TILE - 4, 8);
-      ctx.fill();
+      const ch = cfg.layout[r]?.[c];
+      if (!ch || ch === ' ') continue;
+      if (ch === '#') {
+        // 障碍物: 深棕色 + 石头
+        ctx.fillStyle = '#57534e';
+        roundRect(x + 2, y + 2, TILE - 4, TILE - 4, 6);
+        ctx.fill();
+        ctx.font = Math.floor(TILE * 0.55) + "px 'Apple Color Emoji','Segoe UI Emoji',sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('🪨', x + TILE/2, y + TILE/2 + 1);
+      } else {
+        // 空地
+        ctx.fillStyle = ((r + c) % 2) ? '#fef3c7' : '#fde68a';
+        roundRect(x + 2, y + 2, TILE - 4, TILE - 4, 6);
+        ctx.fill();
+        const lvl = st.board[r][c];
+        if (lvl !== null) drawItem(x + TILE/2, y + TILE/2, lvl, 1);
+        // 高亮
+        const fl = flashCells.find(f => f.r === r && f.c === c);
+        if (fl) {
+          const t = (now - fl.t0) / fl.dur;
+          if (t < 1) {
+            ctx.globalAlpha = 1 - t;
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 3;
+            roundRect(x + 2, y + 2, TILE - 4, TILE - 4, 6);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+      }
     }
   }
-
-  // 提示高亮
-  if (hintPair && performance.now() < hintPair.until) {
-    ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 3;
-    for (const p of [hintPair.a, hintPair.b]) {
-      const x = PAD + p.c * TILE, y = PAD + p.r * TILE;
-      roundRect(x + 3, y + 3, TILE - 6, TILE - 6, 8);
-      ctx.stroke();
-    }
-  } else {
-    hintPair = null;
-  }
-
-  // 物品
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const lvl = st.board[r][c];
-      if (lvl === null) continue;
-      if (dragState && dragState.fromR === r && dragState.fromC === c) continue;
-      const cx = PAD + c * TILE + TILE / 2;
-      const cy = PAD + r * TILE + TILE / 2;
-      drawItem(cx, cy, lvl, 1);
-    }
-  }
-
-  // 拖拽目标提示
-  if (dragState) {
-    const tc = pixelToTile(dragState.x, dragState.y);
-    if (tc) {
-      const tgt = st.board[tc.r][tc.c];
-      let color = '#3b82f6';
-      if (tgt === null) color = '#3b82f6';
-      else if (tgt === dragState.level && dragState.level < MAX_LEVEL) color = '#10b981';
-      else color = '#f59e0b';
-      const x = PAD + tc.c * TILE, y = PAD + tc.r * TILE;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 4;
-      roundRect(x + 3, y + 3, TILE - 6, TILE - 6, 8);
-      ctx.stroke();
-    }
-    // 拖拽物件
-    drawItem(dragState.x, dragState.y, dragState.level, 1.15);
-  }
+  // 清理已过期高亮
+  flashCells = flashCells.filter(f => now - f.t0 < f.dur);
+  if (flashCells.length) requestAnimationFrame(drawBoard);
 }
 
 function drawItem(cx, cy, level, scale) {
-  const a = ANIMALS[level];
-  const size = TILE * 0.82 * scale;
-  // 阴影
+  const a = ITEMS[level];
+  const size = TILE * 0.86 * scale;
   ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  roundRect(cx - size/2 + 1, cy - size/2 + 3, size, size, 10);
+  roundRect(cx - size/2 + 1, cy - size/2 + 2, size, size, 8);
   ctx.fill();
-  // 本体
   ctx.fillStyle = a.color;
-  roundRect(cx - size/2, cy - size/2, size, size, 10);
+  roundRect(cx - size/2, cy - size/2, size, size, 8);
   ctx.fill();
   ctx.strokeStyle = a.border;
   ctx.lineWidth = 2;
   ctx.stroke();
-  // 表情
-  ctx.font = Math.floor(size * 0.65) + "px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif";
+  ctx.font = Math.floor(size * 0.6) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(a.emoji, cx, cy + size * 0.04);
-  // 级别徽章
+  ctx.fillText(a.emoji, cx, cy + size * 0.05);
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
   ctx.font = 'bold ' + Math.max(9, Math.floor(size * 0.18)) + "px system-ui, sans-serif";
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
   ctx.fillText(level, cx - size/2 + 3, cy - size/2 + 2);
 }
 
 function pixelToTile(x, y) {
   const c = Math.floor((x - PAD) / TILE);
   const r = Math.floor((y - PAD) / TILE);
-  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return null;
+  if (r < 0 || r >= curRows || c < 0 || c >= curCols) return null;
   return { r, c };
 }
-
 function eventToCanvas(e) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = boardW / rect.width;
   const scaleY = boardH / rect.height;
-  return {
-    x: (e.clientX - rect.left) * scaleX,
-    y: (e.clientY - rect.top) * scaleY,
-  };
+  return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
 }
 
 /* =====================================================
-   交互
+   3-连通 flood-fill + 连锁合成
 ===================================================== */
+function findGroup(board, r, c, rows, cols) {
+  const level = board[r][c];
+  if (level === null) return [];
+  const visited = {};
+  const key = (rr, cc) => rr + ',' + cc;
+  const stack = [[r, c]];
+  visited[key(r, c)] = true;
+  const group = [[r, c]];
+  while (stack.length) {
+    const [rr, cc] = stack.pop();
+    const nbrs = [[-1,0],[1,0],[0,-1],[0,1]];
+    for (const [dr, dc] of nbrs) {
+      const nr = rr + dr, nc = cc + dc;
+      if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+      const k = key(nr, nc);
+      if (visited[k]) continue;
+      if (board[nr][nc] !== level) continue;
+      visited[k] = true;
+      stack.push([nr, nc]);
+      group.push([nr, nc]);
+    }
+  }
+  return group;
+}
+
+function doMergeCascade(town, r, c) {
+  const cfg = townCfg(currentTownId);
+  const { rows, cols } = townDims(cfg);
+  let chains = 0;
+  while (true) {
+    const level = town.board[r][c];
+    if (level === null || level >= MAX_LEVEL) break;
+    const group = findGroup(town.board, r, c, rows, cols);
+    if (group.length < 3) break;
+    // 清空组内所有格子
+    for (const [rr, cc] of group) town.board[rr][cc] = null;
+    // 在放置位放新等级物品
+    const newLvl = level + 1;
+    town.board[r][c] = newLvl;
+    // 奖励
+    const scoreGain = MERGE_SCORE(newLvl) * (group.length - 2);  // 组越大奖励越多
+    const coinGain = MERGE_COIN(newLvl);
+    town.score += scoreGain;
+    town.coins += coinGain;
+    save.totalMerges++;
+    if (newLvl > save.maxLevel) save.maxLevel = newLvl;
+    chains++;
+    // 高亮
+    flashCells.push({ r, c, t0: performance.now(), dur: 400 });
+    // 屏幕飘字
+    floatText('+' + scoreGain + '分 +' + coinGain + '金', canvas.getBoundingClientRect().left + (PAD + c*TILE + TILE/2) * (canvas.getBoundingClientRect().width / boardW), canvas.getBoundingClientRect().top + (PAD + r*TILE + TILE/2) * (canvas.getBoundingClientRect().height / boardH));
+  }
+  if (chains > save.maxChain) save.maxChain = chains;
+  return chains;
+}
+
+/* =====================================================
+   交互:选商品 + 放置
+===================================================== */
+function renderShop() {
+  const bar = document.getElementById('shopBar');
+  bar.innerHTML = '';
+  // 前 3 级可买
+  for (let i = 0; i < 3; i++) {
+    const it = ITEMS[i];
+    const btn = document.createElement('button');
+    btn.className = 'shop-btn' + (selectedLevel === i ? ' selected' : '');
+    btn.dataset.level = i;
+    btn.innerHTML =
+      '<span class="s-emoji">' + it.emoji + '</span>' +
+      '<span class="s-name">' + it.name + '</span>' +
+      '<span class="s-price">💰' + it.price + '</span>';
+    btn.onclick = () => {
+      selectedLevel = i;
+      renderShop();
+    };
+    bar.appendChild(btn);
+  }
+  // 提示按钮
+  const hint = document.createElement('button');
+  hint.className = 'shop-btn tool';
+  hint.innerHTML = '<span class="s-emoji">💡</span><span class="s-name">提示</span>';
+  hint.onclick = showHint;
+  bar.appendChild(hint);
+  updateShopAffordability();
+}
+function updateShopAffordability() {
+  if (!currentTownId) return;
+  const st = getTownState(currentTownId);
+  document.querySelectorAll('.shop-btn[data-level]').forEach(btn => {
+    const lvl = +btn.dataset.level;
+    btn.disabled = st.coins < ITEMS[lvl].price;
+  });
+}
+function updateStats() {
+  if (!currentTownId) return;
+  const cfg = townCfg(currentTownId);
+  const st = getTownState(currentTownId);
+  document.getElementById('coinsVal').textContent = st.coins;
+  document.getElementById('scoreVal').textContent = st.score;
+  document.getElementById('stepsVal').textContent = st.steps;
+  const total = countPlayableTiles(cfg);
+  let filled = 0;
+  for (let r = 0; r < cfg.layout.length; r++)
+    for (let c = 0; c < cfg.layout[r].length; c++)
+      if (cfg.layout[r][c] === '.' && st.board[r][c] !== null) filled++;
+  document.getElementById('fillVal').textContent = filled + '/' + total;
+  updateShopAffordability();
+}
+
 canvas.addEventListener('pointerdown', e => {
   e.preventDefault();
   const p = eventToCanvas(e);
   const tc = pixelToTile(p.x, p.y);
   if (!tc) return;
+  const cfg = townCfg(currentTownId);
   const st = getTownState(currentTownId);
-  const lvl = st.board[tc.r][tc.c];
-  if (lvl === null) return;
-  const cx = PAD + tc.c * TILE + TILE / 2;
-  const cy = PAD + tc.r * TILE + TILE / 2;
-  dragState = {
-    fromR: tc.r, fromC: tc.c, level: lvl,
-    x: p.x, y: p.y,
-    offX: cx - p.x, offY: cy - p.y,
-  };
-  try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+  if (!isPlayable(cfg, tc.r, tc.c)) {
+    toast('这里是障碍物,不能放'); return;
+  }
+  if (st.board[tc.r][tc.c] !== null) {
+    toast('这个格子已经有东西了'); return;
+  }
+  const price = ITEMS[selectedLevel].price;
+  if (st.coins < price) {
+    toast('金币不够,先合成攒钱'); return;
+  }
+  // 扣钱、放置、合成
+  st.coins -= price;
+  st.board[tc.r][tc.c] = selectedLevel;
+  st.steps++;
+  doMergeCascade(st, tc.r, tc.c);
+  checkWin();
+  checkAchievements();
+  persist();
   drawBoard();
+  updateStats();
 });
 
-canvas.addEventListener('pointermove', e => {
-  if (!dragState) return;
-  e.preventDefault();
-  const p = eventToCanvas(e);
-  dragState.x = p.x + dragState.offX;
-  dragState.y = p.y + dragState.offY;
-  drawBoard();
-});
-
-canvas.addEventListener('pointerup', e => {
-  if (!dragState) return;
-  e.preventDefault();
-  const p = eventToCanvas(e);
-  const tc = pixelToTile(p.x + dragState.offX, p.y + dragState.offY);
+function showHint() {
+  const cfg = townCfg(currentTownId);
   const st = getTownState(currentTownId);
-  const from = { r: dragState.fromR, c: dragState.fromC };
-  const drop = dragState;
-  dragState = null;
-  if (tc) {
-    if (!(tc.r === from.r && tc.c === from.c)) {
-      const target = st.board[tc.r][tc.c];
-      if (target === null) {
-        // 移动
-        st.board[tc.r][tc.c] = drop.level;
-        st.board[from.r][from.c] = null;
-      } else if (target === drop.level && drop.level < MAX_LEVEL) {
-        // 合成
-        const newLvl = drop.level + 1;
-        st.board[tc.r][tc.c] = newLvl;
-        st.board[from.r][from.c] = null;
-        st.merges++;
-        save.totalMerges++;
-        if (newLvl > save.maxLevel) save.maxLevel = newLvl;
-        checkGoal();
-        checkAchievements();
-      } else {
-        // 交换 (级别不同 或 已到顶级)
-        st.board[tc.r][tc.c] = drop.level;
-        st.board[from.r][from.c] = target;
+  const { rows, cols } = townDims(cfg);
+  // 找一个「多放1个就能合成」的位置
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (!isPlayable(cfg, r, c) || st.board[r][c] !== null) continue;
+      // 检查四周邻居中,是否有 2 个相邻同级
+      const nbrs = [[-1,0],[1,0],[0,-1],[0,1]];
+      const map = {};
+      for (const [dr, dc] of nbrs) {
+        const nr = r+dr, nc = c+dc;
+        if (nr<0||nr>=rows||nc<0||nc>=cols) continue;
+        const l = st.board[nr][nc];
+        if (l !== null && l < MAX_LEVEL) (map[l] ||= []).push([nr, nc]);
       }
-      persist();
+      for (const lvl in map) {
+        // 若邻居中已有 >=2 个同级,放这里就三连
+        if (map[lvl].length >= 2) {
+          flashCells.push({ r, c, t0: performance.now(), dur: 1200 });
+          selectedLevel = +lvl;
+          renderShop();
+          drawBoard();
+          toast('这里放 ' + ITEMS[lvl].name + ' 就能合体');
+          return;
+        }
+        // 或者邻居中有 1 个,并且再往外一个也有同级(潜在 3 连)
+        const [nr, nc] = map[lvl][0];
+        for (const [dr2, dc2] of nbrs) {
+          const nr2 = nr+dr2, nc2 = nc+dc2;
+          if (nr2 === r && nc2 === c) continue;
+          if (nr2<0||nr2>=rows||nc2<0||nc2>=cols) continue;
+          if (st.board[nr2]?.[nc2] === +lvl) {
+            flashCells.push({ r, c, t0: performance.now(), dur: 1200 });
+            selectedLevel = +lvl;
+            renderShop();
+            drawBoard();
+            toast('这里放 ' + ITEMS[lvl].name + ' 可以三连');
+            return;
+          }
+        }
+      }
     }
   }
-  drawBoard();
-});
-
-canvas.addEventListener('pointercancel', () => { dragState = null; drawBoard(); });
+  toast('暂时没有明显的合体机会,继续摆放吧');
+}
 
 /* =====================================================
-   按钮
+   通关判定
 ===================================================== */
-document.getElementById('spawnBtn').onclick = () => {
+function checkWin() {
+  const cfg = townCfg(currentTownId);
   const st = getTownState(currentTownId);
-  if (st.cleared) { toast('本关已通关,试试下一关吧'); return; }
-  const ok = placeRandomEgg(st);
-  if (!ok) { toast('板子满了!先合成腾空间'); return; }
+  for (let r = 0; r < cfg.layout.length; r++) {
+    for (let c = 0; c < cfg.layout[r].length; c++) {
+      if (cfg.layout[r][c] === '.' && st.board[r][c] === null) return;
+    }
+  }
+  const wasCleared = st.cleared;
+  st.cleared = true;
+  const total = countPlayableTiles(cfg);
+  const th3 = Math.ceil(total * 1.2), th2 = Math.ceil(total * 1.8);
+  const newStars = st.steps <= th3 ? 3 : st.steps <= th2 ? 2 : 1;
+  if (newStars > st.stars) st.stars = newStars;
+  if (st.bestSteps === null || st.steps < st.bestSteps) st.bestSteps = st.steps;
   persist();
-  updateSpawnBtn();
-  drawBoard();
+  showResult(cfg, newStars, st.steps, st.score, !wasCleared);
+}
+
+function showResult(cfg, stars, steps, score, isFirst) {
+  document.getElementById('resultTitle').textContent = isFirst ? '🎉 首次通关!' : '🎉 又通一次!';
+  document.getElementById('resultStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+  document.getElementById('resultStats').innerHTML =
+    '<div><b>' + cfg.name + '</b></div>' +
+    '<div>👣 步数: <b>' + steps + '</b></div>' +
+    '<div>🎯 分数: <b>' + score + '</b></div>';
+  document.getElementById('resultModal').classList.add('active');
+}
+document.getElementById('resultNext').onclick = () => {
+  document.getElementById('resultModal').classList.remove('active');
+  // 尝试进入下一关
+  const idx = TOWNS.findIndex(t => t.id === currentTownId);
+  if (idx >= 0 && idx < TOWNS.length - 1 && isTownUnlocked(idx + 1)) {
+    enterTown(TOWNS[idx + 1].id);
+  } else {
+    showScreen('mapScreen');
+  }
+};
+document.getElementById('resultAgain').onclick = () => {
+  document.getElementById('resultModal').classList.remove('active');
+  doResetTown();
 };
 
-document.getElementById('hintBtn').onclick = () => {
-  const st = getTownState(currentTownId);
-  // 找一对相同的
-  const map = {};
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const l = st.board[r][c];
-      if (l === null || l === MAX_LEVEL) continue;
-      if (!map[l]) map[l] = [];
-      map[l].push({ r, c });
-    }
-  }
-  // 优先高等级(合成更有价值)
-  const keys = Object.keys(map).map(Number).sort((a, b) => b - a);
-  for (const k of keys) {
-    if (map[k].length >= 2) {
-      hintPair = { a: map[k][0], b: map[k][1], until: performance.now() + 1500 };
-      drawBoard();
-      // 持续重画到消失
-      const iv = setInterval(() => {
-        if (!hintPair || performance.now() > hintPair.until) {
-          clearInterval(iv);
-          drawBoard();
-        } else drawBoard();
-      }, 100);
-      return;
-    }
-  }
-  toast('板上没有可合成的对子,试试生蛋');
-};
-
+/* =====================================================
+   重置
+===================================================== */
 document.getElementById('resetTownBtn').onclick = () => {
   document.getElementById('confirmModal').classList.add('active');
 };
 function closeConfirm() { document.getElementById('confirmModal').classList.remove('active'); }
 function doResetTown() {
-  const wasCleared = save.towns[currentTownId]?.cleared;
-  const wasStars = save.towns[currentTownId]?.stars || 0;
-  const wasBest = save.towns[currentTownId]?.bestSpawns;
+  const cfg = townCfg(currentTownId);
+  const prev = save.towns[currentTownId];
   save.towns[currentTownId] = {
-    board: newBoard(), spawns: 0, merges: 0,
-    cleared: wasCleared || false,
-    stars: wasStars,
-    bestSpawns: wasBest,
+    board: newBoard(cfg),
+    coins: cfg.startCoins,
+    score: 0,
+    steps: 0,
+    cleared: prev?.cleared || false,
+    stars: prev?.stars || 0,
+    bestSteps: prev?.bestSteps ?? null,
   };
-  const st = save.towns[currentTownId];
-  for (let i = 0; i < 4; i++) placeRandomEgg(st);
   persist();
   closeConfirm();
   drawBoard();
-  updateObjective();
-  updateSpawnBtn();
-  toast('小镇已重置');
+  updateStats();
+  toast('村庄已重置');
 }
-
-/* =====================================================
-   目标 / 通关
-===================================================== */
-function goalProgress(st, goal) {
-  if (goal.type === 'reach') {
-    let cur = 0;
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++)
-      if (st.board[r][c] !== null && st.board[r][c] > cur) cur = st.board[r][c];
-    return { cur, max: goal.level, done: cur >= goal.level };
-  }
-  if (goal.type === 'own') {
-    let cnt = 0;
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++)
-      if (st.board[r][c] === goal.level) cnt++;
-    return { cur: cnt, max: goal.count, done: cnt >= goal.count };
-  }
-  if (goal.type === 'merges') {
-    return { cur: st.merges, max: goal.count, done: st.merges >= goal.count };
-  }
-}
-
-function updateObjective() {
-  const cfg = TOWNS.find(t => t.id === currentTownId);
-  const st = getTownState(currentTownId);
-  document.getElementById('objText').textContent = cfg.desc;
-  const p = goalProgress(st, cfg.goal);
-  let text;
-  if (cfg.goal.type === 'reach') text = 'Lv.' + p.cur + ' / Lv.' + p.max;
-  else if (cfg.goal.type === 'own') text = p.cur + ' / ' + p.max + ' 只';
-  else text = p.cur + ' / ' + p.max;
-  document.getElementById('objProgress').textContent = text;
-}
-
-function updateSpawnBtn() {
-  const st = getTownState(currentTownId);
-  document.getElementById('spawnBtn').textContent = '🥚 生蛋 (' + st.spawns + ')';
-}
-
-function checkGoal() {
-  updateObjective();
-  updateSpawnBtn();
-  const cfg = TOWNS.find(t => t.id === currentTownId);
-  const st = getTownState(currentTownId);
-  const p = goalProgress(st, cfg.goal);
-  if (!p.done) return;
-  const wasCleared = st.cleared;
-  st.cleared = true;
-  // 星级评价 —— 按生蛋数,越少越好
-  const th = spawnThresholds(cfg);
-  const spawns = st.spawns;
-  const newStars = spawns <= th[0] ? 3 : spawns <= th[1] ? 2 : 1;
-  if (newStars > st.stars) st.stars = newStars;
-  if (st.bestSpawns === null || spawns < st.bestSpawns) st.bestSpawns = spawns;
-  persist();
-  showResult(cfg, newStars, spawns, st.merges, !wasCleared);
-}
-
-function spawnThresholds(cfg) {
-  // 返回 [3星阈值, 2星阈值];超过 2星阈值就是 1 星
-  const g = cfg.goal;
-  if (g.type === 'reach') {
-    // 合成到 Lv.N 至少需要 2^N 个蛋(极限)。留出宽裕。
-    const base = Math.pow(2, g.level);
-    return [Math.ceil(base * 1.4), Math.ceil(base * 2.2)];
-  }
-  if (g.type === 'own') {
-    const base = g.count * Math.pow(2, g.level);
-    return [Math.ceil(base * 1.4), Math.ceil(base * 2.2)];
-  }
-  if (g.type === 'merges') {
-    return [Math.ceil(g.count * 1.2), Math.ceil(g.count * 1.8)];
-  }
-  return [999, 999];
-}
-
-function showResult(cfg, stars, spawns, merges, isFirstClear) {
-  document.getElementById('resultTitle').textContent = isFirstClear ? '🎉 首次通关!' : '🎉 又通一次!';
-  document.getElementById('resultStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
-  document.getElementById('resultStats').innerHTML =
-    '<div><b>' + cfg.name + '</b> · ' + cfg.desc + '</div>' +
-    '<div>🥚 消耗蛋: <b>' + spawns + '</b></div>' +
-    '<div>✨ 合成次数: <b>' + merges + '</b></div>';
-  document.getElementById('resultModal').classList.add('active');
-}
-document.getElementById('resultNext').onclick = () => {
-  document.getElementById('resultModal').classList.remove('active');
-  showScreen('mapScreen');
-};
-document.getElementById('resultAgain').onclick = () => {
-  document.getElementById('resultModal').classList.remove('active');
-};
 
 /* =====================================================
    成就
@@ -934,7 +1041,8 @@ function drainAchToasts() {
 function renderAch() {
   const list = document.getElementById('achList');
   const done = ACHIEVEMENTS.filter(a => save.achievements[a.id]).length;
-  list.innerHTML = '<div style="text-align:center;padding:10px;color:#4338ca;font-weight:bold;">已解锁 ' + done + ' / ' + ACHIEVEMENTS.length + '</div>' +
+  list.innerHTML =
+    '<div style="text-align:center;padding:12px;color:#4338ca;font-weight:bold;">已解锁 ' + done + ' / ' + ACHIEVEMENTS.length + '</div>' +
     ACHIEVEMENTS.map(a => {
       const has = save.achievements[a.id];
       return '<div class="ach-item' + (has ? ' done' : '') + '">' +
@@ -952,8 +1060,8 @@ function renderAch() {
 ===================================================== */
 function renderDex() {
   const list = document.getElementById('dexList');
-  list.innerHTML = ANIMALS.map((a, i) => {
-    const unlocked = save.maxLevel >= i || i === 0;
+  list.innerHTML = ITEMS.map((a, i) => {
+    const unlocked = save.maxLevel >= i || i <= 2;  // 前 3 级(可购买)始终显示
     return '<div class="dex-item' + (unlocked ? '' : ' locked') + '">' +
       '<div class="dex-icon" style="background:' + (unlocked ? a.color : '#e5e7eb') +
         ';border:2px solid ' + (unlocked ? a.border : '#9ca3af') + '">' +
@@ -966,7 +1074,7 @@ function renderDex() {
 }
 
 /* =====================================================
-   Toast
+   Toast / 飘字
 ===================================================== */
 function toast(msg) {
   const el = document.createElement('div');
@@ -977,18 +1085,26 @@ function toast(msg) {
   setTimeout(() => {
     el.classList.remove('show');
     setTimeout(() => el.remove(), 300);
-  }, 1800);
+  }, 1600);
+}
+function floatText(txt, x, y) {
+  const el = document.createElement('div');
+  el.className = 'float';
+  el.textContent = txt;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
 }
 
 /* =====================================================
-   启动
+   全局
 ===================================================== */
-loadSave();
-showScreen('mapScreen');
-
-// 全局函数(供 HTML onclick 使用)
 window.closeConfirm = closeConfirm;
 window.doResetTown = doResetTown;
+
+loadSave();
+showScreen('mapScreen');
 </script>
 </body>
 </html>
