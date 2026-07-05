@@ -407,8 +407,6 @@ body {
 }
 
 /* ========== Register / dispenser: dual view (customer-outside vs cashier-inside) ========== */
-/* Scene art is now painted background images. Hide all inline scene-art SVGs
-   (they still hold obj-zone rects that we no longer use as visible art). */
 .scene-card > svg.card-svg { display: none; }
 
 .scene-card {
@@ -2564,6 +2562,18 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
         <!-- filled by JS -->
       </div>
     </div>
+
+    <!-- ==== Developer panel (visible during dev; shows current beat's raw text) ==== -->
+    <div class="dev-panel" id="dev-panel">
+      <div class="dev-panel-header">
+        <span>DEV · 当前 beat 原文</span>
+        <button class="dev-panel-toggle" id="dev-panel-toggle" title="隐藏">✕</button>
+      </div>
+      <div class="dev-panel-body" id="dev-panel-body">
+        <em style="opacity:0.5">（还没触发任何 beat）</em>
+      </div>
+    </div>
+    <button class="dev-panel-show hidden" id="dev-panel-show" title="显示 DEV 面板">DEV</button>
 
     <div class="dialogue-overlay hidden" id="dialogue-overlay">
       <div class="dialogue-box">

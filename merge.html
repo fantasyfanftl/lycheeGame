@@ -333,8 +333,25 @@
   .mode-toggle:hover { color: #5a4a2a; }
 
   @media (max-width: 480px) {
-    .container { padding: 18px 16px; }
-    h1 { font-size: 18px; letter-spacing: 1.5px; }
+    body { padding: 0; background: #f7f1de; }
+    .container {
+      padding: 10px 10px 12px;
+      border-radius: 0;
+      border: none;
+      max-width: 100%;
+      min-height: 100vh;
+    }
+    .topbar { margin-bottom: 4px; }
+    .back-link, .mode-toggle { font-size: 11px; }
+    .header { margin-bottom: 8px; }
+    h1 { font-size: 17px; letter-spacing: 1px; }
+    .score-box { padding: 4px 8px; min-width: 52px; }
+    .score-box .label { font-size: 8px; }
+    .score-box .value { font-size: 14px; }
+    .actions { margin-bottom: 8px; gap: 5px; }
+    .actions button { padding: 8px 0; font-size: 12px; letter-spacing: 0.5px; }
+    .board-wrap { border-radius: 6px; margin-bottom: 6px; }
+    .hint { display: none; }
   }
 </style>
 </head>
