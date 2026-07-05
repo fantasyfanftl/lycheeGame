@@ -518,6 +518,96 @@ body {
   .dev-panel, .dev-panel-show { display: none !important; }
 }
 
+/* ========== Developer timeline (LEFT — 4 POVs × time down) ========== */
+.dev-timeline {
+  position: fixed;
+  top: 60px;
+  left: 12px;
+  width: 340px;
+  max-height: calc(100vh - 130px);
+  background: rgba(20, 25, 40, 0.95);
+  color: #d4c39e;
+  border: 1px solid rgba(245, 200, 138, 0.55);
+  border-radius: 6px;
+  padding: 12px 12px 14px;
+  font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+.dev-timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: #f5c88a;
+  font-size: 13px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(245, 200, 138, 0.35);
+  letter-spacing: 2px;
+}
+.dev-timeline-time-label {
+  color: #c17b52;
+  font-size: 10px;
+  letter-spacing: 1px;
+  opacity: 0.75;
+}
+.dev-timeline-cols {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.dev-timeline-col { min-width: 0; }
+.dev-timeline-col-name {
+  color: #c17b52;
+  text-align: center;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(193, 123, 82, 0.35);
+  margin-bottom: 5px;
+  font-size: 11.5px;
+  letter-spacing: 1px;
+}
+.dev-timeline-col-name.active {
+  color: #f5c88a;
+  background: rgba(245, 200, 138, 0.12);
+  border-radius: 3px 3px 0 0;
+}
+.dev-timeline-beat {
+  padding: 3px 5px;
+  margin: 2px 0;
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 2px solid #5a5568;
+  font-size: 10.5px;
+  color: #d4c39e;
+  border-radius: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dev-timeline-beat.played {
+  opacity: 0.4;
+  text-decoration: line-through;
+  border-left-color: #c17b52;
+}
+.dev-timeline-beat.current {
+  background: rgba(245, 200, 138, 0.22);
+  border-left-color: #f5c88a;
+  color: #f5c88a;
+}
+.dev-timeline-beat-num {
+  color: #c17b52;
+  margin-right: 3px;
+  font-weight: 600;
+}
+@media (max-width: 1400px) {
+  .dev-timeline { display: none; }
+}
+@media (max-width: 900px) {
+  .dev-timeline { display: none !important; }
+}
+
 /* ========== Register / dispenser: dual view (customer-outside vs cashier-inside) ========== */
 /* Scene art is now painted background images. Hide all inline scene-art SVGs
    (they still hold obj-zone rects that we no longer use as visible art). */
