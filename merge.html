@@ -194,6 +194,9 @@
   /* Only 2048 keeps a special glow — colors otherwise come from SVG fills */
   .tile-2048 { filter: drop-shadow(0 0 20px rgba(240, 180, 120, 0.5)); }
 
+  /* Small single-item tiles feel too big at native scale — pull them in */
+  .tile-2 .tile-img, .tile-8 .tile-img { transform: scale(0.8); }
+
   .actions {
     display: flex;
     gap: 6px;
