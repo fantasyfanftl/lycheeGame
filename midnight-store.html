@@ -414,6 +414,12 @@ body.pov-cashier .card-svg.dispenser-outside { display: none; }
 body.pov-cashier .card-svg.register-inside,
 body.pov-cashier .card-svg.dispenser-inside { display: block; }
 
+/* Oden tray state — items + steam only show when cashier has cooked */
+body.oden-off .oden-items,
+body.oden-off .oden-steam { display: none; }
+/* "cold" = cooked but pot's off now → items visible, no steam */
+body.oden-cold .oden-steam { display: none; }
+
 /* ========== Inline beat panel (in-scene cue + choices) ========== */
 .inline-panel {
   position: absolute;
@@ -2406,9 +2412,11 @@ body.pov-cashier .card-svg.dispenser-inside { display: block; }
             </g>
 
             <!-- Steam wisps rising from tray -->
+            <g class="oden-steam">
             <path class="steam" d="M180 230 Q176 218 180 206 Q184 194 180 182" stroke="#c9b48a" stroke-width="2" fill="none"/>
             <path class="steam steam-2" d="M240 228 Q244 216 240 204 Q236 192 240 180" stroke="#c9b48a" stroke-width="2" fill="none"/>
             <path class="steam steam-3" d="M300 230 Q304 218 300 206 Q296 194 300 182" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            </g>
 
             <!-- Metal tray (top-down view, big rounded rectangle) -->
             <rect x="130" y="240" width="240" height="180" fill="#8b6f47" stroke="#3d2f24" stroke-width="1.5" rx="6"/>
@@ -2423,6 +2431,7 @@ body.pov-cashier .card-svg.dispenser-inside { display: block; }
             <line x1="250" y1="250" x2="250" y2="410" stroke="#8b6f47" stroke-width="1.4"/>
             <line x1="305" y1="250" x2="305" y2="410" stroke="#8b6f47" stroke-width="1.4"/>
 
+            <g class="oden-items">
             <!-- Cell 1 (TL): 鱼豆腐 rectangles -->
             <rect x="150" y="265" width="14" height="12" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4" rx="1"/>
             <rect x="170" y="272" width="14" height="12" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4" rx="1"/>
@@ -2442,9 +2451,7 @@ body.pov-cashier .card-svg.dispenser-inside { display: block; }
             <circle cx="288" cy="298" r="10" fill="#f9f3e8" opacity="0.9" stroke="#3d2f24" stroke-width="0.4"/>
             <circle cx="288" cy="298" r="5" fill="none" stroke="#c9b48a" stroke-width="0.4"/>
 
-            <!-- Cell 4: 豆皮 triangles + 特价 stripe -->
-            <rect x="308" y="252" width="50" height="8" fill="#c17b52"/>
-            <text x="333" y="258" font-size="5" fill="#f9f3e8" text-anchor="middle" font-family="serif" letter-spacing="1">特 价</text>
+            <!-- Cell 4: 豆皮 triangles -->
             <path d="M320 285 L330 300 L310 300 Z" fill="#e6d09a" stroke="#3d2f24" stroke-width="0.4"/>
             <path d="M340 285 L350 300 L330 300 Z" fill="#e6d09a" stroke="#3d2f24" stroke-width="0.4"/>
             <path d="M330 308 L340 322 L320 322 Z" fill="#e6d09a" stroke="#3d2f24" stroke-width="0.4"/>
@@ -2479,6 +2486,11 @@ body.pov-cashier .card-svg.dispenser-inside { display: block; }
             <rect x="318" y="380" width="12" height="10" fill="#c9b48a" opacity="0.55" stroke="#3d2f24" stroke-width="0.3"/>
             <ellipse cx="335" cy="365" rx="3" ry="1.5" fill="#8b6f47" opacity="0.5"/>
             <ellipse cx="345" cy="395" rx="3" ry="1.5" fill="#8b6f47" opacity="0.5"/>
+            </g>
+
+            <!-- 特价 stripe (always shows regardless of items — it's a permanent price tag) -->
+            <rect x="308" y="252" width="50" height="8" fill="#c17b52"/>
+            <text x="333" y="258" font-size="5" fill="#f9f3e8" text-anchor="middle" font-family="serif" letter-spacing="1">特 价</text>
 
             <!-- Tongs resting on the tray edge (vendor's tool) -->
             <line x1="130" y1="240" x2="115" y2="222" stroke="#3d2f24" stroke-width="1.6"/>
@@ -3640,6 +3652,11 @@ function render() {
   renderCharacters();
   updateCPCounter();
   document.body.classList.toggle('pov-cashier', state.currentPOV === 'cashier');
+  // Oden tray state — default (undefined) shows nothing until cashier decides.
+  const os = (state.world && state.world.odenState) || 'off';
+  document.body.classList.toggle('oden-off',  os === 'off');
+  document.body.classList.toggle('oden-cold', os === 'cold');
+  document.body.classList.toggle('oden-hot',  os === 'hot');
   if (typeof updateCardDots === 'function') updateCardDots();
 }
 
