@@ -37,35 +37,35 @@ body {
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 42px 14px 12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-  backdrop-filter: blur(10px);
-  border-bottom: 2px solid rgba(255,255,255,0.6);
+  background: linear-gradient(180deg, #fff8ec 0%, #fdf1d8 100%);
+  border-bottom: 3px solid #d4a574;
   z-index: 10; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(139,90,60,0.15);
 }
 .topbar .title {
-  font-weight: 900; font-size: 26px; color: #4338ca;
+  font-weight: 900; font-size: 26px; color: #8b4513;
   letter-spacing: 1px;
   text-shadow: 0 1px 2px rgba(255,255,255,0.8);
 }
 .icon-btn {
-  border: none; background: white; border-radius: 14px;
+  border: 2px solid #e5d0a3; background: #fff8ec; border-radius: 14px;
   padding: 10px 16px; font-size: 18px; cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: transform 0.1s; font-weight: bold; color: #4338ca;
+  box-shadow: 0 3px 0 #d4a574, 0 4px 6px rgba(139,90,60,0.15);
+  transition: transform 0.1s; font-weight: bold; color: #8b4513;
 }
-.icon-btn:active { transform: scale(0.94); }
+.icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #d4a574; }
 .icon-btn.small { padding: 8px 14px; font-size: 16px; }
 
 /* ============ 地图 ============ */
 #mapArea {
   flex: 1; position: relative;
   background:
-    radial-gradient(ellipse 70px 50px at 25% 22%, #86efac 0, transparent 100%),
-    radial-gradient(ellipse 90px 60px at 75% 30%, #86efac 0, transparent 100%),
-    radial-gradient(ellipse 110px 70px at 55% 58%, #86efac 0, transparent 100%),
-    radial-gradient(ellipse 70px 50px at 18% 78%, #fde68a 0, transparent 100%),
-    radial-gradient(ellipse 80px 55px at 82% 82%, #fde68a 0, transparent 100%),
-    linear-gradient(180deg, #7dd3fc 0%, #67e8f9 60%, #a7f3d0 100%);
+    radial-gradient(ellipse 90px 60px at 25% 22%, #86efac 0, transparent 100%),
+    radial-gradient(ellipse 110px 70px at 75% 30%, #86efac 0, transparent 100%),
+    radial-gradient(ellipse 130px 85px at 55% 58%, #86efac 0, transparent 100%),
+    radial-gradient(ellipse 90px 60px at 18% 78%, #fde68a 0, transparent 100%),
+    radial-gradient(ellipse 100px 65px at 82% 82%, #fde68a 0, transparent 100%),
+    linear-gradient(180deg, #ffe4b5 0%, #ffd7a1 40%, #f5deb3 100%);
   overflow: hidden;
 }
 #mapArea::before {

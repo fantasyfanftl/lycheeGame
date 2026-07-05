@@ -3987,7 +3987,39 @@ function _devEscape(s) {
     {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]
   ));
 }
+
+function updateDevTimeline() {
+  const cols = document.getElementById('dev-timeline-cols');
+  if (!cols) return;
+  const povs = ['cashier', 'nurse', 'driver', 'teen'];
+  const shortName = { cashier: '店员', nurse: '护士', driver: '司机', teen: '少年' };
+  let h = '';
+  povs.forEach(pov => {
+    const beats = BEATS[pov] || [];
+    const played = state.playedBeats[pov] || new Set();
+    const isActive = state.currentPOV === pov;
+    h += '<div class="dev-timeline-col">';
+    h += '<div class="dev-timeline-col-name' + (isActive ? ' active' : '') + '">' + shortName[pov] + '</div>';
+    beats.forEach((b, i) => {
+      const isPlayed = played.has(i);
+      const isCurrent = isActive && _currentBeatIndex === i && state.dialogueOpen;
+      let cls = 'dev-timeline-beat';
+      if (isCurrent) cls += ' current';
+      else if (isPlayed) cls += ' played';
+      // Strip leading numeric prefix from title if present, then truncate for cell width
+      const rawTitle = (b.title || b.hs || '?');
+      const shortTitle = rawTitle.replace(/^[\d:\s·.-]+/, '').slice(0, 6);
+      h += '<div class="' + cls + '" title="' + _devEscape(rawTitle) + '">';
+      h += '<span class="dev-timeline-beat-num">' + (i + 1) + '</span>';
+      h += _devEscape(shortTitle);
+      h += '</div>';
+    });
+    h += '</div>';
+  });
+  cols.innerHTML = h;
+}
 function updateDevPanel(effective, mode, pickedIdx) {
+  updateDevTimeline();
   const body = document.getElementById('dev-panel-body');
   if (!body) return;
   const pov = state.currentPOV;
