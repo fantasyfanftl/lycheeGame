@@ -3889,6 +3889,8 @@ function render() {
   document.body.classList.toggle('oden-cold', os === 'cold');
   document.body.classList.toggle('oden-hot',  os === 'hot');
   if (typeof updateCardDots === 'function') updateCardDots();
+  if (typeof updateDevTimeline === 'function') updateDevTimeline();
+  if (typeof updateDevPanel === 'function' && !state.dialogueOpen) updateDevPanel(null);
 }
 
 // ============================================================
