@@ -2855,7 +2855,7 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
           <rect x="220" y="2" width="70" height="26" fill="rgba(30,38,55,0.6)" stroke="#5a5568" stroke-width="0.8" stroke-dasharray="3,2"/>
           <text x="240" y="18" fill="#7a95a5" font-size="8" text-anchor="middle" font-family="serif">门 口 · 台 阶</text>
 
-          <!-- Left wall: shelves (upper part = milk cabinet with red LED) -->
+          <!-- Left wall: shelves + top = 热奶柜/冷藏 -->
           <rect x="30" y="45" width="46" height="150" fill="rgba(193,123,82,0.18)" stroke="#c17b52" stroke-width="1"/>
           <rect x="30" y="45" width="46" height="4" fill="#c17b52"/>
           <text x="53" y="70" fill="#f5c88a" font-size="8" text-anchor="middle" font-family="serif">热 奶 柜</text>
@@ -2863,37 +2863,39 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
           <text x="53" y="132" fill="#c17b52" font-size="10" text-anchor="middle" font-family="serif">货 架</text>
           <text x="53" y="180" fill="#c17b52" font-size="7" text-anchor="middle" font-family="serif" opacity="0.7">日用 / 饮品</text>
 
-          <!-- Right wall: window seat -->
-          <rect x="270" y="45" width="45" height="130" fill="rgba(193,123,82,0.18)" stroke="#c17b52" stroke-width="1"/>
+          <!-- Right wall: window seat (bar-counter along window with high stools) -->
+          <rect x="270" y="45" width="45" height="150" fill="rgba(193,123,82,0.18)" stroke="#c17b52" stroke-width="1"/>
           <line x1="270" y1="45" x2="315" y2="45" stroke="#8b6f47" stroke-width="2"/>
-          <text x="292" y="108" fill="#c17b52" font-size="10" text-anchor="middle" font-family="serif">窗 边</text>
-          <text x="292" y="120" fill="#c17b52" font-size="8" text-anchor="middle" font-family="serif">座 位</text>
-          <!-- Small chair marker -->
-          <rect x="284" y="130" width="16" height="10" fill="none" stroke="#8b6f47" stroke-width="0.6"/>
+          <rect x="273" y="50" width="39" height="8" fill="rgba(139,111,71,0.6)" stroke="#8b6f47" stroke-width="0.4"/>
+          <text x="292" y="118" fill="#c17b52" font-size="10" text-anchor="middle" font-family="serif">窗 边</text>
+          <text x="292" y="130" fill="#c17b52" font-size="8" text-anchor="middle" font-family="serif">座 位</text>
+          <!-- Bar stools along window -->
+          <circle cx="284" cy="150" r="4" fill="none" stroke="#8b6f47" stroke-width="0.6"/>
+          <circle cx="300" cy="168" r="4" fill="none" stroke="#8b6f47" stroke-width="0.6"/>
 
-          <!-- Water dispenser (middle-left, near shelves) -->
-          <rect x="86" y="90" width="24" height="34" fill="rgba(122,149,165,0.35)" stroke="#7a95a5" stroke-width="0.8"/>
-          <text x="98" y="108" fill="#7a95a5" font-size="6" text-anchor="middle" font-family="serif">饮水</text>
-          <text x="98" y="116" fill="#7a95a5" font-size="6" text-anchor="middle" font-family="serif">机</text>
+          <!-- Water dispenser (near shelves, mid-left aisle) -->
+          <rect x="88" y="88" width="22" height="30" fill="rgba(122,149,165,0.35)" stroke="#7a95a5" stroke-width="0.8"/>
+          <text x="99" y="105" fill="#7a95a5" font-size="6" text-anchor="middle" font-family="serif">饮 水</text>
 
-          <!-- Oden bar (right of water dispenser, mid-center) -->
-          <rect x="145" y="90" width="60" height="34" fill="rgba(193,123,82,0.25)" stroke="#c17b52" stroke-width="0.9"/>
-          <line x1="145" y1="90" x2="205" y2="90" stroke="#8b6f47" stroke-width="1"/>
-          <text x="175" y="108" fill="#f5c88a" font-size="8" text-anchor="middle" font-family="serif">关 东 煮</text>
-          <text x="175" y="118" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">2 元/串</text>
-
-          <!-- Cashier counter (bottom center, big island) -->
-          <rect x="80" y="210" width="180" height="46" fill="rgba(139,111,71,0.35)" stroke="#8b6f47" stroke-width="1.2"/>
-          <line x1="80" y1="220" x2="260" y2="220" stroke="#c17b52" stroke-width="0.6" opacity="0.7"/>
-          <text x="170" y="238" fill="#f5c88a" font-size="10" text-anchor="middle" font-family="serif" letter-spacing="1">收 银 台</text>
+          <!-- Bottom wall: cashier counter (left) + oden bar (right, adjacent) — SIDE BY SIDE -->
+          <!-- Cashier counter -->
+          <rect x="60" y="210" width="150" height="46" fill="rgba(139,111,71,0.35)" stroke="#8b6f47" stroke-width="1.2"/>
+          <line x1="60" y1="220" x2="210" y2="220" stroke="#c17b52" stroke-width="0.6" opacity="0.7"/>
+          <text x="135" y="238" fill="#f5c88a" font-size="10" text-anchor="middle" font-family="serif" letter-spacing="1">收 银 台</text>
           <!-- POS + register markers on counter -->
-          <rect x="92" y="222" width="14" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
-          <rect x="112" y="223" width="18" height="8" fill="#8b6f47" stroke="#5a5568" stroke-width="0.4"/>
-          <rect x="135" y="223" width="10" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
+          <rect x="72" y="222" width="14" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
+          <rect x="92" y="223" width="18" height="8" fill="#8b6f47" stroke="#5a5568" stroke-width="0.4"/>
+          <rect x="115" y="223" width="10" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
 
-          <!-- Cigarette cabinet on wall behind cashier -->
-          <rect x="130" y="196" width="90" height="10" fill="rgba(61,47,36,0.55)" stroke="#8b6f47" stroke-width="0.6"/>
-          <text x="175" y="204" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">烟 柜</text>
+          <!-- Oden bar RIGHT NEXT TO the cashier counter -->
+          <rect x="210" y="210" width="90" height="46" fill="rgba(193,123,82,0.28)" stroke="#c17b52" stroke-width="1.2"/>
+          <line x1="210" y1="220" x2="300" y2="220" stroke="#c17b52" stroke-width="0.6" opacity="0.7"/>
+          <text x="255" y="235" fill="#f5c88a" font-size="10" text-anchor="middle" font-family="serif" letter-spacing="1">关 东 煮</text>
+          <text x="255" y="248" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">2 元/串</text>
+
+          <!-- Cigarette cabinet on back wall behind cashier counter -->
+          <rect x="80" y="196" width="120" height="10" fill="rgba(61,47,36,0.55)" stroke="#8b6f47" stroke-width="0.6"/>
+          <text x="140" y="204" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">烟 柜</text>
 
           <!-- Aisle floor labels (very faint) -->
           <text x="170" y="150" fill="#c17b52" font-size="7" text-anchor="middle" font-family="serif" opacity="0.35">通 道</text>
