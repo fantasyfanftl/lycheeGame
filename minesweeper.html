@@ -386,33 +386,79 @@ function showMessage(text, type) {
 
 // Interactions
 let longPressTimer = null;
+let pressedCell = null;
+let justFlagged = false;    // 防止长按标记后 click 又翻开
+let flagMode = false;       // 标旗模式开关
+
+function haptic(pattern) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
 boardEl.addEventListener('click', e => {
   const cell = e.target.closest('.cell');
   if (!cell) return;
-  reveal(+cell.dataset.r, +cell.dataset.c);
+  if (justFlagged) { justFlagged = false; return; }  // 忽略长按后的 click
+  if (flagMode) {
+    toggleFlag(+cell.dataset.r, +cell.dataset.c);
+    haptic(40);
+  } else {
+    reveal(+cell.dataset.r, +cell.dataset.c);
+  }
 });
 boardEl.addEventListener('contextmenu', e => {
   e.preventDefault();
   const cell = e.target.closest('.cell');
   if (!cell) return;
   toggleFlag(+cell.dataset.r, +cell.dataset.c);
+  haptic(40);
 });
 boardEl.addEventListener('touchstart', e => {
   const cell = e.target.closest('.cell');
   if (!cell) return;
+  pressedCell = cell;
+  cell.classList.add('pressed');
   clearTimeout(longPressTimer);
+  if (flagMode) return;  // 标旗模式无需长按
   longPressTimer = setTimeout(() => {
     toggleFlag(+cell.dataset.r, +cell.dataset.c);
     longPressTimer = null;
-    if (navigator.vibrate) navigator.vibrate(30);
-  }, 400);
+    justFlagged = true;
+    haptic([25, 30, 60]);  // 长按标记的震动更有辨识度
+  }, 380);
 }, { passive: true });
 boardEl.addEventListener('touchend', () => {
   clearTimeout(longPressTimer);
+  if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
 });
 boardEl.addEventListener('touchmove', () => {
   clearTimeout(longPressTimer);
+  if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
 }, { passive: true });
+boardEl.addEventListener('touchcancel', () => {
+  clearTimeout(longPressTimer);
+  if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
+});
+
+// 桌面按下反馈
+boardEl.addEventListener('mousedown', e => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  cell.classList.add('pressed');
+  pressedCell = cell;
+});
+boardEl.addEventListener('mouseup', () => {
+  if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
+});
+boardEl.addEventListener('mouseleave', () => {
+  if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
+});
+
+// 标旗模式切换
+document.getElementById('flagModeBtn').addEventListener('click', () => {
+  flagMode = !flagMode;
+  document.getElementById('flagModeBtn').classList.toggle('active', flagMode);
+  haptic(20);
+});
 
 faceEl.addEventListener('click', initGame);
 document.querySelectorAll('.diff button').forEach(btn => {
