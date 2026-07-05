@@ -3926,6 +3926,23 @@ function switchPOV(char) {
     }
   }
 
+  // Auto-scroll to this POV's home card — where their story starts.
+  // Home card = card containing the first unplayed beat's hotspot; falls back
+  // to beat 0 if all played. Keeps timeline-based framing: cashier starts at
+  // register, driver at window, teen at doorstep, etc.
+  const beats = BEATS[char] || [];
+  const played = state.playedBeats[char] || new Set();
+  let homeBeat = beats[0];
+  for (let i = 0; i < beats.length; i++) {
+    if (!played.has(i)) { homeBeat = beats[i]; break; }
+  }
+  if (homeBeat && homeBeat.hs && HOTSPOTS[homeBeat.hs]) {
+    const homeCard = HOTSPOTS[homeBeat.hs].card;
+    if (homeCard && typeof scrollToCard === 'function') {
+      setTimeout(() => scrollToCard(homeCard), 60);
+    }
+  }
+
   render();
 }
 
