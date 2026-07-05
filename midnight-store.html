@@ -4939,9 +4939,10 @@ function startCashierAmbient() {
 }
 
 // ========== Cashier's earbud music (lo-fi loop) ==========
-// A slow Am - F - C - G chord loop with a triangle-wave melody, low-passed
-// for the "muffled inside earbuds" feel. Fades in on POV, fades out when the
-// cashier takes off one earbud (beat 0: "01:47 · 摘下一只耳机").
+// Original composition — a slow folk-lullaby, G major, 5s per chord, 20s loop.
+// Warm chord pad (triangle waves) + a simple singable melody line, low-passed
+// for the "muffled through in-ear earbuds" feel. Fades in on POV entry, fades
+// out when the cashier takes off one earbud (beat 0).
 function startCashierEarbudMusic() {
   if (!ensureAudio() || AUDIO.earbudMusic) return;
   const ctx = AUDIO.ctx;
@@ -4949,35 +4950,37 @@ function startCashierEarbudMusic() {
 
   const master = ctx.createGain();
   master.gain.value = 0;
-  master.gain.linearRampToValueAtTime(0.14, start + 1.6); // fade in
+  master.gain.linearRampToValueAtTime(0.15, start + 2.2); // slow fade-in
 
   const lpf = ctx.createBiquadFilter();
   lpf.type = 'lowpass';
-  lpf.frequency.value = 1400;
-  lpf.Q.value = 0.6;
+  lpf.frequency.value = 1200; // muffled through-earbuds feel
+  lpf.Q.value = 0.5;
   master.connect(lpf);
   lpf.connect(AUDIO.master);
 
   const oscs = [];
-  // Am - F - C - G, each 4s → 16s loop
+  // Chord progression: G - Em - C - D (I - vi - IV - V), warm folk-lullaby shape.
   const chords = [
-    [110.0, 164.8, 220.0], // Am
-    [ 87.3, 130.8, 174.6], // F
-    [130.8, 196.0, 261.6], // C
-    [ 98.0, 146.8, 196.0]  // G
+    [ 98.00, 146.83, 246.94], // G:  G2, D3, B3
+    [ 82.41, 123.47, 196.00], // Em: E2, B2, G3
+    [130.81, 196.00, 329.63], // C:  C3, G3, E4
+    [146.83, 220.00, 369.99]  // D:  D3, A3, F#4
   ];
+  // Original melody line — G major pentatonic phrases, singable and settling.
+  // 4 notes over each chord (1.25s each), gently rising then coming home.
   const melody = [
-    [523.3, 587.3, 659.3, 523.3], // C5 D5 E5 C5
-    [440.0, 392.0, 349.2, 293.7], // A4 G4 F4 D4
-    [523.3, 587.3, 523.3, 440.0], // C5 D5 C5 A4
-    [392.0, 440.0, 494.0, 392.0]  // G4 A4 B4 G4
+    [493.88, 440.00, 392.00, 329.63], // over G:  B4 A4 G4 E4
+    [329.63, 392.00, 440.00, 329.63], // over Em: E4 G4 A4 E4
+    [261.63, 329.63, 392.00, 329.63], // over C:  C4 E4 G4 E4
+    [369.99, 440.00, 493.88, 440.00]  // over D:  F#4 A4 B4 A4
   ];
-  const chordDur = 4.0;
-  const noteDur = 1.0;
-  const totalLoop = chords.length * chordDur;
-  const loops = 32; // ~8.5 min of music — plenty for an arc
+  const chordDur = 5.0;
+  const noteDur = 1.25;
+  const totalLoop = chords.length * chordDur; // 20s
+  const loops = 26; // ~8.7 min
 
-  // Chord pad
+  // Chord pad (soft, sustained)
   chords.forEach((chord, ci) => {
     chord.forEach((freq) => {
       const osc = ctx.createOscillator();
@@ -4988,8 +4991,8 @@ function startCashierEarbudMusic() {
       for (let loop = 0; loop < loops; loop++) {
         const t0 = start + loop * totalLoop + ci * chordDur;
         g.gain.setValueAtTime(0, t0);
-        g.gain.linearRampToValueAtTime(0.05, t0 + 0.6);
-        g.gain.linearRampToValueAtTime(0.05, t0 + chordDur - 0.4);
+        g.gain.linearRampToValueAtTime(0.052, t0 + 0.9);
+        g.gain.linearRampToValueAtTime(0.052, t0 + chordDur - 0.6);
         g.gain.linearRampToValueAtTime(0, t0 + chordDur - 0.05);
       }
       osc.connect(g).connect(master);
@@ -4998,7 +5001,7 @@ function startCashierEarbudMusic() {
     });
   });
 
-  // Melody
+  // Melody (breathy triangle, gentle envelope per note)
   melody.forEach((line, ci) => {
     line.forEach((freq, ni) => {
       const osc = ctx.createOscillator();
@@ -5009,8 +5012,8 @@ function startCashierEarbudMusic() {
       for (let loop = 0; loop < loops; loop++) {
         const t0 = start + loop * totalLoop + ci * chordDur + ni * noteDur;
         g.gain.setValueAtTime(0, t0);
-        g.gain.linearRampToValueAtTime(0.045, t0 + 0.06);
-        g.gain.linearRampToValueAtTime(0.035, t0 + noteDur - 0.15);
+        g.gain.linearRampToValueAtTime(0.048, t0 + 0.1);
+        g.gain.linearRampToValueAtTime(0.038, t0 + noteDur - 0.2);
         g.gain.linearRampToValueAtTime(0, t0 + noteDur);
       }
       osc.connect(g).connect(master);
