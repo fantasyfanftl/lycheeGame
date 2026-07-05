@@ -367,7 +367,12 @@
     .back-link { top: 5px; left: 5px; font-size: 10px; padding: 3px 8px; letter-spacing: 1px; }
 
     /* Header 极简：realm-name 小一号，描述隐藏 */
-    .header { margin-bottom: 4px; align-items: flex-end; }
+    .header {
+      margin-bottom: 4px;
+      align-items: flex-end;
+      padding-top: 20px;  /* 让开左上角固定的返回按钮 */
+    }
+    .realm-info { flex: 1; text-align: center; }
     .realm-name { font-size: 15px; letter-spacing: 2px; text-shadow: 0 0 6px rgba(245, 200, 138, 0.3); }
     .realm-desc { display: none; }
     .scores { gap: 4px; }
