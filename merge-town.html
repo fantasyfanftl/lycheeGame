@@ -803,28 +803,44 @@ function doMergeCascade(town, r, c) {
   const cfg = townCfg(currentTownId);
   const { rows, cols } = townDims(cfg);
   let chains = 0;
-  while (true) {
-    const level = town.board[r][c];
-    if (level === null || level >= MAX_LEVEL) break;
-    const group = findGroup(town.board, r, c, rows, cols);
-    if (group.length < 3) break;
+  const queue = [[r, c]];
+  while (queue.length) {
+    const [rr, cc] = queue.shift();
+    const level = town.board[rr][cc];
+    if (level === null || level >= MAX_LEVEL) continue;
+    const group = findGroup(town.board, rr, cc, rows, cols);
+    if (group.length < 3) continue;
+    // 输出数量:3-4 出 1, 5-7 出 2, 8-10 出 3, ...
+    const outCount = Math.floor((group.length + 1) / 3);
     // 清空组内所有格子
-    for (const [rr, cc] of group) town.board[rr][cc] = null;
-    // 在放置位放新等级物品
+    for (const [gr, gc] of group) town.board[gr][gc] = null;
+    // 输出位置:优先放在触发点 (rr,cc),其余按距离最近取
+    const outPos = group
+      .map(g => ({ g, d: Math.abs(g[0] - rr) + Math.abs(g[1] - cc) }))
+      .sort((a, b) => a.d - b.d)
+      .slice(0, outCount)
+      .map(x => x.g);
     const newLvl = level + 1;
-    town.board[r][c] = newLvl;
-    // 奖励
-    const scoreGain = MERGE_SCORE(newLvl) * (group.length - 2);  // 组越大奖励越多
-    const coinGain = MERGE_COIN(newLvl);
+    const scoreGain = MERGE_SCORE(newLvl) * outCount;
+    const coinGain = MERGE_COIN(newLvl) * outCount;
     town.score += scoreGain;
     town.coins += coinGain;
-    save.totalMerges++;
+    save.totalMerges += outCount;
     if (newLvl > save.maxLevel) save.maxLevel = newLvl;
+    for (const [or, oc] of outPos) {
+      town.board[or][oc] = newLvl;
+      queue.push([or, oc]);
+      flashCells.push({ r: or, c: oc, t0: performance.now(), dur: 400 });
+    }
     chains++;
-    // 高亮
-    flashCells.push({ r, c, t0: performance.now(), dur: 400 });
-    // 屏幕飘字
-    floatText('+' + scoreGain + '分 +' + coinGain + '金', canvas.getBoundingClientRect().left + (PAD + c*TILE + TILE/2) * (canvas.getBoundingClientRect().width / boardW), canvas.getBoundingClientRect().top + (PAD + r*TILE + TILE/2) * (canvas.getBoundingClientRect().height / boardH));
+    // 屏幕飘字(在第一个输出位)
+    const [fr, fc] = outPos[0];
+    const rect = canvas.getBoundingClientRect();
+    floatText(
+      (outCount > 1 ? '×' + outCount + ' ' : '') + '+' + scoreGain + '分 +' + coinGain + '金',
+      rect.left + (PAD + fc*TILE + TILE/2) * (rect.width / boardW),
+      rect.top + (PAD + fr*TILE + TILE/2) * (rect.height / boardH)
+    );
   }
   if (chains > save.maxChain) save.maxChain = chains;
   return chains;
@@ -845,7 +861,7 @@ function renderShop() {
     btn.innerHTML =
       '<span class="s-emoji">' + it.emoji + '</span>' +
       '<span class="s-name">' + it.name + '</span>' +
-      '<span class="s-price">💰' + it.price + '</span>';
+      '<span class="s-price">' + (it.price === 0 ? '免费' : '💰' + it.price) + '</span>';
     btn.onclick = () => {
       selectedLevel = i;
       renderShop();
