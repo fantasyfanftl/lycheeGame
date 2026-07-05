@@ -1849,7 +1849,10 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
     <div class="top-bar">
       <div class="top-title">凌晨两点的便利店</div>
       <div class="cp-counter"><span class="count" id="cp-count">0</span> / 15 · 交汇</div>
-      <button class="notebook-btn" id="mute-btn" title="切换环境声" style="margin-right: 10px;">🔊</button>
+      <div class="volume-ctl" id="volume-ctl" style="display:inline-flex;align-items:center;gap:6px;margin-right:10px;">
+        <button class="notebook-btn" id="mute-btn" title="静音" style="margin:0;padding:6px 8px;">🔊</button>
+        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70" title="音量" style="width:80px;accent-color:#c17b52;cursor:pointer;">
+      </div>
       <button class="notebook-btn" id="notebook-btn">📖 图 鉴</button>
     </div>
 
