@@ -1159,7 +1159,7 @@ function setRenderMode(mode) {
   if (tiles && tiles.length) renderTiles();
 }
 document.getElementById('modeToggle').addEventListener('click', () => {
-  setRenderMode(renderMode === '3d' ? 'flat' : '3d');
+  showModePicker();
 });
 
 // Boot
