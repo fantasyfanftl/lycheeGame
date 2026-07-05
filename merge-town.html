@@ -843,26 +843,10 @@ function drawItem(cx, cy, level, scale) {
   ctx.strokeStyle = a.border;
   ctx.lineWidth = 3;
   ctx.stroke();
-  ctx.font = Math.floor(size * 0.6) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+  ctx.font = Math.floor(size * 0.65) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(a.emoji, cx, cy + size * 0.05);
-  // 等级徽章:右上角彩色圆圈 + 大号数字
-  const br = Math.max(10, size * 0.22);
-  const bx = cx + size/2 - br * 0.7;
-  const by = cy - size/2 + br * 0.7;
-  ctx.fillStyle = a.border;
-  ctx.beginPath();
-  ctx.arc(bx, by, br, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.fillStyle = 'white';
-  ctx.font = 'bold ' + Math.floor(br * 1.2) + "px system-ui, sans-serif";
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(level, bx, by + 1);
 }
 
 function pixelToTile(x, y) {
