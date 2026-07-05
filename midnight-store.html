@@ -5191,13 +5191,13 @@ const CASHIER_BG_TRACKS = [
   'assets/audio/Aisle Four Glow01.mp3',
   'assets/audio/Aisle Four Glow02.mp3'
 ];
-function startCashierBackgroundMusic() {
+function startCashierBackgroundMusic(targetVol) {
   if (AUDIO.bgMusic) return;
   const track = CASHIER_BG_TRACKS[Math.floor(Math.random() * CASHIER_BG_TRACKS.length)];
   const audio = new Audio(track);
   audio.loop = true;
   audio.volume = 0;
-  const target = 0.22; // low volume — sits behind everything else
+  const target = (targetVol != null ? targetVol : 0.22);
   audio.play().catch(() => {});
   AUDIO.bgMusic = { audio, track, target };
   if (AUDIO.muted) { try { audio.pause(); } catch (e) {} return; }
