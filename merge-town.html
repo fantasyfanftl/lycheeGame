@@ -1121,7 +1121,7 @@ function renderQueue() {
     const lvl = st.queue[i];
     const it = getItem(lvl);
     document.getElementById('qEmoji' + i).innerHTML =
-      '<img src="' + it.icon + '" alt="' + it.name + '" style="width:100%;height:100%;object-fit:contain;">';
+      '<img src="' + iconSrc(it) + '" alt="' + it.name + '" style="width:100%;height:100%;object-fit:contain;">';
   }
   document.getElementById('qName0').textContent = getItem(st.queue[0]).name;
   const undo = document.getElementById('undoBtn');
@@ -1135,7 +1135,7 @@ function renderQueue() {
       storageBtn.classList.add('empty');
     } else {
       const s = getItem(st.storage);
-      storageEl.innerHTML = '<img src="' + s.icon + '" alt="' + s.name + '" style="width:100%;height:100%;object-fit:contain;">';
+      storageEl.innerHTML = '<img src="' + iconSrc(s) + '" alt="' + s.name + '" style="width:100%;height:100%;object-fit:contain;">';
       storageBtn.classList.remove('empty');
     }
   }
