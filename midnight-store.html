@@ -4223,8 +4223,6 @@ function renderHotspots() {
   } else {
     hideBeatNudge();
   }
-
-  const svgNS = 'http://www.w3.org/2000/svg';
   // Group by card so each card gets one overlay SVG with multiple hotspots.
   const byCard = {};
   items.forEach(({ beat, index }) => {
