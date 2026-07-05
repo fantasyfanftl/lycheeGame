@@ -854,7 +854,7 @@ function resizeBoard() {
   TILE = Math.floor(Math.min(availW / cols, availH / rows));
   TILE = Math.max(TILE, 48);
   PAD = 6;
-  PAD_TOP = PAD + Math.ceil(TILE * 0.9);  // 顶部留 0.9 格空间给高等级图标向上溢出
+  PAD_TOP = PAD + Math.ceil(TILE * 1.35);  // 顶部留 1.35 格空间给高等级图标向上溢出
   boardW = cols * TILE + PAD * 2;
   boardH = rows * TILE + PAD_TOP + PAD;
   const dpr = window.devicePixelRatio || 1;
@@ -1017,11 +1017,18 @@ function drawBoard() {
 
 function drawItem(cx, cy, level, scale) {
   const a = getItem(level);
-  const size = TILE * 0.96 * scale;
+  // 按等级递增尺寸,整体放大让棋盘立体感强
+  const isWc = level === WILDCARD_LVL;
+  const tier = isWc ? 5 : level;
+  const tierScale = tier <= 2 ? 1.25 : tier <= 5 ? 1.5 : tier <= 8 ? 1.85 : 2.2;
+  const size = TILE * tierScale * scale;
   const img = iconImages[level];
+  // 底对齐格子底部,自然向上溢出
+  const bottomY = cy + TILE * 0.5;
+  const drawY = bottomY - size;
+  const drawX = cx - size / 2;
   if (img && img.complete && img.naturalWidth > 0) {
-    // 透明 PNG 直接铺满,不画方块底
-    ctx.drawImage(img, cx - size/2, cy - size/2, size, size);
+    ctx.drawImage(img, drawX, drawY, size, size);
   } else {
     // 图未加载完的兜底:方块底 + emoji
     ctx.fillStyle = 'rgba(0,0,0,0.15)';
