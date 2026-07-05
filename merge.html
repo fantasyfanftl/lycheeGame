@@ -533,13 +533,6 @@ function hideHint() {
   if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
 }
 
-function updateInfoText() {
-  if (inTutorial) {
-    // info bar removed; tutorial hint no longer shown here
-  } else {
-    // info bar removed
-  }
-}
 
 function setBoardSize(freshFrom = null) {
   gridBg.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
