@@ -3986,9 +3986,9 @@ function playBeat(beat) {
   }
 
   // Cashier's beat 0 = "01:47 · 摘下一只耳机" — he takes off one earbud,
-  // so his music fades out (was playing since POV switch).
-  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0 && typeof stopCashierEarbudMusic === 'function') {
-    stopCashierEarbudMusic(1.2);
+  // so the earbud song fades out (background music continues).
+  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0 && typeof stopCashierEarbudSong === 'function') {
+    stopCashierEarbudSong(1.4);
   }
 
   playInlineBeat(effective);
@@ -4853,6 +4853,8 @@ function stopAmbient(instant) {
 
   // Stop earbud music too (may or may not be running)
   if (typeof stopCashierEarbudMusic === 'function') stopCashierEarbudMusic(instant ? 0.15 : 0.9);
+  if (typeof stopCashierBackgroundMusic === 'function') stopCashierBackgroundMusic(instant ? 0.15 : 1.0);
+  if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(instant ? 0.15 : 1.0);
 
   if (AUDIO.drone) {
     const d = AUDIO.drone;
