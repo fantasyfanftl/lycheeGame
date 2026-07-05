@@ -393,6 +393,7 @@ function showMessage(text, type) {
 // Interactions
 let longPressTimer = null;
 let pressedCell = null;
+let pressStartX = 0, pressStartY = 0;
 let justFlagged = false;    // 防止长按标记后 click 又翻开
 let flagMode = false;       // 标旗模式开关
 
@@ -423,6 +424,9 @@ boardEl.addEventListener('touchstart', e => {
   if (!cell) return;
   pressedCell = cell;
   cell.classList.add('pressed');
+  const t = e.touches[0];
+  pressStartX = t.clientX;
+  pressStartY = t.clientY;
   clearTimeout(longPressTimer);
   if (flagMode) return;  // 标旗模式无需长按
   longPressTimer = setTimeout(() => {
@@ -430,19 +434,28 @@ boardEl.addEventListener('touchstart', e => {
     longPressTimer = null;
     justFlagged = true;
     haptic([25, 30, 60]);  // 长按标记的震动更有辨识度
-  }, 380);
+  }, 350);
 }, { passive: true });
 boardEl.addEventListener('touchend', () => {
   clearTimeout(longPressTimer);
   if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
 });
-boardEl.addEventListener('touchmove', () => {
-  clearTimeout(longPressTimer);
-  if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
+boardEl.addEventListener('touchmove', e => {
+  // 只有明显移动（>12px）才取消长按 · 手指微抖不算
+  if (!pressStartX) return;
+  const t = e.touches[0];
+  const dx = t.clientX - pressStartX;
+  const dy = t.clientY - pressStartY;
+  if (Math.sqrt(dx*dx + dy*dy) > 12) {
+    clearTimeout(longPressTimer);
+    if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
+    pressStartX = 0;
+  }
 }, { passive: true });
 boardEl.addEventListener('touchcancel', () => {
   clearTimeout(longPressTimer);
   if (pressedCell) { pressedCell.classList.remove('pressed'); pressedCell = null; }
+  pressStartX = 0;
 });
 
 // 桌面按下反馈
