@@ -154,6 +154,7 @@
     background: radial-gradient(ellipse at center, #14162e 0%, #0a0a18 100%);
     margin-bottom: 12px;
     border: 1px solid rgba(245, 200, 138, 0.15);
+    touch-action: none;
   }
   canvas {
     display: block;
@@ -446,7 +447,7 @@
   </div>
 
   <div class="hint">
-    键盘方向键 / WASD · 手机滑动棋盘 或点方向键 · 空格暂停
+    键盘方向键 / WASD · 手机<b>点棋盘导向</b> 或滑动 · 空格暂停
   </div>
 </div>
 
@@ -823,6 +824,19 @@ function togglePause() {
   }
 }
 
+// Input queue helper — dedup + 180° prevention + queue cap
+const MAX_QUEUE = 3;
+function pushDir(nd) {
+  if (!nd) return;
+  const last = dirQueue.length > 0 ? dirQueue[dirQueue.length - 1] : dir;
+  if (!last) { dirQueue.push(nd); return; }
+  // 与上一个相同 → 丢弃（省一个 queue 位）
+  if (nd.r === last.r && nd.c === last.c) return;
+  // 180° 反转（会立刻撞死自己）→ 丢弃
+  if (nd.r === -last.r && nd.c === -last.c) return;
+  if (dirQueue.length < MAX_QUEUE) dirQueue.push(nd);
+}
+
 // Input
 document.addEventListener('keydown', e => {
   const map = {
@@ -831,7 +845,7 @@ document.addEventListener('keydown', e => {
     W: {r:-1,c:0}, S: {r:1,c:0}, A: {r:0,c:-1}, D: {r:0,c:1},
   };
   if (map[e.key]) {
-    if (dirQueue.length < 2) dirQueue.push(map[e.key]);
+    pushDir(map[e.key]);
     e.preventDefault();
   } else if (e.key === ' ') {
     if (breakthroughEl.classList.contains('show')) return;
@@ -841,7 +855,9 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// Canvas: 点棋盘 = 蛇头朝那个方向走；滑动仍支持
 let touchStart = null;
+const TAP_MAX_MOVE = 12;   // 移动 <12px 视为 tap
 canvas.addEventListener('touchstart', e => {
   const t = e.touches[0];
   touchStart = { x: t.clientX, y: t.clientY };
@@ -852,13 +868,29 @@ canvas.addEventListener('touchend', e => {
   const dx = t.clientX - touchStart.x;
   const dy = t.clientY - touchStart.y;
   const ax = Math.abs(dx), ay = Math.abs(dy);
+  const moved = Math.max(ax, ay);
+  let d = null;
+
+  if (moved < TAP_MAX_MOVE) {
+    // 短按 → tap-to-direct，根据点位相对蛇头方位选主轴
+    if (!snake || !snake.length) { touchStart = null; return; }
+    const rect = canvas.getBoundingClientRect();
+    const cs = rect.width / CELLS;
+    const headX = (snake[0].c + 0.5) * cs + rect.left;
+    const headY = (snake[0].r + 0.5) * cs + rect.top;
+    const tdx = t.clientX - headX;
+    const tdy = t.clientY - headY;
+    const tax = Math.abs(tdx), tay = Math.abs(tdy);
+    if (Math.max(tax, tay) < cs * 0.4) { touchStart = null; return; }  // 太靠近蛇头 → 忽略
+    if (tax > tay) d = tdx > 0 ? {r:0,c:1} : {r:0,c:-1};
+    else d = tdy > 0 ? {r:1,c:0} : {r:-1,c:0};
+  } else {
+    // 长滑 → 滑动方向
+    if (ax > ay) d = dx > 0 ? {r:0,c:1} : {r:0,c:-1};
+    else d = dy > 0 ? {r:1,c:0} : {r:-1,c:0};
+  }
+  pushDir(d);
   touchStart = null;
-  // ignore taps (avoid accidental pause)
-  if (Math.max(ax, ay) < 20) return;
-  let d;
-  if (ax > ay) d = dx > 0 ? {r:0,c:1} : {r:0,c:-1};
-  else d = dy > 0 ? {r:1,c:0} : {r:-1,c:0};
-  if (dirQueue.length < 2) dirQueue.push(d);
 }, { passive: true });
 
 startBtn.addEventListener('click', () => {
@@ -881,8 +913,8 @@ function haptic(ms = 15) {
 document.querySelectorAll('.dpad-btn').forEach(btn => {
   const press = (e) => {
     e.preventDefault();
-    const dir = btn.dataset.dir;
-    if (dirQueue.length < 2) dirQueue.push(DPAD_DIRS[dir]);
+    const dirName = btn.dataset.dir;
+    pushDir(DPAD_DIRS[dirName]);
     btn.classList.add('pressed');
     haptic(12);
   };
