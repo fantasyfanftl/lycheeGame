@@ -4935,12 +4935,23 @@ function startCashierAmbient() {
     AUDIO.timers.push(setTimeout(() => { playPhoneVibration(); scheduleVibration(); }, 25000 + Math.random() * 30000));
   };
   scheduleVibration();
-  // Cashier's shift: two things playing —
-  //  (1) low-volume in-store background music (randomly one of two tracks)
-  //  (2) the earbud song (his personal music) — fades on beat 0 "摘下一只耳机"
-  startCashierBackgroundMusic();
+  // Cashier's shift: initially the player only hears the EARBUD SONG (he's
+  // zoned out). After ~7s an automatic door chime + "欢迎光临" fires as a
+  // narrative cue — this is what pulls him back and motivates beat 0
+  // ("摘下一只耳机"). Background store music only starts AFTER beat 0.
   const played = (state.playedBeats && state.playedBeats.cashier) || new Set();
-  if (!played.has(0)) startCashierEarbudSong();
+  if (!played.has(0)) {
+    startCashierEarbudSong();
+    AUDIO.timers.push(setTimeout(() => {
+      if (AUDIO.currentAmbient !== 'cashier') return;
+      const p = (state.playedBeats && state.playedBeats.cashier) || new Set();
+      if (p.has(0)) return; // already dealt with it
+      playDoorChime();
+    }, 7500));
+  } else {
+    // Already past beat 0 in an earlier run: background music, no earbud song.
+    startCashierBackgroundMusic();
+  }
 }
 
 // ========== Cashier's shift background music (Suno mp3, random pick) ==========
