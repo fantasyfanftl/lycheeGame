@@ -4851,6 +4851,9 @@ function stopAmbient(instant) {
   if (!AUDIO.ctx) return;
   const now = AUDIO.ctx.currentTime;
 
+  // Stop earbud music too (may or may not be running)
+  if (typeof stopCashierEarbudMusic === 'function') stopCashierEarbudMusic(instant ? 0.15 : 0.9);
+
   if (AUDIO.drone) {
     const d = AUDIO.drone;
     AUDIO.drone = null;
