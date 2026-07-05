@@ -878,7 +878,7 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
         const dir = renderMode === 'immortal' ? 'merge-immortal-assets' : 'merge3d-assets';
         const MAX_IMG_TIER = 8192;
         const imgVal = t.value <= MAX_IMG_TIER ? t.value : MAX_IMG_TIER;
-        el.innerHTML = `<img class="tile-img" src="${dir}/tile-${imgVal}.webp?v=17" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
+        el.innerHTML = `<img class="tile-img" src="${dir}/tile-${imgVal}.webp?v=18" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
       } else {
         el.innerHTML = buildTileSVG(t, tileW, tileH) + '<span class="tile-num"></span>';
       }
