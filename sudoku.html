@@ -258,32 +258,154 @@
   }
   .info span b { color: #e0e6ee; margin-left: 4px; }
 
-  .difficulty {
-    display: flex;
-    gap: 5px;
-    max-width: 560px;
-    width: 100%;
+  /* Difficulty picker screen */
+  #screen-difficulty { text-align: center; z-index: 2; }
+  .diff-header {
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: rgba(160, 180, 210, 0.55);
+    margin-bottom: 20px;
+  }
+  .diff-title {
+    font-size: clamp(24px, 5vw, 32px);
+    letter-spacing: 6px;
+    color: #e0e6ee;
     margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(140, 170, 210, 0.25);
+  }
+  .diff-sub {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: rgba(160, 180, 210, 0.55);
+    margin-bottom: 30px;
+  }
+  .diff-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    max-width: 720px;
+    width: 100%;
+    margin-bottom: 26px;
+  }
+  .diff-card {
+    background: rgba(0,0,0,0.32);
+    border: 1px solid rgba(160, 180, 210, 0.28);
+    border-radius: 4px;
+    padding: 18px 16px;
+    color: rgba(212, 216, 224, 0.9);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .diff-card:hover {
+    background: rgba(160, 180, 210, 0.1);
+    border-color: rgba(160, 180, 210, 0.7);
+    transform: translateY(-2px);
+  }
+  .diff-card .diff-emoji { font-size: 34px; margin-bottom: 4px; }
+  .diff-card .diff-name {
+    font-size: 18px;
+    letter-spacing: 6px;
+    color: #e0e6ee;
+    margin-bottom: 2px;
+  }
+  .diff-card .diff-tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(160, 180, 210, 0.7);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(160, 180, 210, 0.2);
+    width: 100%;
+  }
+  .diff-card ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+    font-size: 12px;
+    line-height: 1.8;
+    color: rgba(212, 216, 224, 0.85);
+    letter-spacing: 1px;
+  }
+  .diff-card li { padding-left: 14px; position: relative; }
+  .diff-card li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: rgba(160, 180, 210, 0.6);
+  }
+  .diff-card.rookie { border-color: rgba(120, 200, 140, 0.35); }
+  .diff-card.rookie:hover { border-color: rgba(120, 200, 140, 0.9); box-shadow: 0 0 20px rgba(120, 200, 140, 0.18); }
+  .diff-card.normal { border-color: rgba(160, 180, 210, 0.35); }
+  .diff-card.normal:hover { border-color: rgba(160, 180, 210, 0.9); }
+  .diff-card.master { border-color: rgba(220, 140, 80, 0.4); }
+  .diff-card.master:hover { border-color: rgba(220, 140, 80, 0.95); box-shadow: 0 0 20px rgba(220, 140, 80, 0.2); }
+  .diff-card.hell { border-color: rgba(200, 80, 80, 0.45); }
+  .diff-card.hell:hover { border-color: rgba(255, 100, 100, 0.95); box-shadow: 0 0 22px rgba(220, 80, 80, 0.28); }
+
+  /* Retry accuse modal */
+  .retry-modal .retry-title {
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: #a04040;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .retry-modal .retry-body {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #2a2418;
+    margin-bottom: 18px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .retry-modal .retry-body b { color: #a04040; }
+  .retry-actions {
+    display: flex;
+    gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
   }
-  .difficulty button {
-    padding: 4px 10px;
-    border: 1px solid rgba(160, 180, 210, 0.25);
-    background: transparent;
-    color: rgba(212, 216, 224, 0.75);
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 11px;
-    letter-spacing: 1px;
+  .retry-actions button {
+    background: none;
+    border: 1px solid #6b5d40;
+    color: #2a2418;
+    padding: 8px 20px;
     font-family: inherit;
-    transition: all 0.2s;
+    letter-spacing: 3px;
+    cursor: pointer;
+    font-size: 13px;
   }
-  .difficulty button:hover { background: rgba(160, 180, 210, 0.1); }
-  .difficulty button.active {
-    background: rgba(160, 180, 210, 0.2);
-    border-color: #e0e6ee;
-    color: #e0e6ee;
+  .retry-actions button:hover { background: rgba(107, 93, 64, 0.1); }
+  .retry-actions button.primary { background: #a04040; color: #fff; border-color: #a04040; }
+  .retry-actions button.primary:hover { background: #b85050; }
+
+  /* Timer running-out warning */
+  .info span.warn b { color: #ff8060; }
+  .info span.critical b {
+    color: #ff5050;
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  .verdict-forced {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #ff8060;
+    text-align: center;
+    padding: 8px 14px;
+    border: 1px dashed rgba(255, 128, 96, 0.5);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    max-width: 500px;
   }
 
   .board {
@@ -640,22 +762,25 @@
   <button class="cold-btn" id="startBtn">开 始 调 查</button>
 </div>
 
+<!-- Difficulty picker -->
+<div id="screen-difficulty" class="screen">
+  <div class="diff-header" id="diffCaseTag">— 你 选 中 了 —</div>
+  <h2 class="diff-title">选 择 难 度</h2>
+  <div class="diff-sub">— 一 旦 定 档 · 中 途 不 换 —</div>
+  <div class="diff-picker" id="diffPicker"></div>
+  <button class="cold-btn small" id="backToTitleBtn">← 换 一 桩 案 子</button>
+</div>
+
 <!-- Game -->
 <div id="screen-game" class="screen">
   <div class="game-header">
-    <span class="game-title" id="gameTitle">❄ 雪夜列车 · 案发现场</span>
+    <span class="game-title" id="gameTitle">❄ 雪夜列车 · 🌱 新手 · 剩指控 3</span>
     <button class="clue-btn" id="clueBtn">线索簿 <span class="badge" id="clueBadge">0/9</span></button>
   </div>
   <div class="info">
-    <span>时辰 <b id="timer">00:00</b></span>
-    <span>差错 <b id="mistakes">0</b></span>
+    <span id="timerBox">时辰 <b id="timer">00:00</b></span>
+    <span id="mistakeBox">差错 <b id="mistakes">0</b></span>
     <span>已搜 <b id="searched">0</b>/9 处</span>
-  </div>
-  <div class="difficulty">
-    <button data-level="easy" class="active">简单 · 40 处已知</button>
-    <button data-level="medium">中等 · 32 处已知</button>
-    <button data-level="hard">困难 · 26 处已知</button>
-    <button data-level="expert">专家 · 22 处已知</button>
   </div>
   <div class="board" id="board"></div>
   <div class="numpad" id="numpad"></div>
@@ -673,6 +798,7 @@
 <div id="screen-verdict" class="screen">
   <h2 class="verdict-title">推 · 理 · 定 案</h2>
   <p class="verdict-sub" id="verdictSub"></p>
+  <div class="verdict-forced" id="verdictForced" style="display: none;"></div>
 
   <div class="verdict-section">
     <h4>凶手</h4>
@@ -714,6 +840,18 @@
     <div class="modal-sub">数独盘的每个 3×3 宫 = 车厢的一处位置。填完即搜清</div>
     <div id="clueList"></div>
     <button class="modal-close" id="closeClueBtn">合上</button>
+  </div>
+</div>
+
+<!-- Retry accuse modal -->
+<div class="modal-mask" id="retryModal">
+  <div class="modal retry-modal">
+    <div class="retry-title">— 指 控 有 误 —</div>
+    <div class="retry-body" id="retryBody"></div>
+    <div class="retry-actions">
+      <button id="retryBackToGame">回 场 再 查</button>
+      <button class="primary" id="retryAgain">再 次 指 控</button>
+    </div>
   </div>
 </div>
 
@@ -1147,12 +1285,30 @@ let puzzle, solution, userBoard, fixed;
 let selected = null;
 let mistakes = 0, seconds = 0;
 let timerId = null;
-let difficulty = 'easy';
 let solved = false;
-let unlockedBoxes;  // Set of box indices (0-8) unlocked
+let unlockedBoxes;
 let clueQueue = [];
 let showingClue = false;
-const DIFFICULTY = { easy: 40, medium: 32, hard: 26, expert: 22 };
+
+// ============ Difficulty ============
+const DIFFICULTIES = [
+  { key: 'rookie', name: '新手', emoji: '🌱', clues: 40, mistakeLimit: 0,  accuseTimes: 3, allowHint: true,  timeLimit: 0,
+    tag: '入 门 · 慢 慢 来',
+    lines: ['棋盘已知 40 处', '差错无上限', '指控可 3 次', '直觉提示 可用'] },
+  { key: 'normal', name: '普通', emoji: '⚖', clues: 32, mistakeLimit: 10, accuseTimes: 2, allowHint: true,  timeLimit: 0,
+    tag: '正 剧 调',
+    lines: ['棋盘已知 32 处', '差错限 10 次', '指控可 2 次', '直觉提示 可用'] },
+  { key: 'master', name: '大师', emoji: '🔥', clues: 26, mistakeLimit: 5,  accuseTimes: 1, allowHint: false, timeLimit: 900,
+    tag: '一 击 定 案',
+    lines: ['棋盘已知 26 处', '差错限 5 次', '15 分钟 倒计', '无直觉 · 1 次指控'] },
+  { key: 'hell',   name: '炼狱', emoji: '💀', clues: 22, mistakeLimit: 3,  accuseTimes: 1, allowHint: false, timeLimit: 600,
+    tag: '刀 尖 之 上',
+    lines: ['棋盘已知 22 处', '差错限 3 次', '10 分钟 倒计', '无直觉 · 1 次指控'] },
+];
+let diff = DIFFICULTIES[0];
+let accuseUsed = 0;
+let timeExpired = false;
+let gameOver = false;
 
 function createEmpty() { return Array.from({length: N}, () => Array(N).fill(0)); }
 function isValid(g, r, c, n) {
@@ -1223,8 +1379,6 @@ function generatePuzzle(clues) {
 // ============ DOM ============
 const boardEl = document.getElementById('board');
 const numpadEl = document.getElementById('numpad');
-const timerEl = document.getElementById('timer');
-const mistakesEl = document.getElementById('mistakes');
 const searchedEl = document.getElementById('searched');
 const messageEl = document.getElementById('message');
 const clueBadge = document.getElementById('clueBadge');
@@ -1281,12 +1435,18 @@ function applyHighlights() {
 }
 
 function placeNumber(n) {
-  if (!selected || solved) return;
+  if (!selected || solved || gameOver) return;
   const { r, c } = selected;
   if (fixed[r][c]) return;
   if (n !== 0 && userBoard[r][c] !== n && n !== solution[r][c]) {
     mistakes++;
-    mistakesEl.textContent = mistakes;
+    updateMistakeDisplay();
+    if (diff.mistakeLimit && mistakes >= diff.mistakeLimit) {
+      userBoard[r][c] = n;
+      render();
+      failByMistakes();
+      return;
+    }
   }
   userBoard[r][c] = n;
   render();
@@ -1357,20 +1517,24 @@ function showMessage(text, type) {
 
 function newGame() {
   solved = false;
+  gameOver = false;
+  timeExpired = false;
+  accuseUsed = 0;
+  applyDifficultyUI();
   showMessage('新盘布置中……', '');
   setTimeout(() => {
-    puzzle = generatePuzzle(DIFFICULTY[difficulty]);
+    puzzle = generatePuzzle(diff.clues);
     userBoard = puzzle.map(r => [...r]);
     fixed = puzzle.map(r => r.map(v => v !== 0));
     mistakes = 0;
-    seconds = 0;
+    seconds = diff.timeLimit || 0;
     selected = null;
     unlockedBoxes = new Set();
     clueQueue = [];
     showingClue = false;
     clueToast.classList.remove('show');
-    mistakesEl.textContent = '0';
-    timerEl.textContent = '00:00';
+    updateMistakeDisplay();
+    updateTimerDisplay();
     searchedEl.textContent = '0';
     clueBadge.textContent = '0/9';
     showMessage('', '');
@@ -1379,16 +1543,100 @@ function newGame() {
   }, 50);
 }
 
+function updateHeader() {
+  const s = STORIES[currentStoryIdx];
+  const remaining = Math.max(0, diff.accuseTimes - accuseUsed);
+  document.getElementById('gameTitle').textContent =
+    `${s.emoji} ${s.name} · ${diff.emoji} ${diff.name} · 剩指控 ${remaining}`;
+}
+
+function updateMistakeDisplay() {
+  const box = document.getElementById('mistakeBox');
+  if (diff.mistakeLimit) {
+    box.innerHTML = `差错 <b>${mistakes}</b>/${diff.mistakeLimit}`;
+    box.classList.remove('warn', 'critical');
+    const ratio = mistakes / diff.mistakeLimit;
+    if (ratio >= 0.8) box.classList.add('critical');
+    else if (ratio >= 0.6) box.classList.add('warn');
+  } else {
+    box.innerHTML = `差错 <b>${mistakes}</b>`;
+    box.classList.remove('warn', 'critical');
+  }
+}
+
+function updateTimerDisplay() {
+  const box = document.getElementById('timerBox');
+  const m = String(Math.floor(Math.abs(seconds)/60)).padStart(2,'0');
+  const s = String(Math.abs(seconds)%60).padStart(2,'0');
+  if (diff.timeLimit) {
+    box.innerHTML = `倒计 <b>${m}:${s}</b>`;
+    box.classList.remove('warn', 'critical');
+    if (seconds <= 60) box.classList.add('critical');
+    else if (seconds <= 180) box.classList.add('warn');
+  } else {
+    box.innerHTML = `时辰 <b>${m}:${s}</b>`;
+    box.classList.remove('warn', 'critical');
+  }
+}
+
+function applyDifficultyUI() {
+  updateHeader();
+  document.getElementById('hint').style.display = diff.allowHint ? '' : 'none';
+}
+
 function startTimer() {
   stopTimer();
   timerId = setInterval(() => {
-    seconds++;
-    const m = String(Math.floor(seconds/60)).padStart(2,'0');
-    const s = String(seconds%60).padStart(2,'0');
-    timerEl.textContent = `${m}:${s}`;
+    if (diff.timeLimit) {
+      seconds--;
+      if (seconds <= 0) {
+        seconds = 0;
+        updateTimerDisplay();
+        stopTimer();
+        onTimeExpired();
+        return;
+      }
+    } else {
+      seconds++;
+    }
+    updateTimerDisplay();
   }, 1000);
 }
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
+
+function onTimeExpired() {
+  if (gameOver) return;
+  timeExpired = true;
+  gameOver = true;
+  showMessage('时限已到 · 强制指控', 'error');
+  setTimeout(() => {
+    initVerdict();
+    showScreen('screen-verdict');
+  }, 900);
+}
+
+function failByMistakes() {
+  gameOver = true;
+  stopTimer();
+  showMessage(`差错过 ${diff.mistakeLimit} 次 · 案情失控`, 'error');
+  setTimeout(() => {
+    const titleEl = document.getElementById('resultTitle');
+    const bodyEl = document.getElementById('resultBody');
+    titleEl.textContent = '案 情 失 控';
+    titleEl.className = 'result-title lose';
+    const s = STORIES[currentStoryIdx];
+    const ans = s.suspects.find(x => x.id === s.answer.suspect);
+    const mth = s.methods.find(x => x.id === s.answer.method);
+    bodyEl.innerHTML = [
+      `你差错累计过限（${diff.mistakeLimit} 次），案件被上级收回。`,
+      '',
+      `真相是——凶手 <b>${ans.name}</b>，用 <b>${mth.name}</b>。`,
+      '',
+      `你终究没能亲手把这一夜写完。`,
+    ].map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+    showScreen('screen-result');
+  }, 1200);
+}
 
 function buildNumpad() {
   for (let n = 1; n <= 9; n++) {
@@ -1418,9 +1666,10 @@ document.addEventListener('keydown', e => {
 document.getElementById('newGame').addEventListener('click', newGame);
 document.getElementById('erase').addEventListener('click', () => placeNumber(0));
 document.getElementById('hint').addEventListener('click', () => {
+  if (!diff.allowHint || gameOver || solved) return;
   if (!selected) { showMessage('先选一格', 'error'); return; }
   const { r, c } = selected;
-  if (fixed[r][c] || solved) return;
+  if (fixed[r][c]) return;
   userBoard[r][c] = solution[r][c];
   render();
   checkBoxUnlocks();
@@ -1433,15 +1682,6 @@ document.getElementById('check').addEventListener('click', () => {
       if (userBoard[r][c] !== 0 && userBoard[r][c] !== solution[r][c]) errors++;
   if (errors === 0) showMessage('☾ 目前无差错', 'info');
   else showMessage(`✗ 现有 ${errors} 处错位`, 'error');
-});
-
-document.querySelectorAll('.difficulty button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.difficulty button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    difficulty = btn.dataset.level;
-    newGame();
-  });
 });
 
 // Clue log modal
@@ -1466,8 +1706,22 @@ function renderClueList() {
 let selectedSuspect = null, selectedMethod = null;
 
 function initVerdict() {
+  const remaining = Math.max(1, diff.accuseTimes - accuseUsed);
+  const finalOne = timeExpired || diff.accuseTimes === 1 || remaining === 1;
+  const forcedBox = document.getElementById('verdictForced');
+  if (timeExpired) {
+    forcedBox.style.display = '';
+    forcedBox.textContent = '— 时 限 已 到 · 此 为 最 后 一 击 —';
+  } else if (finalOne) {
+    forcedBox.style.display = '';
+    forcedBox.textContent = '— 只 剩 一 次 指 控 · 慎 之 —';
+  } else {
+    forcedBox.style.display = 'none';
+  }
+  const backBtn = document.getElementById('backToGameBtn');
+  backBtn.style.display = (timeExpired || gameOver) ? 'none' : '';
   document.getElementById('verdictSub').textContent =
-    `你已搜清 ${unlockedBoxes.size}/9 处 · 差错 ${mistakes} 次。凶手是谁？用了什么手法？`;
+    `你已搜清 ${unlockedBoxes.size}/9 处 · 差错 ${mistakes} 次${diff.mistakeLimit ? '/' + diff.mistakeLimit : ''}。凶手是谁？用了什么手法？`;
   const sg = document.getElementById('suspectGrid');
   sg.innerHTML = STORIES[currentStoryIdx].suspects.map(s => `
     <button class="choice" data-sus="${s.id}">
@@ -1507,20 +1761,38 @@ function updateSubmit() {
 }
 
 function submitVerdict() {
-  const correct = selectedSuspect === STORIES[currentStoryIdx].answer.suspect && selectedMethod === STORIES[currentStoryIdx].answer.method;
+  const s = STORIES[currentStoryIdx];
+  const correct = selectedSuspect === s.answer.suspect && selectedMethod === s.answer.method;
   const titleEl = document.getElementById('resultTitle');
   const bodyEl = document.getElementById('resultBody');
   if (correct) {
+    gameOver = true;
+    stopTimer();
     titleEl.textContent = '真 相 大 白';
     titleEl.className = 'result-title win';
-    bodyEl.innerHTML = STORIES[currentStoryIdx].correct.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
-  } else {
-    const sName = STORIES[currentStoryIdx].suspects.find(s => s.id === selectedSuspect).name;
-    const mName = STORIES[currentStoryIdx].methods.find(m => m.id === selectedMethod).name;
-    titleEl.textContent = '你 错 了';
-    titleEl.className = 'result-title lose';
-    bodyEl.innerHTML = STORIES[currentStoryIdx].wrong(sName, mName).map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+    bodyEl.innerHTML = s.correct.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+    showScreen('screen-result');
+    return;
   }
+  accuseUsed++;
+  const remaining = diff.accuseTimes - accuseUsed;
+  updateHeader();
+  const sName = s.suspects.find(x => x.id === selectedSuspect).name;
+  const mName = s.methods.find(x => x.id === selectedMethod).name;
+  if (remaining > 0 && !timeExpired) {
+    const body = document.getElementById('retryBody');
+    body.innerHTML =
+      `你说是 <b>${sName}</b>，用 <b>${mName}</b>。<br>` +
+      `——但真相并非如此。<br><br>` +
+      `你还剩 <b>${remaining}</b> 次指控机会。`;
+    document.getElementById('retryModal').classList.add('show');
+    return;
+  }
+  gameOver = true;
+  stopTimer();
+  titleEl.textContent = '你 错 了';
+  titleEl.className = 'result-title lose';
+  bodyEl.innerHTML = s.wrong(sName, mName).map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
   showScreen('screen-result');
 }
 
@@ -1533,12 +1805,22 @@ document.getElementById('submitVerdictBtn').addEventListener('click', submitVerd
 document.getElementById('replayBtn').addEventListener('click', () => { newGame(); showScreen('screen-game'); });
 document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'index.html'; });
 
-document.getElementById('startBtn').addEventListener('click', () => {
-  const s = STORIES[currentStoryIdx];
-  document.getElementById('gameTitle').textContent = `${s.emoji} ${s.name} · 案发现场`;
-  newGame();
+// Retry modal handlers
+document.getElementById('retryBackToGame').addEventListener('click', () => {
+  document.getElementById('retryModal').classList.remove('show');
+  if (timeExpired || gameOver) return;
   showScreen('screen-game');
 });
+document.getElementById('retryAgain').addEventListener('click', () => {
+  document.getElementById('retryModal').classList.remove('show');
+  initVerdict();
+});
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  initDifficultyPicker();
+  showScreen('screen-difficulty');
+});
+document.getElementById('backToTitleBtn').addEventListener('click', () => showScreen('screen-title'));
 
 // ============ Init ============
 function initCasePicker() {
@@ -1565,6 +1847,28 @@ function initCasePicker() {
 }
 function initIntro() {
   introText.innerHTML = STORIES[currentStoryIdx].intro.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+}
+function initDifficultyPicker() {
+  const s = STORIES[currentStoryIdx];
+  document.getElementById('diffCaseTag').textContent =
+    `— ${s.emoji}  ${s.name.split('').join(' ')}  —`;
+  const el = document.getElementById('diffPicker');
+  el.innerHTML = DIFFICULTIES.map(d => `
+    <button class="diff-card ${d.key}" data-key="${d.key}">
+      <div class="diff-emoji">${d.emoji}</div>
+      <div class="diff-name">${d.name}</div>
+      <div class="diff-tag">${d.tag}</div>
+      <ul>${d.lines.map(l => `<li>${l}</li>`).join('')}</ul>
+    </button>
+  `).join('');
+  el.querySelectorAll('.diff-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key;
+      diff = DIFFICULTIES.find(x => x.key === key) || DIFFICULTIES[0];
+      newGame();
+      showScreen('screen-game');
+    });
+  });
 }
 function initSnow() {
   const snowEl = document.getElementById('snow');

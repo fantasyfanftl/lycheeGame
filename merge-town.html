@@ -187,6 +187,34 @@ body {
 .q-tool:active { transform: translateY(1px); box-shadow: 0 1px 0 #5b21b6; }
 .q-tool:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* ============ 商店行 ============ */
+.shop-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 6px; border-bottom: 1px solid #f3f4f6;
+}
+.shop-row:last-child { border-bottom: none; }
+.shop-row.disabled { opacity: 0.45; }
+.shop-icon {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; border-radius: 10px;
+  flex-shrink: 0;
+}
+.shop-name { flex: 1; font-weight: bold; font-size: 15px; text-align: left; }
+.shop-price {
+  color: #b45309; font-weight: bold; font-size: 14px;
+  min-width: 60px; text-align: right;
+}
+.shop-buy {
+  border: none; padding: 6px 14px; border-radius: 10px;
+  background: linear-gradient(180deg, #fbbf24, #d97706);
+  color: white; font-weight: bold; cursor: pointer;
+  font-size: 13px;
+  box-shadow: 0 2px 0 #b45309;
+}
+.shop-buy:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 #b45309; }
+.shop-buy:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* ============ 弹窗 ============ */
 .modal {
   position: fixed; inset: 0; background: rgba(0,0,0,0.55);
@@ -326,7 +354,7 @@ body {
         <div class="q-emoji q-small" id="qEmoji2">🧱</div>
       </div>
       <button id="undoBtn" class="q-tool" title="撤销上一步" disabled>↩</button>
-      <button id="rerollBtn" class="q-tool" title="换一批(消耗 20 金币)">🎲</button>
+      <button id="shopBtn" class="q-tool" title="商店 - 花金币买建筑">🏪</button>
       <button id="hintBtn" class="q-tool" title="提示">💡</button>
     </div>
   </section>
@@ -383,6 +411,21 @@ body {
   </div>
 </div>
 
+<!-- 商店 -->
+<div id="shopModal" class="modal">
+  <div class="modal-box" style="max-width:360px;">
+    <h2>🏪 商店</h2>
+    <div style="font-size:12px;color:#6b7280;margin-bottom:10px;">买下的物品会替换队列首位</div>
+    <div id="shopList"></div>
+    <div style="border-top:1px dashed #d1d5db;margin-top:12px;padding-top:12px;">
+      <button id="shopReroll" class="big-btn secondary" style="width:100%;">🎲 换一批队列 (💰20)</button>
+    </div>
+    <div class="modal-actions">
+      <button class="big-btn" onclick="closeShop()">关闭</button>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 
@@ -412,6 +455,8 @@ const ENERGY_MAX = 30;
 const ENERGY_REGEN_SEC = 20;            // 每 20 秒恢复 1 点
 const REROLL_COST = 20;                 // 换一批要多少金币
 const SPAWN_WEIGHTS = [70, 25, 5];      // Lv.0 砖块 / Lv.1 木材 / Lv.2 帐篷
+// 商店可买等级(index=level),null=不可买
+const SHOP_PRICES = [10, 40, 150, 500, 1500, 4500, null, null, null, null, null];
 function randomItem() {
   const total = SPAWN_WEIGHTS.reduce((a, b) => a + b, 0);
   let r = Math.random() * total;
@@ -949,21 +994,63 @@ function renderQueue() {
     document.getElementById('qEmoji' + i).textContent = it.emoji;
   }
   document.getElementById('qName0').textContent = ITEMS[st.queue[0]].name;
-  const reroll = document.getElementById('rerollBtn');
-  if (reroll) reroll.disabled = st.coins < REROLL_COST;
   const undo = document.getElementById('undoBtn');
   if (undo) undo.disabled = !st.undoState || st.cleared;
 }
 
-document.getElementById('rerollBtn').onclick = () => {
+/* ============ 商店 ============ */
+function openShop() {
+  if (!currentTownId) return;
+  renderShopList();
+  document.getElementById('shopModal').classList.add('active');
+}
+function closeShop() { document.getElementById('shopModal').classList.remove('active'); }
+
+function renderShopList() {
   const st = getTownState(currentTownId);
-  if (st.coins < REROLL_COST) { toast('金币不够换,先合成攒攒'); return; }
+  const list = document.getElementById('shopList');
+  list.innerHTML = SHOP_PRICES.map((price, lvl) => {
+    if (price === null) return '';
+    const it = ITEMS[lvl];
+    const disabled = st.coins < price;
+    return '<div class="shop-row' + (disabled ? ' disabled' : '') + '">' +
+      '<div class="shop-icon" style="background:' + it.color + ';border:2px solid ' + it.border + '">' + it.emoji + '</div>' +
+      '<div class="shop-name">' + it.name + '</div>' +
+      '<div class="shop-price">💰' + price + '</div>' +
+      '<button class="shop-buy" data-level="' + lvl + '"' + (disabled ? ' disabled' : '') + '>购买</button>' +
+    '</div>';
+  }).join('');
+  list.querySelectorAll('.shop-buy').forEach(btn => {
+    btn.onclick = () => buyItem(+btn.dataset.level);
+  });
+  const rerollBtn = document.getElementById('shopReroll');
+  rerollBtn.disabled = st.coins < REROLL_COST;
+}
+
+function buyItem(lvl) {
+  const st = getTownState(currentTownId);
+  const price = SHOP_PRICES[lvl];
+  if (price === null || st.coins < price) { toast('金币不够'); return; }
+  st.coins -= price;
+  st.queue[0] = lvl;
+  persist();
+  renderQueue();
+  updateStats();
+  toast('已买到 ' + ITEMS[lvl].name + ',放到棋盘上');
+  closeShop();
+}
+
+document.getElementById('shopBtn').onclick = openShop;
+document.getElementById('shopReroll').onclick = () => {
+  const st = getTownState(currentTownId);
+  if (st.coins < REROLL_COST) { toast('金币不够换'); return; }
   st.coins -= REROLL_COST;
   st.queue = [randomItem(), randomItem(), randomItem()];
   renderQueue();
+  renderShopList();
   updateStats();
   persist();
-  toast('已换一批');
+  toast('已换一批队列');
 };
 function updateStats() {
   if (!currentTownId) return;
@@ -988,8 +1075,6 @@ function updateStats() {
     for (let c = 0; c < cfg.layout[r].length; c++)
       if (cfg.layout[r][c] === '.' && st.board[r][c] !== null) filled++;
   document.getElementById('fillVal').textContent = filled + '/' + total;
-  const reroll = document.getElementById('rerollBtn');
-  if (reroll) reroll.disabled = st.coins < REROLL_COST;
 }
 
 canvas.addEventListener('pointerdown', e => {
@@ -1260,6 +1345,7 @@ function floatText(txt, x, y) {
 ===================================================== */
 window.closeConfirm = closeConfirm;
 window.doResetTown = doResetTown;
+window.closeShop = closeShop;
 
 loadSave();
 showScreen('mapScreen');
