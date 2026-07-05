@@ -794,6 +794,20 @@ function isTownUnlocked(idx) {
   const prev = save.towns[TOWNS[idx - 1].id];
   return !!(prev && prev.cleared);
 }
+// 临时:每村用不同图标,先视觉区分开(长期方案见 memory: per-town unique icons)
+const TOWN_ICONS = {
+  t1: 'icon-00-brick.png',
+  t2: 'icon-03-hut.png',
+  t3: 'icon-05-house.png',
+  t4: 'icon-06-villa.png',
+  t5: 'icon-07-apartment.png',
+  t6: 'icon-09-cathedral.png',
+  t7: 'icon-02-tent.png',
+  t8: 'icon-04-oldhouse.png',
+  t9: 'icon-01-wood.png',
+  t10: 'icon-08-skyscraper.png',
+  t11: 'icon-10-castle.png',
+};
 function renderMap() {
   const area = document.getElementById('mapArea');
   area.innerHTML = '';
