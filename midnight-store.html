@@ -4935,9 +4935,99 @@ function startCashierAmbient() {
     AUDIO.timers.push(setTimeout(() => { playPhoneVibration(); scheduleVibration(); }, 25000 + Math.random() * 30000));
   };
   scheduleVibration();
-  // Earbud music — plays in his ears until he takes one out (beat 0).
+  // Cashier's shift: two things playing —
+  //  (1) low-volume in-store background music (randomly one of two tracks)
+  //  (2) the earbud song (his personal music) — fades on beat 0 "摘下一只耳机"
+  startCashierBackgroundMusic();
   const played = (state.playedBeats && state.playedBeats.cashier) || new Set();
-  if (!played.has(0)) startCashierEarbudMusic();
+  if (!played.has(0)) startCashierEarbudSong();
+}
+
+// ========== Cashier's shift background music (Suno mp3, random pick) ==========
+const CASHIER_BG_TRACKS = [
+  'assets/audio/Aisle Four Glow01.mp3',
+  'assets/audio/Aisle Four Glow02.mp3'
+];
+function startCashierBackgroundMusic() {
+  if (AUDIO.bgMusic) return;
+  const track = CASHIER_BG_TRACKS[Math.floor(Math.random() * CASHIER_BG_TRACKS.length)];
+  const audio = new Audio(track);
+  audio.loop = true;
+  audio.volume = 0;
+  const target = 0.22; // low volume — sits behind everything else
+  audio.play().catch(() => {});
+  AUDIO.bgMusic = { audio, track, target };
+  if (AUDIO.muted) { try { audio.pause(); } catch (e) {} return; }
+  const t0 = performance.now();
+  const dur = 2200;
+  const step = () => {
+    if (!AUDIO.bgMusic || AUDIO.bgMusic.audio !== audio) return;
+    const t = performance.now() - t0;
+    if (t >= dur) { audio.volume = target; return; }
+    audio.volume = target * (t / dur);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function stopCashierBackgroundMusic(fadeSeconds) {
+  if (!AUDIO.bgMusic) return;
+  const bg = AUDIO.bgMusic; AUDIO.bgMusic = null;
+  const startVol = bg.audio.volume;
+  const dur = Math.max(80, (fadeSeconds != null ? fadeSeconds : 1.0) * 1000);
+  const t0 = performance.now();
+  const step = () => {
+    const t = performance.now() - t0;
+    if (t >= dur) { try { bg.audio.pause(); bg.audio.currentTime = 0; } catch (e) {} return; }
+    bg.audio.volume = startVol * (1 - t / dur);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ========== Cashier's earbud song (user-provided mp3) ==========
+// Plays as the song in his earbuds while POV is cashier. Skips ~10s of intro
+// so it lands on a melodic phrase immediately. Fades out on beat 0.
+const CASHIER_EARBUD_SONG = 'assets/audio/掌心的温度.mp3';
+const CASHIER_EARBUD_SKIP = 10; // seconds of intro to skip
+function startCashierEarbudSong() {
+  if (AUDIO.earbudSong) return;
+  const audio = new Audio(CASHIER_EARBUD_SONG);
+  audio.loop = true;
+  audio.volume = 0;
+  const target = 0.42;
+  // Start past the intro
+  const applySkip = () => {
+    try { audio.currentTime = CASHIER_EARBUD_SKIP; } catch (e) {}
+  };
+  audio.addEventListener('loadedmetadata', applySkip, { once: true });
+  audio.addEventListener('ended', applySkip); // wrap loop back past intro too
+  audio.play().catch(() => {});
+  AUDIO.earbudSong = { audio, target };
+  if (AUDIO.muted) { try { audio.pause(); } catch (e) {} return; }
+  const t0 = performance.now();
+  const dur = 1800;
+  const step = () => {
+    if (!AUDIO.earbudSong || AUDIO.earbudSong.audio !== audio) return;
+    const t = performance.now() - t0;
+    if (t >= dur) { audio.volume = target; return; }
+    audio.volume = target * (t / dur);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function stopCashierEarbudSong(fadeSeconds) {
+  if (!AUDIO.earbudSong) return;
+  const es = AUDIO.earbudSong; AUDIO.earbudSong = null;
+  const startVol = es.audio.volume;
+  const dur = Math.max(80, (fadeSeconds != null ? fadeSeconds : 1.2) * 1000);
+  const t0 = performance.now();
+  const step = () => {
+    const t = performance.now() - t0;
+    if (t >= dur) { try { es.audio.pause(); } catch (e) {} return; }
+    es.audio.volume = startVol * (1 - t / dur);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 // ========== Cashier's earbud music (lo-fi loop) ==========
@@ -5310,6 +5400,15 @@ function toggleMute() {
     AUDIO.master.gain.setValueAtTime(AUDIO.master.gain.value, now);
     AUDIO.master.gain.linearRampToValueAtTime(AUDIO.muted ? 0 : 0.9, now + 0.4);
   }
+  // Mute / unmute HTML5 <Audio> players (background music + earbud song)
+  [AUDIO.bgMusic, AUDIO.earbudSong].forEach(entry => {
+    if (!entry) return;
+    if (AUDIO.muted) {
+      try { entry.audio.pause(); } catch (e) {}
+    } else {
+      try { entry.audio.volume = entry.target; entry.audio.play().catch(() => {}); } catch (e) {}
+    }
+  });
 }
 
 // ============================================================
