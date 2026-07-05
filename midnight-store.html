@@ -680,6 +680,219 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
 /* Oden tray state — no longer wired to visual (image is static); leaving JS toggle
    in place for future per-state images. */
 
+/* ========== Phone player overlay (Act 1 opening) ========== */
+.phone-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 25, 40, 0.82);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 30px 20px;
+  animation: phone-fade-in 0.6s ease-out;
+}
+.phone-overlay.hidden { display: none; }
+@keyframes phone-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.phone-frame {
+  width: 280px;
+  height: 560px;
+  background: linear-gradient(#0a0a0e, #1a1a20);
+  border-radius: 38px;
+  padding: 8px;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(245, 200, 138, 0.15);
+  flex-shrink: 0;
+}
+.phone-notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 22px;
+  background: #000;
+  border-radius: 11px;
+  z-index: 2;
+}
+.phone-home {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: #f9f3e8;
+  border-radius: 2px;
+  opacity: 0.75;
+}
+.phone-screen {
+  background: linear-gradient(#f9f3e8, #f0e6d0);
+  border-radius: 30px;
+  height: 100%;
+  padding: 34px 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #3d2f24;
+  font-family: inherit;
+}
+.pp-statusbar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #8b6f47;
+  letter-spacing: 0.5px;
+  padding: 0 4px;
+}
+.pp-icons { font-size: 8px; }
+.pp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 4px 6px;
+  border-bottom: 1px dashed rgba(139, 111, 71, 0.35);
+  font-size: 12px;
+  color: #8b6f47;
+  letter-spacing: 2px;
+}
+.pp-back, .pp-menu { font-size: 18px; cursor: default; opacity: 0.6; }
+.pp-art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  margin: 4px 0;
+}
+.pp-art svg { display: block; width: 100%; height: 100%; }
+.pp-track-info {
+  text-align: center;
+  padding: 4px 0;
+}
+.pp-track {
+  font-size: 14px;
+  color: #3d2f24;
+  letter-spacing: 2px;
+  margin-bottom: 3px;
+}
+.pp-artist {
+  font-size: 10.5px;
+  color: #8b6f47;
+  letter-spacing: 1px;
+}
+.pp-progress { padding: 2px 4px 0; }
+.pp-bar {
+  height: 3px;
+  background: rgba(139, 111, 71, 0.2);
+  border-radius: 2px;
+  position: relative;
+  overflow: visible;
+}
+.pp-fill {
+  height: 100%;
+  background: #c17b52;
+  width: 12%;
+  border-radius: 2px;
+  animation: pp-progress 190s linear infinite;
+}
+@keyframes pp-progress { from { width: 12%; } to { width: 100%; } }
+.pp-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #c17b52;
+  border-radius: 50%;
+  left: 12%;
+  animation: pp-thumb-move 190s linear infinite;
+}
+@keyframes pp-thumb-move { from { left: 12%; } to { left: 100%; } }
+.pp-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 9.5px;
+  color: #8b6f47;
+  letter-spacing: 0.5px;
+}
+.pp-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px 6px 2px;
+}
+.pp-btn {
+  background: transparent;
+  border: none;
+  color: #3d2f24;
+  font-size: 22px;
+  cursor: default;
+  padding: 6px 10px;
+  opacity: 0.75;
+  font-family: inherit;
+}
+.pp-play {
+  font-size: 34px;
+  opacity: 1;
+  color: #c17b52;
+}
+
+.phone-cue {
+  padding: 6px 16px;
+  background: rgba(20, 25, 40, 0.55);
+  color: #f5c88a;
+  font-size: 12px;
+  letter-spacing: 3px;
+  border: 1px solid rgba(245, 200, 138, 0.5);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  animation: pp-cue-appear 0.6s ease-out;
+}
+.phone-cue.hidden { display: none; }
+@keyframes pp-cue-appear {
+  0%   { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.phone-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+}
+.phone-choice-btn {
+  background: rgba(249, 243, 232, 0.94);
+  border: 1px solid rgba(61, 47, 36, 0.35);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  letter-spacing: 0.3px;
+  color: #3d2f24;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.phone-choice-btn:hover {
+  background: #f5c88a;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .phone-frame { width: 240px; height: 480px; }
+  .phone-choice-btn { font-size: 12.5px; padding: 8px 12px; }
+  .phone-cue { font-size: 11px; letter-spacing: 2px; }
+}
+
 /* ========== Inline beat panel (in-scene cue + choices) ========== */
 .inline-panel {
   position: absolute;
