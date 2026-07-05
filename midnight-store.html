@@ -3890,50 +3890,75 @@ function _devEscape(s) {
 }
 function updateDevPanel(effective, mode, pickedIdx) {
   const body = document.getElementById('dev-panel-body');
-  if (!body || !effective) return;
-  const pov = state.currentPOV || '—';
+  if (!body) return;
+  const pov = state.currentPOV;
+  if (!pov) {
+    body.innerHTML = '<em style="opacity:0.5">（还没选角色）</em>';
+    return;
+  }
   const cpName = CHARACTERS[pov] ? CHARACTERS[pov].name : pov;
   const totalBeats = (BEATS[pov] || []).length;
-  const playedCount = (state.playedBeats[pov] || new Set()).size;
+  const played = state.playedBeats[pov] || new Set();
+  const playedCount = played.size;
   let h = '';
   h += '<div class="dev-panel-block"><span class="dev-panel-label">POV</span> · ' + _devEscape(cpName) + ' (' + _devEscape(pov) + ')</div>';
-  h += '<div class="dev-panel-block"><span class="dev-panel-label">Beat idx</span> · ' + _currentBeatIndex + ' &nbsp; <span class="dev-panel-label">Progress</span> · ' + playedCount + ' / ' + totalBeats + '</div>';
-  if (effective.title) {
-    h += '<div class="dev-panel-block"><span class="dev-panel-label">Title</span><br><span class="dev-panel-value">' + _devEscape(effective.title) + '</span></div>';
-  }
-  if (effective.hs) {
-    h += '<div class="dev-panel-block"><span class="dev-panel-label">Hotspot</span> · ' + _devEscape(effective.hs) + '</div>';
-  }
-  if (effective.sfx) {
-    h += '<div class="dev-panel-block"><span class="dev-panel-label">SFX</span> · ' + _devEscape(effective.sfx) + '</div>';
-  }
-  if (effective.text) {
-    h += '<div class="dev-panel-block"><span class="dev-panel-label">Text</span></div>';
-    h += '<div class="dev-panel-text">' + _devEscape(effective.text) + '</div>';
-  }
-  if (effective.choicePrompt) {
-    h += '<div class="dev-panel-block"><span class="dev-panel-label">Choice prompt</span> · ' + _devEscape(effective.choicePrompt) + '</div>';
-  }
-  if (effective.choices && effective.choices.length) {
-    h += '<div class="dev-panel-block"><span class="dev-panel-label">Choices</span></div>';
-    effective.choices.forEach((c, i) => {
-      const marker = (mode === 'choice' && i === pickedIdx) ? '▶ ' : (i + 1) + '. ';
-      h += '<div class="dev-panel-choice">' + marker + _devEscape(c.label);
-      if (c.text) h += '<small>→ ' + _devEscape(c.text) + '</small>';
-      const bits = [];
-      if (c.cps && c.cps.length) bits.push('cps: ' + c.cps.map(x => x.id || x).join(', '));
-      if (c.voice) bits.push('voice: "' + _devEscape(c.voice.text || '') + '"');
-      if (bits.length) h += '<small style="color:#c17b52;opacity:0.8">' + bits.join(' · ') + '</small>';
+  h += '<div class="dev-panel-block"><span class="dev-panel-label">Progress</span> · ' + playedCount + ' / ' + totalBeats + '</div>';
+
+  if (effective) {
+    // Active beat detailed view
+    h += '<div class="dev-panel-block"><span class="dev-panel-label">Beat idx</span> · ' + _currentBeatIndex + '</div>';
+    if (effective.title) {
+      h += '<div class="dev-panel-block"><span class="dev-panel-label">Title</span><br><span class="dev-panel-value">' + _devEscape(effective.title) + '</span></div>';
+    }
+    if (effective.hs) {
+      h += '<div class="dev-panel-block"><span class="dev-panel-label">Hotspot</span> · ' + _devEscape(effective.hs) + '</div>';
+    }
+    if (effective.sfx) {
+      h += '<div class="dev-panel-block"><span class="dev-panel-label">SFX</span> · ' + _devEscape(effective.sfx) + '</div>';
+    }
+    if (effective.text) {
+      h += '<div class="dev-panel-block"><span class="dev-panel-label">Text</span></div>';
+      h += '<div class="dev-panel-text">' + _devEscape(effective.text) + '</div>';
+    }
+    if (effective.choicePrompt) {
+      h += '<div class="dev-panel-block"><span class="dev-panel-label">Choice prompt</span> · ' + _devEscape(effective.choicePrompt) + '</div>';
+    }
+    if (effective.choices && effective.choices.length) {
+      h += '<div class="dev-panel-block"><span class="dev-panel-label">Choices</span></div>';
+      effective.choices.forEach((c, i) => {
+        const marker = (mode === 'choice' && i === pickedIdx) ? '▶ ' : (i + 1) + '. ';
+        h += '<div class="dev-panel-choice">' + marker + _devEscape(c.label);
+        if (c.text) h += '<small>→ ' + _devEscape(c.text) + '</small>';
+        const bits = [];
+        if (c.cps && c.cps.length) bits.push('cps: ' + c.cps.map(x => x.id || x).join(', '));
+        if (c.voice) bits.push('voice: "' + _devEscape(c.voice.text || '') + '"');
+        if (bits.length) h += '<small style="color:#c17b52;opacity:0.85">' + bits.join(' · ') + '</small>';
+        h += '</div>';
+      });
+    }
+    if (effective.cps && effective.cps.length) {
+      h += '<div class="dev-panel-block"><span class="dev-panel-label">CPs</span> · ' + effective.cps.map(c => c.id || c).join(', ') + '</div>';
+    }
+  } else {
+    // No active beat — show full beat list for current POV
+    const beats = BEATS[pov] || [];
+    h += '<div class="dev-panel-block"><span class="dev-panel-label">全部 beats</span> ' + (playedCount ? '（' + playedCount + ' 已探索）' : '') + '</div>';
+    h += '<div class="dev-panel-beat-list">';
+    beats.forEach((b, i) => {
+      const isPlayed = played.has(i);
+      h += '<div class="dev-beat-row' + (isPlayed ? ' played' : '') + '">';
+      h += '<span class="dev-beat-num">' + (i + 1) + '.</span>';
+      h += _devEscape(b.title || '(no title)');
+      if (b.hs) h += '<span class="dev-beat-hs">· ' + _devEscape(b.hs) + '</span>';
       h += '</div>';
     });
+    h += '</div>';
   }
-  if (effective.cps && effective.cps.length) {
-    h += '<div class="dev-panel-block"><span class="dev-panel-label">CPs</span> · ' + effective.cps.map(c => c.id || c).join(', ') + '</div>';
-  }
+
   const wKeys = Object.keys(state.world || {});
   if (wKeys.length) {
     h += '<div class="dev-panel-block"><span class="dev-panel-label">World flags</span></div>';
-    h += '<div class="dev-panel-text" style="font-size:10.5px">' + wKeys.map(k => k + ' = ' + JSON.stringify(state.world[k])).join('\n') + '</div>';
+    h += '<div class="dev-panel-text" style="font-size:12px">' + wKeys.map(k => k + ' = ' + JSON.stringify(state.world[k])).join('\n') + '</div>';
   }
   body.innerHTML = h;
 }
