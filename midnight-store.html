@@ -681,7 +681,6 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
    in place for future per-state images. */
 
 /* ========== Phone player overlay (Act 1 opening) ========== */
-.phone-overlay {
   position: fixed;
   inset: 0;
   background: rgba(20, 25, 40, 0.82);
@@ -4271,6 +4270,41 @@ function isCharPresent(id) {
     return !!(state.world && state.world.driverArrived) || state.completed.has(id);
   }
   return state.completed.has(id);
+}
+
+// ========== First-beat nudge (subtle text hint to guide the very first click) ==========
+// Positioned near the beat's hotspot inside the relevant scene-card. Only
+// appears while state.playedBeats[currentPOV].size === 0 — vanishes once the
+// player has interacted with anything.
+const NUDGE_TEXT_BY_HS = {
+  phone:     '· 试 试 手 上 的 手 机 ·',
+  register:  '· 桌 面 上 有 东 西 ·',
+  catBowl:   '· 门 口 那 只 猫 ·',
+  doorway:   '· 玻 璃 门 边 ·',
+  odenPot:   '· 关 东 煮 的 盆 ·',
+  waterDispenser: '· 饮 水 机 ·',
+  shelves:   '· 货 架 中 段 ·',
+  milkCabinet: '· 热 奶 柜 顶 层 ·',
+  driverSeat:  '· 靠 窗 的 位 子 ·'
+};
+function showBeatNudge(item) {
+  const pos = HOTSPOTS[item.beat.hs];
+  if (!pos) { hideBeatNudge(); return; }
+  const cardEl = document.querySelector('[data-card-hotspots="' + pos.card + '"]');
+  if (!cardEl) { hideBeatNudge(); return; }
+  hideBeatNudge();
+  const chip = document.createElement('div');
+  chip.className = 'beat-nudge';
+  chip.id = '_beat-nudge';
+  chip.textContent = NUDGE_TEXT_BY_HS[item.beat.hs] || '· 场 景 里 有 会 响 应 的 东 西 ·';
+  // Position as a percentage overlay so it lands roughly on the hotspot
+  chip.style.left = (pos.x / 400 * 100) + '%';
+  chip.style.top = ((pos.y + 55) / 550 * 100) + '%';
+  cardEl.appendChild(chip);
+}
+function hideBeatNudge() {
+  const existing = document.getElementById('_beat-nudge');
+  if (existing) existing.remove();
 }
 
 function renderCharacters() {
