@@ -392,6 +392,31 @@ function svgGridDot(row, col) {
   return `<svg viewBox="0 0 80 80">${g}<circle cx="${cx}" cy="${cy}" r="6" fill="#333"/></svg>`;
 }
 
+// 象限阴影 + 底部圆点计数 (双规律深度题用)
+function svgQuadDots(pos, dotCount) {
+  const paths = [
+    "M40,26 L40,8 A18,18 0 0,1 58,26 Z",
+    "M40,26 L58,26 A18,18 0 0,1 40,44 Z",
+    "M40,26 L40,44 A18,18 0 0,1 22,26 Z",
+    "M40,26 L22,26 A18,18 0 0,1 40,8 Z"
+  ];
+  let dots = '';
+  for (let i = 0; i < dotCount; i++) {
+    const x = 40 - (dotCount - 1) * 7 + i * 14;
+    dots += `<circle cx="${x}" cy="66" r="4" fill="#333"/>`;
+  }
+  return `<svg viewBox="0 0 80 80"><circle cx="40" cy="26" r="18" fill="white" stroke="#333" stroke-width="2"/><path d="${paths[pos]}" fill="#333"/><line x1="22" y1="26" x2="58" y2="26" stroke="#333" stroke-width="1"/><line x1="40" y1="8" x2="40" y2="44" stroke="#333" stroke-width="1"/>${dots}</svg>`;
+}
+
+// 累加图形叠加 (第 n 层含 n 个嵌套元素)
+function svgLayered(n) {
+  let s = `<circle cx="40" cy="40" r="30" fill="none" stroke="#333" stroke-width="2"/>`;
+  if (n >= 2) s += `<rect x="21" y="21" width="38" height="38" fill="none" stroke="#333" stroke-width="2"/>`;
+  if (n >= 3) s += `<polygon points="40,28 27,52 53,52" fill="none" stroke="#333" stroke-width="2"/>`;
+  if (n >= 4) s += `<circle cx="40" cy="46" r="3" fill="#333"/>`;
+  return `<svg viewBox="0 0 80 80">${s}</svg>`;
+}
+
 // ============================================================
 //  分类定义
 // ============================================================
@@ -2767,7 +2792,8 @@ function renderQuestion() {
 
   let sequenceHtml = '';
   if (q.type === 'graphical') {
-    sequenceHtml = `<div class="sequence">${
+    const cols = q.sequence.length === 9 ? 3 : 4;
+    sequenceHtml = `<div class="sequence" style="grid-template-columns: repeat(${cols}, 1fr);">${
       q.sequence.map(s => `<div class="seq-box">${s === '?' ? '?' : s}</div>`).join('')
     }</div>`;
   }
