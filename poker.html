@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>德州扑克 · 入门</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Songti SC', 'STSong', 'Georgia', serif;
+    background: #f5efe0;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(200, 170, 130, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(160, 130, 90, 0.08) 0%, transparent 40%);
+    min-height: 100vh;
+    color: #2a2418;
+    line-height: 1.7;
+    font-size: 17px;
+    padding: 24px 16px 60px;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+  .back-link {
+    display: inline-block; color: #a67240; text-decoration: none;
+    font-size: 13px; margin-bottom: 12px; letter-spacing: 2px;
+  }
+  .back-link:hover { color: #6b4820; }
+  h1 {
+    text-align: center; color: #3d2f24;
+    font-size: 32px; letter-spacing: 4px; margin-bottom: 6px;
+  }
+  .subtitle {
+    text-align: center; color: #907050;
+    font-size: 14px; letter-spacing: 3px; margin-bottom: 28px; font-style: italic;
+  }
+
+  /* Tab bar */
+  .tabs {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    background: #ede2c4;
+    border-radius: 12px;
+    padding: 6px;
+    margin-bottom: 22px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .tab {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    color: #6b4820;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab:hover { background: rgba(255,255,255,0.5); }
+  .tab.active {
+    background: #a67240;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(166,114,64,0.35);
+  }
+
+  .module { display: none; }
+  .module.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  h2 {
+    font-size: 24px; color: #3d2f24; margin: 28px 0 12px;
+    padding-bottom: 6px; border-bottom: 2px solid #d4a878;
+    letter-spacing: 2px;
+  }
+  h3 {
+    font-size: 18px; color: #6b4820; margin: 20px 0 8px;
+    letter-spacing: 1px;
+  }
+  p { margin-bottom: 12px; }
+  ul, ol { margin-left: 24px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; }
+
+  b, strong { color: #6b4820; }
+  .en { color: #907050; font-style: italic; font-size: 90%; }
+
+  /* Playing card visual */
+  .pc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 52px; height: 74px;
+    background: #fff;
+    border: 1.5px solid #3d2f24;
+    border-radius: 6px;
+    position: relative;
+    vertical-align: middle;
+    margin: 3px;
+    font-family: 'Georgia', serif;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    line-height: 1;
+    font-weight: bold;
+  }
+  .pc .rk {
+    position: absolute; top: 4px; left: 6px;
+    font-size: 15px;
+  }
+  .pc .st-tl {
+    position: absolute; top: 20px; left: 6px;
+    font-size: 12px;
+  }
+  .pc .st-mid {
+    font-size: 28px;
+  }
+  .pc.red { color: #b03030; }
+  .pc.back {
+    background: repeating-linear-gradient(45deg, #6b4820 0 6px, #a67240 6px 12px);
+    color: transparent;
+  }
+
+  .hand-row {
+    display: flex; flex-wrap: wrap;
+    padding: 12px 0;
+    align-items: center;
+    gap: 8px;
+  }
+  .hand-label {
+    min-width: 120px;
+    font-weight: bold; color: #6b4820;
+    font-size: 15px;
+  }
+  .hand-cards { display: inline-flex; }
+
+  /* Info boxes */
+  .box {
+    background: #fefbf5;
+    border-left: 4px solid #a67240;
+    padding: 14px 18px;
+    margin: 14px 0;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .box.tip { border-left-color: #6b8f4b; background: #f0f6e8; }
+  .box.warn { border-left-color: #b03030; background: #fbe8e2; }
+  .box.important { border-left-color: #b58a3a; background: #faf1dc; font-weight: 500; }
+  .box .box-title {
+    font-weight: bold; color: #6b4820;
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+  .box.tip .box-title { color: #4a6b28; }
+  .box.warn .box-title { color: #8a2020; }
+
+  /* Quiz */
+  .quiz {
+    background: #fefbf5;
+    border: 1px solid #d4a878;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 20px 0;
+  }
+  .quiz .q-title {
+    font-weight: bold; color: #6b4820;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .quiz .q-body { margin-bottom: 12px; }
+  .quiz .options {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .quiz .opt {
+    padding: 10px 14px;
+    background: #f5efe0;
+    border: 1.5px solid #d4a878;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    color: #3d2f24;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .quiz .opt:hover:not(:disabled) { background: #ede2c4; }
+  .quiz .opt.correct {
+    background: #d4ecc4; border-color: #6b8f4b; color: #2a4818; font-weight: bold;
+  }
+  .quiz .opt.wrong {
+    background: #f5c8c0; border-color: #b03030; color: #4a1010;
+  }
+  .quiz .opt:disabled { cursor: default; }
+  .quiz .explain {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #ede2c4;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.7;
+    display: none;
+  }
+  .quiz .explain.show { display: block; }
+  .quiz .next-btn {
+    margin-top: 10px;
+    padding: 8px 20px;
+    background: #a67240;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 2px;
+    display: none;
+  }
+  .quiz .next-btn.show { display: inline-block; }
+  .quiz .next-btn:hover { background: #6b4820; }
+  .quiz .score {
+    color: #907050;
+    font-size: 13px;
+    text-align: right;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+
+  /* Pot-odds calculator */
+  .calc {
+    background: #fefbf5;
+    border: 1px solid #d4a878;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 16px 0;
+  }
+  .calc .row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .calc .row label {
+    min-width: 100px;
+    color: #6b4820;
+    font-weight: bold;
+  }
+  .calc .row input[type="number"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1.5px solid #d4a878;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 16px;
+    background: #fff;
+    color: #3d2f24;
+  }
+  .calc .row input[type="number"]:focus {
+    outline: none;
+    border-color: #a67240;
+    box-shadow: 0 0 8px rgba(166,114,64,0.2);
+  }
+  .calc .result {
+    background: #ede2c4;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #3d2f24;
+  }
+  .calc .result b { color: #a67240; font-size: 18px; }
+
+  /* Outs table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    background: #fefbf5;
+  }
+  th, td {
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ede2c4;
+    font-size: 14px;
+  }
+  th {
+    background: #ede2c4;
+    color: #6b4820;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  td:first-child, th:first-child { text-align: left; }
+
+  /* Glossary */
+  .glossary-search {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #d4a878;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    background: #fff;
+    margin-bottom: 14px;
+  }
+  .glossary-search:focus {
+    outline: none; border-color: #a67240;
+    box-shadow: 0 0 8px rgba(166,114,64,0.2);
+  }
+  .term {
+    padding: 12px 16px;
+    border-left: 3px solid #a67240;
+    background: #fefbf5;
+    margin-bottom: 8px;
+    border-radius: 4px;
+  }
+  .term .en {
+    display: inline-block; margin-left: 6px;
+    color: #907050; font-style: italic; font-size: 90%;
+  }
+  .term .cat {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #ede2c4;
+    color: #6b4820;
+    border-radius: 999px;
+    font-size: 11px;
+    margin-left: 8px;
+    letter-spacing: 1px;
+  }
+  .term .term-body {
+    color: #4a3820;
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* Suit intro */
+  .suit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .suit-card {
+    padding: 14px;
+    background: #fefbf5;
+    border-radius: 8px;
+    border: 1px solid #ede2c4;
+    text-align: center;
+  }
+  .suit-card .big-suit {
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .suit-card .name {
+    font-weight: bold;
+    color: #6b4820;
+    letter-spacing: 2px;
+  }
+  .suit-card .en-name {
+    color: #907050;
+    font-size: 12px;
+    font-style: italic;
+  }
+  .suit-card.red { color: #b03030; }
+
+  /* Rank strip */
+  .rank-strip {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    background: #fefbf5;
+    padding: 14px;
+    border-radius: 8px;
+    margin: 14px 0;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 16px 12px 40px; font-size: 15px; }
+    h1 { font-size: 26px; letter-spacing: 3px; }
+    h2 { font-size: 20px; }
+    .pc { width: 42px; height: 60px; margin: 2px; }
+    .pc .rk { font-size: 12px; top: 3px; left: 4px; }
+    .pc .st-tl { font-size: 10px; top: 15px; left: 4px; }
+    .pc .st-mid { font-size: 22px; }
+    .hand-label { min-width: 100px; font-size: 14px; }
+    .tab { font-size: 12px; padding: 8px 6px; min-width: 70px; }
+    .suit-card .big-suit { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <h1>德 州 扑 克 · 入 门</h1>
+  <div class="subtitle">— 从 52 张牌 · 到能上桌 —</div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-mod="cards">📖 认识牌</button>
+    <button class="tab" data-mod="ranks">🏆 牌型排名</button>
+    <button class="tab" data-mod="winner">🎯 胜负判断</button>
+    <button class="tab" data-mod="odds">🧮 底池赔率</button>
+    <button class="tab" data-mod="glossary">🎭 术语速查</button>
+  </div>
+
+  <!-- ============ Module 1: 认识牌 ============ -->
+  <div class="module active" id="mod-cards">
+    <h2>一副牌 · 52 张</h2>
+    <p>德州扑克（Texas Hold'em）用一副标准的扑克牌 —— <b>52 张</b>，不含大小王（Joker）。</p>
+
+    <h3>4 种花色</h3>
+    <p>德州扑克中，<b>花色本身不比大小</b>（这是新手常见误区，桥牌里花色才有序）。同花色只在"组成同花"和"平分底池"时有意义。</p>
+
+    <div class="suit-grid">
+      <div class="suit-card"><div class="big-suit">♠</div><div class="name">黑桃</div><div class="en-name">Spades</div></div>
+      <div class="suit-card red"><div class="big-suit">♥</div><div class="name">红桃</div><div class="en-name">Hearts</div></div>
+      <div class="suit-card red"><div class="big-suit">♦</div><div class="name">方块</div><div class="en-name">Diamonds</div></div>
+      <div class="suit-card"><div class="big-suit">♣</div><div class="name">梅花</div><div class="en-name">Clubs</div></div>
+    </div>
+
+    <h3>13 个点数</h3>
+    <p>从小到大：<b>2, 3, 4, 5, 6, 7, 8, 9, 10, J（勾）, Q（皇后）, K（老 K）, A（尖）</b>。</p>
+
+    <div class="rank-strip" id="rankStrip"></div>
+
+    <div class="box important">
+      <div class="box-title">⚡ 关于 A 的特殊性</div>
+      A（Ace，尖）通常是<b>最大</b>的（比 K 大），但在组成顺子时可以当<b>最小</b>用：
+      <br>• A-K-Q-J-10 是最大的顺子（"皇家顺子"）
+      <br>• 5-4-3-2-A 是最小的顺子（俗称"顺 wheel"）
+      <br>• 但 Q-K-A-2-3 <b>不是</b>顺子（A 不能"环绕")
+    </div>
+
+    <h3>全套 52 张</h3>
+    <p>点击下面任意一张牌看它的英文写法：</p>
+    <div id="fullDeck"></div>
+
+    <div class="box tip">
+      <div class="box-title">💡 记牌小贴士</div>
+      玩久了以后，你不会再"数"牌，会直接"看形状"。花色的颜色和图案会成为条件反射。
+    </div>
+  </div>
+
+  <!-- ============ Module 2: 牌型排名 ============ -->
+  <div class="module" id="mod-ranks">
+    <h2>10 种牌型 · 从大到小</h2>
+    <p>德州扑克每人最终用 <b>5 张牌</b>（从自己 2 张手牌 + 5 张公共牌中选）组成最好的组合。牌型从大到小如下：</p>
+
+    <div id="handRanks"></div>
+
+    <div class="box important">
+      <div class="box-title">⚡ 平手怎么办？</div>
+      两人牌型相同时，看"高牌"（Kicker）：
+      <br>• 一对 K 双方都有 → 看剩下 3 张的最大牌
+      <br>• 同花双方都有 → 看同花里最大的那张
+      <br>• 完全一样 → 平分底池
+    </div>
+
+    <h2 id="rankQuizAnchor">练一练</h2>
+    <p>下面 5 张牌，最好的组合是什么牌型？</p>
+    <div id="rankQuiz"></div>
+  </div>
+
+  <!-- ============ Module 3: 胜负判断 ============ -->
+  <div class="module" id="mod-winner">
+    <h2>胜负判断</h2>
+    <p>两个玩家 · 每人 2 张手牌 · 5 张公共牌。<b>谁的最好 5 张组合更大？</b></p>
+    <p>下面 6 局，选出你觉得胜的那一方。每局都有讲解。</p>
+    <div id="winnerQuiz"></div>
+  </div>
+
+  <!-- ============ Module 4: 底池赔率 ============ -->
+  <div class="module" id="mod-odds">
+    <h2>底池赔率 (Pot Odds)</h2>
+    <p>德州扑克最重要的数学概念。<b>它告诉你现在该不该跟注</b>。</p>
+
+    <div class="box">
+      <div class="box-title">核心公式</div>
+      <b>底池赔率</b> = 底池现在的钱 : 你要跟注的钱
+      <br><br>
+      <b>需要的胜率</b> = 你的跟注 ÷ (底池 + 你的跟注 + 对手的下注)
+    </div>
+
+    <h3>🎬 一个例子</h3>
+    <div class="box">
+      底池里现在有 <b>100 元</b>。对手押 <b>50 元</b>。现在你要跟注 50 元才能看下一张牌。
+      <br><br>
+      • 如果你跟：需要投入 50 元 · 有机会赢下总共 <b>200 元</b> 的底池<br>
+      &nbsp;&nbsp;（原 100 + 对手 50 + 你 50 = 200）
+      <br>
+      • 底池赔率 = <b>150 : 50 = 3 : 1</b>
+      <br>
+      &nbsp;&nbsp;（"用 50 换到 150 的机会"）
+      <br>
+      • 你需要的最低胜率 = <b>50 ÷ 200 = 25%</b>
+      <br>
+      &nbsp;&nbsp;（跑 4 次能赢 1 次以上就划算）
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">💡 记忆法</div>
+      如果对手下注 = 底池的一半 → 你要 25% 胜率跟注<br>
+      如果对手下注 = 底池的 2/3 → 你要 29% 胜率跟注<br>
+      如果对手下注 = 底池全额 → 你要 33% 胜率跟注<br>
+      如果对手下注 = 2 倍底池 → 你要 40% 胜率跟注
+    </div>
+
+    <h3>🧮 底池赔率计算器</h3>
+    <div class="calc">
+      <div class="row">
+        <label>底池金额</label>
+        <input type="number" id="calcPot" value="100" min="0">
+      </div>
+      <div class="row">
+        <label>对手下注</label>
+        <input type="number" id="calcBet" value="50" min="0">
+      </div>
+      <div class="result" id="calcResult"></div>
+    </div>
+
+    <h3>🎲 Outs 计算（差多少张牌能赢）</h3>
+    <p>Outs = 剩余牌堆中能让你成牌的牌数。比如你有 <b>4 张同花</b>，需要 1 张同花色成同花。同花色还剩 <b>9 张</b>（一副共 13 张 - 你已经看到的 4 张）→ 你有 <b>9 个 outs</b>。</p>
+
+    <div class="box tip">
+      <div class="box-title">💡 快速心算 · "×2 / ×4 法则"</div>
+      • <b>Turn 到 River 只剩一张牌</b>：胜率 ≈ outs × 2 %<br>
+      • <b>Flop 到 River 剩两张牌</b>：胜率 ≈ outs × 4 %<br>
+      <br>
+      例：Flop 有 9 outs → 到 River 前胜率 ≈ 36% → 对手下注不超过底池全额都能跟
+    </div>
+
+    <h3>常见 Outs 场景速查</h3>
+    <table>
+      <thead><tr><th>手牌类型</th><th>Outs</th><th>Flop → River 胜率</th></tr></thead>
+      <tbody>
+        <tr><td>后门同花 (差 2 张)</td><td>10 (间接)</td><td>~4%</td></tr>
+        <tr><td>gutshot 卡张顺 (需要 1 张)</td><td>4</td><td>~17%</td></tr>
+        <tr><td>一对补三条</td><td>2</td><td>~8%</td></tr>
+        <tr><td>两对补葫芦</td><td>4</td><td>~17%</td></tr>
+        <tr><td>三条补葫芦或四条</td><td>7</td><td>~28%</td></tr>
+        <tr><td>open-ended 两头顺</td><td>8</td><td>~32%</td></tr>
+        <tr><td>4 张同花 (差 1 张)</td><td>9</td><td>~35%</td></tr>
+        <tr><td>顺 + 同花听牌</td><td>15</td><td>~54%</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box warn">
+      <div class="box-title">⚠ 隐含赔率 (Implied Odds)</div>
+      上面的计算只看当前底池。但如果你成牌后对手<b>可能还会给你更多钱</b>（例如你听到同花对方还会继续押注），你实际的赔率比"底池赔率"更好。
+      <br><br>
+      新手常见错误：<b>只算底池赔率不算隐含赔率</b> → 该跟的不跟。反之亦有：迷信隐含赔率追永远追不上的听牌。
+    </div>
+  </div>
+
+  <!-- ============ Module 5: 术语速查 ============ -->
+  <div class="module" id="mod-glossary">
+    <h2>术语速查</h2>
+    <p>德扑术语大部分是英文。下面按类别列出，可搜索。</p>
+    <input type="text" class="glossary-search" id="glossarySearch" placeholder="搜索中英文关键词...">
+    <div id="glossaryList"></div>
+  </div>
+
+</div>
+
+<script>
+// ============ Data ============
+const SUITS = [
+  { s: '♠', color: 'black' },
+  { s: '♥', color: 'red' },
+  { s: '♦', color: 'red' },
+  { s: '♣', color: 'black' },
+];
+const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const RANK_NAMES = {
+  'A': 'A (Ace, 尖)', 'K': 'K (King, 老 K)', 'Q': 'Q (Queen, 皇后)', 'J': 'J (Jack, 勾)',
+  '10': '10 (Ten)', '9': '9 (Nine)', '8': '8 (Eight)', '7': '7 (Seven)',
+  '6': '6 (Six)', '5': '5 (Five)', '4': '4 (Four)', '3': '3 (Three)', '2': '2 (Two)',
+};
+const SUIT_NAMES = { '♠': 'Spades (黑桃)', '♥': 'Hearts (红桃)', '♦': 'Diamonds (方块)', '♣': 'Clubs (梅花)' };
+
+function makeCard(rank, suit) {
+  const isRed = suit === '♥' || suit === '♦';
+  return `<span class="pc ${isRed ? 'red' : ''}">
+    <span class="rk">${rank}</span>
+    <span class="st-tl">${suit}</span>
+    <span class="st-mid">${suit}</span>
+  </span>`;
+}
+
+// ============ Module 1: Rank strip + full deck ============
+function initCards() {
+  document.getElementById('rankStrip').innerHTML =
+    RANKS.map(r => makeCard(r, '♠')).join('');
+  const deck = document.getElementById('fullDeck');
+  let html = '';
+  for (const suit of SUITS) {
+    html += '<div style="margin: 6px 0;">';
+    for (const rank of RANKS) {
+      html += makeCard(rank, suit.s);
+    }
+    html += '</div>';
+  }
+  deck.innerHTML = html;
+  deck.addEventListener('click', e => {
+    const card = e.target.closest('.pc');
+    if (!card) return;
+    const rank = card.querySelector('.rk').textContent;
+    const suit = card.querySelector('.st-mid').textContent;
+    alert(`${rank}${suit}\n\n${RANK_NAMES[rank]} of ${SUIT_NAMES[suit]}`);
+  });
+}
+
+// ============ Module 2: Hand ranks + quiz ============
+const HAND_RANKS = [
+  { name: '皇家同花顺', en: 'Royal Flush', freq: '~ 1 / 65万手', desc: '同花色的 A-K-Q-J-10',
+    hand: [['A','♠'],['K','♠'],['Q','♠'],['J','♠'],['10','♠']] },
+  { name: '同花顺', en: 'Straight Flush', freq: '~ 1 / 7万手', desc: '同花色的 5 张连续牌',
+    hand: [['9','♥'],['8','♥'],['7','♥'],['6','♥'],['5','♥']] },
+  { name: '四条', en: 'Four of a Kind (Quads)', freq: '~ 1 / 4千手', desc: '4 张相同点数',
+    hand: [['K','♠'],['K','♥'],['K','♦'],['K','♣'],['2','♠']] },
+  { name: '葫芦', en: 'Full House (Boat)', freq: '~ 1 / 700手', desc: '三条 + 一对',
+    hand: [['A','♠'],['A','♥'],['A','♦'],['K','♠'],['K','♥']] },
+  { name: '同花', en: 'Flush', freq: '~ 1 / 500手', desc: '5 张同花色（无需连续）',
+    hand: [['K','♠'],['J','♠'],['9','♠'],['5','♠'],['2','♠']] },
+  { name: '顺子', en: 'Straight', freq: '~ 1 / 250手', desc: '5 张连续（不同花色）',
+    hand: [['10','♦'],['9','♣'],['8','♥'],['7','♠'],['6','♦']] },
+  { name: '三条', en: 'Three of a Kind (Trips/Set)', freq: '~ 1 / 50手', desc: '3 张相同点数',
+    hand: [['Q','♠'],['Q','♥'],['Q','♦'],['4','♠'],['2','♣']] },
+  { name: '两对', en: 'Two Pair', freq: '~ 1 / 21手', desc: '两个不同的对子',
+    hand: [['J','♠'],['J','♥'],['5','♦'],['5','♣'],['2','♠']] },
+  { name: '一对', en: 'One Pair', freq: '~ 42%', desc: '两张相同点数',
+    hand: [['9','♠'],['9','♥'],['A','♦'],['K','♣'],['2','♠']] },
+  { name: '单张', en: 'High Card', freq: '~ 50%', desc: '什么都不是 · 只有最大的单张',
+    hand: [['A','♠'],['K','♥'],['Q','♦'],['8','♠'],['3','♣']] },
+];
+
+function initRanks() {
+  document.getElementById('handRanks').innerHTML = HAND_RANKS.map((h, i) => `
+    <div class="hand-row">
+      <div class="hand-label">${i+1}. ${h.name}<br><span class="en">${h.en}</span></div>
+      <div class="hand-cards">${h.hand.map(c => makeCard(c[0], c[1])).join('')}</div>
+    </div>
+    <div style="color: #907050; font-size: 13px; margin: -6px 0 8px 130px;">${h.desc} · 出现频率 ${h.freq}</div>
+  `).join('');
+}
+
+// Rank quiz
+const RANK_QUIZ = [
+  { hand: [['A','♠'],['K','♠'],['Q','♠'],['J','♠'],['10','♠']], answer: '皇家同花顺',
+    explain: '同花色 A-K-Q-J-10 · 扑克里最大牌型 · 一辈子能碰到一次算幸运' },
+  { hand: [['J','♥'],['J','♠'],['9','♦'],['9','♣'],['4','♥']], answer: '两对',
+    explain: 'JJ + 99 是两对 · 4 只是"kicker"（比大小用）' },
+  { hand: [['A','♦'],['A','♠'],['A','♥'],['K','♣'],['K','♦']], answer: '葫芦',
+    explain: '三个 A + 一对 K · 称为"AAA-KK 满堂红" · 葫芦 = 三条 + 一对' },
+  { hand: [['9','♥'],['9','♦'],['9','♠'],['9','♣'],['2','♥']], answer: '四条',
+    explain: '4 个相同点数 · 排名第 3 · 比葫芦大' },
+  { hand: [['K','♠'],['9','♠'],['7','♠'],['5','♠'],['3','♠']], answer: '同花',
+    explain: '5 张同花色但不连续 · 就是"同花" · 如果连续就是"同花顺"' },
+  { hand: [['10','♦'],['9','♣'],['8','♥'],['7','♠'],['6','♦']], answer: '顺子',
+    explain: '5 张连续但不同花色 · 就是"顺子"' },
+  { hand: [['Q','♠'],['Q','♥'],['Q','♦'],['5','♠'],['2','♣']], answer: '三条',
+    explain: '3 个 Q · 剩下的 5 和 2 是"kicker"' },
+  { hand: [['A','♠'],['K','♥'],['Q','♦'],['J','♠'],['3','♣']], answer: '单张',
+    explain: '什么组合都不是 · 只算 A 高牌 · 也叫"A high"' },
+];
+const RANK_OPTIONS = ['皇家同花顺', '同花顺', '四条', '葫芦', '同花', '顺子', '三条', '两对', '一对', '单张'];
+
+let rankQuizIdx = 0, rankQuizScore = 0;
+
+function renderRankQuiz() {
+  const q = RANK_QUIZ[rankQuizIdx];
+  const el = document.getElementById('rankQuiz');
+  el.innerHTML = `
+    <div class="quiz">
+      <div class="q-title">第 ${rankQuizIdx + 1} / ${RANK_QUIZ.length} 题</div>
+      <div class="q-body" style="text-align: center; padding: 10px 0;">
+        ${q.hand.map(c => makeCard(c[0], c[1])).join('')}
+      </div>
+      <div class="options">
+        ${RANK_OPTIONS.map(opt => `<button class="opt" data-opt="${opt}">${opt}</button>`).join('')}
+      </div>
+      <div class="explain" id="rankExplain"></div>
+      <button class="next-btn" id="rankNext">下一题 →</button>
+      <div class="score">得分：${rankQuizScore} / ${rankQuizIdx}</div>
+    </div>
+  `;
+  el.querySelectorAll('.opt').forEach(b => {
+    b.addEventListener('click', () => {
+      const chose = b.dataset.opt;
+      const correct = chose === q.answer;
+      el.querySelectorAll('.opt').forEach(x => {
+        x.disabled = true;
+        if (x.dataset.opt === q.answer) x.classList.add('correct');
+        else if (x.dataset.opt === chose) x.classList.add('wrong');
+      });
+      if (correct) rankQuizScore++;
+      const ex = document.getElementById('rankExplain');
+      ex.innerHTML = `<b>${correct ? '✓ 对！' : '✗ 错了'}</b>：正确答案是 <b>${q.answer}</b>。<br>${q.explain}`;
+      ex.classList.add('show');
+      document.getElementById('rankNext').classList.add('show');
+    });
+  });
+  document.getElementById('rankNext').addEventListener('click', () => {
+    rankQuizIdx = (rankQuizIdx + 1) % RANK_QUIZ.length;
+    if (rankQuizIdx === 0) rankQuizScore = 0;
+    renderRankQuiz();
+    document.getElementById('rankQuizAnchor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+// ============ Module 3: Winner quiz ============
+const WINNER_QUIZ = [
+  {
+    a: { name: '玩家 A', hole: [['A','♠'],['K','♠']] },
+    b: { name: '玩家 B', hole: [['Q','♥'],['Q','♦']] },
+    board: [['A','♥'],['7','♣'],['2','♦'],['3','♠'],['5','♣']],
+    winner: 'A',
+    explain: 'A 有一对 A · B 只有一对 Q。一对 A > 一对 Q · A 赢。（"AK 顶到 A 高对"是德扑最经典的战例之一）',
+  },
+  {
+    a: { name: '玩家 A', hole: [['K','♠'],['K','♦']] },
+    b: { name: '玩家 B', hole: [['A','♣'],['9','♥']] },
+    board: [['A','♠'],['K','♥'],['9','♦'],['2','♠'],['3','♣']],
+    winner: 'A',
+    explain: 'A 有三条 K（KKK）· B 有两对（AA + 99）。三条 > 两对 · A 赢。（"隔山打牛"：手上的 KK 遇到 flop 里的 K 就是三条）',
+  },
+  {
+    a: { name: '玩家 A', hole: [['J','♠'],['10','♠']] },
+    b: { name: '玩家 B', hole: [['A','♥'],['A','♦']] },
+    board: [['Q','♠'],['9','♠'],['8','♠'],['2','♣'],['3','♦']],
+    winner: 'A',
+    explain: 'A 有同花顺（Q-J-10-9-8 全是♠) · B 只是一对 A。同花顺是第 2 大牌型 · 完胜 AA。（听同花听顺的 JT 同花是最恐怖的手牌之一）',
+  },
+  {
+    a: { name: '玩家 A', hole: [['A','♥'],['A','♣']] },
+    b: { name: '玩家 B', hole: [['K','♠'],['Q','♠']] },
+    board: [['J','♠'],['10','♠'],['9','♠'],['4','♥'],['2','♦']],
+    winner: 'B',
+    explain: 'B 有同花顺（K-Q-J-10-9 全是♠）· A 只有一对 A。B 的手牌加上公共牌里的 3 张 ♠ 组成了皇家附近的同花顺。',
+  },
+  {
+    a: { name: '玩家 A', hole: [['A','♠'],['K','♣']] },
+    b: { name: '玩家 B', hole: [['A','♥'],['Q','♣']] },
+    board: [['A','♦'],['J','♥'],['5','♣'],['3','♠'],['7','♦']],
+    winner: 'A',
+    explain: '两人都有一对 A · 比 kicker：A 的 K > B 的 Q · A 赢。（这就是为什么 AK 比 AQ 值钱：撞对时 kicker 更大）',
+  },
+  {
+    a: { name: '玩家 A', hole: [['7','♠'],['7','♥']] },
+    b: { name: '玩家 B', hole: [['A','♠'],['K','♦']] },
+    board: [['A','♥'],['K','♣'],['7','♦'],['2','♠'],['3','♣']],
+    winner: 'A',
+    explain: 'A 有三条 7（77 + flop 7）· B 有两对 A+K。三条 > 两对 · A 赢。（"暗三条"：手里对子撞到 flop 上的一张，形成隐蔽的三条）',
+  },
+];
+
+let winnerQuizIdx = 0, winnerQuizScore = 0;
+
+function renderCard(c) { return makeCard(c[0], c[1]); }
+function renderWinnerQuiz() {
+  const q = WINNER_QUIZ[winnerQuizIdx];
+  const el = document.getElementById('winnerQuiz');
+  el.innerHTML = `
+    <div class="quiz">
+      <div class="q-title">第 ${winnerQuizIdx + 1} / ${WINNER_QUIZ.length} 题</div>
+      <div class="q-body">
+        <div style="margin-bottom: 10px;"><b>${q.a.name} 手牌</b>：${q.a.hole.map(renderCard).join('')}</div>
+        <div style="margin-bottom: 10px;"><b>${q.b.name} 手牌</b>：${q.b.hole.map(renderCard).join('')}</div>
+        <div style="margin-top: 14px;"><b>公共牌</b>：${q.board.map(renderCard).join('')}</div>
+      </div>
+      <div class="options">
+        <button class="opt" data-opt="A">${q.a.name} 赢</button>
+        <button class="opt" data-opt="B">${q.b.name} 赢</button>
+      </div>
+      <div class="explain" id="winnerExplain"></div>
+      <button class="next-btn" id="winnerNext">下一题 →</button>
+      <div class="score">得分：${winnerQuizScore} / ${winnerQuizIdx}</div>
+    </div>
+  `;
+  el.querySelectorAll('.opt').forEach(b => {
+    b.addEventListener('click', () => {
+      const chose = b.dataset.opt;
+      const correct = chose === q.winner;
+      el.querySelectorAll('.opt').forEach(x => {
+        x.disabled = true;
+        if (x.dataset.opt === q.winner) x.classList.add('correct');
+        else if (x.dataset.opt === chose) x.classList.add('wrong');
+      });
+      if (correct) winnerQuizScore++;
+      const ex = document.getElementById('winnerExplain');
+      ex.innerHTML = `<b>${correct ? '✓ 对！' : '✗ 错了'}</b>：${q[q.winner === 'A' ? 'a' : 'b'].name} 赢。<br>${q.explain}`;
+      ex.classList.add('show');
+      document.getElementById('winnerNext').classList.add('show');
+    });
+  });
+  document.getElementById('winnerNext').addEventListener('click', () => {
+    winnerQuizIdx = (winnerQuizIdx + 1) % WINNER_QUIZ.length;
+    if (winnerQuizIdx === 0) winnerQuizScore = 0;
+    renderWinnerQuiz();
+  });
+}
+
+// ============ Module 4: Pot odds calculator ============
+function initCalc() {
+  function calc() {
+    const pot = +document.getElementById('calcPot').value || 0;
+    const bet = +document.getElementById('calcBet').value || 0;
+    const el = document.getElementById('calcResult');
+    if (pot < 0 || bet <= 0) { el.innerHTML = '请输入有效数字'; return; }
+    const total = pot + bet + bet;
+    const winRate = bet / total * 100;
+    const ratio = ((pot + bet) / bet).toFixed(2);
+    let verdict = '';
+    if (winRate < 25) verdict = '低门槛 · 一般好听牌都能跟';
+    else if (winRate < 33) verdict = '中门槛 · 需要 open-ended 顺或 4 张同花';
+    else if (winRate < 40) verdict = '高门槛 · 需要顺+同花听牌或已经领先';
+    else verdict = '极高门槛 · 除非已经有大牌 · 通常应弃牌';
+    el.innerHTML = `
+      看下一张牌前需要跟注 <b>${bet}</b> · 有机会赢下 <b>${pot + bet}</b>（不含你的跟注）<br>
+      底池赔率 = <b>${ratio} : 1</b><br>
+      最低胜率 = <b>${winRate.toFixed(1)}%</b><br>
+      <br>
+      <span style="color:#6b4820;">${verdict}</span>
+    `;
+  }
+  document.getElementById('calcPot').addEventListener('input', calc);
+  document.getElementById('calcBet').addEventListener('input', calc);
+  calc();
+}
+
+// ============ Module 5: Glossary ============
+const GLOSSARY = [
+  // 基础流程
+  { term: '手牌', en: 'Hole Cards', cat: '基础', body: '发给你的、只有你能看的 2 张底牌。' },
+  { term: '公共牌', en: 'Community Cards / Board', cat: '基础', body: '桌面上所有人共享的 5 张牌（flop 3 张 + turn 1 张 + river 1 张）。' },
+  { term: '翻牌前', en: 'Preflop', cat: '流程', body: '发完手牌、公共牌还没出的阶段。' },
+  { term: '翻牌', en: 'Flop', cat: '流程', body: '第一次发的 3 张公共牌。' },
+  { term: '转牌', en: 'Turn', cat: '流程', body: '第 4 张公共牌。也叫 Fourth Street。' },
+  { term: '河牌', en: 'River', cat: '流程', body: '第 5 张（最后一张）公共牌。也叫 Fifth Street。' },
+  { term: '摊牌', en: 'Showdown', cat: '流程', body: '河牌下注结束后，剩下的玩家亮牌比大小。' },
+
+  // 位置
+  { term: '按钮位', en: 'Button / BTN', cat: '位置', body: '每一轮最后行动的位置 · 最有利。也叫"庄家位"（dealer）。' },
+  { term: '小盲', en: 'Small Blind / SB', cat: '位置', body: '按钮位左侧 · 强制下注（半个大盲）· 翻牌后是第一个行动。位置差。' },
+  { term: '大盲', en: 'Big Blind / BB', cat: '位置', body: '小盲左侧 · 强制下注 · 也是"下注单位"（$1/$2 局，大盲=$2）。' },
+  { term: 'UTG', en: 'Under the Gun', cat: '位置', body: '大盲左侧 · 翻牌前第一个行动 · 位置最差。' },
+  { term: '劫持位', en: 'Hijack / HJ', cat: '位置', body: 'CO 右边一位 · 中晚期位置。' },
+  { term: '切位', en: 'Cutoff / CO', cat: '位置', body: 'BTN 右边一位 · 位置很好。' },
+
+  // 行动
+  { term: '过牌', en: 'Check', cat: '行动', body: '不下注，把行动权给下家（仅当前面无人下注时可以过牌）。' },
+  { term: '跟注', en: 'Call', cat: '行动', body: '匹配前一位玩家的下注金额。' },
+  { term: '加注', en: 'Raise', cat: '行动', body: '在别人下注基础上再加高金额。' },
+  { term: '再加注', en: '3-bet / Re-raise', cat: '行动', body: '第三次下注（1st: 大盲、2nd: 别人加注、3rd: 你再加）。同理有 4-bet、5-bet。' },
+  { term: '弃牌', en: 'Fold / Muck', cat: '行动', body: '放弃当前手 · 之前投入的钱不能拿回。' },
+  { term: '全下', en: 'All-in / Jam / Shove', cat: '行动', body: '把自己所有筹码推出去。之后无论对方怎么加注你都不用再放钱。' },
+  { term: '跛入', en: 'Limp', cat: '行动', body: '翻牌前只跟大盲、不加注 · 通常被视为业余打法（除非有特定策略）。' },
+
+  // 手牌 / 结构
+  { term: '对子', en: 'Pair', cat: '牌型', body: '两张相同点数。' },
+  { term: '暗三条', en: 'Set', cat: '牌型', body: '手里对子撞到公共牌上的一张同点数 → 隐蔽的三条 · 别人看不出你有。' },
+  { term: '明三条', en: 'Trips', cat: '牌型', body: '公共牌有一对 + 你手上一张相同点数 · 别人可能猜到。' },
+  { term: '葫芦', en: 'Full House / Boat', cat: '牌型', body: '三条 + 一对。' },
+  { term: '四条', en: 'Quads', cat: '牌型', body: '4 张同点数。' },
+  { term: 'kicker', en: 'Kicker', cat: '牌型', body: '组成主要牌型后剩下的最大单牌 · 平手时比大小用。' },
+  { term: '坚果', en: 'Nuts', cat: '牌型', body: '当前公共牌能组成的最大牌 · "the nuts" = 一定赢。' },
+
+  // 听牌
+  { term: '听牌', en: 'Draw / Drawing', cat: '听牌', body: '还没成型但有可能成型的手 · 比如"听同花"= 4 张同花色差 1 张。' },
+  { term: '两头顺', en: 'Open-ended Straight Draw', cat: '听牌', body: '4 张连续，两头都能补成顺子（8 outs）。' },
+  { term: '卡张顺', en: 'Gutshot / Inside Straight', cat: '听牌', body: '缺中间一张才能成顺（4 outs）· 也叫"内嵌顺"。' },
+  { term: '同花听牌', en: 'Flush Draw', cat: '听牌', body: '4 张同花色差 1 张（9 outs）。' },
+  { term: 'outs', en: 'Outs', cat: '听牌', body: '剩余牌堆中能让你成牌的牌数。' },
+  { term: '空追', en: 'Drawing Dead', cat: '听牌', body: '你以为在追的听牌其实已经输了（对方的牌大过你能成的最大牌）· 最惨情况。' },
+
+  // 战术
+  { term: '持续下注', en: 'Continuation Bet / C-bet', cat: '战术', body: '翻牌前加注的人 · 翻牌后继续下注 · 无论有没有击中。' },
+  { term: '价值下注', en: 'Value Bet', cat: '战术', body: '你觉得自己是最大牌 · 下注让对方跟注 · 赚钱。' },
+  { term: '诈唬', en: 'Bluff', cat: '战术', body: '你其实牌不好 · 下注让对方以为你牌好而弃牌。' },
+  { term: '半诈唬', en: 'Semi-bluff', cat: '战术', body: '你现在牌不算大 · 但有听牌 · 边下注边希望对方弃牌 · 就算被跟还能追。' },
+  { term: '慢玩', en: 'Slow Play', cat: '战术', body: '有大牌但故意打得温和 · 引诱对方多下注。' },
+  { term: '挤兑', en: 'Squeeze', cat: '战术', body: '前面有加注 + 至少一位跟注时的再加注 · 把中间跟注玩家挤走。' },
+  { term: '偷盲', en: 'Steal', cat: '战术', body: '在晚位置（CO / BTN）用一般手牌加注 · 目的是拿走盲注（对方翻牌前弃牌）。' },
+  { term: '范围', en: 'Range', cat: '战术', body: '一个玩家在某个行动中"可能持有"的所有手牌集合 · 高手用 range 思考，业余用具体一手思考。' },
+  { term: '底池承诺', en: 'Pot Committed', cat: '战术', body: '已经投入太多筹码 · 数学上无论如何都该跟到底。' },
+
+  // 概念 / 数学
+  { term: '底池赔率', en: 'Pot Odds', cat: '数学', body: '当前底池 vs 需要跟注的钱 · 决定跟注是否划算。见 🧮 底池赔率 模块。' },
+  { term: '隐含赔率', en: 'Implied Odds', cat: '数学', body: '成牌后对方可能还会给你更多钱 · 让边际听牌变值。' },
+  { term: '公平度', en: 'Equity', cat: '数学', body: '你的手牌当前对底池的"数学份额"（胜率 × 底池）。' },
+  { term: 'GTO', en: 'Game Theory Optimal', cat: '数学', body: '博弈论最优策略 · 让对手无论怎么打都无法剥削你。理论目标，实战多用 exploitative（利用对手弱点）打法。' },
+  { term: 'ICM', en: 'Independent Chip Model', cat: '锦标赛', body: '锦标赛用的模型 · 筹码不等于现金奖 · 短码时特别关键。' },
+
+  // 玩家类型
+  { term: 'TAG', en: 'Tight-Aggressive', cat: '风格', body: '紧凶：入池少、入池后压得凶。多数职业玩家的基础风格。' },
+  { term: 'LAG', en: 'Loose-Aggressive', cat: '风格', body: '松凶：入池多、压得凶。高级玩家/明星选手常见 · 需要极强读牌。' },
+  { term: '鱼', en: 'Fish', cat: '风格', body: '弱玩家 · 常见打法：跛入、跟到河牌、追听牌。桌上没鱼 · 你就是鱼。' },
+  { term: '鲨鱼', en: 'Shark', cat: '风格', body: '强玩家 · 通常伪装成中等玩家 · 让你意识不到被剥削。' },
+  { term: '倾斜', en: 'Tilt / On Tilt', cat: '心理', body: '因情绪波动（连输、被诈唬识破等）而失去理智 · 打出臭手。控制不住 tilt 是所有输家的通病。' },
+
+  // 术语速查
+  { term: '摊示', en: 'Reveal', cat: '流程', body: '你被对方跟到河牌 · 必须先亮牌' },
+  { term: '干干净净', en: 'Rag', cat: '牌', body: '低点数、无组合价值的牌（比如 8, 5, 2 三张 flop 就是"rag flop"）' },
+];
+
+function initGlossary() {
+  const list = document.getElementById('glossaryList');
+  function render(filter = '') {
+    const q = filter.toLowerCase().trim();
+    const filtered = GLOSSARY.filter(g =>
+      !q ||
+      g.term.toLowerCase().includes(q) ||
+      g.en.toLowerCase().includes(q) ||
+      g.body.toLowerCase().includes(q)
+    );
+    list.innerHTML = filtered.length ? filtered.map(g => `
+      <div class="term">
+        <b>${g.term}</b><span class="en">${g.en}</span><span class="cat">${g.cat}</span>
+        <div class="term-body">${g.body}</div>
+      </div>
+    `).join('') : '<p style="color:#907050; text-align:center; padding: 20px;">没找到相关术语</p>';
+  }
+  document.getElementById('glossarySearch').addEventListener('input', e => render(e.target.value));
+  render();
+}
+
+// ============ Tab switching ============
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const mod = btn.dataset.mod;
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+  document.getElementById('mod-' + mod).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ============ Init all ============
+initCards();
+initRanks();
+renderRankQuiz();
+renderWinnerQuiz();
+initCalc();
+initGlossary();
+</script>
+</body>
+</html>
