@@ -376,6 +376,7 @@ function checkWin() {
     updateMineCount();
     render();
     showMessage(`🎉 通关！用时 ${elapsed} 秒`, 'win');
+    if (navigator.vibrate) navigator.vibrate([30, 40, 60, 40, 30]);
     clearInterval(timerId);
   }
 }
