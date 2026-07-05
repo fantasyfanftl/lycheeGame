@@ -4121,9 +4121,83 @@ function _devEscape(s) {
   ));
 }
 
+// Floor plan (top-down store layout) — position map for each character.
+// Coordinates in the SVG viewBox 340×280 space.
+const FLOORPLAN_POS = {
+  cashier:  { x: 170, y: 200, label: '店' },
+  nurse:    { x: 100, y: 130, label: '护' }, // in aisle near shelves / dispenser
+  driver:   { x: 292, y: 140, label: '司' }, // window seat
+  teen:     { x: 255, y: 15,  label: '少' }, // outside doorstep
+  oldman:   { x:  55, y:  90, label: '老' }  // near milk cabinet
+};
+const FLOORPLAN_COLOR = {
+  cashier: '#f5c88a',   // warm gold = current-shift attendant
+  nurse:   '#d4b8c8',   // soft rose
+  driver:  '#a0c4d8',   // cool blue
+  teen:    '#e2a76a',   // warm ember
+  oldman:  '#c9b48a'    // aged parchment
+};
+
+function updateDevFloorplan() {
+  const layer = document.getElementById('floorplan-chars');
+  const legend = document.getElementById('dev-floorplan-legend');
+  if (!layer) return;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  layer.innerHTML = '';
+  const legendItems = [];
+  Object.keys(FLOORPLAN_POS).forEach(id => {
+    const pos = FLOORPLAN_POS[id];
+    const color = FLOORPLAN_COLOR[id] || '#f5c88a';
+    let present = false;
+    let isCurrent = state.currentPOV === id;
+    if (typeof isCharPresent === 'function') present = isCharPresent(id);
+    if (isCurrent) present = true; // always show current POV's dot for orientation
+    if (!present) return;
+    // Halo (subtle) for current POV
+    if (isCurrent) {
+      const halo = document.createElementNS(svgNS, 'circle');
+      halo.setAttribute('cx', pos.x);
+      halo.setAttribute('cy', pos.y);
+      halo.setAttribute('r', '13');
+      halo.setAttribute('fill', color);
+      halo.setAttribute('opacity', '0.22');
+      layer.appendChild(halo);
+    }
+    // Dot
+    const dot = document.createElementNS(svgNS, 'circle');
+    dot.setAttribute('cx', pos.x);
+    dot.setAttribute('cy', pos.y);
+    dot.setAttribute('r', isCurrent ? '7' : '5.5');
+    dot.setAttribute('fill', color);
+    dot.setAttribute('stroke', '#1a1f2c');
+    dot.setAttribute('stroke-width', '1.2');
+    dot.setAttribute('opacity', isCurrent ? '1' : '0.7');
+    layer.appendChild(dot);
+    // Label letter
+    const label = document.createElementNS(svgNS, 'text');
+    label.setAttribute('x', pos.x);
+    label.setAttribute('y', pos.y + 3.2);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('font-size', isCurrent ? '9' : '7.5');
+    label.setAttribute('fill', '#1a1f2c');
+    label.setAttribute('font-family', 'serif');
+    label.setAttribute('font-weight', '600');
+    label.textContent = pos.label;
+    layer.appendChild(label);
+    legendItems.push({ id, color, present });
+  });
+  if (legend) {
+    const short = { cashier: '店员', nurse: '护士', driver: '司机', teen: '少年', oldman: '老人' };
+    legend.innerHTML = legendItems.map(li =>
+      '<span class="lg-item"><span class="lg-dot" style="background:' + li.color + '"></span>' + short[li.id] + '</span>'
+    ).join('');
+  }
+}
+
 function updateDevTimeline() {
   const cols = document.getElementById('dev-timeline-cols');
   if (!cols) return;
+  updateDevFloorplan();
   const povs = ['cashier', 'nurse', 'driver', 'teen'];
   const shortName = { cashier: '店员', nurse: '护士', driver: '司机', teen: '少年' };
   let h = '';
