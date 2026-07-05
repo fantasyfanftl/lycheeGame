@@ -516,7 +516,9 @@ const overlayTitle = document.getElementById('overlayTitle');
 const overlaySub = document.getElementById('overlaySub');
 const startBtn = document.getElementById('startBtn');
 const continueBtn = document.getElementById('continueBtn');
-const infoEl = document.getElementById('info');
+const infoEl = null;
+
+function updateInfoText() { /* info bar removed for cleaner UI */ }
 const boardHint = document.getElementById('boardHint');
 
 let hintTimer = null;
@@ -533,9 +535,9 @@ function hideHint() {
 
 function updateInfoText() {
   if (inTutorial) {
-    infoEl.innerHTML = '教学·合出 <b>32</b> 结业&nbsp;·&nbsp;<span style="opacity:.65">数字变大占地更大，注意留空间</span>';
+    // info bar removed; tutorial hint no longer shown here
   } else {
-    infoEl.innerHTML = '数字越大 · 占地越大 · <b>16</b>→1×2 · <b>32</b>→2×1 · <b>128</b>→2×2 · <b>1024</b>→2×3 · <b>2048</b>→3×3 通关';
+    // info bar removed
   }
 }
 
