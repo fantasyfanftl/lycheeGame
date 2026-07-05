@@ -405,6 +405,10 @@
           <h3>仙 界</h3>
           <p>修仙场景</p>
         </div>
+        <div class="mode-card" data-mode="suzhou">
+          <h3>苏 州</h3>
+          <p>园林水乡</p>
+        </div>
       </div>
     </div>
   </div>
@@ -877,11 +881,13 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
     // Regenerate content only when value/shape/rendered-size/mode changes.
     const rk = `${renderMode}|${t.value}|${t.w}|${t.h}|${Math.round(tileW)}|${Math.round(tileH)}`;
     if (el.dataset.rk !== rk) {
-      if (renderMode === '3d' || renderMode === 'immortal') {
-        const dir = renderMode === 'immortal' ? 'merge-immortal-assets' : 'merge3d-assets';
+      if (renderMode === '3d' || renderMode === 'immortal' || renderMode === 'suzhou') {
+        const dir = renderMode === 'immortal' ? 'merge-immortal-assets'
+                  : renderMode === 'suzhou'   ? 'merge-suzhou-assets'
+                  : 'merge3d-assets';
         const MAX_IMG_TIER = 8192;
         const imgVal = t.value <= MAX_IMG_TIER ? t.value : MAX_IMG_TIER;
-        el.innerHTML = `<img class="tile-img" src="${dir}/tile-${imgVal}.webp?v=23" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
+        el.innerHTML = `<img class="tile-img" src="${dir}/tile-${imgVal}.webp?v=24" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
       } else {
         el.innerHTML = buildTileSVG(t, tileW, tileH) + '<span class="tile-num"></span>';
       }
