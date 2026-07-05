@@ -991,21 +991,22 @@ function drawBoard() {
 
 function drawItem(cx, cy, level, scale) {
   const a = getItem(level);
-  const size = TILE * 0.86 * scale;
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  roundRect(cx - size/2 + 1, cy - size/2 + 2, size, size, 8);
-  ctx.fill();
-  ctx.fillStyle = a.color;
-  roundRect(cx - size/2, cy - size/2, size, size, 8);
-  ctx.fill();
-  ctx.strokeStyle = a.border;
-  ctx.lineWidth = 3;
-  ctx.stroke();
+  const size = TILE * 0.96 * scale;
   const img = iconImages[level];
   if (img && img.complete && img.naturalWidth > 0) {
-    const iSize = size * 0.92;
-    ctx.drawImage(img, cx - iSize/2, cy - iSize/2, iSize, iSize);
+    // 透明 PNG 直接铺满,不画方块底
+    ctx.drawImage(img, cx - size/2, cy - size/2, size, size);
   } else {
+    // 图未加载完的兜底:方块底 + emoji
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    roundRect(cx - size/2 + 1, cy - size/2 + 2, size, size, 8);
+    ctx.fill();
+    ctx.fillStyle = a.color;
+    roundRect(cx - size/2, cy - size/2, size, size, 8);
+    ctx.fill();
+    ctx.strokeStyle = a.border;
+    ctx.lineWidth = 3;
+    ctx.stroke();
     ctx.font = Math.floor(size * 0.65) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -1397,45 +1398,6 @@ function doUndo() {
 }
 
 document.getElementById('undoBtn').onclick = doUndo;
-
-document.getElementById('hintBtn').onclick = showHint;
-
-function showHint() {
-  const cfg = townCfg(currentTownId);
-  const st = getTownState(currentTownId);
-  const { rows, cols } = townDims(cfg);
-  const currentLvl = st.queue[0];
-  // 找一个「放当前物品就能三连」的位置:即某空格四周有 >=2 个同级
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (!isPlayable(cfg, r, c) || st.board[r][c] !== null) continue;
-      const nbrs = [[-1,0],[1,0],[0,-1],[0,1]];
-      let sameNbrs = 0;
-      let sameOneStep = false;
-      for (const [dr, dc] of nbrs) {
-        const nr = r+dr, nc = c+dc;
-        if (nr<0||nr>=rows||nc<0||nc>=cols) continue;
-        if (st.board[nr]?.[nc] === currentLvl) {
-          sameNbrs++;
-          // 再看这个邻居的其他邻居有没有同级
-          for (const [dr2, dc2] of nbrs) {
-            const nr2 = nr+dr2, nc2 = nc+dc2;
-            if (nr2 === r && nc2 === c) continue;
-            if (nr2<0||nr2>=rows||nc2<0||nc2>=cols) continue;
-            if (st.board[nr2]?.[nc2] === currentLvl) sameOneStep = true;
-          }
-        }
-      }
-      if (sameNbrs >= 2 || (sameNbrs >= 1 && sameOneStep)) {
-        flashCells.push({ r, c, t0: performance.now(), dur: 1500 });
-        drawBoard();
-        toast('把 ' + ITEMS[currentLvl].name + ' 放这里可以三连');
-        return;
-      }
-    }
-  }
-  toast('目前没有明显的合体位置,先随便摆吧');
-}
 
 /* =====================================================
    通关判定
