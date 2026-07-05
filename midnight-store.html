@@ -4012,7 +4012,7 @@ function updateDevTimeline() {
       else if (isPlayed) cls += ' played';
       // Strip leading numeric prefix from title if present, then truncate for cell width
       const rawTitle = (b.title || b.hs || '?');
-      const shortTitle = rawTitle.replace(/^[\d:\s·.-]+/, '').slice(0, 6);
+      const shortTitle = rawTitle.replace(/^[\d:\s·.-]+/, '').slice(0, 9);
       h += '<div class="' + cls + '" title="' + _devEscape(rawTitle) + '">';
       h += '<span class="dev-timeline-beat-num">' + (i + 1) + '</span>';
       h += _devEscape(shortTitle);
