@@ -2996,9 +2996,42 @@ const HOTSPOTS = {
 const BEATS = {
   cashier: [
     {
-      hs: 'register',
-      title: '01 : 47 · 摘 下 一 只 耳 机',
-      text: '01:47。\n\n你把耳机的一只摘下来放到桌上，另一只留在耳朵里——夜班要留半只耳朵听门口的铃。\n\n你懒得报修那盏偏红的灯。反正这份工你也做不了几个月。\n\n你在等妈的消息。她今天化疗第三次。你早上问她怎么样，她只回了两个字："还好"。你没敢再问。\n\n外面。橘猫在。碗歪了。'
+      hs: 'phone',
+      title: '01 : 47 · 耳 机 里 的 歌',
+      text: '手机屏幕亮着，那首歌还在放。\n\n你懒得报修那盏偏红的灯。反正这份工你也做不了几个月。\n\n你在等妈的消息。她今天化疗第三次。你早上问她怎么样，她只回了两个字："还好"。你没敢再问。\n\n外面。刚才有自动门"叮"了一声，"欢迎光临"响过。你没抬头。',
+      choicePrompt: '怎 么 办 ？',
+      choices: [
+        {
+          label: '降低音量。留半只耳听门口的铃。',
+          text: '你把音量拧小。歌声只剩薄薄一层，压在店里的嗡上。\n\n夜班要留半只耳朵。这份心不放，其他的也做不好。',
+          effects: (w) => {
+            w.earbud = 'half';
+            if (typeof setEarbudSongVolume === 'function') setEarbudSongVolume(0.15);
+            setTimeout(() => { if (typeof startCashierBackgroundMusic === 'function') startCashierBackgroundMusic(0.15); }, 400);
+          },
+          cps: [{ id: 'cp8' }]
+        },
+        {
+          label: '摘下一只放桌上。另一只塞着。',
+          text: '你把耳机的一只摘下来放到桌上，另一只留在耳朵里。\n\n冷藏柜的嗡从没听清过，现在听清了。夜班的第一个客人来了——你没抬头。',
+          effects: (w) => {
+            w.earbud = 'one';
+            if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(1.2);
+            setTimeout(() => { if (typeof startCashierBackgroundMusic === 'function') startCashierBackgroundMusic(0.22); }, 900);
+          },
+          cps: [{ id: 'cp8' }]
+        },
+        {
+          label: '索性关掉。这一单接完再说。',
+          text: '你把两只都摘了。歌停了。\n\n突然安静下来。日光灯偏红的那一盏，在头顶滋着响。\n\n你没抬头。你知道谁进来了——那种脚步声你熟。',
+          effects: (w) => {
+            w.earbud = 'off';
+            if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(1.4);
+            setTimeout(() => { if (typeof startCashierBackgroundMusic === 'function') startCashierBackgroundMusic(0.32); }, 1200);
+          },
+          cps: [{ id: 'cp8' }]
+        }
+      ]
     },
     {
       hs: 'odenPot',
