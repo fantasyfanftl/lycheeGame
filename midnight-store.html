@@ -4259,6 +4259,7 @@ function renderHotspots() {
   Object.keys(byCard).forEach(cardName => {
     const cardEl = document.querySelector('[data-card-hotspots="' + cardName + '"]');
     if (!cardEl) return;
+    const svgNS = 'http://www.w3.org/2000/svg';
     const overlay = document.createElementNS(svgNS, 'svg');
     overlay.setAttribute('viewBox', '0 0 400 550');
     overlay.setAttribute('preserveAspectRatio', 'xMidYMid meet');
