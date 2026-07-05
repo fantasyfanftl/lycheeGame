@@ -461,7 +461,7 @@ body {
 /* =====================================================
    物品链 (0..10, 共 11 级)
 ===================================================== */
-const ITEMS = [
+let ITEMS = [
   { emoji: '📰', icon: 'icon-00-brick.png',      name: '报刊亭',     color: '#dcfce7', border: '#15803d', price: 0 },
   { emoji: '🍎', icon: 'icon-01-wood.png',       name: '水果摊',     color: '#fecaca', border: '#b91c1c', price: 30 },
   { emoji: '🥤', icon: 'icon-02-tent.png',       name: '奶茶店',     color: '#fce7f3', border: '#db2777', price: 200 },
@@ -474,7 +474,7 @@ const ITEMS = [
   { emoji: '👜', icon: 'icon-09-cathedral.png',  name: '精品店',     color: '#fef3c7', border: '#b45309', price: null },
   { emoji: '🏬', icon: 'icon-10-castle.png',     name: '网红咖啡厅', color: '#fde68a', border: '#92400e', price: null },
 ];
-const MAX_LEVEL = ITEMS.length - 1;
+let MAX_LEVEL = ITEMS.length - 1;
 const MERGE_COIN = lvl => Math.pow(3, lvl) * 2;       // 合成到 Lv.N 奖励金币
 const MERGE_SCORE = lvl => Math.pow(2, lvl) * 10;     // 合成到 Lv.N 奖励分数
 
@@ -486,23 +486,59 @@ const REROLL_COST = 20;                 // 换一批要多少金币
 const SPAWN_WEIGHTS = [63, 25, 7, 5];   // Lv.0 砖块 / Lv.1 木材 / Lv.2 帐篷 / 万能星
 // 万能星 —— 特殊道具:放到棋盘时会自动变成能触发合体的等级
 const WILDCARD_LVL = -1;
-const WILDCARD_ITEM = { emoji: '🌟', icon: 'icon-11-wildcard.png', name: '万能星', color: '#fef9c3', border: '#ca8a04' };
+let WILDCARD_ITEM = { emoji: '🌟', icon: 'icon-11-wildcard.png', name: '万能星', color: '#fef9c3', border: '#ca8a04' };
+
+// ===== 主题系统:每个 town 有自己的合成链 =====
+const THEME_MODERN = { items: null, wildcard: null };  // 稍后指向当前 ITEMS
+const THEME_COFFEE = {
+  items: [
+    { emoji: '☕', icon: 'coffee-t0-bean.png',     name: '咖啡豆',   color: '#fde68a', border: '#92400e', price: 0 },
+    { emoji: '☕', icon: 'coffee-t1-cup.png',      name: '小杯咖啡', color: '#fef3c7', border: '#b45309', price: 30 },
+    { emoji: '⚙️', icon: 'coffee-t2-grinder.png',  name: '咖啡磨',   color: '#fde68a', border: '#78350f', price: 200 },
+    { emoji: '🫖', icon: 'coffee-t3-pourover.png', name: '手冲壶',   color: '#fef3c7', border: '#78350f', price: null },
+    { emoji: '☕', icon: 'coffee-t4-machine.png',  name: '咖啡机',   color: '#fee2e2', border: '#991b1b', price: null },
+    { emoji: '🚚', icon: 'coffee-t5-cart.png',     name: '咖啡小车', color: '#fed7aa', border: '#c2410c', price: null },
+    { emoji: '🏠', icon: 'coffee-t6-kiosk.png',    name: '小咖啡店', color: '#fef3c7', border: '#b45309', price: null },
+    { emoji: '☕', icon: 'coffee-t7-shop.png',     name: '咖啡店',   color: '#fbbf24', border: '#92400e', price: null },
+    { emoji: '🏛️', icon: 'coffee-t8-market.png',  name: '咖啡市集', color: '#fde68a', border: '#78350f', price: null },
+  ],
+  wildcard: { emoji: '🌟', icon: 'coffee-wildcard.png', name: '万能星', color: '#fef9c3', border: '#ca8a04' },
+};
+// modern 主题指向已有 ITEMS(启动时是 modern)
+THEME_MODERN.items = ITEMS;
+THEME_MODERN.wildcard = WILDCARD_ITEM;
+const THEMES = { 'modern-shop': THEME_MODERN, 'coffee': THEME_COFFEE };
+function switchTheme(themeName) {
+  const t = THEMES[themeName] || THEME_MODERN;
+  ITEMS = t.items;
+  WILDCARD_ITEM = t.wildcard;
+  MAX_LEVEL = ITEMS.length - 1;
+}
 function getItem(lvl) { return lvl === WILDCARD_LVL ? WILDCARD_ITEM : ITEMS[lvl]; }
 // 图片预加载
 const ICON_V = 'v=15';  // 图片资源版本,换图后 bump 一下防浏览器缓存
 const iconImages = {};
 function iconSrc(it) { return it.icon + '?' + ICON_V; }
 function preloadIcons() {
-  ITEMS.forEach((it, lvl) => {
-    const img = new Image();
-    img.src = iconSrc(it);
-    img.onload = () => { if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) drawBoard(); };
-    iconImages[lvl] = img;
-  });
-  const wc = new Image();
-  wc.src = iconSrc(WILDCARD_ITEM);
-  wc.onload = () => { if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) drawBoard(); };
-  iconImages[WILDCARD_LVL] = wc;
+  const seen = new Set();
+  const onImgLoad = () => { if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) drawBoard(); };
+  for (const theme of Object.values(THEMES)) {
+    for (const it of theme.items) {
+      if (seen.has(it.icon)) continue;
+      seen.add(it.icon);
+      const img = new Image();
+      img.src = iconSrc(it);
+      img.onload = onImgLoad;
+      iconImages[it.icon] = img;
+    }
+    if (theme.wildcard && !seen.has(theme.wildcard.icon)) {
+      seen.add(theme.wildcard.icon);
+      const wc = new Image();
+      wc.src = iconSrc(theme.wildcard);
+      wc.onload = onImgLoad;
+      iconImages[theme.wildcard.icon] = wc;
+    }
+  }
 }
 // 商店可买等级(index=level),null=不可买
 const SHOP_PRICES = [10, 40, 150, 500, 1500, 4500, null, null, null, null, null];
@@ -547,7 +583,7 @@ const TOWNS = [
     '......',
     '......'
   ]},
-  { id:'t3', name:'喵喵村', x:20, y:50, startCoins: 450, layout: [
+  { id:'t3', name:'喵喵村', theme:'coffee', x:20, y:50, startCoins: 450, layout: [
     '......',
     '..##..',
     '......',
@@ -843,8 +879,10 @@ function renderMap() {
 }
 function enterTown(id) {
   currentTownId = id;
+  const cfg = townCfg(id);
+  switchTheme(cfg.theme || 'modern-shop');
   getTownState(id);
-  document.getElementById('townTitle').textContent = townCfg(id).name;
+  document.getElementById('townTitle').textContent = cfg.name;
   showScreen('gameScreen');
 }
 
@@ -979,7 +1017,7 @@ function drawBoard() {
       const nextLvl = actualLvl + 1;
       if (nextLvl <= MAX_LEVEL) {
         const nextItem = getItem(nextLvl);
-        const nextImg = iconImages[nextLvl];
+        const nextImg = iconImages[nextItem.icon];
         ctx.setLineDash([]);
         const iconSize = 34;
         const countText = outCount > 1 ? ' ×' + outCount : '';
@@ -1038,7 +1076,7 @@ function drawItem(cx, cy, level, scale) {
   const tier = isWc ? 5 : level;
   const tierScale = tier <= 2 ? 1.0 : tier <= 5 ? 1.15 : tier <= 8 ? 1.3 : 1.5;
   const size = TILE * tierScale * scale;
-  const img = iconImages[level];
+  const img = iconImages[a.icon];
   // 底对齐格子底部,自然向上溢出
   const bottomY = cy + TILE * 0.5;
   const drawY = bottomY - size;
