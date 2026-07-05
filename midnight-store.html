@@ -2855,51 +2855,55 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
           <rect x="220" y="2" width="70" height="26" fill="rgba(30,38,55,0.6)" stroke="#5a5568" stroke-width="0.8" stroke-dasharray="3,2"/>
           <text x="240" y="18" fill="#7a95a5" font-size="8" text-anchor="middle" font-family="serif">门 口 · 台 阶</text>
 
-          <!-- Left wall: shelves + top = 热奶柜/冷藏 -->
-          <rect x="30" y="45" width="46" height="150" fill="rgba(193,123,82,0.18)" stroke="#c17b52" stroke-width="1"/>
-          <rect x="30" y="45" width="46" height="4" fill="#c17b52"/>
-          <text x="53" y="70" fill="#f5c88a" font-size="8" text-anchor="middle" font-family="serif">热 奶 柜</text>
-          <line x1="30" y1="82" x2="76" y2="82" stroke="#c17b52" stroke-width="0.5" opacity="0.5"/>
-          <text x="53" y="132" fill="#c17b52" font-size="10" text-anchor="middle" font-family="serif">货 架</text>
-          <text x="53" y="180" fill="#c17b52" font-size="7" text-anchor="middle" font-family="serif" opacity="0.7">日用 / 饮品</text>
+          <!-- Left wall: two units side-by-side —
+               冷藏饮品柜 (glass cold cooler, closer to door) + 货架/热奶柜 (open shelves) -->
+          <rect x="18" y="45" width="28" height="150" fill="rgba(122,149,165,0.28)" stroke="#7a95a5" stroke-width="1"/>
+          <line x1="18" y1="45" x2="46" y2="45" stroke="#7a95a5" stroke-width="2"/>
+          <text x="32" y="105" fill="#7a95a5" font-size="8" text-anchor="middle" font-family="serif">冷 藏</text>
+          <text x="32" y="118" fill="#7a95a5" font-size="8" text-anchor="middle" font-family="serif">饮 品</text>
+          <rect x="48" y="45" width="46" height="150" fill="rgba(193,123,82,0.18)" stroke="#c17b52" stroke-width="1"/>
+          <rect x="48" y="45" width="46" height="4" fill="#c17b52"/>
+          <text x="71" y="70" fill="#f5c88a" font-size="8" text-anchor="middle" font-family="serif">热 奶 柜</text>
+          <line x1="48" y1="82" x2="94" y2="82" stroke="#c17b52" stroke-width="0.5" opacity="0.5"/>
+          <text x="71" y="132" fill="#c17b52" font-size="10" text-anchor="middle" font-family="serif">货 架</text>
+          <text x="71" y="180" fill="#c17b52" font-size="7" text-anchor="middle" font-family="serif" opacity="0.7">日用 · 零食</text>
 
-          <!-- Right wall: window seat (bar-counter along window with high stools) -->
+          <!-- Right wall: window bar counter with stools -->
           <rect x="270" y="45" width="45" height="150" fill="rgba(193,123,82,0.18)" stroke="#c17b52" stroke-width="1"/>
           <line x1="270" y1="45" x2="315" y2="45" stroke="#8b6f47" stroke-width="2"/>
           <rect x="273" y="50" width="39" height="8" fill="rgba(139,111,71,0.6)" stroke="#8b6f47" stroke-width="0.4"/>
           <text x="292" y="118" fill="#c17b52" font-size="10" text-anchor="middle" font-family="serif">窗 边</text>
           <text x="292" y="130" fill="#c17b52" font-size="8" text-anchor="middle" font-family="serif">座 位</text>
-          <!-- Bar stools along window -->
           <circle cx="284" cy="150" r="4" fill="none" stroke="#8b6f47" stroke-width="0.6"/>
           <circle cx="300" cy="168" r="4" fill="none" stroke="#8b6f47" stroke-width="0.6"/>
 
-          <!-- Water dispenser (near shelves, mid-left aisle) -->
-          <rect x="88" y="88" width="22" height="30" fill="rgba(122,149,165,0.35)" stroke="#7a95a5" stroke-width="0.8"/>
-          <text x="99" y="105" fill="#7a95a5" font-size="6" text-anchor="middle" font-family="serif">饮 水</text>
-
-          <!-- Bottom wall: cashier counter (left) + oden bar (right, adjacent) — SIDE BY SIDE -->
+          <!-- Bottom wall front-of-house: 收银台 (left) + 关东煮 (mid) + 饮水机 (right) — one service line -->
           <!-- Cashier counter -->
-          <rect x="60" y="210" width="150" height="46" fill="rgba(139,111,71,0.35)" stroke="#8b6f47" stroke-width="1.2"/>
-          <line x1="60" y1="220" x2="210" y2="220" stroke="#c17b52" stroke-width="0.6" opacity="0.7"/>
-          <text x="135" y="238" fill="#f5c88a" font-size="10" text-anchor="middle" font-family="serif" letter-spacing="1">收 银 台</text>
-          <!-- POS + register markers on counter -->
-          <rect x="72" y="222" width="14" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
-          <rect x="92" y="223" width="18" height="8" fill="#8b6f47" stroke="#5a5568" stroke-width="0.4"/>
-          <rect x="115" y="223" width="10" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
+          <rect x="30" y="210" width="130" height="46" fill="rgba(139,111,71,0.35)" stroke="#8b6f47" stroke-width="1.2"/>
+          <line x1="30" y1="220" x2="160" y2="220" stroke="#c17b52" stroke-width="0.6" opacity="0.7"/>
+          <text x="95" y="238" fill="#f5c88a" font-size="10" text-anchor="middle" font-family="serif" letter-spacing="1">收 银 台</text>
+          <rect x="40" y="222" width="14" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
+          <rect x="60" y="223" width="18" height="8" fill="#8b6f47" stroke="#5a5568" stroke-width="0.4"/>
+          <rect x="83" y="223" width="10" height="10" fill="#3d2f24" stroke="#5a5568" stroke-width="0.4"/>
 
-          <!-- Oden bar RIGHT NEXT TO the cashier counter -->
-          <rect x="210" y="210" width="90" height="46" fill="rgba(193,123,82,0.28)" stroke="#c17b52" stroke-width="1.2"/>
-          <line x1="210" y1="220" x2="300" y2="220" stroke="#c17b52" stroke-width="0.6" opacity="0.7"/>
-          <text x="255" y="235" fill="#f5c88a" font-size="10" text-anchor="middle" font-family="serif" letter-spacing="1">关 东 煮</text>
-          <text x="255" y="248" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">2 元/串</text>
+          <!-- Oden bar directly beside register -->
+          <rect x="160" y="210" width="90" height="46" fill="rgba(193,123,82,0.28)" stroke="#c17b52" stroke-width="1.2"/>
+          <line x1="160" y1="220" x2="250" y2="220" stroke="#c17b52" stroke-width="0.6" opacity="0.7"/>
+          <text x="205" y="235" fill="#f5c88a" font-size="10" text-anchor="middle" font-family="serif" letter-spacing="1">关 东 煮</text>
+          <text x="205" y="248" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">2 元/串</text>
+
+          <!-- Water dispenser at the right end of the service counter, beside oden -->
+          <rect x="252" y="210" width="55" height="46" fill="rgba(122,149,165,0.28)" stroke="#7a95a5" stroke-width="1"/>
+          <text x="279" y="232" fill="#7a95a5" font-size="9" text-anchor="middle" font-family="serif">饮 水 机</text>
+          <text x="279" y="244" fill="#7a95a5" font-size="6" text-anchor="middle" font-family="serif">45°C</text>
 
           <!-- Cigarette cabinet on back wall behind cashier counter -->
-          <rect x="80" y="196" width="120" height="10" fill="rgba(61,47,36,0.55)" stroke="#8b6f47" stroke-width="0.6"/>
-          <text x="140" y="204" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">烟 柜</text>
+          <rect x="50" y="196" width="100" height="10" fill="rgba(61,47,36,0.55)" stroke="#8b6f47" stroke-width="0.6"/>
+          <text x="100" y="204" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif">烟 柜</text>
 
           <!-- Aisle floor labels (very faint) -->
-          <text x="170" y="150" fill="#c17b52" font-size="7" text-anchor="middle" font-family="serif" opacity="0.35">通 道</text>
-          <text x="170" y="180" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif" opacity="0.3">→ 客 人 走 向 →</text>
+          <text x="180" y="150" fill="#c17b52" font-size="7" text-anchor="middle" font-family="serif" opacity="0.35">通 道</text>
+          <text x="180" y="180" fill="#c17b52" font-size="6" text-anchor="middle" font-family="serif" opacity="0.3">→ 客 人 走 向 →</text>
 
           <!-- Character position markers (JS updates these based on state) -->
           <g id="floorplan-chars">
@@ -4126,11 +4130,11 @@ function _devEscape(s) {
 // Floor plan (top-down store layout) — position map for each character.
 // Coordinates in the SVG viewBox 340×280 space.
 const FLOORPLAN_POS = {
-  cashier:  { x: 135, y: 200, label: '店' }, // behind cashier counter (bottom-left)
-  nurse:    { x: 130, y: 130, label: '护' }, // in main aisle
+  cashier:  { x:  95, y: 200, label: '店' }, // behind cashier counter
+  nurse:    { x: 130, y: 130, label: '护' }, // main aisle (walking through)
   driver:   { x: 292, y: 152, label: '司' }, // window bar seat (right wall)
-  teen:     { x: 255, y: 15,  label: '少' }, // outside doorstep
-  oldman:   { x:  55, y:  95, label: '老' }  // near milk cabinet (left wall)
+  teen:     { x: 255, y: 15,  label: '少' }, // outside doorstep (dashed area)
+  oldman:   { x:  71, y:  95, label: '老' }  // reaching for top of shelves (milk cabinet)
 };
 const FLOORPLAN_COLOR = {
   cashier: '#f5c88a',   // warm gold = current-shift attendant
