@@ -920,10 +920,9 @@ function doMergeCascade(town, r, c) {
     if (newLvl > save.maxLevel) save.maxLevel = newLvl;
     for (const [or, oc] of outPos) {
       town.board[or][oc] = newLvl;
+      queue.push([or, oc]);
       flashCells.push({ r: or, c: oc, t0: performance.now(), dur: 400 });
     }
-    // 只有单输出才继续连锁;多输出(5+)保住数量,不被后续三消吸走
-    if (outCount === 1) queue.push(outPos[0]);
     chains++;
     // 屏幕飘字(在第一个输出位)
     const [fr, fc] = outPos[0];
