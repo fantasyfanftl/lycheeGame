@@ -866,7 +866,9 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
     const rk = `${renderMode}|${t.value}|${t.w}|${t.h}|${Math.round(tileW)}|${Math.round(tileH)}`;
     if (el.dataset.rk !== rk) {
       if (renderMode === '3d') {
-        const imgVal = t.value <= 2048 ? t.value : 2048;
+        // Cap the image lookup at the highest available tier
+        const MAX_IMG_TIER = 8192;
+        const imgVal = t.value <= MAX_IMG_TIER ? t.value : MAX_IMG_TIER;
         el.innerHTML = `<img class="tile-img" src="merge3d-assets/tile-${imgVal}.png?v=3" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
       } else {
         el.innerHTML = buildTileSVG(t, tileW, tileH) + '<span class="tile-num"></span>';
