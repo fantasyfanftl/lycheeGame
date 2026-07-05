@@ -4366,7 +4366,10 @@ function switchPOV(char) {
   if (homeBeat && homeBeat.hs && HOTSPOTS[homeBeat.hs]) {
     const homeCard = HOTSPOTS[homeBeat.hs].card;
     if (homeCard && typeof scrollToCard === 'function') {
-      setTimeout(() => scrollToCard(homeCard), 60);
+      // Two-shot: instant jump right after render lands, then a smooth reset
+      // in case the container size changed once bars finished laying out.
+      setTimeout(() => scrollToCard(homeCard, true), 60);
+      setTimeout(() => scrollToCard(homeCard, true), 320);
     }
   }
 
@@ -6225,17 +6228,22 @@ const CARDS = ['doorstep', 'window', 'shelves', 'register', 'dispenser'];
 let currentCardIdx = 0;
 let _scrollingAuto = false;
 
-function scrollToCard(cardName) {
+function scrollToCard(cardName, instant) {
   const idx = CARDS.indexOf(cardName);
   if (idx < 0) return;
   const container = document.getElementById('scene-cards');
   const card = container && container.children[idx];
   if (!card) return;
   _scrollingAuto = true;
-  card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  if (instant) {
+    // Direct assignment — reliable even before layout has settled.
+    container.scrollLeft = card.offsetLeft;
+  } else {
+    card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
   currentCardIdx = idx;
   updateCardDots();
-  setTimeout(() => { _scrollingAuto = false; }, 700);
+  setTimeout(() => { _scrollingAuto = false; }, instant ? 120 : 700);
 }
 
 function updateCardDots() {
