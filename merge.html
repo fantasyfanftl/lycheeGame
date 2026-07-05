@@ -268,8 +268,11 @@
   /* ============ 3D mode (isometric image tiles) ============ */
   .tile-img {
     display: block;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    left: -8%;
+    top: -8%;
+    width: 116%;
+    height: 116%;
     object-fit: contain;
     pointer-events: none;
     user-select: none;
@@ -847,7 +850,7 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
     if (el.dataset.rk !== rk) {
       if (renderMode === '3d') {
         const imgVal = t.value <= 2048 ? t.value : 2048;
-        el.innerHTML = `<img class="tile-img" src="merge3d-assets/tile-${imgVal}.png" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
+        el.innerHTML = `<img class="tile-img" src="merge3d-assets/tile-${imgVal}.png?v=3" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
       } else {
         el.innerHTML = buildTileSVG(t, tileW, tileH) + '<span class="tile-num"></span>';
       }
