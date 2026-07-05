@@ -645,7 +645,7 @@ body {
   border-radius: 50%;
   border: 1.5px solid #f9f3e8;
 }
-@media (max-width: 1500px) {
+@media (max-width: 1200px) {
   .dev-timeline { display: none; }
 }
 @media (max-width: 900px) {
@@ -6303,12 +6303,9 @@ function scrollToCard(cardName, instant) {
   const card = container && container.children[idx];
   if (!card) return;
   _scrollingAuto = true;
-  if (instant) {
-    // Direct assignment — reliable even before layout has settled.
-    container.scrollLeft = card.offsetLeft;
-  } else {
-    card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  }
+  // For instant mode use scrollIntoView with behavior:'auto' — browser handles
+  // scroll-snap alignment reliably even before layout has fully settled.
+  card.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
   currentCardIdx = idx;
   updateCardDots();
   setTimeout(() => { _scrollingAuto = false; }, instant ? 120 : 700);
