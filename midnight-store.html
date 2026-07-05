@@ -406,6 +406,93 @@ body {
   pointer-events: none;
 }
 
+/* ========== Developer panel (dev-time only) ========== */
+.dev-panel {
+  position: fixed;
+  top: 60px;
+  right: 12px;
+  width: 340px;
+  max-height: calc(100vh - 130px);
+  background: rgba(20, 25, 40, 0.95);
+  color: #d4c39e;
+  border: 1px solid rgba(245, 200, 138, 0.55);
+  border-radius: 6px;
+  padding: 10px 14px 12px;
+  font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+  font-size: 11.5px;
+  line-height: 1.55;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+.dev-panel.hidden { display: none; }
+.dev-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #f5c88a;
+  font-size: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(245, 200, 138, 0.35);
+  letter-spacing: 2px;
+}
+.dev-panel-toggle {
+  background: transparent;
+  color: #c17b52;
+  border: 1px solid #c17b52;
+  border-radius: 3px;
+  padding: 1px 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10px;
+}
+.dev-panel-toggle:hover { background: rgba(193, 123, 82, 0.2); }
+.dev-panel-body { }
+.dev-panel-label { color: #c17b52; font-weight: 600; }
+.dev-panel-value { color: #f9f3e8; }
+.dev-panel-block { margin-top: 8px; white-space: pre-wrap; }
+.dev-panel-text {
+  white-space: pre-wrap;
+  background: rgba(245, 200, 138, 0.06);
+  border-left: 2px solid #c17b52;
+  padding: 4px 8px;
+  margin-top: 2px;
+  color: #e8dcc4;
+}
+.dev-panel-choice {
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-left: 2px solid #5a5568;
+  background: rgba(255, 255, 255, 0.03);
+}
+.dev-panel-choice small {
+  display: block;
+  margin-top: 3px;
+  opacity: 0.75;
+  color: #a8a595;
+  white-space: pre-wrap;
+}
+.dev-panel-show {
+  position: fixed;
+  top: 60px;
+  right: 12px;
+  background: rgba(20, 25, 40, 0.85);
+  color: #f5c88a;
+  border: 1px solid #c17b52;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  z-index: 100;
+}
+.dev-panel-show.hidden { display: none; }
+@media (max-width: 900px) {
+  .dev-panel, .dev-panel-show { display: none !important; }
+}
+
 /* ========== Register / dispenser: dual view (customer-outside vs cashier-inside) ========== */
 /* Scene art is now painted background images. Hide all inline scene-art SVGs
    (they still hold obj-zone rects that we no longer use as visible art). */
@@ -3808,6 +3895,7 @@ function advanceInlinePage() {
 }
 
 function playInlineBeat(effective) {
+  updateDevPanel(effective, 'beat');
   const panel = $('inline-panel');
   const cue = $('inline-cue');
   const subtitle = $('inline-subtitle');
@@ -3857,6 +3945,7 @@ function playInlineBeat(effective) {
 function pickInlineChoice(idx) {
   const beat = _currentEffective;
   const choice = beat.choices[idx];
+  updateDevPanel(beat, 'choice', idx);
 
   playChoiceClick();
   if (choice.voice) speakLine(choice.voice, 900);
