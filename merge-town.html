@@ -1046,7 +1046,7 @@ function drawItem(cx, cy, level, scale) {
 
 function pixelToTile(x, y) {
   const c = Math.floor((x - PAD) / TILE);
-  const r = Math.floor((y - PAD) / TILE);
+  const r = Math.floor((y - PAD_TOP) / TILE);
   if (r < 0 || r >= curRows || c < 0 || c >= curCols) return null;
   return { r, c };
 }
