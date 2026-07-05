@@ -3986,9 +3986,14 @@ function playBeat(beat) {
   }
 
   // Cashier's beat 0 = "01:47 · 摘下一只耳机" — he takes off one earbud,
-  // so the earbud song fades out (background music continues).
-  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0 && typeof stopCashierEarbudSong === 'function') {
-    stopCashierEarbudSong(1.4);
+  // so the earbud song fades out and the in-store background music comes up.
+  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0) {
+    if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(1.4);
+    setTimeout(() => {
+      if (state.currentPOV === 'cashier' && typeof startCashierBackgroundMusic === 'function') {
+        startCashierBackgroundMusic();
+      }
+    }, 1200);
   }
 
   playInlineBeat(effective);
