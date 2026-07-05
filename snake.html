@@ -361,34 +361,61 @@
   .dpad-btn.left  { grid-area: left; }
   .dpad-btn.right { grid-area: right; }
 
-  @media (max-width: 480px) {
-    body { padding: 34px 8px 8px; }
-    .container { padding: 12px 12px 10px; }
-    .back-link { top: 6px; left: 6px; font-size: 10px; padding: 3px 8px; letter-spacing: 1px; }
-    .header { margin-bottom: 5px; }
-    .realm-name { font-size: 17px; letter-spacing: 3px; text-shadow: 0 0 8px rgba(245, 200, 138, 0.35); }
-    .realm-desc { font-size: 10px; letter-spacing: 1px; margin-top: 0; opacity: 0.8; }
+  @media (max-width: 640px) {
+    body { padding: 30px 8px 210px; }  /* 底部留出 fixed D-pad 空间 */
+    .container { padding: 8px 10px 6px; }
+    .back-link { top: 5px; left: 5px; font-size: 10px; padding: 3px 8px; letter-spacing: 1px; }
+
+    /* Header 极简：realm-name 小一号，描述隐藏 */
+    .header { margin-bottom: 4px; align-items: flex-end; }
+    .realm-name { font-size: 15px; letter-spacing: 2px; text-shadow: 0 0 6px rgba(245, 200, 138, 0.3); }
+    .realm-desc { display: none; }
     .scores { gap: 4px; }
-    .score-box { padding: 3px 8px; min-width: 44px; border-radius: 3px; }
-    .score-box .label { font-size: 9px; letter-spacing: 1px; }
-    .score-box .value { font-size: 14px; margin-top: 0; }
-    .progress { margin-bottom: 5px; padding: 0 2px; }
+    .score-box { padding: 2px 7px; min-width: 40px; border-radius: 3px; }
+    .score-box .label { font-size: 8px; letter-spacing: 0.5px; }
+    .score-box .value { font-size: 13px; margin-top: 0; }
+
+    /* Progress 极瘦，标签隐藏（只保留轨道+锚点） */
+    .progress { margin-bottom: 4px; padding: 0 2px; }
     .progress-track { height: 2px; }
-    .progress-marker { width: 7px; height: 7px; top: -3px; }
-    .progress-labels { font-size: 9px; letter-spacing: 0.5px; margin-top: 4px; }
+    .progress-marker { width: 6px; height: 6px; top: -3px; border-width: 1px; }
+    .progress-labels { display: none; }
+
+    /* Board 高度上限：不要压过 55vh */
     .board-wrap {
-      max-width: min(100%, 52vh);
-      margin: 0 auto 5px;
+      max-width: min(100%, 55vh);
+      margin: 0 auto 4px;
     }
-    .actions { margin-bottom: 3px; gap: 6px; }
-    .actions button { padding: 5px 14px; font-size: 11px; letter-spacing: 1.5px; }
-    .hint { font-size: 9px; letter-spacing: 1px; line-height: 1.4; }
+
+    /* Actions & hint 极简 */
+    .actions { margin-bottom: 2px; gap: 5px; }
+    .actions button { padding: 4px 12px; font-size: 10px; letter-spacing: 1px; }
+    .hint { font-size: 9px; letter-spacing: 0.5px; line-height: 1.4; }
+
+    /* D-pad 固定在视口底部 —— 不再占容器纵向空间 */
     .dpad {
-      width: min(360px, 96%);
-      gap: 5px;
-      margin: 6px auto 4px;
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: min(320px, 94%);
+      height: 175px;
+      aspect-ratio: auto;
+      margin: 0;
+      padding: 0;
+      z-index: 50;
+      gap: 4px;
     }
-    .dpad-btn { font-size: 44px; border-radius: 20px; }
+    .dpad-btn {
+      background: rgba(245, 200, 138, 0.18);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1.5px solid rgba(245, 200, 138, 0.55);
+      color: #f5c88a;
+      font-size: 32px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
   }
 
   @media (orientation: landscape) and (max-height: 550px) {
