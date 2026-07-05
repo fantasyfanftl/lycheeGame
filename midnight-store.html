@@ -5920,6 +5920,22 @@ function bindEvents() {
   $('notebook-btn').addEventListener('click', showNotebook);
   $('notebook-close').addEventListener('click', hideNotebook);
   $('mute-btn').addEventListener('click', toggleMute);
+  const volSlider = $('volume-slider');
+  if (volSlider) {
+    // Restore persisted volume + mute
+    try {
+      const savedVol = parseFloat(localStorage.getItem('midnight-store.volume'));
+      const savedMuted = localStorage.getItem('midnight-store.muted') === '1';
+      if (!isNaN(savedVol)) AUDIO.volume = Math.max(0, Math.min(1, savedVol));
+      else AUDIO.volume = 0.7;
+      AUDIO.muted = savedMuted;
+      volSlider.value = Math.round((AUDIO.volume || 0) * 100);
+    } catch (e) {
+      AUDIO.volume = 0.7;
+    }
+    volSlider.addEventListener('input', (e) => setVolume(parseInt(e.target.value, 10) / 100));
+    applyVolume();
+  }
 
   // Mobile: tap pov-indicator or scene to trigger current beat
   const tryTriggerCurrent = () => {
