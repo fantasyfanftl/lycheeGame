@@ -286,23 +286,29 @@ body {
       <button id="resetTownBtn" class="icon-btn small">🔄</button>
     </div>
     <div id="statsBar">
+      <span>⚡<b id="energyVal">30</b>/<span id="energyMax">30</span><small id="energyTimer" style="opacity:0.75;font-size:11px;margin-left:4px"></small></span>
       <span>💰<b id="coinsVal">0</b></span>
       <span>🎯<b id="scoreVal">0</b></span>
-      <span>👣<b id="stepsVal">0</b></span>
       <span class="goal" id="fillVal">0/0</span>
     </div>
     <div id="boardWrap"><canvas id="board"></canvas></div>
-    <div id="nextTray">
-      <div class="tray-label">👇 下一个</div>
-      <div class="tray-item">
-        <div class="tray-emoji" id="trayEmoji">🧱</div>
-        <div class="tray-info">
-          <div class="tray-name" id="trayName">砖块</div>
-          <div class="tray-price" id="trayPrice">免费</div>
-        </div>
+    <div id="queueBar">
+      <div class="q-slot q-current">
+        <div class="q-label">👇 现在放</div>
+        <div class="q-emoji" id="qEmoji0">🧱</div>
+        <div class="q-name" id="qName0">砖块</div>
       </div>
+      <div class="q-slot">
+        <div class="q-label">下一个</div>
+        <div class="q-emoji q-small" id="qEmoji1">🧱</div>
+      </div>
+      <div class="q-slot">
+        <div class="q-label">再下</div>
+        <div class="q-emoji q-small" id="qEmoji2">🧱</div>
+      </div>
+      <button id="rerollBtn" class="q-tool" title="换一批(消耗 20 金币)">🎲</button>
+      <button id="hintBtn" class="q-tool" title="提示">💡</button>
     </div>
-    <div id="shopBar"></div>
   </section>
 
   <!-- 成就 -->
