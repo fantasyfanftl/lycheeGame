@@ -826,9 +826,7 @@ document.querySelectorAll('.back-map').forEach(b => b.onclick = () => showScreen
    地图
 ===================================================== */
 function isTownUnlocked(idx) {
-  if (idx === 0) return true;
-  const prev = save.towns[TOWNS[idx - 1].id];
-  return !!(prev && prev.cleared);
+  return true;  // 调试期:全解锁
 }
 // 临时:每村用不同图标,先视觉区分开(长期方案见 memory: per-town unique icons)
 const TOWN_ICONS = {
