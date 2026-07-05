@@ -5409,25 +5409,45 @@ function playHospitalBeep() {
   });
 }
 
-function toggleMute() {
-  AUDIO.muted = !AUDIO.muted;
-  const btn = $('mute-btn');
-  if (btn) btn.textContent = AUDIO.muted ? '🔇' : '🔊';
+function applyVolume() {
+  const v = AUDIO.muted ? 0 : (AUDIO.volume != null ? AUDIO.volume : 0.7);
+  // Master gain scales all Web Audio synth (drone, SFX, phone vibration, etc.)
   if (AUDIO.ctx && AUDIO.master) {
     const now = AUDIO.ctx.currentTime;
     AUDIO.master.gain.cancelScheduledValues(now);
     AUDIO.master.gain.setValueAtTime(AUDIO.master.gain.value, now);
-    AUDIO.master.gain.linearRampToValueAtTime(AUDIO.muted ? 0 : 0.9, now + 0.4);
+    AUDIO.master.gain.linearRampToValueAtTime(v, now + 0.25);
   }
-  // Mute / unmute HTML5 <Audio> players (background music + earbud song)
+  // HTML5 <Audio> players: scale each entry's target by v
   [AUDIO.bgMusic, AUDIO.earbudSong].forEach(entry => {
     if (!entry) return;
-    if (AUDIO.muted) {
-      try { entry.audio.pause(); } catch (e) {}
-    } else {
-      try { entry.audio.volume = entry.target; entry.audio.play().catch(() => {}); } catch (e) {}
-    }
+    try {
+      entry.audio.volume = entry.target * v;
+      if (v > 0 && entry.audio.paused) entry.audio.play().catch(() => {});
+      else if (v <= 0 && !entry.audio.paused) entry.audio.pause();
+    } catch (e) {}
   });
+  // Icon reflects state
+  const btn = $('mute-btn');
+  if (btn) {
+    if (AUDIO.muted || v === 0) btn.textContent = '🔇';
+    else if (v < 0.35) btn.textContent = '🔈';
+    else if (v < 0.7) btn.textContent = '🔉';
+    else btn.textContent = '🔊';
+  }
+  try { localStorage.setItem('midnight-store.volume', String(v)); } catch (e) {}
+  try { localStorage.setItem('midnight-store.muted', AUDIO.muted ? '1' : '0'); } catch (e) {}
+}
+
+function toggleMute() {
+  AUDIO.muted = !AUDIO.muted;
+  applyVolume();
+}
+
+function setVolume(v) {
+  AUDIO.volume = Math.max(0, Math.min(1, v));
+  if (AUDIO.volume > 0) AUDIO.muted = false;
+  applyVolume();
 }
 
 // ============================================================
