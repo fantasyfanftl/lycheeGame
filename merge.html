@@ -655,9 +655,12 @@ function pickAnchor(front, nw, nh, dx, dy) {
   if (dx > 0)      preferX = front.x + front.w - nw;
   else if (dx < 0) preferX = front.x;
   else             preferX = front.x;
-  if (dy > 0)      preferY = front.y + front.h - nh;
-  else if (dy < 0) preferY = front.y;
-  else             preferY = front.y;
+  // Vertical: if the shape shrinks vertically (e.g. 1×2 → 2×1), always
+  // land at the bottom of the merge zone regardless of push direction.
+  if (nh < front.h) preferY = front.y + front.h - nh;
+  else if (dy > 0)  preferY = front.y + front.h - nh;
+  else if (dy < 0)  preferY = front.y;
+  else              preferY = front.y;
   // Clamp preferred into the overlap range (needed for shape changes that shrink an axis).
   preferX = Math.max(xMin, Math.min(xMax, preferX));
   preferY = Math.max(yMin, Math.min(yMax, preferY));
