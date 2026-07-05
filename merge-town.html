@@ -567,15 +567,7 @@ function regenEnergy(st) {
    layout: 二维字符串,每个字符 = '.' 空地  '#' 障碍物  ' ' 忽略(留白)
 ===================================================== */
 const TOWNS = [
-  { id:'t1', name:'报亭村', x:48, y:63, startCoins: 200, layout: [
-    '.....',
-    '.....',
-    '.....',
-    '.....',
-    '.....',
-    '.....'
-  ]},
-  { id:'t2', name:'果园村', x:18, y:76, startCoins: 350, layout: [
+    { id:'t2', name:'果园村', x:18, y:76, startCoins: 350, layout: [
     '......',
     '......',
     '......',
@@ -692,7 +684,7 @@ const ACHIEVEMENTS = [
   { id:'a_clear_1',  icon:'🎯', name:'初出茅庐',   desc:'通关第一个村庄',           check:s => countCleared(s) >= 1 },
   { id:'a_clear_3',  icon:'🚶', name:'渐入佳境',   desc:'通关 3 个村庄',            check:s => countCleared(s) >= 3 },
   { id:'a_clear_5',  icon:'🏃', name:'半程英雄',   desc:'通关 5 个村庄',            check:s => countCleared(s) >= 5 },
-  { id:'a_clear_all',icon:'👑', name:'求合体大师', desc:'通关全部 11 个村庄',        check:s => countCleared(s) >= 11 },
+  { id:'a_clear_all',icon:'👑', name:'求合体大师', desc:'通关全部 10 个村庄',        check:s => countCleared(s) >= 10 },
   { id:'a_metro',    icon:'🏙️', name:'大都会主',  desc:'通关 大都会',              check:s => !!s.towns.t11?.cleared },
   { id:'a_chain3',   icon:'⚡', name:'三连击',    desc:'一次放置触发 3 段连锁',     check:s => s.maxChain >= 3 },
   { id:'a_chain5',   icon:'💥', name:'五连爆炸',   desc:'一次放置触发 5 段连锁',     check:s => s.maxChain >= 5 },
@@ -830,7 +822,6 @@ function isTownUnlocked(idx) {
 }
 // 临时:每村用不同图标,先视觉区分开(长期方案见 memory: per-town unique icons)
 const TOWN_ICONS = {
-  t1:  'shop-newsstand.webp',
   t2:  'shop-fruit.webp',
   t3:  'shop-coffee.webp',
   t4:  'shop-boba.webp',
