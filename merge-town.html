@@ -145,28 +145,47 @@ body {
 .shop-btn .s-price { font-size: 15px; background: rgba(0,0,0,0.35); padding: 2px 8px; border-radius: 10px; }
 .shop-btn.tool { background: linear-gradient(180deg, #a78bfa, #7c3aed); flex: 0 0 74px; }
 
-/* ============ 下一个托盘 ============ */
-#nextTray {
-  padding: 8px 14px;
-  background: rgba(0,0,0,0.5);
-  color: white;
-  display: flex; align-items: center; gap: 12px;
+/* ============ 队列托盘 ============ */
+#queueBar {
+  padding: 10px 12px; display: flex; gap: 8px;
+  background: rgba(0,0,0,0.55); flex-shrink: 0;
+  align-items: stretch;
   border-top: 2px solid rgba(255,255,255,0.15);
-  flex-shrink: 0;
 }
-.tray-label { font-size: 13px; opacity: 0.9; white-space: nowrap; }
-.tray-item {
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(255,255,255,0.22);
-  padding: 6px 14px;
-  border-radius: 14px;
+.q-slot {
+  background: rgba(255,255,255,0.18);
+  border-radius: 12px;
+  padding: 6px 8px 8px;
+  display: flex; flex-direction: column; align-items: center;
+  color: white; font-weight: bold;
+  min-width: 0;
+  transition: transform 0.15s;
+}
+.q-slot.q-current {
   flex: 1;
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
+  background: linear-gradient(180deg, rgba(251,191,36,0.4), rgba(217,119,6,0.4));
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,0.7), 0 0 12px rgba(251,191,36,0.5);
 }
-.tray-emoji { font-size: 34px; line-height: 1; }
-.tray-info { display: flex; flex-direction: column; line-height: 1.2; }
-.tray-name { font-weight: bold; font-size: 17px; }
-.tray-price { font-size: 12px; color: #fbbf24; }
+.q-slot:not(.q-current) {
+  flex: 0 0 62px;
+  opacity: 0.75;
+}
+.q-label { font-size: 11px; opacity: 0.85; white-space: nowrap; }
+.q-slot.q-current .q-label { font-size: 13px; opacity: 1; }
+.q-emoji { font-size: 40px; line-height: 1.1; }
+.q-emoji.q-small { font-size: 28px; }
+.q-name { font-size: 14px; margin-top: 2px; }
+.q-tool {
+  flex: 0 0 52px;
+  border: none;
+  background: linear-gradient(180deg, #a78bfa, #7c3aed);
+  color: white; font-size: 22px; font-weight: bold;
+  border-radius: 12px; cursor: pointer;
+  box-shadow: 0 3px 0 #5b21b6;
+  transition: all 0.1s;
+}
+.q-tool:active { transform: translateY(1px); box-shadow: 0 1px 0 #5b21b6; }
+.q-tool:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ============ 弹窗 ============ */
 .modal {
@@ -385,6 +404,32 @@ const ITEMS = [
 const MAX_LEVEL = ITEMS.length - 1;
 const MERGE_COIN = lvl => Math.pow(3, lvl) * 2;       // 合成到 Lv.N 奖励金币
 const MERGE_SCORE = lvl => Math.pow(2, lvl) * 10;     // 合成到 Lv.N 奖励分数
+
+// 队列 / 能量 / 随机
+const QUEUE_SIZE = 3;
+const ENERGY_MAX = 30;
+const ENERGY_REGEN_SEC = 20;            // 每 20 秒恢复 1 点
+const REROLL_COST = 20;                 // 换一批要多少金币
+const SPAWN_WEIGHTS = [70, 25, 5];      // Lv.0 砖块 / Lv.1 木材 / Lv.2 帐篷
+function randomItem() {
+  const total = SPAWN_WEIGHTS.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < SPAWN_WEIGHTS.length; i++) {
+    r -= SPAWN_WEIGHTS[i];
+    if (r < 0) return i;
+  }
+  return 0;
+}
+function regenEnergy(st) {
+  const now = Date.now();
+  if (st.energy >= ENERGY_MAX) { st.lastRegen = now; return; }
+  const elapsedMs = now - st.lastRegen;
+  const regens = Math.floor(elapsedMs / (ENERGY_REGEN_SEC * 1000));
+  if (regens > 0) {
+    st.energy = Math.min(ENERGY_MAX, st.energy + regens);
+    st.lastRegen = st.lastRegen + regens * ENERGY_REGEN_SEC * 1000;
+  }
+}
 
 /* =====================================================
    村庄配置
@@ -609,16 +654,27 @@ function getTownState(id) {
       cleared: false,
       stars: 0,
       bestSteps: null,
+      energy: ENERGY_MAX,
+      lastRegen: Date.now(),
+      queue: [randomItem(), randomItem(), randomItem()],
     };
   }
-  return save.towns[id];
+  const st = save.towns[id];
+  // 老存档补齐字段
+  if (st.energy === undefined) st.energy = ENERGY_MAX;
+  if (st.lastRegen === undefined) st.lastRegen = Date.now();
+  if (!Array.isArray(st.queue) || st.queue.length < QUEUE_SIZE) {
+    st.queue = Array.isArray(st.queue) ? st.queue : [];
+    while (st.queue.length < QUEUE_SIZE) st.queue.push(randomItem());
+  }
+  regenEnergy(st);
+  return st;
 }
 
 /* =====================================================
    屏幕切换
 ===================================================== */
 let currentTownId = null;
-let selectedLevel = 0;
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -626,7 +682,7 @@ function showScreen(id) {
   if (id === 'mapScreen') renderMap();
   if (id === 'achScreen') renderAch();
   if (id === 'dexScreen') renderDex();
-  if (id === 'gameScreen') { renderShop(); resizeBoard(); drawBoard(); updateStats(); }
+  if (id === 'gameScreen') { renderQueue(); resizeBoard(); drawBoard(); updateStats(); }
 }
 document.getElementById('achBtn').onclick = () => showScreen('achScreen');
 document.getElementById('dexBtn').onclick = () => showScreen('dexScreen');
@@ -669,7 +725,6 @@ function enterTown(id) {
   currentTownId = id;
   getTownState(id);
   document.getElementById('townTitle').textContent = townCfg(id).name;
-  selectedLevel = 0;
   showScreen('gameScreen');
 }
 
@@ -888,55 +943,54 @@ function doMergeCascade(town, r, c) {
 /* =====================================================
    交互:选商品 + 放置
 ===================================================== */
-function renderShop() {
-  const bar = document.getElementById('shopBar');
-  bar.innerHTML = '';
-  // 前 3 级可买
-  for (let i = 0; i < 3; i++) {
-    const it = ITEMS[i];
-    const btn = document.createElement('button');
-    btn.className = 'shop-btn' + (selectedLevel === i ? ' selected' : '');
-    btn.dataset.level = i;
-    btn.innerHTML =
-      '<span class="s-emoji">' + it.emoji + '</span>' +
-      '<span class="s-name">' + it.name + '</span>' +
-      '<span class="s-price">' + (it.price === 0 ? '免费' : '💰' + it.price) + '</span>';
-    btn.onclick = () => {
-      selectedLevel = i;
-      renderShop();
-    };
-    bar.appendChild(btn);
-  }
-  // 提示按钮
-  const hint = document.createElement('button');
-  hint.className = 'shop-btn tool';
-  hint.innerHTML = '<span class="s-emoji">💡</span><span class="s-name">提示</span>';
-  hint.onclick = showHint;
-  bar.appendChild(hint);
-  updateShopAffordability();
-}
-function updateShopAffordability() {
+function renderQueue() {
   if (!currentTownId) return;
   const st = getTownState(currentTownId);
-  document.querySelectorAll('.shop-btn[data-level]').forEach(btn => {
-    const lvl = +btn.dataset.level;
-    btn.disabled = st.coins < ITEMS[lvl].price;
-  });
+  for (let i = 0; i < QUEUE_SIZE; i++) {
+    const lvl = st.queue[i];
+    const it = ITEMS[lvl];
+    document.getElementById('qEmoji' + i).textContent = it.emoji;
+  }
+  document.getElementById('qName0').textContent = ITEMS[st.queue[0]].name;
+  const reroll = document.getElementById('rerollBtn');
+  if (reroll) reroll.disabled = st.coins < REROLL_COST;
 }
+
+document.getElementById('rerollBtn').onclick = () => {
+  const st = getTownState(currentTownId);
+  if (st.coins < REROLL_COST) { toast('金币不够换,先合成攒攒'); return; }
+  st.coins -= REROLL_COST;
+  st.queue = [randomItem(), randomItem(), randomItem()];
+  renderQueue();
+  updateStats();
+  persist();
+  toast('已换一批');
+};
 function updateStats() {
   if (!currentTownId) return;
   const cfg = townCfg(currentTownId);
   const st = getTownState(currentTownId);
   document.getElementById('coinsVal').textContent = st.coins;
   document.getElementById('scoreVal').textContent = st.score;
-  document.getElementById('stepsVal').textContent = st.steps;
+  document.getElementById('energyVal').textContent = st.energy;
+  document.getElementById('energyMax').textContent = ENERGY_MAX;
+  const timerEl = document.getElementById('energyTimer');
+  if (st.energy < ENERGY_MAX) {
+    const now = Date.now();
+    const elapsed = (now - st.lastRegen) / 1000;
+    const remaining = Math.max(0, Math.ceil(ENERGY_REGEN_SEC - elapsed));
+    timerEl.textContent = '+1 in ' + remaining + 's';
+  } else {
+    timerEl.textContent = '满';
+  }
   const total = countPlayableTiles(cfg);
   let filled = 0;
   for (let r = 0; r < cfg.layout.length; r++)
     for (let c = 0; c < cfg.layout[r].length; c++)
       if (cfg.layout[r][c] === '.' && st.board[r][c] !== null) filled++;
   document.getElementById('fillVal').textContent = filled + '/' + total;
-  updateShopAffordability();
+  const reroll = document.getElementById('rerollBtn');
+  if (reroll) reroll.disabled = st.coins < REROLL_COST;
 }
 
 canvas.addEventListener('pointerdown', e => {
@@ -952,68 +1006,63 @@ canvas.addEventListener('pointerdown', e => {
   if (st.board[tc.r][tc.c] !== null) {
     toast('这个格子已经有东西了'); return;
   }
-  const price = ITEMS[selectedLevel].price;
-  if (st.coins < price) {
-    toast('金币不够,先合成攒钱'); return;
+  if (st.energy < 1) {
+    toast('步数没了,再等一会儿就恢复'); return;
   }
-  // 扣钱、放置、合成
-  st.coins -= price;
-  st.board[tc.r][tc.c] = selectedLevel;
+  const level = st.queue[0];
+  st.energy -= 1;
+  if (st.energy === ENERGY_MAX - 1) st.lastRegen = Date.now();  // 刚从满掉下来,开始计时
+  st.board[tc.r][tc.c] = level;
   st.steps++;
+  // 队列前进,尾部补一个随机
+  st.queue.shift();
+  st.queue.push(randomItem());
   doMergeCascade(st, tc.r, tc.c);
   checkWin();
   checkAchievements();
   persist();
   drawBoard();
   updateStats();
+  renderQueue();
 });
+
+document.getElementById('hintBtn').onclick = showHint;
 
 function showHint() {
   const cfg = townCfg(currentTownId);
   const st = getTownState(currentTownId);
   const { rows, cols } = townDims(cfg);
-  // 找一个「多放1个就能合成」的位置
+  const currentLvl = st.queue[0];
+  // 找一个「放当前物品就能三连」的位置:即某空格四周有 >=2 个同级
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       if (!isPlayable(cfg, r, c) || st.board[r][c] !== null) continue;
-      // 检查四周邻居中,是否有 2 个相邻同级
       const nbrs = [[-1,0],[1,0],[0,-1],[0,1]];
-      const map = {};
+      let sameNbrs = 0;
+      let sameOneStep = false;
       for (const [dr, dc] of nbrs) {
         const nr = r+dr, nc = c+dc;
         if (nr<0||nr>=rows||nc<0||nc>=cols) continue;
-        const l = st.board[nr][nc];
-        if (l !== null && l < MAX_LEVEL) (map[l] ||= []).push([nr, nc]);
-      }
-      for (const lvl in map) {
-        // 若邻居中已有 >=2 个同级,放这里就三连
-        if (map[lvl].length >= 2) {
-          flashCells.push({ r, c, t0: performance.now(), dur: 1200 });
-          selectedLevel = +lvl;
-          renderShop();
-          drawBoard();
-          toast('这里放 ' + ITEMS[lvl].name + ' 就能合体');
-          return;
-        }
-        // 或者邻居中有 1 个,并且再往外一个也有同级(潜在 3 连)
-        const [nr, nc] = map[lvl][0];
-        for (const [dr2, dc2] of nbrs) {
-          const nr2 = nr+dr2, nc2 = nc+dc2;
-          if (nr2 === r && nc2 === c) continue;
-          if (nr2<0||nr2>=rows||nc2<0||nc2>=cols) continue;
-          if (st.board[nr2]?.[nc2] === +lvl) {
-            flashCells.push({ r, c, t0: performance.now(), dur: 1200 });
-            selectedLevel = +lvl;
-            renderShop();
-            drawBoard();
-            toast('这里放 ' + ITEMS[lvl].name + ' 可以三连');
-            return;
+        if (st.board[nr]?.[nc] === currentLvl) {
+          sameNbrs++;
+          // 再看这个邻居的其他邻居有没有同级
+          for (const [dr2, dc2] of nbrs) {
+            const nr2 = nr+dr2, nc2 = nc+dc2;
+            if (nr2 === r && nc2 === c) continue;
+            if (nr2<0||nr2>=rows||nc2<0||nc2>=cols) continue;
+            if (st.board[nr2]?.[nc2] === currentLvl) sameOneStep = true;
           }
         }
       }
+      if (sameNbrs >= 2 || (sameNbrs >= 1 && sameOneStep)) {
+        flashCells.push({ r, c, t0: performance.now(), dur: 1500 });
+        drawBoard();
+        toast('把 ' + ITEMS[currentLvl].name + ' 放这里可以三连');
+        return;
+      }
     }
   }
-  toast('暂时没有明显的合体机会,继续摆放吧');
+  toast('目前没有明显的合体位置,先随便摆吧');
 }
 
 /* =====================================================
@@ -1080,11 +1129,15 @@ function doResetTown() {
     cleared: prev?.cleared || false,
     stars: prev?.stars || 0,
     bestSteps: prev?.bestSteps ?? null,
+    energy: ENERGY_MAX,
+    lastRegen: Date.now(),
+    queue: [randomItem(), randomItem(), randomItem()],
   };
   persist();
   closeConfirm();
   drawBoard();
   updateStats();
+  renderQueue();
   toast('村庄已重置');
 }
 
@@ -1175,6 +1228,13 @@ window.doResetTown = doResetTown;
 
 loadSave();
 showScreen('mapScreen');
+
+// 每秒刷新一次统计栏(能量倒计时/自动回复)
+setInterval(() => {
+  if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) {
+    updateStats();
+  }
+}, 1000);
 </script>
 </body>
 </html>
