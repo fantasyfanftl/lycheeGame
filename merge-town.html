@@ -482,16 +482,18 @@ const WILDCARD_LVL = -1;
 const WILDCARD_ITEM = { emoji: '🌟', icon: 'icon-11-wildcard.png', name: '万能星', color: '#fef9c3', border: '#ca8a04' };
 function getItem(lvl) { return lvl === WILDCARD_LVL ? WILDCARD_ITEM : ITEMS[lvl]; }
 // 图片预加载
+const ICON_V = 'v=13';  // 图片资源版本,换图后 bump 一下防浏览器缓存
 const iconImages = {};
+function iconSrc(it) { return it.icon + '?' + ICON_V; }
 function preloadIcons() {
   ITEMS.forEach((it, lvl) => {
     const img = new Image();
-    img.src = it.icon;
+    img.src = iconSrc(it);
     img.onload = () => { if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) drawBoard(); };
     iconImages[lvl] = img;
   });
   const wc = new Image();
-  wc.src = WILDCARD_ITEM.icon;
+  wc.src = iconSrc(WILDCARD_ITEM);
   wc.onload = () => { if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) drawBoard(); };
   iconImages[WILDCARD_LVL] = wc;
 }
