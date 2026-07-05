@@ -390,10 +390,10 @@ body {
 ===================================================== */
 const ITEMS = [
   { emoji: '🧱', name: '砖块',   color: '#fecaca', border: '#b91c1c', price: 0 },
-  { emoji: '🪵', name: '木材',   color: '#fed7aa', border: '#c2410c', price: 30 },
+  { emoji: '🌲', name: '木材',   color: '#fed7aa', border: '#c2410c', price: 30 },
   { emoji: '⛺', name: '帐篷',   color: '#d9f99d', border: '#65a30d', price: 200 },
-  { emoji: '🛖', name: '茅屋',   color: '#fef08a', border: '#a16207', price: null },
-  { emoji: '🏚️', name: '木屋',   color: '#d6d3d1', border: '#78716c', price: null },
+  { emoji: '🏕️', name: '茅屋',   color: '#fef08a', border: '#a16207', price: null },
+  { emoji: '🏚️', name: '老屋',   color: '#d6d3d1', border: '#78716c', price: null },
   { emoji: '🏠', name: '民房',   color: '#fde68a', border: '#d97706', price: null },
   { emoji: '🏡', name: '别墅',   color: '#fca5a5', border: '#dc2626', price: null },
   { emoji: '🏢', name: '公寓楼', color: '#93c5fd', border: '#1e40af', price: null },
@@ -553,8 +553,8 @@ const TOWNS = [
 ===================================================== */
 const ACHIEVEMENTS = [
   { id:'a_first',    icon:'✨', name:'初次合体',   desc:'完成第一次合成',           check:s => s.totalMerges >= 1 },
-  { id:'a_bigtree',  icon:'🛖', name:'搭窝达人',   desc:'合成出 茅屋 (Lv.3)',       check:s => s.maxLevel >= 3 },
-  { id:'a_house',    icon:'🏚️', name:'置业',      desc:'合成出 木屋 (Lv.4)',       check:s => s.maxLevel >= 4 },
+  { id:'a_bigtree',  icon:'🏕️', name:'搭窝达人',   desc:'合成出 茅屋 (Lv.3)',       check:s => s.maxLevel >= 3 },
+  { id:'a_house',    icon:'🏚️', name:'置业',      desc:'合成出 老屋 (Lv.4)',       check:s => s.maxLevel >= 4 },
   { id:'a_palace',   icon:'🏢', name:'都市白领',   desc:'合成出 公寓楼 (Lv.7)',      check:s => s.maxLevel >= 7 },
   { id:'a_tower',    icon:'🕍', name:'神圣殿堂',   desc:'合成出 教堂 (Lv.9)',        check:s => s.maxLevel >= 9 },
   { id:'a_chest',    icon:'🏰', name:'城堡之王',   desc:'合成出 城堡 (Lv.10)',       check:s => s.maxLevel >= 10 },
