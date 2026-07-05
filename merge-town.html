@@ -92,7 +92,18 @@ body {
   animation: bounce 1s infinite; font-weight: bold;
 }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-.town-marker { font-size: 58px; line-height: 1; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25)); }
+.town-marker {
+  width: 78px; height: 78px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25));
+}
+.lock-badge {
+  position: absolute;
+  bottom: -6px; right: -6px;
+  font-size: 30px;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.35));
+}
 .town-label {
   background: white; border-radius: 12px; padding: 4px 12px;
   font-size: 16px; font-weight: bold; margin-top: -6px;
@@ -802,8 +813,17 @@ function renderMap() {
     node.className = 'town-node' + (unlocked ? '' : ' locked') + (i === nextIdx ? ' next' : '');
     node.style.left = t.x + '%';
     node.style.top = t.y + '%';
+    let markerImg;
+    if (unlocked) {
+      const iconFile = st?.cleared ? 'icon-10-castle.png' : 'icon-05-house.png';
+      markerImg = '<img src="' + iconFile + '?' + ICON_V + '" style="width:100%;height:100%;object-fit:contain;">';
+    } else {
+      markerImg =
+        '<img src="icon-05-house.png?' + ICON_V + '" style="width:100%;height:100%;object-fit:contain;filter:grayscale(0.9) brightness(0.65);">' +
+        '<div class="lock-badge">🔒</div>';
+    }
     node.innerHTML =
-      '<div class="town-marker">' + (unlocked ? (st?.cleared ? '🏰' : '🏘️') : '🔒') + '</div>' +
+      '<div class="town-marker">' + markerImg + '</div>' +
       '<div class="town-label">' + t.name + '</div>' +
       '<div class="town-stars">' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>';
     if (unlocked) node.onclick = () => enterTown(t.id);
