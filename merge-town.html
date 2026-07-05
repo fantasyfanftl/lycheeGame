@@ -858,8 +858,9 @@ function resizeBoard() {
   TILE = Math.floor(Math.min(availW / cols, availH / rows));
   TILE = Math.max(TILE, 48);
   PAD = 6;
+  PAD_TOP = PAD + Math.ceil(TILE * 0.9);  // 顶部留 0.9 格空间给高等级图标向上溢出
   boardW = cols * TILE + PAD * 2;
-  boardH = rows * TILE + PAD * 2;
+  boardH = rows * TILE + PAD_TOP + PAD;
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = boardW + 'px';
   canvas.style.height = boardH + 'px';
