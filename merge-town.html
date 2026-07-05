@@ -170,6 +170,21 @@ body {
   flex: 0 0 54px;
   opacity: 0.75;
 }
+.q-slot.q-storage {
+  flex: 0 0 58px;
+  opacity: 1;
+  cursor: pointer;
+  border: 2px dashed rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.15);
+  transition: all 0.15s;
+}
+.q-slot.q-storage:hover { background: rgba(0,0,0,0.25); }
+.q-slot.q-storage:active { transform: scale(0.95); }
+.q-slot.q-storage.empty .q-emoji { font-size: 26px; opacity: 0.6; }
+.q-slot.q-storage:not(.empty) {
+  background: linear-gradient(180deg, rgba(167,139,250,0.35), rgba(124,58,237,0.35));
+  border: 2px solid rgba(255,255,255,0.7);
+}
 .q-label { font-size: 11px; opacity: 0.85; white-space: nowrap; }
 .q-slot.q-current .q-label { font-size: 13px; opacity: 1; }
 .q-emoji {
@@ -357,9 +372,12 @@ body {
         <div class="q-label">再下</div>
         <div class="q-emoji q-small" id="qEmoji2">🧱</div>
       </div>
+      <div class="q-slot q-storage empty" id="storageBtn" title="暂存位:点一次收进,再点换回">
+        <div class="q-label">🎒 暂存</div>
+        <div class="q-emoji q-small" id="storageContent">＋</div>
+      </div>
       <button id="undoBtn" class="q-tool" title="撤销上一步" disabled>↩</button>
       <button id="shopBtn" class="q-tool" title="商店 - 花金币买建筑">🏪</button>
-      <button id="hintBtn" class="q-tool" title="提示">💡</button>
     </div>
   </section>
 
@@ -725,6 +743,7 @@ function getTownState(id) {
       energy: ENERGY_MAX,
       lastRegen: Date.now(),
       queue: [randomItem(), randomItem(), randomItem()],
+      storage: null,
     };
   }
   const st = save.towns[id];
@@ -735,6 +754,7 @@ function getTownState(id) {
     st.queue = Array.isArray(st.queue) ? st.queue : [];
     while (st.queue.length < QUEUE_SIZE) st.queue.push(randomItem());
   }
+  if (st.storage === undefined) st.storage = null;
   regenEnergy(st);
   return st;
 }
