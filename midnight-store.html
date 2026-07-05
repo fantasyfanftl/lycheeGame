@@ -5260,8 +5260,7 @@ function startCashierEarbudSong() {
 }
 function stopCashierEarbudSong(fadeSeconds) {
   if (!AUDIO.earbudSong) return;
-  const es = AUDIO.earbudSong; AUDIO.earbudSong = null;
-  const startVol = es.audio.volume;
+  const es = AUDIO.earbudSong; AUDIO.earbudSong = null;  const startVol = es.audio.volume;
   const dur = Math.max(80, (fadeSeconds != null ? fadeSeconds : 1.2) * 1000);
   const t0 = performance.now();
   const step = () => {
