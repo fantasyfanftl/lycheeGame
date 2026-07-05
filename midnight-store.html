@@ -407,6 +407,8 @@ body {
 }
 
 /* ========== Register / dispenser: dual view (customer-outside vs cashier-inside) ========== */
+/* Scene art is now painted background images. Hide all inline scene-art SVGs
+   (they still hold obj-zone rects that we no longer use as visible art). */
 .scene-card > svg.card-svg { display: none; }
 
 .scene-card {
