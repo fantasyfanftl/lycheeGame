@@ -406,10 +406,13 @@ body {
   pointer-events: none;
 }
 
-/* ========== Register: dual view (customer-outside vs cashier-inside) ========== */
-.register-inside { display: none; }
-body.pov-cashier .register-outside { display: none; }
-body.pov-cashier .register-inside { display: block; }
+/* ========== Register / dispenser: dual view (customer-outside vs cashier-inside) ========== */
+.register-inside,
+.dispenser-inside { display: none; }
+body.pov-cashier .register-outside,
+body.pov-cashier .dispenser-outside { display: none; }
+body.pov-cashier .register-inside,
+body.pov-cashier .dispenser-inside { display: block; }
 
 /* ========== Inline beat panel (in-scene cue + choices) ========== */
 .inline-panel {
@@ -2358,6 +2361,145 @@ body.pov-cashier .register-inside { display: block; }
 
             <rect class="obj-zone" data-hs="waterDispenser" x="20" y="120" width="135" height="205"/>
             <rect class="obj-zone" data-hs="odenPot" x="80" y="200" width="270" height="245"/>
+          </svg>
+          <!-- Cashier view (top-down over the oden tray) -->
+          <svg viewBox="0 0 400 550" preserveAspectRatio="xMidYMid meet" class="card-svg dispenser-inside">
+            <rect x="0" y="0" width="400" height="550" fill="#e8dcc4"/>
+            <ellipse cx="200" cy="0" rx="250" ry="80" fill="#f5c88a" opacity="0.14"/>
+            <!-- Ceiling tubes -->
+            <rect x="30" y="20" width="140" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect x="230" y="20" width="140" height="6" fill="#f9f3e8" opacity="0.85" stroke="#3d2f24" stroke-width="0.5"/>
+            <rect class="tube-flicker" x="90" y="20" width="45" height="6" fill="#c17b52"/>
+
+            <!-- ==== Water dispenser (left back — same as customer view) ==== -->
+            <path d="M 45 130 L 108 130 L 115 175 L 38 175 Z" fill="#a0c4d8" opacity="0.35" stroke="#3d2f24" stroke-width="1"/>
+            <rect x="55" y="123" width="43" height="8" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.6"/>
+            <ellipse cx="78" cy="150" rx="5" ry="3.5" fill="#f9f3e8" opacity="0.7"/>
+            <ellipse cx="92" cy="160" rx="3" ry="2" fill="#f9f3e8" opacity="0.6"/>
+            <rect x="30" y="175" width="93" height="170" fill="#c9b48a" stroke="#3d2f24" stroke-width="1.5"/>
+            <rect x="48" y="188" width="58" height="16" fill="#3d2f24"/>
+            <text x="77" y="199" font-size="9" fill="#c17b52" text-anchor="middle" font-family="serif" letter-spacing="1">4 5 °C</text>
+            <circle cx="52" cy="230" r="8" fill="#7a95a5" stroke="#3d2f24" stroke-width="1"/>
+            <text x="52" y="233" font-size="8" fill="#f9f3e8" text-anchor="middle" font-family="serif">冷</text>
+            <circle cx="101" cy="230" r="8" fill="#c17b52" stroke="#3d2f24" stroke-width="1"/>
+            <text x="101" y="233" font-size="8" fill="#f9f3e8" text-anchor="middle" font-family="serif">热</text>
+            <rect x="74" y="246" width="6" height="14" fill="#3d2f24"/>
+            <rect x="46" y="266" width="62" height="10" fill="#3d2f24" opacity="0.75"/>
+            <line x1="52" y1="266" x2="52" y2="276" stroke="#c9b48a" stroke-width="0.4"/>
+            <line x1="62" y1="266" x2="62" y2="276" stroke="#c9b48a" stroke-width="0.4"/>
+            <line x1="72" y1="266" x2="72" y2="276" stroke="#c9b48a" stroke-width="0.4"/>
+            <line x1="82" y1="266" x2="82" y2="276" stroke="#c9b48a" stroke-width="0.4"/>
+            <line x1="92" y1="266" x2="92" y2="276" stroke="#c9b48a" stroke-width="0.4"/>
+            <line x1="102" y1="266" x2="102" y2="276" stroke="#c9b48a" stroke-width="0.4"/>
+
+            <!-- Back of the hanging menu sign (blank wooden side facing cashier) -->
+            <line x1="200" y1="80" x2="200" y2="105" stroke="#3d2f24" stroke-width="0.4"/>
+            <g transform="rotate(-2 240 130)">
+              <rect x="196" y="105" width="88" height="42" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.8"/>
+              <line x1="210" y1="118" x2="270" y2="118" stroke="#3d2f24" stroke-width="0.3" opacity="0.4"/>
+              <line x1="210" y1="128" x2="270" y2="128" stroke="#3d2f24" stroke-width="0.3" opacity="0.4"/>
+              <line x1="210" y1="138" x2="265" y2="138" stroke="#3d2f24" stroke-width="0.3" opacity="0.4"/>
+            </g>
+
+            <!-- Steam wisps rising from tray -->
+            <path class="steam" d="M180 230 Q176 218 180 206 Q184 194 180 182" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            <path class="steam steam-2" d="M240 228 Q244 216 240 204 Q236 192 240 180" stroke="#c9b48a" stroke-width="2" fill="none"/>
+            <path class="steam steam-3" d="M300 230 Q304 218 300 206 Q296 194 300 182" stroke="#c9b48a" stroke-width="2" fill="none"/>
+
+            <!-- Metal tray (top-down view, big rounded rectangle) -->
+            <rect x="130" y="240" width="240" height="180" fill="#8b6f47" stroke="#3d2f24" stroke-width="1.5" rx="6"/>
+            <!-- Inner broth area (dark liquid) -->
+            <rect x="140" y="250" width="220" height="160" fill="#3d2c1e" stroke="#3d2f24" stroke-width="0.8" rx="4"/>
+            <!-- Broth ripple/shine hint -->
+            <ellipse cx="180" cy="270" rx="12" ry="2" fill="#8b6f47" opacity="0.4"/>
+            <ellipse cx="290" cy="390" rx="14" ry="2.5" fill="#8b6f47" opacity="0.4"/>
+            <!-- Compartment dividers (2 rows × 4 cols) -->
+            <line x1="140" y1="330" x2="360" y2="330" stroke="#8b6f47" stroke-width="1.4"/>
+            <line x1="195" y1="250" x2="195" y2="410" stroke="#8b6f47" stroke-width="1.4"/>
+            <line x1="250" y1="250" x2="250" y2="410" stroke="#8b6f47" stroke-width="1.4"/>
+            <line x1="305" y1="250" x2="305" y2="410" stroke="#8b6f47" stroke-width="1.4"/>
+
+            <!-- Cell 1 (TL): 鱼豆腐 rectangles -->
+            <rect x="150" y="265" width="14" height="12" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4" rx="1"/>
+            <rect x="170" y="272" width="14" height="12" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4" rx="1"/>
+            <rect x="155" y="292" width="14" height="12" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4" rx="1"/>
+            <rect x="175" y="308" width="14" height="12" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4" rx="1"/>
+
+            <!-- Cell 2: 鹌鹑蛋 circles -->
+            <circle cx="212" cy="272" r="6" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <circle cx="228" cy="278" r="6" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <circle cx="215" cy="295" r="6" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <circle cx="234" cy="303" r="6" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+            <circle cx="220" cy="316" r="6" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.4"/>
+
+            <!-- Cell 3: 白萝卜 translucent slices -->
+            <circle cx="270" cy="275" r="10" fill="#f9f3e8" opacity="0.9" stroke="#3d2f24" stroke-width="0.4"/>
+            <circle cx="270" cy="275" r="5" fill="none" stroke="#c9b48a" stroke-width="0.4"/>
+            <circle cx="288" cy="298" r="10" fill="#f9f3e8" opacity="0.9" stroke="#3d2f24" stroke-width="0.4"/>
+            <circle cx="288" cy="298" r="5" fill="none" stroke="#c9b48a" stroke-width="0.4"/>
+
+            <!-- Cell 4: 豆皮 triangles + 特价 stripe -->
+            <rect x="308" y="252" width="50" height="8" fill="#c17b52"/>
+            <text x="333" y="258" font-size="5" fill="#f9f3e8" text-anchor="middle" font-family="serif" letter-spacing="1">特 价</text>
+            <path d="M320 285 L330 300 L310 300 Z" fill="#e6d09a" stroke="#3d2f24" stroke-width="0.4"/>
+            <path d="M340 285 L350 300 L330 300 Z" fill="#e6d09a" stroke="#3d2f24" stroke-width="0.4"/>
+            <path d="M330 308 L340 322 L320 322 Z" fill="#e6d09a" stroke="#3d2f24" stroke-width="0.4"/>
+
+            <!-- Cell 5 (BL): 海带卷 dark bricks -->
+            <rect x="150" y="345" width="16" height="10" fill="#3d2f24" opacity="0.85"/>
+            <rect x="170" y="352" width="16" height="10" fill="#3d2f24" opacity="0.85"/>
+            <rect x="155" y="370" width="16" height="10" fill="#3d2f24" opacity="0.85"/>
+            <rect x="173" y="386" width="16" height="10" fill="#3d2f24" opacity="0.85"/>
+
+            <!-- Cell 6: 魔芋 -->
+            <rect x="205" y="345" width="12" height="12" fill="#c9b48a" opacity="0.6" stroke="#3d2f24" stroke-width="0.3"/>
+            <rect x="222" y="355" width="12" height="12" fill="#c9b48a" opacity="0.6" stroke="#3d2f24" stroke-width="0.3"/>
+            <rect x="210" y="375" width="12" height="12" fill="#c9b48a" opacity="0.6" stroke="#3d2f24" stroke-width="0.3"/>
+            <rect x="228" y="390" width="12" height="12" fill="#c9b48a" opacity="0.6" stroke="#3d2f24" stroke-width="0.3"/>
+
+            <!-- Cell 7: 竹轮 (circles with hole) -->
+            <g transform="translate(275, 355)">
+              <circle cx="0" cy="0" r="8" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4"/>
+              <circle cx="0" cy="0" r="3" fill="#3d2c1e"/>
+            </g>
+            <g transform="translate(295, 380)">
+              <circle cx="0" cy="0" r="8" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4"/>
+              <circle cx="0" cy="0" r="3" fill="#3d2c1e"/>
+            </g>
+            <g transform="translate(275, 395)">
+              <circle cx="0" cy="0" r="8" fill="#c9b48a" stroke="#3d2f24" stroke-width="0.4"/>
+              <circle cx="0" cy="0" r="3" fill="#3d2c1e"/>
+            </g>
+
+            <!-- Cell 8: mostly empty (sold out — just a couple of leftover flecks) -->
+            <rect x="318" y="380" width="12" height="10" fill="#c9b48a" opacity="0.55" stroke="#3d2f24" stroke-width="0.3"/>
+            <ellipse cx="335" cy="365" rx="3" ry="1.5" fill="#8b6f47" opacity="0.5"/>
+            <ellipse cx="345" cy="395" rx="3" ry="1.5" fill="#8b6f47" opacity="0.5"/>
+
+            <!-- Tongs resting on the tray edge (vendor's tool) -->
+            <line x1="130" y1="240" x2="115" y2="222" stroke="#3d2f24" stroke-width="1.6"/>
+            <line x1="115" y1="222" x2="122" y2="215" stroke="#3d2f24" stroke-width="1.6"/>
+            <line x1="115" y1="222" x2="108" y2="215" stroke="#3d2f24" stroke-width="1.6"/>
+
+            <!-- Ladle handle sticking out of tray (right side) -->
+            <line x1="365" y1="260" x2="380" y2="230" stroke="#3d2f24" stroke-width="1.6"/>
+            <ellipse cx="382" cy="227" rx="6" ry="3.5" fill="#8b6f47" stroke="#3d2f24" stroke-width="0.6"/>
+
+            <!-- Below tray: plain wooden inner counter (cashier's workspace) -->
+            <rect x="0" y="440" width="400" height="110" fill="#8b6f47"/>
+            <line x1="0" y1="440" x2="400" y2="440" stroke="#3d2f24" stroke-width="1"/>
+            <line x1="0" y1="450" x2="400" y2="450" stroke="#c9b48a" stroke-width="0.5" opacity="0.5"/>
+            <line x1="80" y1="440" x2="72" y2="550" stroke="#3d2f24" stroke-width="0.4" opacity="0.35"/>
+            <line x1="200" y1="440" x2="200" y2="550" stroke="#3d2f24" stroke-width="0.4" opacity="0.35"/>
+            <line x1="320" y1="440" x2="328" y2="550" stroke="#3d2f24" stroke-width="0.4" opacity="0.35"/>
+            <!-- Cashier's small note / order slip -->
+            <rect x="245" y="470" width="60" height="42" fill="#f9f3e8" stroke="#3d2f24" stroke-width="0.5" transform="rotate(-4 275 490)"/>
+            <line x1="252" y1="482" x2="298" y2="482" stroke="#8b6f47" stroke-width="0.4" opacity="0.6"/>
+            <line x1="252" y1="490" x2="294" y2="490" stroke="#8b6f47" stroke-width="0.4" opacity="0.6"/>
+            <line x1="252" y1="498" x2="298" y2="498" stroke="#8b6f47" stroke-width="0.4" opacity="0.6"/>
+
+            <rect class="obj-zone" data-hs="waterDispenser" x="20" y="120" width="135" height="205"/>
+            <rect class="obj-zone" data-hs="odenPot" x="125" y="235" width="250" height="200"/>
           </svg>
           <div class="hotspots-layer" data-card-hotspots="dispenser"></div>
           <div class="chars-layer" data-card-chars="dispenser"></div>
