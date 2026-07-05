@@ -265,6 +265,70 @@
   .overlay button.secondary:hover { background: #f0e6c8; }
   .overlay-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
+  /* ============ 3D mode (isometric image tiles) ============ */
+  .tile-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .tile-label {
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    background: rgba(58, 48, 32, 0.78);
+    color: #faf5e8;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 8px;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+    z-index: 3;
+  }
+
+  /* Mode picker overlay content */
+  .mode-picker {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .mode-card {
+    background: #faf4e0;
+    border: 2px solid #d8ccae;
+    border-radius: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 120px;
+    text-align: center;
+    color: #3a3020;
+  }
+  .mode-card:hover { border-color: #5a4a2a; background: #f0e6c8; transform: translateY(-2px); }
+  .mode-card h3 { font-size: 16px; margin-bottom: 6px; font-weight: 700; letter-spacing: 2px; }
+  .mode-card p { font-size: 11px; color: #7a6a4a; letter-spacing: 0.5px; margin: 0; }
+
+  /* Topbar with back link + mode toggle */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .mode-toggle {
+    color: #a89b7a;
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .mode-toggle:hover { color: #5a4a2a; }
+
   @media (max-width: 480px) {
     .container { padding: 18px 16px; }
     h1 { font-size: 18px; letter-spacing: 1.5px; }
@@ -273,7 +337,10 @@
 </head>
 <body>
 <div class="container">
-  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <div class="topbar">
+    <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+    <a href="javascript:void(0)" id="modeToggle" class="mode-toggle">切换视觉</a>
+  </div>
   <div class="header">
     <h1>合体·破阵</h1>
     <div class="scores">
@@ -300,9 +367,19 @@
     <div class="overlay" id="overlay">
       <h2 id="overlayTitle">合体·破阵</h2>
       <p id="overlaySub">数字块滑动合并<br>合到 2048 通关</p>
-      <div class="overlay-btns">
+      <div class="overlay-btns" id="overlayBtns">
         <button id="continueBtn" class="secondary" style="display:none">继 续</button>
         <button id="startBtn">开 局</button>
+      </div>
+      <div class="mode-picker" id="modePickerBox" style="display:none">
+        <div class="mode-card" data-mode="flat">
+          <h3>扁 平</h3>
+          <p>拼图 · 极简</p>
+        </div>
+        <div class="mode-card" data-mode="3d">
+          <h3>立 体</h3>
+          <p>3D 等距场景</p>
+        </div>
       </div>
     </div>
   </div>
@@ -427,6 +504,7 @@ let animating;
 let won;        // "win overlay pending / active" — cleared when player picks 继续
 let wonEver;    // "2048 has been reached this game" — prevents re-showing win overlay
 let inTutorial; // first-time player is on the tutorial board
+let renderMode; // 'flat' (SVG jigsaw) | '3d' (isometric image tiles)
 let history;    // for undo (snapshot before each move)
 
 const boardWrap = document.getElementById('boardWrap');
@@ -773,17 +851,24 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
     const minDim = Math.min(t.w, t.h);
     const fs = Math.floor(cellSize * (minDim === 1 ? 0.55 : minDim === 2 ? 0.48 : 0.42));
 
-    // Regenerate the SVG piece only when value/shape/rendered-size changes.
-    const rk = `${t.value}|${t.w}|${t.h}|${Math.round(tileW)}|${Math.round(tileH)}`;
+    // Regenerate content only when value/shape/rendered-size/mode changes.
+    const rk = `${renderMode}|${t.value}|${t.w}|${t.h}|${Math.round(tileW)}|${Math.round(tileH)}`;
     if (el.dataset.rk !== rk) {
-      el.innerHTML = buildTileSVG(t, tileW, tileH) + '<span class="tile-num"></span>';
+      if (renderMode === '3d') {
+        const imgVal = t.value <= 2048 ? t.value : 2048;
+        el.innerHTML = `<img class="tile-img" src="merge3d-assets/tile-${imgVal}.png" draggable="false" alt="${t.value}"><span class="tile-label">${t.value}</span>`;
+      } else {
+        el.innerHTML = buildTileSVG(t, tileW, tileH) + '<span class="tile-num"></span>';
+      }
       el.dataset.rk = rk;
     }
-    const style = tierStyleFor(t.value);
-    const numEl = el.querySelector('.tile-num');
-    numEl.textContent = t.value;
-    numEl.style.color = style.txt;
-    numEl.style.fontSize = fs + 'px';
+    if (renderMode !== '3d') {
+      const style = tierStyleFor(t.value);
+      const numEl = el.querySelector('.tile-num');
+      numEl.textContent = t.value;
+      numEl.style.color = style.txt;
+      numEl.style.fontSize = fs + 'px';
+    }
 
     const px = t.x * (cellSize + gap);
     const py = t.y * (cellSize + gap);
@@ -1029,10 +1114,44 @@ continueBtn.addEventListener('click', () => {
 
 window.addEventListener('resize', () => renderTiles());
 
+// ============ Mode picker ============
+function showModePicker() {
+  overlayTitle.textContent = '选 择 视 觉';
+  overlaySub.innerHTML = '两种风格 · 之后可切换';
+  document.getElementById('overlayBtns').style.display = 'none';
+  const box = document.getElementById('modePickerBox');
+  box.style.display = 'flex';
+  overlay.classList.add('show');
+  box.querySelectorAll('.mode-card').forEach(card => {
+    card.onclick = () => {
+      setRenderMode(card.dataset.mode);
+      box.style.display = 'none';
+      document.getElementById('overlayBtns').style.display = 'flex';
+      overlay.classList.remove('show');
+      if (!tiles || !tiles.length) newGame();
+    };
+  });
+}
+function setRenderMode(mode) {
+  renderMode = mode;
+  localStorage.setItem('mergeRenderMode', mode);
+  // Invalidate render caches so every tile rebuilds in the new mode
+  tilesEl.querySelectorAll('.tile').forEach(el => delete el.dataset.rk);
+  if (tiles && tiles.length) renderTiles();
+}
+document.getElementById('modeToggle').addEventListener('click', () => {
+  setRenderMode(renderMode === '3d' ? 'flat' : '3d');
+});
+
 // Boot
 best = parseInt(localStorage.getItem('bestMerge') || '0', 10);
 bestEl.textContent = best;
-newGame();
+renderMode = localStorage.getItem('mergeRenderMode');
+if (!renderMode) {
+  showModePicker();
+} else {
+  newGame();
+}
 </script>
 </body>
 </html>

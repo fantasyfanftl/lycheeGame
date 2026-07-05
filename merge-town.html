@@ -172,8 +172,12 @@ body {
 }
 .q-label { font-size: 11px; opacity: 0.85; white-space: nowrap; }
 .q-slot.q-current .q-label { font-size: 13px; opacity: 1; }
-.q-emoji { font-size: 40px; line-height: 1.1; }
-.q-emoji.q-small { font-size: 26px; }
+.q-emoji {
+  width: 56px; height: 56px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+}
+.q-emoji.q-small { width: 38px; height: 38px; font-size: 26px; }
 .q-name { font-size: 14px; margin-top: 2px; }
 .q-tool {
   flex: 0 0 46px;
@@ -433,17 +437,17 @@ body {
    物品链 (0..10, 共 11 级)
 ===================================================== */
 const ITEMS = [
-  { emoji: '🧱', name: '砖块',   color: '#fecaca', border: '#b91c1c', price: 0 },
-  { emoji: '🌲', name: '木材',   color: '#bbf7d0', border: '#15803d', price: 30 },
-  { emoji: '⛺', name: '帐篷',   color: '#fef08a', border: '#a16207', price: 200 },
-  { emoji: '🎪', name: '茅屋',   color: '#fed7aa', border: '#c2410c', price: null },
-  { emoji: '🏚️', name: '老屋',   color: '#d6d3d1', border: '#57534e', price: null },
-  { emoji: '🏠', name: '民房',   color: '#fde68a', border: '#b45309', price: null },
-  { emoji: '🏡', name: '别墅',   color: '#fca5a5', border: '#dc2626', price: null },
-  { emoji: '🏢', name: '公寓楼', color: '#93c5fd', border: '#1e40af', price: null },
-  { emoji: '🏬', name: '大厦',   color: '#a5b4fc', border: '#4338ca', price: null },
-  { emoji: '🕍', name: '教堂',   color: '#d8b4fe', border: '#6b21a8', price: null },
-  { emoji: '🏰', name: '城堡',   color: '#fcd34d', border: '#78350f', price: null },
+  { emoji: '🧱', icon: 'icon-00-brick.png',      name: '砖块',   color: '#fecaca', border: '#b91c1c', price: 0 },
+  { emoji: '🌲', icon: 'icon-01-wood.png',       name: '木材',   color: '#bbf7d0', border: '#15803d', price: 30 },
+  { emoji: '⛺', icon: 'icon-02-tent.png',       name: '帐篷',   color: '#fef08a', border: '#a16207', price: 200 },
+  { emoji: '🎪', icon: 'icon-03-hut.png',        name: '茅屋',   color: '#fed7aa', border: '#c2410c', price: null },
+  { emoji: '🏚️', icon: 'icon-04-oldhouse.png',   name: '老屋',   color: '#d6d3d1', border: '#57534e', price: null },
+  { emoji: '🏠', icon: 'icon-05-house.png',      name: '民房',   color: '#fde68a', border: '#b45309', price: null },
+  { emoji: '🏡', icon: 'icon-06-villa.png',      name: '别墅',   color: '#fca5a5', border: '#dc2626', price: null },
+  { emoji: '🏢', icon: 'icon-07-apartment.png',  name: '公寓楼', color: '#93c5fd', border: '#1e40af', price: null },
+  { emoji: '🏬', icon: 'icon-08-skyscraper.png', name: '大厦',   color: '#a5b4fc', border: '#4338ca', price: null },
+  { emoji: '🕍', icon: 'icon-09-cathedral.png',  name: '教堂',   color: '#d8b4fe', border: '#6b21a8', price: null },
+  { emoji: '🏰', icon: 'icon-10-castle.png',     name: '城堡',   color: '#fcd34d', border: '#78350f', price: null },
 ];
 const MAX_LEVEL = ITEMS.length - 1;
 const MERGE_COIN = lvl => Math.pow(3, lvl) * 2;       // 合成到 Lv.N 奖励金币
@@ -457,8 +461,22 @@ const REROLL_COST = 20;                 // 换一批要多少金币
 const SPAWN_WEIGHTS = [63, 25, 7, 5];   // Lv.0 砖块 / Lv.1 木材 / Lv.2 帐篷 / 万能星
 // 万能星 —— 特殊道具:放到棋盘时会自动变成能触发合体的等级
 const WILDCARD_LVL = -1;
-const WILDCARD_ITEM = { emoji: '🌟', name: '万能星', color: '#fef9c3', border: '#ca8a04' };
+const WILDCARD_ITEM = { emoji: '🌟', icon: 'icon-11-wildcard.png', name: '万能星', color: '#fef9c3', border: '#ca8a04' };
 function getItem(lvl) { return lvl === WILDCARD_LVL ? WILDCARD_ITEM : ITEMS[lvl]; }
+// 图片预加载
+const iconImages = {};
+function preloadIcons() {
+  ITEMS.forEach((it, lvl) => {
+    const img = new Image();
+    img.src = it.icon;
+    img.onload = () => { if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) drawBoard(); };
+    iconImages[lvl] = img;
+  });
+  const wc = new Image();
+  wc.src = WILDCARD_ITEM.icon;
+  wc.onload = () => { if (currentTownId && document.getElementById('gameScreen').classList.contains('active')) drawBoard(); };
+  iconImages[WILDCARD_LVL] = wc;
+}
 // 商店可买等级(index=level),null=不可买
 const SHOP_PRICES = [10, 40, 150, 500, 1500, 4500, null, null, null, null, null];
 function randomItem() {
@@ -918,7 +936,7 @@ function drawBoard() {
 }
 
 function drawItem(cx, cy, level, scale) {
-  const a = ITEMS[level];
+  const a = getItem(level);
   const size = TILE * 0.86 * scale;
   ctx.fillStyle = 'rgba(0,0,0,0.15)';
   roundRect(cx - size/2 + 1, cy - size/2 + 2, size, size, 8);
@@ -929,10 +947,16 @@ function drawItem(cx, cy, level, scale) {
   ctx.strokeStyle = a.border;
   ctx.lineWidth = 3;
   ctx.stroke();
-  ctx.font = Math.floor(size * 0.65) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(a.emoji, cx, cy + size * 0.05);
+  const img = iconImages[level];
+  if (img && img.complete && img.naturalWidth > 0) {
+    const iSize = size * 0.92;
+    ctx.drawImage(img, cx - iSize/2, cy - iSize/2, iSize, iSize);
+  } else {
+    ctx.font = Math.floor(size * 0.65) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(a.emoji, cx, cy + size * 0.05);
+  }
 }
 
 function pixelToTile(x, y) {
@@ -1032,7 +1056,8 @@ function renderQueue() {
   for (let i = 0; i < QUEUE_SIZE; i++) {
     const lvl = st.queue[i];
     const it = getItem(lvl);
-    document.getElementById('qEmoji' + i).textContent = it.emoji;
+    document.getElementById('qEmoji' + i).innerHTML =
+      '<img src="' + it.icon + '" alt="' + it.name + '" style="width:100%;height:100%;object-fit:contain;">';
   }
   document.getElementById('qName0').textContent = getItem(st.queue[0]).name;
   const undo = document.getElementById('undoBtn');
@@ -1055,7 +1080,7 @@ function renderShopList() {
     const it = ITEMS[lvl];
     const disabled = st.coins < price;
     return '<div class="shop-row' + (disabled ? ' disabled' : '') + '">' +
-      '<div class="shop-icon" style="background:' + it.color + ';border:2px solid ' + it.border + '">' + it.emoji + '</div>' +
+      '<div class="shop-icon" style="background:' + it.color + ';border:2px solid ' + it.border + '"><img src="' + it.icon + '" alt="' + it.name + '" style="width:90%;height:90%;object-fit:contain;"></div>' +
       '<div class="shop-name">' + it.name + '</div>' +
       '<div class="shop-price">💰' + price + '</div>' +
       '<button class="shop-buy" data-level="' + lvl + '"' + (disabled ? ' disabled' : '') + '>购买</button>' +
@@ -1065,7 +1090,7 @@ function renderShopList() {
   const wcPrice = 200;
   const wcDisabled = st.coins < wcPrice;
   html += '<div class="shop-row' + (wcDisabled ? ' disabled' : '') + '" style="background:linear-gradient(90deg,#fef9c3,white);">' +
-    '<div class="shop-icon" style="background:' + WILDCARD_ITEM.color + ';border:2px solid ' + WILDCARD_ITEM.border + '">' + WILDCARD_ITEM.emoji + '</div>' +
+    '<div class="shop-icon" style="background:' + WILDCARD_ITEM.color + ';border:2px solid ' + WILDCARD_ITEM.border + '"><img src="' + WILDCARD_ITEM.icon + '" alt="万能星" style="width:90%;height:90%;object-fit:contain;"></div>' +
     '<div class="shop-name">' + WILDCARD_ITEM.name + '<div style="font-size:11px;color:#6b7280;font-weight:normal;">放到棋盘自动变身</div></div>' +
     '<div class="shop-price">💰' + wcPrice + '</div>' +
     '<button class="shop-buy" data-wildcard="1"' + (wcDisabled ? ' disabled' : '') + '>购买</button>' +
@@ -1444,11 +1469,11 @@ function renderAch() {
 function renderDex() {
   const list = document.getElementById('dexList');
   list.innerHTML = ITEMS.map((a, i) => {
-    const unlocked = save.maxLevel >= i || i <= 2;  // 前 3 级(可购买)始终显示
+    const unlocked = save.maxLevel >= i || i <= 2;
     return '<div class="dex-item' + (unlocked ? '' : ' locked') + '">' +
       '<div class="dex-icon" style="background:' + (unlocked ? a.color : '#e5e7eb') +
         ';border:2px solid ' + (unlocked ? a.border : '#9ca3af') + '">' +
-        (unlocked ? a.emoji : '❓') +
+        (unlocked ? '<img src="' + a.icon + '" alt="' + a.name + '" style="width:88%;height:88%;object-fit:contain;">' : '❓') +
       '</div>' +
       '<div class="dex-name">' + (unlocked ? a.name : '???') + '</div>' +
       '<div class="dex-lvl">Lv.' + i + '</div>' +
@@ -1488,6 +1513,7 @@ window.doResetTown = doResetTown;
 window.closeShop = closeShop;
 
 loadSave();
+preloadIcons();
 showScreen('mapScreen');
 
 // 每秒刷新一次统计栏(能量倒计时/自动回复)

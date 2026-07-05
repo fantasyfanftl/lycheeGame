@@ -407,18 +407,27 @@ body {
 }
 
 /* ========== Register / dispenser: dual view (customer-outside vs cashier-inside) ========== */
-.card-svg.register-inside,
-.card-svg.dispenser-inside { display: none; }
-body.pov-cashier .card-svg.register-outside,
-body.pov-cashier .card-svg.dispenser-outside { display: none; }
-body.pov-cashier .card-svg.register-inside,
-body.pov-cashier .card-svg.dispenser-inside { display: block; }
+/* Scene art is now painted background images. Hide all inline scene-art SVGs
+   (they still hold obj-zone rects that we no longer use as visible art). */
+.scene-card > svg.card-svg { display: none; }
 
-/* Oden tray state — items + steam only show when cashier has cooked */
-body.oden-off .oden-items,
-body.oden-off .oden-steam { display: none; }
-/* "cold" = cooked but pot's off now → items visible, no steam */
-body.oden-cold .oden-steam { display: none; }
+.scene-card {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #1a1f2c;
+}
+.scene-card[data-card="doorstep"]  { background-image: url('assets/scenes/01-doorstep.png'); }
+.scene-card[data-card="window"]    { background-image: url('assets/scenes/02-window.png'); }
+.scene-card[data-card="shelves"]   { background-image: url('assets/scenes/03-shelves.png'); }
+.scene-card[data-card="register"]  { background-image: url('assets/scenes/04-register.png'); }
+.scene-card[data-card="dispenser"] { background-image: url('assets/scenes/05-dispenser.png'); }
+/* Cashier POV → inside variants for register + dispenser */
+body.pov-cashier .scene-card[data-card="register"]  { background-image: url('assets/scenes/04b-register-inside.png'); }
+body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('assets/scenes/05b-dispenser-inside.png'); }
+
+/* Oden tray state — no longer wired to visual (image is static); leaving JS toggle
+   in place for future per-state images. */
 
 /* ========== Inline beat panel (in-scene cue + choices) ========== */
 .inline-panel {

@@ -573,6 +573,16 @@
     text-align: right;
     letter-spacing: 2px;
   }
+  .clue-toast.scorched {
+    background: linear-gradient(180deg, #3a2018 0%, #2a1810 100%);
+    color: #ffb090;
+    border-color: #a04040;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(200, 80, 60, 0.35);
+  }
+  .clue-toast.scorched .location { color: #d08060; }
+  .clue-toast.scorched .head { color: #ff9070; border-bottom-color: rgba(200, 80, 60, 0.4); }
+  .clue-toast.scorched .body { color: #ffcaa0; }
+  .clue-toast.scorched .foot { color: #a06050; }
 
   /* Modal (clue log) */
   .modal-mask {
@@ -628,6 +638,14 @@
   }
   .clue-body-inner { color: #2a2418; font-size: 14px; flex: 1; }
   .clue-body-inner.locked { color: #907050; opacity: 0.55; font-style: italic; }
+  .clue-body-inner.scorched {
+    color: #a04040;
+    font-style: italic;
+    text-decoration: line-through;
+    text-decoration-color: rgba(160, 64, 64, 0.5);
+    opacity: 0.75;
+  }
+  .clue-item.scorched .clue-location { color: #a04040; }
 
   /* Case-file tabs (line-up over clue modal) */
   .case-tabs {
@@ -1398,23 +1416,25 @@ let showingClue = false;
 
 // ============ Difficulty ============
 const DIFFICULTIES = [
-  { key: 'rookie', name: '新手', emoji: '🌱', clues: 40, mistakeLimit: 0,  accuseTimes: 3, allowHint: true,  timeLimit: 0,
+  { key: 'rookie', name: '新手', emoji: '🌱', clues: 40, mistakeLimit: 0,  accuseTimes: 3, allowHint: true,  timeLimit: 0,   destroyEverySec: 0,
     tag: '入 门 · 慢 慢 来',
     lines: ['棋盘已知 40 处', '差错无上限', '指控可 3 次', '直觉提示 可用'] },
-  { key: 'normal', name: '普通', emoji: '⚖', clues: 32, mistakeLimit: 10, accuseTimes: 2, allowHint: true,  timeLimit: 0,
+  { key: 'normal', name: '普通', emoji: '⚖', clues: 32, mistakeLimit: 10, accuseTimes: 2, allowHint: true,  timeLimit: 0,   destroyEverySec: 0,
     tag: '正 剧 调',
     lines: ['棋盘已知 32 处', '差错限 10 次', '指控可 2 次', '直觉提示 可用'] },
-  { key: 'master', name: '大师', emoji: '🔥', clues: 26, mistakeLimit: 5,  accuseTimes: 1, allowHint: false, timeLimit: 900,
+  { key: 'master', name: '大师', emoji: '🔥', clues: 26, mistakeLimit: 5,  accuseTimes: 1, allowHint: false, timeLimit: 900, destroyEverySec: 100,
     tag: '一 击 定 案',
-    lines: ['棋盘已知 26 处', '差错限 5 次', '15 分钟 倒计', '无直觉 · 1 次指控'] },
-  { key: 'hell',   name: '炼狱', emoji: '💀', clues: 22, mistakeLimit: 3,  accuseTimes: 1, allowHint: false, timeLimit: 600,
+    lines: ['棋盘已知 26 处', '差错限 5 次', '15 分钟 倒计', '每 100 秒 · 焚一处线索', '无直觉 · 1 次指控'] },
+  { key: 'hell',   name: '炼狱', emoji: '💀', clues: 22, mistakeLimit: 3,  accuseTimes: 1, allowHint: false, timeLimit: 600, destroyEverySec: 70,
     tag: '刀 尖 之 上',
-    lines: ['棋盘已知 22 处', '差错限 3 次', '10 分钟 倒计', '无直觉 · 1 次指控'] },
+    lines: ['棋盘已知 22 处', '差错限 3 次', '10 分钟 倒计', '每 70 秒 · 焚一处线索', '无直觉 · 1 次指控'] },
 ];
 let diff = DIFFICULTIES[0];
 let accuseUsed = 0;
 let timeExpired = false;
 let gameOver = false;
+let destroyedClues;
+let nextDestroyAt = -1;
 
 function createEmpty() { return Array.from({length: N}, () => Array(N).fill(0)); }
 function isValid(g, r, c, n) {
@@ -1578,9 +1598,22 @@ function checkBoxUnlocks() {
     if (unlockedBoxes.has(bi)) continue;
     if (isBoxComplete(bi)) {
       unlockedBoxes.add(bi);
-      queueClueToast(STORIES[currentStoryIdx].clues[bi]);
+      const clue = STORIES[currentStoryIdx].clues[bi];
+      if (destroyedClues && destroyedClues.has(bi)) {
+        queueClueToast({
+          loc: clue.loc,
+          text: '你到达此处时，证据已被人清理干净——一无所获。',
+          scorched: true,
+        });
+      } else {
+        queueClueToast(clue);
+      }
     }
   }
+  updateClueBadgeAndSearch();
+}
+
+function updateClueBadgeAndSearch() {
   searchedEl.textContent = unlockedBoxes.size;
   clueBadge.textContent = `${unlockedBoxes.size}/9`;
 }
@@ -1593,6 +1626,9 @@ function processClueQueue() {
   if (!clueQueue.length) { showingClue = false; return; }
   showingClue = true;
   const clue = clueQueue.shift();
+  const isScorch = !!clue.scorched;
+  clueToast.classList.toggle('scorched', isScorch);
+  document.getElementById('clueToastHead').textContent = isScorch ? '— 证据焚毁 —' : '— 搜查结果 —';
   clueToastLoc.textContent = `— ${clue.loc} —`;
   clueToastBody.textContent = clue.text;
   clueToast.classList.add('show');
@@ -1606,7 +1642,7 @@ function processClueQueue() {
     setTimeout(processClueQueue, 400);
   };
   clueToast.addEventListener('click', dismiss);
-  const timer = setTimeout(dismiss, 4500);
+  const timer = setTimeout(dismiss, isScorch ? 3600 : 4500);
 }
 
 function isComplete() {
@@ -1636,6 +1672,10 @@ function newGame() {
     seconds = diff.timeLimit || 0;
     selected = null;
     unlockedBoxes = new Set();
+    destroyedClues = new Set();
+    nextDestroyAt = (diff.timeLimit && diff.destroyEverySec)
+      ? diff.timeLimit - diff.destroyEverySec
+      : -1;
     clueQueue = [];
     showingClue = false;
     clueToast.classList.remove('show');
@@ -1695,6 +1735,10 @@ function startTimer() {
   timerId = setInterval(() => {
     if (diff.timeLimit) {
       seconds--;
+      if (nextDestroyAt >= 0 && seconds <= nextDestroyAt && (9 - destroyedClues.size) > 1) {
+        destroyOneClue();
+        nextDestroyAt -= diff.destroyEverySec;
+      }
       if (seconds <= 0) {
         seconds = 0;
         updateTimerDisplay();
@@ -1709,6 +1753,28 @@ function startTimer() {
   }, 1000);
 }
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
+
+function destroyOneClue() {
+  const candidates = [];
+  for (let i = 0; i < 9; i++) if (!destroyedClues.has(i)) candidates.push(i);
+  if (!candidates.length) return;
+  const idx = candidates[Math.floor(Math.random() * candidates.length)];
+  destroyedClues.add(idx);
+  const clue = STORIES[currentStoryIdx].clues[idx];
+  const already = unlockedBoxes.has(idx);
+  queueClueToast({
+    loc: clue.loc,
+    text: already
+      ? '此处的证据化为灰烬——你所记的，可能已成灰。'
+      : '此处的证据被人清理干净。就算你搜到，也一无所获。',
+    scorched: true,
+  });
+  updateClueBadgeAndSearch();
+  if (clueModal.classList.contains('show')) {
+    renderClueList();
+    document.getElementById('tabClueCount').textContent = `(${unlockedBoxes.size}/9)`;
+  }
+}
 
 function onTimeExpired() {
   if (gameOver) return;
@@ -1846,9 +1912,20 @@ function openCaseFile() {
 function renderClueList() {
   clueList.innerHTML = STORIES[currentStoryIdx].clues.map((c, i) => {
     const unlocked = unlockedBoxes.has(i);
-    return `<div class="clue-item">
+    const scorched = destroyedClues && destroyedClues.has(i);
+    let cls = '', text = '';
+    if (scorched) {
+      cls = 'scorched';
+      text = unlocked ? c.text : '此处证据已被销毁 · 无从查证';
+    } else if (unlocked) {
+      text = c.text;
+    } else {
+      cls = 'locked';
+      text = '尚未搜查……';
+    }
+    return `<div class="clue-item ${scorched ? 'scorched' : ''}">
       <span class="clue-location">${c.loc}</span>
-      <span class="clue-body-inner ${unlocked ? '' : 'locked'}">${unlocked ? c.text : '尚未搜查……'}</span>
+      <span class="clue-body-inner ${cls}">${text}</span>
     </div>`;
   }).join('');
 }
