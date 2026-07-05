@@ -680,7 +680,33 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
 /* Oden tray state — no longer wired to visual (image is static); leaving JS toggle
    in place for future per-state images. */
 
+/* ========== First-beat nudge (subtle text chip near hotspot) ========== */
+.beat-nudge {
+  position: absolute;
+  transform: translate(-50%, 0);
+  padding: 5px 12px;
+  background: rgba(20, 25, 40, 0.62);
+  color: var(--paper);
+  font-size: 11.5px;
+  letter-spacing: 3px;
+  border: 1px solid rgba(245, 200, 138, 0.5);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  animation: beat-nudge-pulse 2.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+}
+@keyframes beat-nudge-pulse {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, 0); }
+  50%      { opacity: 0.9;  transform: translate(-50%, -2px); }
+}
+@media (max-width: 640px) {
+  .beat-nudge { font-size: 10.5px; letter-spacing: 2px; padding: 4px 10px; }
+}
+
 /* ========== Phone player overlay (Act 1 opening) ========== */
+.phone-overlay {
   position: fixed;
   inset: 0;
   background: rgba(20, 25, 40, 0.82);
