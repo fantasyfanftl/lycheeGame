@@ -489,7 +489,7 @@ const WILDCARD_LVL = -1;
 const WILDCARD_ITEM = { emoji: '🌟', icon: 'icon-11-wildcard.png', name: '万能星', color: '#fef9c3', border: '#ca8a04' };
 function getItem(lvl) { return lvl === WILDCARD_LVL ? WILDCARD_ITEM : ITEMS[lvl]; }
 // 图片预加载
-const ICON_V = 'v=14';  // 图片资源版本,换图后 bump 一下防浏览器缓存
+const ICON_V = 'v=15';  // 图片资源版本,换图后 bump 一下防浏览器缓存
 const iconImages = {};
 function iconSrc(it) { return it.icon + '?' + ICON_V; }
 function preloadIcons() {
