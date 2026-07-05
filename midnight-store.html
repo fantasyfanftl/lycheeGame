@@ -4361,6 +4361,17 @@ function closeBeat() {
       state.completed.add(c);
       playArcComplete();
       setTimeout(() => toast(CHARACTERS[c].name + ' · 这 一 段 走 完 了'), 300);
+      // Return to title screen for next character pick — unless this was the
+      // last arc (handled below by the all-done ending).
+      if (state.completed.size < CHAR_ORDER.length) {
+        setTimeout(() => {
+          stopAmbient();
+          state.currentPOV = null;
+          _currentBeatIndex = -1;
+          if (typeof showScreen === 'function') showScreen('title-screen');
+          render();
+        }, 1600);
+      }
     }
   }
 
