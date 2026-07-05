@@ -4661,6 +4661,60 @@ function advanceInlinePage() {
   return false;
 }
 
+// ========== Phone player overlay (Act 1 opening for cashier beat 0) ==========
+function showPhoneOverlay(effective) {
+  const overlay = document.getElementById('phone-overlay');
+  const choicesEl = document.getElementById('phone-choices');
+  const cueEl = document.getElementById('phone-cue');
+  if (!overlay || !choicesEl) return;
+
+  choicesEl.innerHTML = '';
+  cueEl.classList.add('hidden');
+
+  effective.choices.forEach((choice, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'phone-choice-btn';
+    btn.textContent = choice.label;
+    btn.addEventListener('click', () => pickPhoneChoice(idx));
+    choicesEl.appendChild(btn);
+  });
+
+  overlay.classList.remove('hidden');
+  // Show "门铃响了" cue ~4s after overlay appears (mirrors the ambient chime timing)
+  setTimeout(() => {
+    if (!overlay.classList.contains('hidden')) cueEl.classList.remove('hidden');
+  }, 4000);
+}
+
+function pickPhoneChoice(idx) {
+  const beat = _currentEffective;
+  if (!beat || !beat.choices) return;
+  const choice = beat.choices[idx];
+
+  playChoiceClick && playChoiceClick();
+  if (choice.effects) choice.effects(state.world);
+  const unlocked = contributeToCPs(choice);
+  recordNotebook(choice.cps, choice.text);
+  showCPUnlock(unlocked);
+
+  // Fade the overlay out and drop the follow-up text through the standard
+  // inline subtitle so we don't fork the UX.
+  const overlay = document.getElementById('phone-overlay');
+  if (overlay) overlay.classList.add('hidden');
+
+  // Show the choice's follow-up narrative in the regular inline subtitle
+  const cueEl = $('inline-cue');
+  const choicesEl = $('inline-choices');
+  const cont = $('inline-continue');
+  const panel = $('inline-panel');
+  choicesEl.innerHTML = '';
+  cueEl.textContent = '「 ' + choice.label + ' 」';
+  cueEl.classList.remove('hidden');
+  loadInlinePages(choice.text);
+  cont.classList.remove('hidden');
+  panel.classList.remove('hidden');
+}
+
 function playInlineBeat(effective) {
   updateDevPanel(effective, 'beat');
 
