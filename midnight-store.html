@@ -521,11 +521,11 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
   position: absolute;
   left: 12px;
   right: 12px;
-  bottom: 44px;
+  bottom: 32px;
   z-index: 6;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   align-items: center;
   transition: opacity 0.35s ease;
   pointer-events: none;
@@ -534,12 +534,12 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
 .inline-panel:not(.hidden) { pointer-events: auto; }
 
 .inline-cue {
-  padding: 5px 16px;
-  background: rgba(20, 25, 40, 0.62);
+  padding: 3px 14px;
+  background: rgba(20, 25, 40, 0.55);
   color: var(--paper);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 4px;
-  border: 1px solid rgba(245, 200, 138, 0.5);
+  border: 1px solid rgba(245, 200, 138, 0.45);
   border-radius: 999px;
   backdrop-filter: blur(6px);
   animation: inline-fade-up 0.5s ease-out;
@@ -578,17 +578,17 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
 }
 .inline-choices:empty { display: none; }
 .inline-choice-btn {
-  background: rgba(249, 243, 232, 0.94);
-  border: 1px solid var(--paper-edge);
-  padding: 9px 14px;
+  background: rgba(249, 243, 232, 0.78);
+  border: 1px solid rgba(61, 47, 36, 0.35);
+  padding: 6px 12px;
   border-radius: 8px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   letter-spacing: 0.3px;
   color: var(--ink);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
   transition: all 0.2s;
   animation: inline-fade-up 0.5s ease-out;
 }

@@ -1116,7 +1116,39 @@ function renderQueue() {
   document.getElementById('qName0').textContent = getItem(st.queue[0]).name;
   const undo = document.getElementById('undoBtn');
   if (undo) undo.disabled = !st.undoState || st.cleared;
+  // 暂存位
+  const storageEl = document.getElementById('storageContent');
+  const storageBtn = document.getElementById('storageBtn');
+  if (storageEl && storageBtn) {
+    if (st.storage === null || st.storage === undefined) {
+      storageEl.innerHTML = '＋';
+      storageBtn.classList.add('empty');
+    } else {
+      const s = getItem(st.storage);
+      storageEl.innerHTML = '<img src="' + s.icon + '" alt="' + s.name + '" style="width:100%;height:100%;object-fit:contain;">';
+      storageBtn.classList.remove('empty');
+    }
+  }
 }
+
+function toggleStorage() {
+  if (!currentTownId) return;
+  const st = getTownState(currentTownId);
+  if (st.storage === null || st.storage === undefined) {
+    st.storage = st.queue[0];
+    st.queue.shift();
+    st.queue.push(randomItem());
+    toast('已暂存 ' + getItem(st.storage).name);
+  } else {
+    const tmp = st.storage;
+    st.storage = st.queue[0];
+    st.queue[0] = tmp;
+    toast('换出 ' + getItem(st.queue[0]).name);
+  }
+  persist();
+  renderQueue();
+}
+document.getElementById('storageBtn').onclick = toggleStorage;
 
 /* ============ 商店 ============ */
 function openShop() {
@@ -1472,6 +1504,7 @@ function doResetTown() {
     energy: ENERGY_MAX,
     lastRegen: Date.now(),
     queue: [randomItem(), randomItem(), randomItem()],
+    storage: null,
   };
   persist();
   closeConfirm();
