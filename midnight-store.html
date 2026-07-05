@@ -3985,6 +3985,12 @@ function playBeat(beat) {
     state.world.oldmanArrived = true;
   }
 
+  // Cashier's beat 0 = "01:47 · 摘下一只耳机" — he takes off one earbud,
+  // so his music fades out (was playing since POV switch).
+  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0 && typeof stopCashierEarbudMusic === 'function') {
+    stopCashierEarbudMusic(1.2);
+  }
+
   playInlineBeat(effective);
   render();
 }
