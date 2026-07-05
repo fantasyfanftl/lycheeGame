@@ -320,18 +320,18 @@
       ".    up   ."
       "left .    right"
       ".    down .";
-    gap: 8px;
-    width: 220px;
-    height: 220px;
-    margin: 14px auto;
+    gap: 6px;
+    width: min(320px, 92%);
+    aspect-ratio: 1;
+    margin: 18px auto 8px;
     touch-action: none;
   }
   .dpad-btn {
     background: rgba(245, 200, 138, 0.1);
     border: 1.5px solid rgba(245, 200, 138, 0.35);
     color: rgba(232, 220, 196, 0.9);
-    border-radius: 14px;
-    font-size: 32px;
+    border-radius: 18px;
+    font-size: 40px;
     cursor: pointer;
     touch-action: manipulation;
     transition: transform 0.08s ease, background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
@@ -343,21 +343,32 @@
     justify-content: center;
     padding: 0;
     -webkit-tap-highlight-color: transparent;
-    min-width: 64px;
-    min-height: 64px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;  /* 命中交给 .dpad 统一按角度分派 */
   }
   .dpad-btn:hover { background: rgba(245, 200, 138, 0.16); color: #f5c88a; }
   .dpad-btn.pressed,
   .dpad-btn:active {
-    transform: scale(0.88);
-    background: rgba(245, 200, 138, 0.35);
+    transform: scale(0.9);
+    background: rgba(245, 200, 138, 0.4);
     color: #f5c88a;
-    box-shadow: 0 0 16px rgba(245, 200, 138, 0.5), inset 0 0 12px rgba(245, 200, 138, 0.2);
+    box-shadow: 0 0 20px rgba(245, 200, 138, 0.55), inset 0 0 14px rgba(245, 200, 138, 0.25);
   }
   .dpad-btn.up    { grid-area: up; }
   .dpad-btn.down  { grid-area: down; }
   .dpad-btn.left  { grid-area: left; }
   .dpad-btn.right { grid-area: right; }
+
+  @media (max-width: 480px) {
+    .dpad {
+      width: min(360px, 96%);
+      gap: 5px;
+      margin-top: 14px;
+    }
+    .dpad-btn { font-size: 44px; border-radius: 20px; }
+  }
 
   @media (orientation: landscape) and (max-height: 550px) {
     .container {
@@ -900,7 +911,8 @@ startBtn.addEventListener('click', () => {
 pauseBtn.addEventListener('click', togglePause);
 restartBtn.addEventListener('click', newGame);
 
-// D-pad buttons — with haptic feedback
+// D-pad —— 整个 D-pad 区域都能点，按角度判方向
+// 好处：手指落在按钮之间的缝隙 / 边缘也能识别，没有死区
 const DPAD_DIRS = {
   up:    {r:-1, c:0},
   down:  {r:1,  c:0},
@@ -910,20 +922,57 @@ const DPAD_DIRS = {
 function haptic(ms = 15) {
   if (navigator.vibrate) navigator.vibrate(ms);
 }
-document.querySelectorAll('.dpad-btn').forEach(btn => {
-  const press = (e) => {
-    e.preventDefault();
-    const dirName = btn.dataset.dir;
-    pushDir(DPAD_DIRS[dirName]);
-    btn.classList.add('pressed');
-    haptic(12);
-  };
-  const release = () => btn.classList.remove('pressed');
-  btn.addEventListener('pointerdown', press);
-  btn.addEventListener('pointerup', release);
-  btn.addEventListener('pointercancel', release);
-  btn.addEventListener('pointerleave', release);
+const dpadEl = document.querySelector('.dpad');
+let dpadCurrentBtn = null;
+
+function dpadDirFromXY(clientX, clientY) {
+  const rect = dpadEl.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = clientX - cx;
+  const dy = clientY - cy;
+  // 中心死区（半径 ~15% of dpad width）→ 避免误触
+  if (Math.sqrt(dx*dx + dy*dy) < rect.width * 0.12) return null;
+  // 角度：0=右, 90=下, ±180=左, -90=上（y 向下为正）
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  if (angle >= -45 && angle < 45) return 'right';
+  if (angle >= 45 && angle < 135) return 'down';
+  if (angle >= -135 && angle < -45) return 'up';
+  return 'left';
+}
+function setDpadPressed(dirName) {
+  const btn = dpadEl.querySelector('.dpad-btn.' + dirName);
+  if (btn === dpadCurrentBtn) return false;
+  if (dpadCurrentBtn) dpadCurrentBtn.classList.remove('pressed');
+  if (btn) btn.classList.add('pressed');
+  dpadCurrentBtn = btn;
+  return true;
+}
+function clearDpadPressed() {
+  if (dpadCurrentBtn) { dpadCurrentBtn.classList.remove('pressed'); dpadCurrentBtn = null; }
+}
+dpadEl.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  const dirName = dpadDirFromXY(e.clientX, e.clientY);
+  if (!dirName) return;
+  try { dpadEl.setPointerCapture(e.pointerId); } catch (_) {}
+  setDpadPressed(dirName);
+  pushDir(DPAD_DIRS[dirName]);
+  haptic(12);
 });
+dpadEl.addEventListener('pointermove', e => {
+  if (!dpadCurrentBtn) return;
+  const dirName = dpadDirFromXY(e.clientX, e.clientY);
+  if (!dirName) return;
+  // 拖到别的方向 → 切换并推入新方向
+  if (setDpadPressed(dirName)) {
+    pushDir(DPAD_DIRS[dirName]);
+    haptic(8);
+  }
+});
+dpadEl.addEventListener('pointerup', clearDpadPressed);
+dpadEl.addEventListener('pointercancel', clearDpadPressed);
+dpadEl.addEventListener('pointerleave', clearDpadPressed);
 
 // Add haptic to other important buttons
 [pauseBtn, restartBtn, startBtn].forEach(b => {

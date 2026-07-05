@@ -357,7 +357,6 @@ body {
       <span>🎯<b id="scoreVal">0</b></span>
       <span class="goal" id="fillVal">0/0</span>
     </div>
-    <div id="boardWrap"><canvas id="board"></canvas></div>
     <div id="queueBar">
       <div class="q-slot q-current">
         <div class="q-label">👇 现在放</div>
@@ -379,6 +378,7 @@ body {
       <button id="undoBtn" class="q-tool" title="撤销上一步" disabled>↩</button>
       <button id="shopBtn" class="q-tool" title="商店 - 花金币买建筑">🏪</button>
     </div>
+    <div id="boardWrap"><canvas id="board"></canvas></div>
   </section>
 
   <!-- 成就 -->
@@ -455,17 +455,17 @@ body {
    物品链 (0..10, 共 11 级)
 ===================================================== */
 const ITEMS = [
-  { emoji: '🧱', icon: 'icon-00-brick.png',      name: '砖块',   color: '#fecaca', border: '#b91c1c', price: 0 },
-  { emoji: '🌲', icon: 'icon-01-wood.png',       name: '木材',   color: '#bbf7d0', border: '#15803d', price: 30 },
-  { emoji: '⛺', icon: 'icon-02-tent.png',       name: '帐篷',   color: '#fef08a', border: '#a16207', price: 200 },
-  { emoji: '🎪', icon: 'icon-03-hut.png',        name: '茅屋',   color: '#fed7aa', border: '#c2410c', price: null },
-  { emoji: '🏚️', icon: 'icon-04-oldhouse.png',   name: '老屋',   color: '#d6d3d1', border: '#57534e', price: null },
-  { emoji: '🏠', icon: 'icon-05-house.png',      name: '民房',   color: '#fde68a', border: '#b45309', price: null },
-  { emoji: '🏡', icon: 'icon-06-villa.png',      name: '别墅',   color: '#fca5a5', border: '#dc2626', price: null },
-  { emoji: '🏢', icon: 'icon-07-apartment.png',  name: '公寓楼', color: '#93c5fd', border: '#1e40af', price: null },
-  { emoji: '🏬', icon: 'icon-08-skyscraper.png', name: '大厦',   color: '#a5b4fc', border: '#4338ca', price: null },
-  { emoji: '🕍', icon: 'icon-09-cathedral.png',  name: '教堂',   color: '#d8b4fe', border: '#6b21a8', price: null },
-  { emoji: '🏰', icon: 'icon-10-castle.png',     name: '城堡',   color: '#fcd34d', border: '#78350f', price: null },
+  { emoji: '📰', icon: 'icon-00-brick.png',      name: '报刊亭',     color: '#dcfce7', border: '#15803d', price: 0 },
+  { emoji: '🍎', icon: 'icon-01-wood.png',       name: '水果摊',     color: '#fecaca', border: '#b91c1c', price: 30 },
+  { emoji: '🥤', icon: 'icon-02-tent.png',       name: '奶茶店',     color: '#fce7f3', border: '#db2777', price: 200 },
+  { emoji: '🥐', icon: 'icon-03-hut.png',        name: '面包坊',     color: '#fed7aa', border: '#c2410c', price: null },
+  { emoji: '☕', icon: 'icon-04-oldhouse.png',   name: '咖啡店',     color: '#d9f99d', border: '#15803d', price: null },
+  { emoji: '🍦', icon: 'icon-05-house.png',      name: '冰淇淋店',   color: '#fbcfe8', border: '#ec4899', price: null },
+  { emoji: '🎁', icon: 'icon-06-villa.png',      name: '盲盒店',     color: '#ddd6fe', border: '#7c3aed', price: null },
+  { emoji: '💐', icon: 'icon-07-apartment.png',  name: '花店',       color: '#bbf7d0', border: '#15803d', price: null },
+  { emoji: '🍰', icon: 'icon-08-skyscraper.png', name: '甜品店',     color: '#fecdd3', border: '#e11d48', price: null },
+  { emoji: '👜', icon: 'icon-09-cathedral.png',  name: '精品店',     color: '#fef3c7', border: '#b45309', price: null },
+  { emoji: '🏬', icon: 'icon-10-castle.png',     name: '网红咖啡厅', color: '#fde68a', border: '#92400e', price: null },
 ];
 const MAX_LEVEL = ITEMS.length - 1;
 const MERGE_COIN = lvl => Math.pow(3, lvl) * 2;       // 合成到 Lv.N 奖励金币
