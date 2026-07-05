@@ -96,25 +96,20 @@
     position: relative;
     aspect-ratio: 1;
     background:
-      linear-gradient(45deg, rgba(200, 170, 130, 0.06) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(200, 170, 130, 0.06) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(200, 170, 130, 0.06) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(200, 170, 130, 0.06) 75%),
-      #faf3e6;
-    background-size: 24px 24px;
-    background-position: 0 0, 0 12px, 12px -12px, -12px 0;
-    border: 1px solid rgba(160, 130, 90, 0.3);
-    border-radius: 6px;
+      radial-gradient(ellipse 80% 60% at 40% 30%, #fdf5e3 0%, #ecd7ae 65%, #cfb083 100%);
+    border: 1px solid rgba(160, 130, 90, 0.35);
+    border-radius: 8px;
     margin-bottom: 12px;
     overflow: hidden;
+    box-shadow: inset 0 0 28px rgba(120, 80, 40, 0.16);
   }
   svg { display: block; width: 100%; height: 100%; }
 
   .silhouette {
-    fill: rgba(80, 55, 30, 0.12);
-    stroke: rgba(80, 55, 30, 0.4);
-    stroke-width: 2.5;
-    stroke-dasharray: 8, 4;
+    fill: rgba(60, 40, 20, 0.14);
+    stroke: rgba(60, 40, 20, 0.38);
+    stroke-width: 2;
+    stroke-dasharray: 6, 4;
     pointer-events: none;
   }
   .theme-label {
@@ -124,28 +119,42 @@
     transform: translateX(-50%);
     font-size: 40px;
     font-weight: 300;
-    color: rgba(120, 90, 40, 0.15);
+    color: rgba(120, 90, 40, 0.16);
     letter-spacing: 4px;
     pointer-events: none;
     font-family: 'STKaiti', 'KaiTi', 'Songti SC', serif;
   }
 
-  .piece {
-    cursor: grab;
-    transition: filter 0.15s;
-    filter: drop-shadow(0 2px 4px rgba(80, 50, 20, 0.15));
-    will-change: transform;
+  /* Faux-3D piece layers */
+  .piece { cursor: grab; }
+  .piece .face-top {
+    stroke: rgba(0,0,0,0.22);
+    stroke-width: 0.8;
+    stroke-linejoin: round;
   }
-  .piece.selected {
-    filter: drop-shadow(0 0 12px rgba(200, 120, 60, 0.85)) drop-shadow(0 2px 4px rgba(80, 50, 20, 0.2));
-    stroke: rgba(200, 120, 60, 0.7);
-    stroke-width: 2.5;
+  .piece .face-side {
+    stroke: rgba(0,0,0,0.18);
+    stroke-width: 0.5;
+    stroke-linejoin: round;
   }
-  .piece.dragging {
-    transition: none;
-    filter: drop-shadow(0 0 14px rgba(200, 120, 60, 0.9)) drop-shadow(0 4px 8px rgba(80, 50, 20, 0.3));
+  .piece .face-back {
+    opacity: 0.9;
   }
-  .piece:active { cursor: grabbing; }
+  .piece .highlight {
+    fill: rgba(255,255,255,0.18);
+    pointer-events: none;
+  }
+  .shadow-poly {
+    fill: rgba(40, 25, 10, 0.32);
+    filter: blur(3.5px);
+    pointer-events: none;
+  }
+  .piece.selected .face-top {
+    stroke: #ff8a3d;
+    stroke-width: 2.4;
+  }
+  .piece.selected + .highlight-glow, .piece.selected .highlight { fill: rgba(255,200,120,0.28); }
+  .piece.dragging { cursor: grabbing; }
 
   .controls {
     display: flex;
@@ -178,16 +187,6 @@
     font-size: 11px;
     letter-spacing: 1px;
     line-height: 1.6;
-  }
-  .hint kbd {
-    display: inline-block;
-    padding: 1px 5px;
-    background: rgba(200, 170, 130, 0.2);
-    border: 1px solid rgba(160, 130, 90, 0.3);
-    border-radius: 3px;
-    font-family: monospace;
-    font-size: 10px;
-    color: #6b4820;
   }
 
   /* Poem overlay */
@@ -310,7 +309,7 @@
 <div class="container">
   <a href="index.html" class="back-link">← 返回荔枝游戏</a>
   <h1>七 巧 · 山 水</h1>
-  <div class="subtitle">— 拼一意 · 得一诗 —</div>
+  <div class="subtitle">— 拼一意 · 得一诗 · 立体版 —</div>
 
   <div class="progress">
     已得诗 <b id="progressCount">0</b> / <b id="progressTotal">6</b>
@@ -331,7 +330,7 @@
   </div>
 
   <div class="hint">
-    选一景 · 把七片拼成心中的样子 · 满意后点「得诗」得一联
+    选一景 · 点击选中 · 拖动摆放 · 双击旋转 · 满意后点「得诗」
   </div>
 </div>
 
@@ -350,9 +349,10 @@
 </div>
 
 <script>
+const SVG_NS = 'http://www.w3.org/2000/svg';
 const svg = document.getElementById('canvas');
 
-// Piece geometry — centroid-centered
+// ============ Piece geometry (centroid-centered, unit U) ============
 const U = 40;
 const SQRT2 = Math.SQRT2;
 function centerPts(pts) {
@@ -370,20 +370,28 @@ const DEFS = {
 
 const COLORS = ['#e07a5f', '#3d5a80', '#81b29a', '#f2cc8f', '#a08fdc', '#c17b52', '#5b8ba3'];
 
+// ============ 3D extrusion params ============
+// Bottom face is drawn LEFT and DOWN of top face → piece appears raised UP-RIGHT.
+// Camera implied above-front-left.
+const BOTTOM_DX = -3;   // bottom shifted 3px LEFT of top (screen space)
+const BOTTOM_DY = 10;   // bottom shifted 10px DOWN of top (larger y = down)
+const SHADOW_DX = -5;   // ground shadow slightly further
+const SHADOW_DY = 14;
+
 const INITIAL = [
   { type: 'bigTri',   x: 80,  y: 90,  rot: 0,   flipped: false },
   { type: 'bigTri',   x: 320, y: 90,  rot: 90,  flipped: false },
   { type: 'medTri',   x: 200, y: 60,  rot: 45,  flipped: false },
   { type: 'smallTri', x: 60,  y: 250, rot: 0,   flipped: false },
   { type: 'smallTri', x: 340, y: 250, rot: 180, flipped: false },
-  { type: 'square',   x: 200, y: 300, rot: 0,   flipped: false },
-  { type: 'paralle',  x: 200, y: 200, rot: 0,   flipped: false },
+  { type: 'square',   x: 200, y: 310, rot: 0,   flipped: false },
+  { type: 'paralle',  x: 200, y: 210, rot: 0,   flipped: false },
 ];
 
 let pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
 let selectedIdx = null;
 
-// TARGETS — each has a SILHOUETTE PATH (recognizable shape) and a poem
+// ============ Targets & poems ============
 const TARGETS = [
   {
     name: '月', emoji: '🌙',
@@ -435,37 +443,110 @@ let completedTargets = new Set(JSON.parse(localStorage.getItem('qixiaoBanPoems2'
 
 const themeLabel = document.getElementById('themeLabel');
 
-// ============ Render ============
-function pointsStr(pts) {
+// ============ Color helpers ============
+function hexToRgb(hex) {
+  return [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+}
+function shade(hex, factor) {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgb(${Math.round(r*factor)}, ${Math.round(g*factor)}, ${Math.round(b*factor)})`;
+}
+
+// ============ Geometry ============
+function worldPoints(p) {
+  const cs = Math.cos(p.rot * Math.PI / 180);
+  const sn = Math.sin(p.rot * Math.PI / 180);
+  const sx = p.flipped ? -1 : 1;
+  return DEFS[p.type].map(([x, y]) => {
+    const fx = x * sx;
+    return [fx * cs - y * sn + p.x, fx * sn + y * cs + p.y];
+  });
+}
+function offsetPts(pts, dx, dy) {
+  return pts.map(([x, y]) => [x + dx, y + dy]);
+}
+function ptsStr(pts) {
   return pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
 }
-function pieceTransform(p) {
-  const flipScale = p.flipped ? -1 : 1;
-  return `translate(${p.x} ${p.y}) rotate(${p.rot}) scale(${flipScale} 1)`;
+
+// ============ Rendering ============
+function renderShadowSVG(p) {
+  const top = worldPoints(p);
+  const shadow = offsetPts(top, SHADOW_DX, SHADOW_DY);
+  return `<polygon class="shadow-poly" points="${ptsStr(shadow)}" data-shadow-idx="${p.idx}" />`;
+}
+
+function renderPieceSVG(p) {
+  const top = worldPoints(p);
+  const bot = offsetPts(top, BOTTOM_DX, BOTTOM_DY);
+  const sideColor = shade(p.color, 0.72);
+  const backColor = shade(p.color, 0.55);
+  const cls = 'piece' + (p.idx === selectedIdx ? ' selected' : '');
+
+  let html = `<g class="${cls}" data-idx="${p.idx}">`;
+  // Back face (bottom polygon, darker) — mostly hidden but shows at edges
+  html += `<polygon class="face-back" points="${ptsStr(bot)}" fill="${backColor}" />`;
+  // Side quads: each edge (a→b) at top connects to (a', b') at bottom
+  for (let i = 0; i < top.length; i++) {
+    const a  = top[i], b  = top[(i + 1) % top.length];
+    const aB = bot[i], bB = bot[(i + 1) % bot.length];
+    html += `<polygon class="face-side" points="${ptsStr([a, b, bB, aB])}" fill="${sideColor}" />`;
+  }
+  // Top face (base color)
+  html += `<polygon class="face-top" points="${ptsStr(top)}" fill="${p.color}" />`;
+  // Subtle highlight strip on top face (fake specular)
+  const hlPts = top.map(([x, y]) => [x + 1, y - 1.5]);
+  html += `<polygon class="highlight" points="${ptsStr(hlPts)}" />`;
+  html += `</g>`;
+  return html;
 }
 
 function render() {
   let html = '';
-  // Silhouette background
+  html += `<g class="silhouette-layer">`;
   if (currentTargetIdx >= 0) {
-    const t = TARGETS[currentTargetIdx];
-    html += `<path class="silhouette" d="${t.silhouette}" />`;
+    html += `<path class="silhouette" d="${TARGETS[currentTargetIdx].silhouette}" />`;
   }
-  // Pieces
-  for (const p of pieces) {
-    const pts = pointsStr(DEFS[p.type]);
-    const cls = 'piece' + (p.idx === selectedIdx ? ' selected' : '');
-    html += `<polygon class="${cls}" points="${pts}"
-                      fill="${p.color}"
-                      stroke="rgba(0,0,0,0.15)" stroke-width="1"
-                      transform="${pieceTransform(p)}"
-                      data-idx="${p.idx}" />`;
-  }
+  html += `</g>`;
+  html += `<g class="shadow-layer">`;
+  for (const p of pieces) html += renderShadowSVG(p);
+  html += `</g>`;
+  html += `<g class="piece-layer">`;
+  for (const p of pieces) html += renderPieceSVG(p);
+  html += `</g>`;
   svg.innerHTML = html;
 }
-function updateDraggedTransform(p) {
-  const el = svg.querySelector(`[data-idx="${p.idx}"]`);
-  if (el) el.setAttribute('transform', pieceTransform(p));
+
+function updateSelectionOnly(newIdx) {
+  selectedIdx = newIdx;
+  svg.querySelectorAll('.piece.selected').forEach(el => el.classList.remove('selected'));
+  if (newIdx !== null) {
+    const el = svg.querySelector(`.piece[data-idx="${newIdx}"]`);
+    if (el) el.classList.add('selected');
+  }
+}
+
+// Live drag translate on the g + its shadow
+function setDragTransform(pieceIdx, dx, dy) {
+  const g = svg.querySelector(`.piece[data-idx="${pieceIdx}"]`);
+  const s = svg.querySelector(`[data-shadow-idx="${pieceIdx}"]`);
+  const t = `translate(${dx} ${dy})`;
+  if (g) g.setAttribute('transform', t);
+  if (s) s.setAttribute('transform', t);
+}
+function clearDragTransform(pieceIdx) {
+  const g = svg.querySelector(`.piece[data-idx="${pieceIdx}"]`);
+  const s = svg.querySelector(`[data-shadow-idx="${pieceIdx}"]`);
+  if (g) g.removeAttribute('transform');
+  if (s) s.removeAttribute('transform');
+}
+function raiseToTop(pieceIdx) {
+  const layer = svg.querySelector('.piece-layer');
+  const shadowLayer = svg.querySelector('.shadow-layer');
+  const g = svg.querySelector(`.piece[data-idx="${pieceIdx}"]`);
+  const s = svg.querySelector(`[data-shadow-idx="${pieceIdx}"]`);
+  if (layer && g) layer.appendChild(g);
+  if (shadowLayer && s) shadowLayer.appendChild(s);
 }
 
 // ============ Target row ============
@@ -487,7 +568,6 @@ function initTargetRow() {
     setTarget(idx === currentTargetIdx ? -1 : idx);
   });
 }
-
 function updateProgress() {
   document.getElementById('progressCount').textContent = completedTargets.size;
 }
@@ -532,11 +612,11 @@ function resetPieces() {
 }
 
 // ============ Interaction ============
-let dragging = null;         // 真正处于拖拽中的 piece
-let pending = null;          // 按下但还没确认是 drag 的 piece
+let dragging = null;
+let pending = null;
 let lastTapTime = 0;
 let lastTapIdx = null;
-const DRAG_THRESHOLD = 5;    // 手指移动超过 5px 才算 drag
+const DRAG_THRESHOLD = 5;
 
 function svgCoords(clientX, clientY) {
   const rect = svg.getBoundingClientRect();
@@ -545,85 +625,82 @@ function svgCoords(clientX, clientY) {
   return { x: (clientX - rect.left) * sx, y: (clientY - rect.top) * sy };
 }
 
-function updateSelection(newIdx) {
-  selectedIdx = newIdx;
-  svg.querySelectorAll('.piece.selected').forEach(el => el.classList.remove('selected'));
-  if (newIdx !== null) {
-    const el = svg.querySelector(`[data-idx="${newIdx}"]`);
-    if (el) el.classList.add('selected');
-  }
-}
-
 svg.addEventListener('pointerdown', e => {
-  const idx = e.target.dataset ? e.target.dataset.idx : undefined;
-  if (idx === undefined || idx === '') {
-    updateSelection(null);
+  const g = e.target.closest('.piece');
+  if (!g) {
+    updateSelectionOnly(null);
     return;
   }
-  const i = +idx;
+  const i = +g.dataset.idx;
 
-  // Double-tap → rotate
+  // Double-tap → rotate 45°
   const now = Date.now();
   if (lastTapIdx === i && now - lastTapTime < 350) {
     pieces[i].rot = (pieces[i].rot + 45) % 360;
-    updateDraggedTransform(pieces[i]);
+    render();
+    updateSelectionOnly(i);
     lastTapTime = 0; lastTapIdx = null;
     return;
   }
   lastTapTime = now;
   lastTapIdx = i;
 
-  // Select immediately (visual feedback)
-  updateSelection(i);
+  updateSelectionOnly(i);
+  raiseToTop(i);
 
-  // Pending drag: only actual drag if pointer moves > threshold
   const svgPos = svgCoords(e.clientX, e.clientY);
   pending = {
     piece: pieces[i],
-    element: e.target,
+    idx: i,
     startClientX: e.clientX,
     startClientY: e.clientY,
-    startSvgX: svgPos.x,
-    startSvgY: svgPos.y,
     pieceX: pieces[i].x,
     pieceY: pieces[i].y,
+    startSvgX: svgPos.x,
+    startSvgY: svgPos.y,
   };
   try { svg.setPointerCapture(e.pointerId); } catch (_) {}
 });
 
 svg.addEventListener('pointermove', e => {
   if (!pending) return;
-  const dx = e.clientX - pending.startClientX;
-  const dy = e.clientY - pending.startClientY;
+  const dxRaw = e.clientX - pending.startClientX;
+  const dyRaw = e.clientY - pending.startClientY;
 
   if (!dragging) {
-    if (Math.sqrt(dx * dx + dy * dy) < DRAG_THRESHOLD) return;
-    // Convert pending → dragging
+    if (Math.sqrt(dxRaw * dxRaw + dyRaw * dyRaw) < DRAG_THRESHOLD) return;
     dragging = pending.piece;
-    svg.appendChild(pending.element);  // raise to top
-    pending.element.classList.add('dragging');
+    const g = svg.querySelector(`.piece[data-idx="${pending.idx}"]`);
+    if (g) g.classList.add('dragging');
   }
 
-  // Real drag
   const svgPos = svgCoords(e.clientX, e.clientY);
-  dragging.x = pending.pieceX + (svgPos.x - pending.startSvgX);
-  dragging.y = pending.pieceY + (svgPos.y - pending.startSvgY);
-  updateDraggedTransform(dragging);
+  const dSvgX = svgPos.x - pending.startSvgX;
+  const dSvgY = svgPos.y - pending.startSvgY;
+  setDragTransform(pending.idx, dSvgX, dSvgY);
 });
 
 function endInteraction(pointerId) {
   try { svg.releasePointerCapture(pointerId); } catch (_) {}
-  if (dragging) {
-    dragging.x = Math.round(dragging.x / 5) * 5;
-    dragging.y = Math.round(dragging.y / 5) * 5;
-    updateDraggedTransform(dragging);
-    if (pending && pending.element) pending.element.classList.remove('dragging');
+  if (dragging && pending) {
+    // Commit the drag translate into piece.x/y, re-render
+    const g = svg.querySelector(`.piece[data-idx="${pending.idx}"]`);
+    const t = g ? g.getAttribute('transform') : null;
+    const m = t && t.match(/translate\(([-\d.]+)\s+([-\d.]+)\)/);
+    if (m) {
+      dragging.x = Math.round((pending.pieceX + parseFloat(m[1])) / 5) * 5;
+      dragging.y = Math.round((pending.pieceY + parseFloat(m[2])) / 5) * 5;
+    }
+    clearDragTransform(pending.idx);
+    // Move dragged to end of pieces array (top of stack)
     pieces = pieces.filter(p => p !== dragging).concat([dragging]);
+    if (g) g.classList.remove('dragging');
+    render();
+    updateSelectionOnly(dragging.idx);
   }
   dragging = null;
   pending = null;
 }
-
 svg.addEventListener('pointerup', e => endInteraction(e.pointerId));
 svg.addEventListener('pointercancel', e => endInteraction(e.pointerId));
 
@@ -632,21 +709,20 @@ document.getElementById('rotateBtn').addEventListener('click', () => {
   if (selectedIdx === null) return;
   pieces[selectedIdx].rot = (pieces[selectedIdx].rot + 45) % 360;
   render();
+  updateSelectionOnly(selectedIdx);
 });
 document.getElementById('flipBtn').addEventListener('click', () => {
   if (selectedIdx === null) return;
   pieces[selectedIdx].flipped = !pieces[selectedIdx].flipped;
   render();
+  updateSelectionOnly(selectedIdx);
 });
 document.getElementById('resetBtn').addEventListener('click', () => {
   resetPieces();
   render();
 });
 document.getElementById('poemBtn').addEventListener('click', () => {
-  if (currentTargetIdx < 0) {
-    alert('先在上面选一景');
-    return;
-  }
+  if (currentTargetIdx < 0) { alert('先在上面选一景'); return; }
   const target = TARGETS[currentTargetIdx];
   completedTargets.add(target.name);
   localStorage.setItem('qixiaoBanPoems2', JSON.stringify([...completedTargets]));
@@ -655,16 +731,12 @@ document.getElementById('poemBtn').addEventListener('click', () => {
   showPoem(target);
 });
 
-// Keyboard
+// Keyboard shortcuts
 document.addEventListener('keydown', e => {
   if (selectedIdx === null) return;
-  if (e.key === 'r' || e.key === 'R') {
-    document.getElementById('rotateBtn').click();
-  } else if (e.key === 'f' || e.key === 'F') {
-    document.getElementById('flipBtn').click();
-  } else if (e.key === 'Escape') {
-    selectedIdx = null; render();
-  }
+  if (e.key === 'r' || e.key === 'R') document.getElementById('rotateBtn').click();
+  else if (e.key === 'f' || e.key === 'F') document.getElementById('flipBtn').click();
+  else if (e.key === 'Escape') { selectedIdx = null; render(); }
 });
 
 // Boot
