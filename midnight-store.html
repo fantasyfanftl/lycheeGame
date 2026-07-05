@@ -610,6 +610,11 @@ body {
   .dev-timeline { display: none !important; }
 }
 
+/* Hide bottom character tabs during arc play — user picks via title screen
+   between arcs. Tabs come back only at ending / when no POV selected. */
+body.playing-arc .char-tabs { display: none !important; }
+body.playing-arc .pov-indicator { border-right: none; }
+
 /* ========== Register / dispenser: dual view (customer-outside vs cashier-inside) ========== */
 /* Scene art is now painted background images. Hide all inline scene-art SVGs
    (they still hold obj-zone rects that we no longer use as visible art). */
