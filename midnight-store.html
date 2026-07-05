@@ -4126,11 +4126,11 @@ function _devEscape(s) {
 // Floor plan (top-down store layout) — position map for each character.
 // Coordinates in the SVG viewBox 340×280 space.
 const FLOORPLAN_POS = {
-  cashier:  { x: 170, y: 200, label: '店' },
-  nurse:    { x: 100, y: 130, label: '护' }, // in aisle near shelves / dispenser
-  driver:   { x: 292, y: 140, label: '司' }, // window seat
+  cashier:  { x: 135, y: 200, label: '店' }, // behind cashier counter (bottom-left)
+  nurse:    { x: 130, y: 130, label: '护' }, // in main aisle
+  driver:   { x: 292, y: 152, label: '司' }, // window bar seat (right wall)
   teen:     { x: 255, y: 15,  label: '少' }, // outside doorstep
-  oldman:   { x:  55, y:  90, label: '老' }  // near milk cabinet
+  oldman:   { x:  55, y:  95, label: '老' }  // near milk cabinet (left wall)
 };
 const FLOORPLAN_COLOR = {
   cashier: '#f5c88a',   // warm gold = current-shift attendant
