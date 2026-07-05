@@ -6650,11 +6650,11 @@ function bindEvents() {
 }
 
 function init() {
-  bindEvents();
-  initCardNav();
-  initObjClicks();
-  refreshSaveUI();
-  updateClockUI();
+  if (typeof bindEvents === 'function') bindEvents();
+  if (typeof initCardNav === 'function') initCardNav();
+  if (typeof initObjClicks === 'function') initObjClicks();
+  if (typeof refreshSaveUI === 'function') refreshSaveUI();
+  if (typeof updateClockUI === 'function') updateClockUI();
   render();
 }
 
