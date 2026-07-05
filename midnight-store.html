@@ -5447,6 +5447,20 @@ function bindEvents() {
   // Inline beat: tap continue chip or subtitle to dismiss
   $('inline-continue').addEventListener('click', dismissInlineBeat);
   $('inline-subtitle').addEventListener('click', dismissInlineBeat);
+  // Dev panel toggle (persists via localStorage)
+  const devPanel = document.getElementById('dev-panel');
+  const devShow = document.getElementById('dev-panel-show');
+  const devToggle = document.getElementById('dev-panel-toggle');
+  const applyDevVisibility = (visible) => {
+    devPanel.classList.toggle('hidden', !visible);
+    devShow.classList.toggle('hidden', visible);
+    try { localStorage.setItem('midnight-store.dev-panel', visible ? '1' : '0'); } catch (e) {}
+  };
+  // Default = visible during dev
+  const savedDev = (() => { try { return localStorage.getItem('midnight-store.dev-panel'); } catch (e) { return null; } })();
+  applyDevVisibility(savedDev !== '0');
+  devToggle.addEventListener('click', () => applyDevVisibility(false));
+  devShow.addEventListener('click', () => applyDevVisibility(true));
   $('notebook-btn').addEventListener('click', showNotebook);
   $('notebook-close').addEventListener('click', hideNotebook);
   $('mute-btn').addEventListener('click', toggleMute);
