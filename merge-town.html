@@ -391,16 +391,16 @@ body {
 ===================================================== */
 const ITEMS = [
   { emoji: '🧱', name: '砖块',   color: '#fecaca', border: '#b91c1c', price: 0 },
-  { emoji: '🌲', name: '木材',   color: '#fed7aa', border: '#c2410c', price: 30 },
-  { emoji: '⛺', name: '帐篷',   color: '#d9f99d', border: '#65a30d', price: 200 },
-  { emoji: '🏕️', name: '茅屋',   color: '#fef08a', border: '#a16207', price: null },
-  { emoji: '🏚️', name: '老屋',   color: '#d6d3d1', border: '#78716c', price: null },
-  { emoji: '🏠', name: '民房',   color: '#fde68a', border: '#d97706', price: null },
+  { emoji: '🌲', name: '木材',   color: '#bbf7d0', border: '#15803d', price: 30 },
+  { emoji: '⛺', name: '帐篷',   color: '#fef08a', border: '#a16207', price: 200 },
+  { emoji: '🎪', name: '茅屋',   color: '#fed7aa', border: '#c2410c', price: null },
+  { emoji: '🏚️', name: '老屋',   color: '#d6d3d1', border: '#57534e', price: null },
+  { emoji: '🏠', name: '民房',   color: '#fde68a', border: '#b45309', price: null },
   { emoji: '🏡', name: '别墅',   color: '#fca5a5', border: '#dc2626', price: null },
   { emoji: '🏢', name: '公寓楼', color: '#93c5fd', border: '#1e40af', price: null },
   { emoji: '🏬', name: '大厦',   color: '#a5b4fc', border: '#4338ca', price: null },
-  { emoji: '🕍', name: '教堂',   color: '#d8b4fe', border: '#7c3aed', price: null },
-  { emoji: '🏰', name: '城堡',   color: '#fcd34d', border: '#b45309', price: null },
+  { emoji: '🕍', name: '教堂',   color: '#d8b4fe', border: '#6b21a8', price: null },
+  { emoji: '🏰', name: '城堡',   color: '#fcd34d', border: '#78350f', price: null },
 ];
 const MAX_LEVEL = ITEMS.length - 1;
 const MERGE_COIN = lvl => Math.pow(3, lvl) * 2;       // 合成到 Lv.N 奖励金币
@@ -841,16 +841,28 @@ function drawItem(cx, cy, level, scale) {
   roundRect(cx - size/2, cy - size/2, size, size, 8);
   ctx.fill();
   ctx.strokeStyle = a.border;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.stroke();
   ctx.font = Math.floor(size * 0.6) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(a.emoji, cx, cy + size * 0.05);
-  ctx.fillStyle = 'rgba(0,0,0,0.55)';
-  ctx.font = 'bold ' + Math.max(9, Math.floor(size * 0.18)) + "px system-ui, sans-serif";
-  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-  ctx.fillText(level, cx - size/2 + 3, cy - size/2 + 2);
+  // 等级徽章:右上角彩色圆圈 + 大号数字
+  const br = Math.max(10, size * 0.22);
+  const bx = cx + size/2 - br * 0.7;
+  const by = cy - size/2 + br * 0.7;
+  ctx.fillStyle = a.border;
+  ctx.beginPath();
+  ctx.arc(bx, by, br, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold ' + Math.floor(br * 1.2) + "px system-ui, sans-serif";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(level, bx, by + 1);
 }
 
 function pixelToTile(x, y) {
