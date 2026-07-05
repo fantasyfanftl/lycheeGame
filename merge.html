@@ -143,7 +143,7 @@
   }
   .tiles {
     position: absolute;
-    inset: 8px;
+    inset: 18px;
     pointer-events: none;
   }
   .tile {
@@ -846,7 +846,7 @@ function hasMovesLeft() {
 // ============ Render ============
 function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) {
   const wrap = boardWrap.getBoundingClientRect();
-  const boardW = wrap.width - 16;  // minus padding
+  const boardW = wrap.width - 36;  // minus board padding on both sides
   const cellSize = (boardW - (SIZE - 1) * 4) / SIZE;  // 4px gap
   const gap = 4;
 

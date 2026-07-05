@@ -903,7 +903,7 @@ function drawBoard() {
   // 第一遍:所有格子的背景/障碍(不画物品,让下一遍的物品可以超出格子)
   for (let r = 0; r < curRows; r++) {
     for (let c = 0; c < curCols; c++) {
-      const x = PAD + c * TILE, y = PAD + r * TILE;
+      const x = PAD + c * TILE, y = PAD_TOP + r * TILE;
       const ch = cfg.layout[r]?.[c];
       if (!ch || ch === ' ') continue;
       if (ch === '#') {
@@ -925,7 +925,7 @@ function drawBoard() {
     for (let c = 0; c < curCols; c++) {
       const ch = cfg.layout[r]?.[c];
       if (!ch || ch === ' ' || ch === '#') continue;
-      const x = PAD + c * TILE, y = PAD + r * TILE;
+      const x = PAD + c * TILE, y = PAD_TOP + r * TILE;
       const lvl = st.board[r][c];
       if (lvl !== null) drawItem(x + TILE/2, y + TILE/2, lvl, 1);
       // 高亮闪烁
@@ -946,7 +946,7 @@ function drawBoard() {
   // 预览:显示按住位置的幽灵物品 + 会被合并的组
   if (previewCell) {
     const { r, c, actualLvl, group } = previewCell;
-    const px = PAD + c * TILE, py = PAD + r * TILE;
+    const px = PAD + c * TILE, py = PAD_TOP + r * TILE;
     // 幽灵物品(半透明)
     ctx.globalAlpha = 0.6;
     drawItem(px + TILE/2, py + TILE/2, actualLvl, 1);
