@@ -3890,6 +3890,11 @@ function render() {
   renderCharacters();
   updateCPCounter();
   document.body.classList.toggle('pov-cashier', state.currentPOV === 'cashier');
+  // Mid-arc = a POV is picked AND its arc isn't complete. Hides bottom tabs
+  // so the player stays immersed until they finish this character; between
+  // arcs they return to the title screen to pick next.
+  const midArc = !!(state.currentPOV && !state.completed.has(state.currentPOV));
+  document.body.classList.toggle('playing-arc', midArc);
   // Oden tray state — default (undefined) shows nothing until cashier decides.
   const os = (state.world && state.world.odenState) || 'off';
   document.body.classList.toggle('oden-off',  os === 'off');
