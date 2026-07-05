@@ -392,46 +392,48 @@ let pieces = INITIAL.map((p, i) => ({ ...p, idx: i, color: COLORS[i] }));
 let selectedIdx = null;
 
 // ============ Targets & poems ============
+// All silhouettes are pure straight-line polygons with area ≈ 8U² = 12800
+// (equal to the total area of the 7 tangram pieces).
 const TARGETS = [
   {
-    name: '月', emoji: '🌙',
-    silhouette: 'M 240 100 A 130 130 0 1 0 240 300 A 100 100 0 1 1 240 100 Z',
-    verse: '举 头 望 明 月\n低 头 思 故 乡',
-    poet: '李白 · 静夜思',
-    sub: '一片乡愁',
-  },
-  {
-    name: '舟', emoji: '⛵',
-    silhouette: 'M 200 100 L 200 260 M 200 260 L 280 260 L 200 100 Z ' +
-                'M 90 260 Q 100 285 130 300 L 280 300 Q 310 285 320 260 Z',
-    verse: '孤 舟 蓑 笠 翁\n独 钓 寒 江 雪',
-    poet: '柳宗元 · 江雪',
-    sub: '天地寂寂',
-  },
-  {
     name: '山', emoji: '⛰',
-    silhouette: 'M 60 320 L 140 200 L 200 250 L 250 160 L 340 320 Z',
+    silhouette: 'M 90 300 L 160 200 L 210 240 L 260 180 L 320 300 Z',
     verse: '不 识 庐 山 真 面 目\n只 缘 身 在 此 山 中',
     poet: '苏轼 · 题西林壁',
     sub: '身在局中',
   },
   {
     name: '松', emoji: '🌲',
-    silhouette: 'M 200 60 L 130 190 L 165 190 L 110 280 L 180 280 L 180 340 L 220 340 L 220 280 L 290 280 L 235 190 L 270 190 Z',
+    silhouette: 'M 200 100 L 150 195 L 175 195 L 130 275 L 190 275 L 190 315 L 210 315 L 210 275 L 270 275 L 225 195 L 250 195 Z',
     verse: '岁 寒\n然 后 知 松 柏 之 后 凋 也',
     poet: '孔子 · 论语',
     sub: '傲雪凌霜',
   },
   {
+    name: '舟', emoji: '⛵',
+    silhouette: 'M 200 125 L 220 240 L 90 240 Z ' +
+                'M 70 240 L 330 240 L 300 295 L 100 295 Z',
+    verse: '孤 舟 蓑 笠 翁\n独 钓 寒 江 雪',
+    poet: '柳宗元 · 江雪',
+    sub: '天地寂寂',
+  },
+  {
+    name: '月', emoji: '🌕',
+    silhouette: 'M 175 140 L 225 140 L 265 180 L 265 240 L 225 280 L 175 280 L 135 240 L 135 180 Z',
+    verse: '举 头 望 明 月\n低 头 思 故 乡',
+    poet: '李白 · 静夜思',
+    sub: '一轮乡愁',
+  },
+  {
     name: '亭', emoji: '⛩',
-    silhouette: 'M 80 200 L 200 90 L 320 200 L 300 220 L 300 320 L 240 320 L 240 240 L 160 240 L 160 320 L 100 320 L 100 220 Z',
+    silhouette: 'M 130 210 L 200 140 L 270 210 L 255 225 L 255 290 L 220 290 L 220 240 L 180 240 L 180 290 L 145 290 L 145 225 Z',
     verse: '亭 亭 山 上 松\n瑟 瑟 谷 中 风',
     poet: '刘桢 · 赠从弟',
     sub: '一亭一世界',
   },
   {
     name: '云', emoji: '☁',
-    silhouette: 'M 100 250 Q 80 200 130 190 Q 130 140 200 160 Q 240 130 290 170 Q 340 180 330 230 Q 350 270 300 280 L 130 280 Q 80 280 100 250 Z',
+    silhouette: 'M 90 250 L 90 225 L 120 225 L 120 200 L 170 200 L 170 175 L 270 175 L 270 200 L 310 200 L 310 225 L 340 225 L 340 250 Z',
     verse: '行 到 水 穷 处\n坐 看 云 起 时',
     poet: '王维 · 终南别业',
     sub: '闲云自舒',
