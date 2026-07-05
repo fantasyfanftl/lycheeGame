@@ -3276,11 +3276,13 @@ function renderHotspots() {
 }
 
 function isCharPresent(id) {
-  // First-person rule: the current POV is the viewer — they don't see
-  // themselves in the scene. NPC oldman appears once a doorChime beat has
-  // fired. Other POV chars appear (dimmed) once their arc completes — as
-  // "this is who else is here in the same night" — but never the viewer.
+  // First-person rule: the current POV is the viewer — they don't see themselves.
   if (id === state.currentPOV) return false;
+  // Cashier is the store attendant — always at the register while the store
+  // is open, regardless of whether their own arc has been played. Other
+  // playable POVs (nurse/driver/teen) are customers; they only appear as
+  // dimmed silhouettes after their arc has been played this run.
+  if (id === 'cashier') return true;
   if (id === 'oldman') {
     return !!(state.world && state.world.oldmanArrived);
   }
