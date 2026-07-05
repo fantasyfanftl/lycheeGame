@@ -5272,6 +5272,26 @@ function stopCashierEarbudSong(fadeSeconds) {
   requestAnimationFrame(step);
 }
 
+// Adjust the earbud song volume smoothly (used when player picks
+// "降低音量" — song keeps playing but softer).
+function setEarbudSongVolume(newTargetVol, fadeSeconds) {
+  if (!AUDIO.earbudSong) return;
+  const es = AUDIO.earbudSong;
+  const startVol = es.audio.volume;
+  const target = Math.max(0, Math.min(1, newTargetVol));
+  es.target = target;
+  const dur = Math.max(80, (fadeSeconds != null ? fadeSeconds : 1.2) * 1000);
+  const t0 = performance.now();
+  const step = () => {
+    if (!AUDIO.earbudSong || AUDIO.earbudSong !== es) return;
+    const t = performance.now() - t0;
+    if (t >= dur) { es.audio.volume = target; return; }
+    es.audio.volume = startVol + (target - startVol) * (t / dur);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
 // ========== Cashier's earbud music (lo-fi loop) ==========
 // Original composition — a slow folk-lullaby, G major, 5s per chord, 20s loop.
 // Warm chord pad (triangle waves) + a simple singable melody line, low-passed
