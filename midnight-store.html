@@ -4663,6 +4663,14 @@ function advanceInlinePage() {
 
 function playInlineBeat(effective) {
   updateDevPanel(effective, 'beat');
+
+  // Cashier's beat 0 — Act 1 opening: show the phone player overlay
+  // (music player UI with 3 choices) instead of the standard inline panel.
+  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0 && effective.choices) {
+    showPhoneOverlay(effective);
+    return;
+  }
+
   const panel = $('inline-panel');
   const cue = $('inline-cue');
   const subtitle = $('inline-subtitle');
