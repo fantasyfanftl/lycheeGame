@@ -1108,6 +1108,60 @@ function updateStats() {
   document.getElementById('fillVal').textContent = filled + '/' + total;
 }
 
+let previewCell = null;  // {r, c, actualLvl, group}
+
+function updatePreview(r, c) {
+  const cfg = townCfg(currentTownId);
+  const st = getTownState(currentTownId);
+  if (!cfg || !st) return;
+  if (!isPlayable(cfg, r, c) || st.board[r][c] !== null) {
+    if (previewCell) { previewCell = null; drawBoard(); }
+    return;
+  }
+  const qLvl = st.queue[0];
+  const actualLvl = (qLvl === WILDCARD_LVL) ? pickWildcardLevel(st, r, c) : qLvl;
+  const { rows, cols } = townDims(cfg);
+  // 临时放上去找组,再撤回
+  st.board[r][c] = actualLvl;
+  const group = findGroup(st.board, r, c, rows, cols);
+  st.board[r][c] = null;
+  previewCell = { r, c, actualLvl, group };
+  drawBoard();
+}
+
+function commitPlacement() {
+  if (!previewCell) return;
+  const { r, c } = previewCell;
+  const cfg = townCfg(currentTownId);
+  const st = getTownState(currentTownId);
+  previewCell = null;
+  if (!isPlayable(cfg, r, c) || st.board[r][c] !== null) { drawBoard(); return; }
+  if (st.energy < 1) { toast('步数没了,再等一会儿就恢复'); drawBoard(); return; }
+  st.undoState = snapshotState(st);
+  const level = st.queue[0];
+  st.energy -= 1;
+  if (st.energy === ENERGY_MAX - 1) st.lastRegen = Date.now();
+  let placedLvl;
+  if (level === WILDCARD_LVL) {
+    placedLvl = pickWildcardLevel(st, r, c);
+    st.board[r][c] = placedLvl;
+    toast('🌟 万能星变身为 ' + ITEMS[placedLvl].name);
+  } else {
+    placedLvl = level;
+    st.board[r][c] = level;
+  }
+  st.steps++;
+  st.queue.shift();
+  st.queue.push(randomItem());
+  doMergeCascade(st, r, c);
+  checkWin();
+  checkAchievements();
+  persist();
+  drawBoard();
+  updateStats();
+  renderQueue();
+}
+
 canvas.addEventListener('pointerdown', e => {
   e.preventDefault();
   const p = eventToCanvas(e);
@@ -1115,41 +1169,31 @@ canvas.addEventListener('pointerdown', e => {
   if (!tc) return;
   const cfg = townCfg(currentTownId);
   const st = getTownState(currentTownId);
-  if (!isPlayable(cfg, tc.r, tc.c)) {
-    toast('这里是障碍物,不能放'); return;
-  }
-  if (st.board[tc.r][tc.c] !== null) {
-    toast('这个格子已经有东西了'); return;
-  }
-  if (st.energy < 1) {
-    toast('步数没了,再等一会儿就恢复'); return;
-  }
-  // 保存快照供撤销
-  st.undoState = snapshotState(st);
-  const level = st.queue[0];
-  st.energy -= 1;
-  if (st.energy === ENERGY_MAX - 1) st.lastRegen = Date.now();  // 刚从满掉下来,开始计时
-  // 万能星:自动挑一个能触发合体(或最好的)等级放下
-  let placedLvl;
-  if (level === WILDCARD_LVL) {
-    placedLvl = pickWildcardLevel(st, tc.r, tc.c);
-    st.board[tc.r][tc.c] = placedLvl;
-    toast('🌟 万能星变身为 ' + ITEMS[placedLvl].name);
-  } else {
-    placedLvl = level;
-    st.board[tc.r][tc.c] = level;
-  }
-  st.steps++;
-  // 队列前进,尾部补一个随机
-  st.queue.shift();
-  st.queue.push(randomItem());
-  doMergeCascade(st, tc.r, tc.c);
-  checkWin();
-  checkAchievements();
-  persist();
+  if (!isPlayable(cfg, tc.r, tc.c)) { toast('这里是障碍物,不能放'); return; }
+  if (st.board[tc.r][tc.c] !== null) { toast('这个格子已经有东西了'); return; }
+  if (st.energy < 1) { toast('步数没了,再等一会儿就恢复'); return; }
+  updatePreview(tc.r, tc.c);
+  try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
+});
+
+canvas.addEventListener('pointermove', e => {
+  if (!previewCell) return;
+  e.preventDefault();
+  const p = eventToCanvas(e);
+  const tc = pixelToTile(p.x, p.y);
+  if (!tc) return;
+  if (tc.r === previewCell.r && tc.c === previewCell.c) return;
+  updatePreview(tc.r, tc.c);
+});
+
+canvas.addEventListener('pointerup', e => {
+  e.preventDefault();
+  commitPlacement();
+});
+
+canvas.addEventListener('pointercancel', () => {
+  previewCell = null;
   drawBoard();
-  updateStats();
-  renderQueue();
 });
 
 function snapshotState(st) {
