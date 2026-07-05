@@ -307,6 +307,7 @@ function reveal(r, c) {
     for (const m of mines) revealed.add(m);
     render();
     showMessage('💥 踩中了 —— 再来一局？', 'lose');
+    if (navigator.vibrate) navigator.vibrate([80, 40, 80, 40, 120]);
     clearInterval(timerId);
     return;
   }
