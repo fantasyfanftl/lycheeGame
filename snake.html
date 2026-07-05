@@ -392,9 +392,28 @@
       margin: 0 auto 4px;
     }
 
-    /* Actions & hint 极简 */
-    .actions { margin-bottom: 2px; gap: 5px; }
-    .actions button { padding: 4px 12px; font-size: 10px; letter-spacing: 1px; }
+    /* Actions —— 拆到顶部两角，不占上下空间 */
+    .actions { display: contents; margin: 0; }
+    #pauseBtn, #restartBtn {
+      position: fixed;
+      top: 5px;
+      z-index: 30;
+      padding: 4px 12px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      border-radius: 999px;
+      background: rgba(10, 10, 20, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(245, 200, 138, 0.4);
+      color: rgba(245, 200, 138, 0.95);
+      font-family: inherit;
+      cursor: pointer;
+      margin: 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    #pauseBtn { right: 5px; }                 /* 右上角 */
+    #restartBtn { left: 5px; top: 32px; background: rgba(245, 200, 138, 0.2); }  /* 左上角，返回按钮下方 */
     .hint { font-size: 9px; letter-spacing: 0.5px; line-height: 1.4; }
 
     /* D-pad 固定在视口底部 —— 不再占容器纵向空间 */
