@@ -628,6 +628,99 @@
   }
   .clue-body-inner { color: #2a2418; font-size: 14px; flex: 1; }
   .clue-body-inner.locked { color: #907050; opacity: 0.55; font-style: italic; }
+
+  /* Case-file tabs (line-up over clue modal) */
+  .case-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(160, 144, 112, 0.4);
+  }
+  .case-tabs button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(160, 144, 112, 0.5);
+    color: #6b5d40;
+    padding: 8px 4px;
+    font-family: inherit;
+    letter-spacing: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .case-tabs button:hover { background: rgba(160, 144, 112, 0.15); }
+  .case-tabs button.active {
+    background: #6b5d40;
+    color: #f0e8d5;
+    border-color: #6b5d40;
+  }
+  .case-tab { display: none; }
+  .case-tab.active { display: block; }
+  .case-story p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: #2a2418;
+    letter-spacing: 1px;
+    margin: 4px 0;
+  }
+  .case-story p.gap { height: 12px; }
+  .case-story .story-subtitle {
+    font-size: 12px;
+    color: #907050;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(160, 144, 112, 0.4);
+    text-align: center;
+  }
+  .deduce-section { margin-bottom: 18px; }
+  .deduce-section:last-child { margin-bottom: 0; }
+  .deduce-section h4 {
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #907050;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed rgba(160, 144, 112, 0.4);
+  }
+  .deduce-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    align-items: flex-start;
+    border-bottom: 1px dashed rgba(160, 144, 112, 0.25);
+  }
+  .deduce-item:last-child { border-bottom: none; }
+  .deduce-item .avatar {
+    font-size: 22px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .deduce-item .who {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2a2418;
+    letter-spacing: 1px;
+  }
+  .deduce-item .role {
+    font-size: 11px;
+    color: #907050;
+    letter-spacing: 1px;
+    margin-top: 1px;
+  }
+  .deduce-item .desc {
+    font-size: 12px;
+    color: #4a4028;
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+  .method-item { padding: 8px 0; border-bottom: 1px dashed rgba(160, 144, 112, 0.25); }
+  .method-item:last-child { border-bottom: none; }
+  .method-item .who { font-size: 14px; font-weight: 500; color: #2a2418; letter-spacing: 2px; }
+  .method-item .desc { font-size: 12px; color: #4a4028; margin-top: 3px; line-height: 1.6; }
   .modal-close {
     display: block;
     margin: 20px auto 0;
@@ -775,7 +868,7 @@
 <div id="screen-game" class="screen">
   <div class="game-header">
     <span class="game-title" id="gameTitle">❄ 雪夜列车 · 🌱 新手 · 剩指控 3</span>
-    <button class="clue-btn" id="clueBtn">线索簿 <span class="badge" id="clueBadge">0/9</span></button>
+    <button class="clue-btn" id="clueBtn">案卷 <span class="badge" id="clueBadge">0/9</span></button>
   </div>
   <div class="info">
     <span id="timerBox">时辰 <b id="timer">00:00</b></span>
@@ -836,9 +929,22 @@
 
 <div class="modal-mask" id="clueModal">
   <div class="modal">
-    <h3>线 索 簿</h3>
-    <div class="modal-sub">数独盘的每个 3×3 宫 = 车厢的一处位置。填完即搜清</div>
-    <div id="clueList"></div>
+    <h3 id="caseModalTitle">案 · 卷</h3>
+    <div class="modal-sub" id="caseModalSub">案情 · 线索 · 推理 · 皆在此册</div>
+    <div class="case-tabs" id="caseTabs">
+      <button data-tab="story" class="active">案情</button>
+      <button data-tab="clues">线索 <span id="tabClueCount"></span></button>
+      <button data-tab="deduce">推理</button>
+    </div>
+    <div class="case-tab active" data-tab="story">
+      <div class="case-story" id="caseStory"></div>
+    </div>
+    <div class="case-tab" data-tab="clues">
+      <div id="clueList"></div>
+    </div>
+    <div class="case-tab" data-tab="deduce">
+      <div id="caseDeduce"></div>
+    </div>
     <button class="modal-close" id="closeClueBtn">合上</button>
   </div>
 </div>
@@ -1684,13 +1790,58 @@ document.getElementById('check').addEventListener('click', () => {
   else showMessage(`✗ 现有 ${errors} 处错位`, 'error');
 });
 
-// Clue log modal
+// Case-file (formerly clue log) modal
 document.getElementById('clueBtn').addEventListener('click', () => {
-  renderClueList();
-  clueModal.classList.add('show');
+  openCaseFile();
 });
 document.getElementById('closeClueBtn').addEventListener('click', () => clueModal.classList.remove('show'));
 clueModal.addEventListener('click', e => { if (e.target === clueModal) clueModal.classList.remove('show'); });
+
+// Tab switching
+document.getElementById('caseTabs').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-tab]');
+  if (!btn) return;
+  const key = btn.dataset.tab;
+  document.querySelectorAll('#caseTabs button').forEach(b => b.classList.toggle('active', b === btn));
+  document.querySelectorAll('.case-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === key));
+});
+
+function openCaseFile() {
+  const s = STORIES[currentStoryIdx];
+  document.getElementById('caseModalTitle').textContent =
+    `${s.emoji}  ${s.name.split('').join(' ')}`;
+  document.getElementById('caseModalSub').textContent = s.subtitle;
+  document.getElementById('caseStory').innerHTML =
+    `<div class="story-subtitle">— ${s.subtitle} —</div>` +
+    s.intro.map(l => l ? `<p>${l}</p>` : '<p class="gap"></p>').join('');
+  document.getElementById('tabClueCount').textContent = `(${unlockedBoxes.size}/9)`;
+  renderClueList();
+  document.getElementById('caseDeduce').innerHTML =
+    `<div class="deduce-section">
+       <h4>嫌 疑 人</h4>
+       ${s.suspects.map(x => `
+         <div class="deduce-item">
+           <div class="avatar">${x.avatar}</div>
+           <div>
+             <div class="who">${x.name}</div>
+             <div class="role">${x.role}</div>
+             <div class="desc">${x.desc}</div>
+           </div>
+         </div>`).join('')}
+     </div>
+     <div class="deduce-section">
+       <h4>可 能 手 法</h4>
+       ${s.methods.map(m => `
+         <div class="method-item">
+           <div class="who">${m.name}</div>
+           <div class="desc">${m.desc}</div>
+         </div>`).join('')}
+     </div>`;
+  // reset to first tab
+  document.querySelectorAll('#caseTabs button').forEach((b, i) => b.classList.toggle('active', i === 0));
+  document.querySelectorAll('.case-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+  clueModal.classList.add('show');
+}
 
 function renderClueList() {
   clueList.innerHTML = STORIES[currentStoryIdx].clues.map((c, i) => {
