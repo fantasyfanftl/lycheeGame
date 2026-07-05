@@ -3975,6 +3975,10 @@ function isCharPresent(id) {
   if (id === 'oldman') {
     return !!(state.world && state.world.oldmanArrived);
   }
+  if (id === 'driver') {
+    // Driver arrives on the first door chime of the cashier's shift.
+    return !!(state.world && state.world.driverArrived) || state.completed.has(id);
+  }
   return state.completed.has(id);
 }
 
@@ -5179,6 +5183,11 @@ function startCashierAmbient() {
       const p = (state.playedBeats && state.playedBeats.cashier) || new Set();
       if (p.has(0)) return; // already dealt with it
       playDoorChime();
+      // The first door chime of the shift = driver arrives. Mark it so his
+      // silhouette shows up in the window seat area from now on.
+      if (!state.world) state.world = {};
+      state.world.driverArrived = true;
+      if (typeof render === 'function') render();
     }, 7500));
   } else {
     // Already past beat 0 in an earlier run: background music, no earbud song.
