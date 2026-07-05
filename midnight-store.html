@@ -3796,34 +3796,11 @@ function renderHotspots() {
     overlay.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;');
 
     byCard[cardName].forEach(({ pos, beat, index }) => {
-      // Ripple ring
-      const ring = document.createElementNS(svgNS, 'circle');
-      ring.setAttribute('cx', pos.x); ring.setAttribute('cy', pos.y); ring.setAttribute('r', 26);
-      ring.setAttribute('fill', 'none');
-      ring.setAttribute('stroke', 'rgba(245, 200, 138, 0.9)');
-      ring.setAttribute('stroke-width', '3.2');
-      ring.setAttribute('class', 'hotspot-ring');
-      overlay.appendChild(ring);
-
-      // Warm glow
-      const glow = document.createElementNS(svgNS, 'circle');
-      glow.setAttribute('cx', pos.x); glow.setAttribute('cy', pos.y); glow.setAttribute('r', 26);
-      glow.setAttribute('fill', 'rgba(245, 200, 138, 0.55)');
-      glow.setAttribute('class', 'hotspot-glow');
-      overlay.appendChild(glow);
-
-      // Bright center dot
-      const dot = document.createElementNS(svgNS, 'circle');
-      dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y); dot.setAttribute('r', 7.5);
-      dot.setAttribute('fill', 'rgba(249, 243, 232, 0.95)');
-      dot.setAttribute('stroke', 'rgba(193, 123, 82, 0.9)');
-      dot.setAttribute('stroke-width', '1.5');
-      dot.setAttribute('class', 'hotspot-dot');
-      overlay.appendChild(dot);
-
-      // Click target (larger, invisible)
+      // Observation-based gameplay: no visible glow — player must observe
+      // the illustrated scene and click on the object itself. Only an
+      // invisible generous hit target is placed at the beat's hotspot.
       const hit = document.createElementNS(svgNS, 'circle');
-      hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 52);
+      hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 60);
       hit.setAttribute('fill', 'transparent');
       hit.setAttribute('style', 'pointer-events:auto;cursor:pointer;');
       hit.addEventListener('click', () => triggerBeatByIndex(index));
