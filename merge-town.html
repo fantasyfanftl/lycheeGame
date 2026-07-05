@@ -454,7 +454,11 @@ const QUEUE_SIZE = 3;
 const ENERGY_MAX = 30;
 const ENERGY_REGEN_SEC = 20;            // 每 20 秒恢复 1 点
 const REROLL_COST = 20;                 // 换一批要多少金币
-const SPAWN_WEIGHTS = [70, 25, 5];      // Lv.0 砖块 / Lv.1 木材 / Lv.2 帐篷
+const SPAWN_WEIGHTS = [68, 25, 5, 2];   // Lv.0 砖块 / Lv.1 木材 / Lv.2 帐篷 / 万能星
+// 万能星 —— 特殊道具:放到棋盘时会自动变成能触发合体的等级
+const WILDCARD_LVL = -1;
+const WILDCARD_ITEM = { emoji: '🌟', name: '万能星', color: '#fef9c3', border: '#ca8a04' };
+function getItem(lvl) { return lvl === WILDCARD_LVL ? WILDCARD_ITEM : ITEMS[lvl]; }
 // 商店可买等级(index=level),null=不可买
 const SHOP_PRICES = [10, 40, 150, 500, 1500, 4500, null, null, null, null, null];
 function randomItem() {
@@ -462,7 +466,7 @@ function randomItem() {
   let r = Math.random() * total;
   for (let i = 0; i < SPAWN_WEIGHTS.length; i++) {
     r -= SPAWN_WEIGHTS[i];
-    if (r < 0) return i;
+    if (r < 0) return i === 3 ? WILDCARD_LVL : i;
   }
   return 0;
 }
@@ -990,10 +994,10 @@ function renderQueue() {
   const st = getTownState(currentTownId);
   for (let i = 0; i < QUEUE_SIZE; i++) {
     const lvl = st.queue[i];
-    const it = ITEMS[lvl];
+    const it = getItem(lvl);
     document.getElementById('qEmoji' + i).textContent = it.emoji;
   }
-  document.getElementById('qName0').textContent = ITEMS[st.queue[0]].name;
+  document.getElementById('qName0').textContent = getItem(st.queue[0]).name;
   const undo = document.getElementById('undoBtn');
   if (undo) undo.disabled = !st.undoState || st.cleared;
 }
@@ -1098,7 +1102,16 @@ canvas.addEventListener('pointerdown', e => {
   const level = st.queue[0];
   st.energy -= 1;
   if (st.energy === ENERGY_MAX - 1) st.lastRegen = Date.now();  // 刚从满掉下来,开始计时
-  st.board[tc.r][tc.c] = level;
+  // 万能星:自动挑一个能触发合体(或最好的)等级放下
+  let placedLvl;
+  if (level === WILDCARD_LVL) {
+    placedLvl = pickWildcardLevel(st, tc.r, tc.c);
+    st.board[tc.r][tc.c] = placedLvl;
+    toast('🌟 万能星变身为 ' + ITEMS[placedLvl].name);
+  } else {
+    placedLvl = level;
+    st.board[tc.r][tc.c] = level;
+  }
   st.steps++;
   // 队列前进,尾部补一个随机
   st.queue.shift();
@@ -1122,6 +1135,31 @@ function snapshotState(st) {
     lastRegen: st.lastRegen,
     queue: st.queue.slice(),
   };
+}
+
+// 万能星:挑一个能触发合体的最高等级(优先);否则跟最高级邻居同级(凑成对);否则默认 Lv.0
+function pickWildcardLevel(st, r, c) {
+  const cfg = townCfg(currentTownId);
+  const { rows, cols } = townDims(cfg);
+  const nbrs = [[-1,0],[1,0],[0,-1],[0,1]];
+  // 优先级 1:能凑齐 3+ 组的最高等级
+  for (let lvl = MAX_LEVEL - 1; lvl >= 0; lvl--) {
+    st.board[r][c] = lvl;
+    const group = findGroup(st.board, r, c, rows, cols);
+    st.board[r][c] = null;
+    if (group.length >= 3) return lvl;
+  }
+  // 优先级 2:跟最高级邻居同级(至少凑成对)
+  let bestNbr = -1;
+  for (const [dr, dc] of nbrs) {
+    const nr = r+dr, nc = c+dc;
+    if (nr<0||nr>=rows||nc<0||nc>=cols) continue;
+    const l = st.board[nr]?.[nc];
+    if (typeof l === 'number' && l > bestNbr && l < MAX_LEVEL) bestNbr = l;
+  }
+  if (bestNbr >= 0) return bestNbr;
+  // 兜底:Lv.0
+  return 0;
 }
 
 function doUndo() {
