@@ -2807,6 +2807,75 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
       </div>
       </div>
     </div>
+
+    <!-- ==== Phone player overlay (Act 1 opening for cashier beat 0) ==== -->
+    <div class="phone-overlay hidden" id="phone-overlay">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="pp-statusbar">
+            <span>01:47</span>
+            <span class="pp-icons">📶 🔋</span>
+          </div>
+          <div class="pp-header">
+            <span class="pp-back">‹</span>
+            <span class="pp-title">· 现 在 播 放 ·</span>
+            <span class="pp-menu">⋯</span>
+          </div>
+          <div class="pp-art">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <!-- Original abstract album-art: night convenience-store dream -->
+              <defs>
+                <linearGradient id="pp-sky" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2a3448"/>
+                  <stop offset="100%" stop-color="#1a1f2c"/>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="200" height="200" fill="url(#pp-sky)"/>
+              <circle cx="150" cy="55" r="18" fill="#f5c88a" opacity="0.9"/>
+              <circle cx="158" cy="50" r="16" fill="#1a1f2c"/>
+              <circle cx="40" cy="35" r="1.4" fill="#f5c88a" opacity="0.8"/>
+              <circle cx="80" cy="60" r="1" fill="#f5c88a" opacity="0.6"/>
+              <circle cx="115" cy="30" r="1.2" fill="#f5c88a" opacity="0.7"/>
+              <circle cx="180" cy="90" r="1" fill="#f5c88a" opacity="0.5"/>
+              <!-- Distant building silhouettes -->
+              <path d="M0 130 L0 100 L18 100 L18 88 L38 88 L38 108 L60 108 L60 78 L82 78 L82 100 L110 100 L110 118 L140 118 L140 90 L165 90 L165 110 L200 110 L200 130 Z" fill="#0e1622" opacity="0.85"/>
+              <!-- Warm store window glow -->
+              <rect x="72" y="130" width="60" height="46" fill="#f5c88a" opacity="0.4"/>
+              <rect x="72" y="130" width="60" height="46" fill="none" stroke="#c17b52" stroke-width="1"/>
+              <text x="102" y="158" font-size="14" fill="#3d2f24" text-anchor="middle" font-family="serif" letter-spacing="1">24</text>
+              <!-- Foreground pavement -->
+              <rect x="0" y="176" width="200" height="24" fill="#0a0f1a"/>
+              <ellipse cx="150" cy="188" rx="20" ry="3" fill="#5a6580" opacity="0.6"/>
+              <ellipse cx="150" cy="187" rx="14" ry="2" fill="#f5c88a" opacity="0.15"/>
+            </svg>
+          </div>
+          <div class="pp-track-info">
+            <div class="pp-track">— 耳 机 里 的 歌 —</div>
+            <div class="pp-artist">你 的 播 放 列 表</div>
+          </div>
+          <div class="pp-progress">
+            <div class="pp-bar">
+              <div class="pp-fill" id="pp-fill"></div>
+              <div class="pp-thumb" id="pp-thumb"></div>
+            </div>
+            <div class="pp-times">
+              <span id="pp-time-cur">0 : 23</span>
+              <span>3 : 12</span>
+            </div>
+          </div>
+          <div class="pp-controls">
+            <button class="pp-btn" aria-label="上一首">⏮</button>
+            <button class="pp-btn pp-play" id="pp-play" aria-label="暂停">⏸</button>
+            <button class="pp-btn" aria-label="下一首">⏭</button>
+          </div>
+        </div>
+        <div class="phone-home"></div>
+      </div>
+      <div class="phone-cue hidden" id="phone-cue">· 门 铃 响 了 · 有 人 进 来 ·</div>
+      <div class="phone-choices" id="phone-choices"></div>
+    </div>
+
     <div class="bottom-bar">
       <div class="pov-indicator">
         <div class="pov-label">当前视角</div>
