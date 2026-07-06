@@ -4159,6 +4159,47 @@ const BEATS = {
     }
   ]};
 
+// ============================================================
+// CASHIER TIMELINE — invisible time axis for the cashier POV.
+// Clicking the register is the *only* time-advancing action:
+//   - during an 'idle' step (guestPresent == null) → advance to next step,
+//     spawn its guest with a door chime.
+//   - during a 'guest' step (guest already in store) → trigger their anchor
+//     checkout beat. Beat close → guest leaves, step++, back to idle.
+// Shard hotspots (non-register, non-anchor) are only clickable while their
+// step is current. Miss them and they're gone — NPC falls back to default
+// behavior implicitly. See handleRegisterClick / advanceCashierStep below.
+// Only affects the cashier POV; nurse/driver/teen use the legacy free-touch
+// model unchanged.
+// ============================================================
+const CASHIER_TIMELINE = [
+  // step 0 — opening idle (01:47). Player wakes into the shift.
+  { kind: 'idle', label: '开局空窗',
+    shards: ['phone', 'catBowl'] },
+  // step 1 — 独居老人
+  { kind: 'guest', guest: 'oldman',    enterCard: 'shelves',
+    shards: ['milkCabinet'],           anchorKey: 'oldmanCheckout' },
+  // step 2 — 夜班护士（进店在货架，落座走到吧台）
+  { kind: 'guest', guest: 'nurse',     enterCard: 'shelves', walkTo: 'window',
+    shards: ['odenPot', 'nurseObserve'], anchorKey: 'nurseCheckout' },
+  // step 3 — 保洁阿姨（小锚点）
+  { kind: 'guest', guest: 'cleaner',   enterCard: 'shelves',
+    shards: [],                        anchorKey: 'cleanerCheckout' },
+  // step 4 — 网约车司机
+  { kind: 'guest', guest: 'driver',    enterCard: 'window',
+    shards: ['driverSeat'],            anchorKey: 'driverCheckout' },
+  // step 5 — 代驾小哥（小锚点）
+  { kind: 'guest', guest: 'driverAlt', enterCard: 'shelves',
+    shards: [],                        anchorKey: 'driverAltCheckout' },
+  // step 6 — 叛逆少年（进店买猫粮）
+  { kind: 'guest', guest: 'teen',      enterCard: 'doorstep',
+    shards: ['teenObserve'],           anchorKey: 'teenCheckout' },
+  // step 7 — 收尾空窗（少年蹲回台阶，不再进出）
+  { kind: 'idle', label: '收尾空窗',
+    shards: ['doorway'],
+    persistGuest: 'teen', persistZone: 'doorstep' }
+];
+
 // Convergences — 15 CPs across 4 POVs + 1 NPC (老人)
 // participants: who is involved. npcs: who is not-playable (auto-satisfied for CP unlock).
 // Full text (cold/default/warm tiers) filled in later batches.
