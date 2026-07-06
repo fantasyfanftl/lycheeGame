@@ -353,37 +353,40 @@ body {
 
   <!-- 游戏 -->
   <section id="gameScreen" class="screen">
-    <div class="topbar">
-      <button id="backToMap" class="icon-btn small">← 地图</button>
+    <div class="topbar compact">
+      <button id="backToMap" class="icon-btn small">←</button>
       <div class="title" id="townTitle">村庄</div>
       <button id="resetTownBtn" class="icon-btn small">🔄</button>
     </div>
-    <div id="statsBar">
-      <span>⚡<b id="energyVal">30</b>/<span id="energyMax">30</span><small id="energyTimer" style="opacity:0.75;font-size:11px;margin-left:4px"></small></span>
-      <span>💰<b id="coinsVal">0</b></span>
-      <span>🎯<b id="scoreVal">0</b></span>
-      <span class="goal" id="fillVal">0/0</span>
+    <div id="scoreBar">
+      <div class="sb-left">
+        <div class="sb-score">🎯<b id="scoreVal">0</b></div>
+        <div class="sb-steps">🎁<b id="energyVal">30</b>步</div>
+      </div>
+      <div class="sb-preview" id="previewBox" title="现在放">
+        <div class="sb-preview-img" id="qEmoji0">🧱</div>
+      </div>
+      <div class="sb-right">
+        <div class="sb-coins">💰<b id="coinsVal">0</b></div>
+        <button id="shopBtn" class="sb-btn shop-btn-mini">🍔 商店</button>
+        <button id="settingsBtn" class="sb-btn">⚙</button>
+      </div>
     </div>
-    <div id="queueBar">
-      <div class="q-slot q-current">
-        <div class="q-label">👇 现在放</div>
-        <div class="q-emoji" id="qEmoji0">🧱</div>
-        <div class="q-name" id="qName0">砖块</div>
-      </div>
-      <div class="q-slot">
-        <div class="q-label">下一个</div>
-        <div class="q-emoji q-small" id="qEmoji1">🧱</div>
-      </div>
-      <div class="q-slot">
-        <div class="q-label">再下</div>
-        <div class="q-emoji q-small" id="qEmoji2">🧱</div>
-      </div>
-      <div class="q-slot q-storage empty" id="storageBtn" title="暂存位:点一次收进,再点换回">
-        <div class="q-label">🎒 暂存</div>
-        <div class="q-emoji q-small" id="storageContent">＋</div>
-      </div>
-      <button id="undoBtn" class="q-tool" title="撤销上一步" disabled>↩</button>
-      <button id="shopBtn" class="q-tool" title="商店 - 花金币买建筑">🏪</button>
+    <div id="promoBar">
+      <div class="promo-formula">3 <span id="promoLo">🍀</span> = <span id="promoHi">🌳</span></div>
+      <button id="giveStepsBtn" class="promo-btn">送 100 步</button>
+      <button id="freeGiftBtn" class="promo-btn rainbow">🎁 免费奖品</button>
+    </div>
+    <!-- 隐藏的下 2 个预览 + 暂存(逻辑保留但不视觉展示) -->
+    <div id="hiddenQueueBar" style="display:none;">
+      <span id="qEmoji1"></span>
+      <span id="qEmoji2"></span>
+      <span id="qName0"></span>
+      <span id="storageBtn" class="empty"><span id="storageContent">＋</span></span>
+      <button id="undoBtn" disabled>↩</button>
+      <span id="energyMax">30</span>
+      <span id="energyTimer"></span>
+      <span id="fillVal">0/0</span>
     </div>
     <div id="boardWrap"><canvas id="board"></canvas></div>
   </section>
