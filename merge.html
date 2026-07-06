@@ -1184,18 +1184,21 @@ function newGame() {
   grid = emptyGrid();
   nextId = 1;
   score = 0;
+  displayedScore = 0;
   won = false;
   wonEver = false;
   history = [];
   animating = false;
   tilesEl.innerHTML = '';
   hideHint();
+  boardWrap.classList.remove('warn-pulse');
   spawn();
   spawn();
   renderTiles();
   updateScore();
   updateUndoBtn();
   updateItemBtns();
+  updateBoardWarning();
   updateInfoText();
   overlay.classList.remove('show');
 }
