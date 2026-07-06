@@ -1017,6 +1017,56 @@ function roundRect(x, y, w, h, r) {
 
 let flashCells = [];  // {r,c,t0,dur} 合成成功时短暂高亮
 
+
+// ==== 手感优化:弹跳动画 + Web Audio 音效 ====
+let bounceCells = [];  // {r, c, t0, dur}
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function beep(freq, duration = 100, type = 'sine', vol = 0.12) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.value = vol;
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration/1000);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration/1000);
+}
+function soundPlace() { beep(520, 60, 'sine', 0.08); }
+function soundMerge(tier) {
+  // 高等级合成音更低沉更响
+  const freq = 900 - Math.min(tier, 8) * 50;
+  const dur = 140 + Math.min(tier, 8) * 15;
+  beep(freq, dur, 'triangle', 0.15);
+  if (tier >= 5) setTimeout(() => beep(freq * 1.5, dur * 0.7, 'sine', 0.10), 40);
+}
+function soundError() { beep(180, 90, 'sawtooth', 0.10); }
+
+// 弹跳缓动:0→0.4 冲高到 1.25, 0.4→1 回落到 1.0
+function bounceScale(t) {
+  if (t >= 1) return 1;
+  if (t < 0) return 0;
+  if (t < 0.4) {
+    const p = t / 0.4;
+    return 0.55 + 0.7 * (1 - Math.pow(1 - p, 2));  // 0.55 → 1.25
+  }
+  const p = (t - 0.4) / 0.6;
+  return 1.25 - 0.25 * (1 - Math.pow(1 - p, 2));   // 1.25 → 1.0
+}
+function pushBounce(r, c) {
+  bounceCells = bounceCells.filter(b => !(b.r === r && b.c === c));
+  bounceCells.push({ r, c, t0: performance.now(), dur: 280 });
+}
+
+
 function drawBoard() {
   if (!currentTownId) return;
   const cfg = townCfg(currentTownId);
@@ -1061,7 +1111,16 @@ function drawBoard() {
       if (!ch || ch === ' ' || ch === '#') continue;
       const x = PAD + c * TILE, y = PAD_TOP + r * TILE;
       const lvl = st.board[r][c];
-      if (lvl !== null) drawItem(x + TILE/2, y + TILE/2, lvl, 1);
+      if (lvl !== null) {
+        const b = bounceCells.find(bb => bb.r === r && bb.c === c);
+        let s = 1;
+        if (b) {
+          const t = (now - b.t0) / b.dur;
+          if (t < 1) s = bounceScale(t);
+          else bounceCells = bounceCells.filter(bb => bb !== b);
+        }
+        drawItem(x + TILE/2, y + TILE/2, lvl, s);
+      }
       // 高亮闪烁
       const fl = flashCells.find(f => f.r === r && f.c === c);
       if (fl) {
@@ -1150,7 +1209,7 @@ function drawBoard() {
   }
   // 清理已过期高亮
   flashCells = flashCells.filter(f => now - f.t0 < f.dur);
-  if (flashCells.length) requestAnimationFrame(drawBoard);
+  if (flashCells.length || bounceCells.length) requestAnimationFrame(drawBoard);
 }
 
 function drawItem(cx, cy, level, scale) {
@@ -1258,7 +1317,9 @@ function doMergeCascade(town, r, c) {
       town.board[or][oc] = newLvl;
       queue.push([or, oc]);
       flashCells.push({ r: or, c: oc, t0: performance.now(), dur: 400 });
+      pushBounce(or, oc);
     }
+    soundMerge(newLvl);
     chains++;
     // 屏幕飘字(在第一个输出位)
     const [fr, fc] = outPos[0];
@@ -1471,6 +1532,9 @@ function commitPlacement() {
     st.board[r][c] = level;
   }
   st.steps++;
+  initAudio();
+  soundPlace();
+  pushBounce(r, c);
   st.queue.shift();
   st.queue.push(randomItem());
   doMergeCascade(st, r, c);
@@ -1492,14 +1556,14 @@ canvas.addEventListener('pointerdown', e => {
   if (!isPlayable(cfg, tc.r, tc.c)) {
     // 点在障碍物,顺便清除预览
     if (previewCell) { previewCell = null; drawBoard(); }
-    toast('这里是障碍物,不能放'); return;
+    initAudio(); soundError(); toast('这里是障碍物,不能放'); return;
   }
   if (st.board[tc.r][tc.c] !== null) {
     if (previewCell) { previewCell = null; drawBoard(); }
-    toast('这个格子已经有东西了'); return;
+    initAudio(); soundError(); toast('这个格子已经有东西了'); return;
   }
   if (st.energy < 1) {
-    toast('步数没了,再等一会儿就恢复'); return;
+    initAudio(); soundError(); toast('步数没了,再等一会儿就恢复'); return;
   }
   // 二次点同一格 → 确认放置
   if (previewCell && previewCell.r === tc.r && previewCell.c === tc.c) {
