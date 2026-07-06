@@ -4200,6 +4200,164 @@ const CASHIER_TIMELINE = [
     persistGuest: 'teen', persistZone: 'doorstep' }
 ];
 
+// ============================================================
+// CASHIER ARC — state machine + helpers driven by CASHIER_TIMELINE.
+// Only affects currentPOV === 'cashier'. Other POVs untouched.
+// ============================================================
+
+function ensureCashierArc() {
+  if (!state.world) state.world = {};
+  if (!state.world.cashierArc) {
+    state.world.cashierArc = {
+      step: 0,
+      guestPresent: null,
+      guestZone: {},
+      playedShards: [],
+      playedAnchors: []
+    };
+  }
+  return state.world.cashierArc;
+}
+
+function currentCashierStep() {
+  const arc = ensureCashierArc();
+  return CASHIER_TIMELINE[arc.step] || null;
+}
+
+function findCashierBeatByKey(key) {
+  const arr = BEATS.cashier || [];
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] && arr[i].key === key) return { beat: arr[i], index: i };
+  }
+  return null;
+}
+
+// The register hotspot's click. Contextual: advance next guest, or trigger
+// the current guest's checkout anchor.
+function handleRegisterClick() {
+  const arc = ensureCashierArc();
+  const step = currentCashierStep();
+  if (!step) return;
+  if (arc.guestPresent && step.kind === 'guest' && step.anchorKey) {
+    playCashierAnchor(step.anchorKey);
+    return;
+  }
+  if (!arc.guestPresent && step.kind === 'idle') {
+    advanceCashierStep();
+    return;
+  }
+  // Safety: guest step but no guest present — advance.
+  if (!arc.guestPresent) advanceCashierStep();
+}
+
+// Advance to next step. Called from idle→next-guest OR (via afterCashierAnchor)
+// after a guest finishes checkout.
+function advanceCashierStep() {
+  const arc = ensureCashierArc();
+  const nextIdx = arc.step + 1;
+  const next = CASHIER_TIMELINE[nextIdx];
+  if (!next) { maybeCompleteCashierArc(); return; }
+  arc.step = nextIdx;
+  if (next.kind === 'guest') {
+    spawnCashierGuest(next);
+  } else {
+    if (next.persistGuest) {
+      arc.guestPresent = next.persistGuest;
+      arc.guestZone[next.persistGuest] = next.persistZone || null;
+    } else {
+      arc.guestPresent = null;
+    }
+    maybeCompleteCashierArc();
+  }
+  saveState();
+  render();
+}
+
+function spawnCashierGuest(step) {
+  const arc = ensureCashierArc();
+  arc.guestPresent = step.guest;
+  arc.guestZone[step.guest] = step.enterCard;
+  // Legacy world flags — kept alive so cross-POV logic (e.g. other POVs'
+  // isCharPresent branch) still sees arrivals.
+  if (step.guest === 'oldman') state.world.oldmanArrived = true;
+  if (step.guest === 'driver') state.world.driverArrived = true;
+  if (step.guest === 'nurse')  state.world.nurseArrived  = true;
+  if (step.guest === 'teen')   state.world.teenArrived   = true;
+  if (typeof playDoorChime === 'function') playDoorChime();
+  if (typeof scrollToCard === 'function') {
+    setTimeout(() => scrollToCard(step.enterCard), 220);
+  }
+  if (step.walkTo) {
+    // Simulate the guest moving to their resting spot after a brief pause.
+    setTimeout(() => {
+      const a = ensureCashierArc();
+      if (a.guestPresent === step.guest) {
+        a.guestZone[step.guest] = step.walkTo;
+        render();
+      }
+    }, 2200);
+  }
+  saveState();
+}
+
+function playCashierAnchor(anchorKey) {
+  const found = findCashierBeatByKey(anchorKey);
+  if (!found) return;
+  _currentBeatIndex = found.index;
+  playBeat(found.beat);
+}
+
+// Called from closeBeat when a cashier anchor beat finishes.
+function afterCashierAnchor(anchorKey) {
+  const arc = ensureCashierArc();
+  if (arc.playedAnchors.indexOf(anchorKey) < 0) arc.playedAnchors.push(anchorKey);
+  arc.guestPresent = null;
+  const nextIdx = arc.step + 1;
+  const next = CASHIER_TIMELINE[nextIdx];
+  if (next) {
+    arc.step = nextIdx;
+    if (next.kind === 'idle' && next.persistGuest) {
+      arc.guestPresent = next.persistGuest;
+      arc.guestZone[next.persistGuest] = next.persistZone || null;
+    }
+  }
+  maybeCompleteCashierArc();
+  saveState();
+  render();
+}
+
+// Called from closeBeat when a cashier shard beat finishes.
+function afterCashierShard(shardKey) {
+  const arc = ensureCashierArc();
+  if (arc.playedShards.indexOf(shardKey) < 0) arc.playedShards.push(shardKey);
+  // If this shard was on the terminal idle step and completes the arc, wrap.
+  maybeCompleteCashierArc();
+  saveState();
+}
+
+function maybeCompleteCashierArc() {
+  const arc = ensureCashierArc();
+  const atTerminal = arc.step >= CASHIER_TIMELINE.length - 1;
+  const doorwaySeen = arc.playedShards.indexOf('doorway') >= 0;
+  if (!(atTerminal && doorwaySeen)) return;
+  if (state.completed.has('cashier')) return;
+  state.completed.add('cashier');
+  if (typeof playArcComplete === 'function') playArcComplete();
+  setTimeout(() => toast(CHARACTERS.cashier.name + ' · 这 一 段 走 完 了'), 300);
+  if (state.completed.size >= CHAR_ORDER.length) {
+    if (typeof stopAmbient === 'function') stopAmbient();
+    setTimeout(() => { if (typeof showEnding === 'function') showEnding(); }, 900);
+  } else {
+    setTimeout(() => {
+      if (typeof stopAmbient === 'function') stopAmbient();
+      state.currentPOV = null;
+      _currentBeatIndex = -1;
+      if (typeof showScreen === 'function') showScreen('title-screen');
+      render();
+    }, 1600);
+  }
+}
+
 // Convergences — 15 CPs across 4 POVs + 1 NPC (老人)
 // participants: who is involved. npcs: who is not-playable (auto-satisfied for CP unlock).
 // Full text (cold/default/warm tiers) filled in later batches.
