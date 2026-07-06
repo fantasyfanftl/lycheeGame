@@ -4460,6 +4460,9 @@ function unplayedBeats() {
   // Return [{beat, index}] for each unplayed beat of the current POV,
   // dedup'd by hs (if two beats share a hotspot, only the earlier one shows).
   if (!state.currentPOV) return [];
+  // Cashier POV is driven by CASHIER_TIMELINE — hotspot visibility follows
+  // the current step (allowed shards + register). Route to a dedicated impl.
+  if (state.currentPOV === 'cashier') return unplayedBeatsCashier();
   const beats = BEATS[state.currentPOV] || [];
   const played = state.playedBeats[state.currentPOV] || new Set();
   const seenHs = new Set();
@@ -4471,6 +4474,35 @@ function unplayedBeats() {
     if (seenHs.has(b.hs)) continue;
     seenHs.add(b.hs);
     list.push({ beat: b, index: i });
+  }
+  return list;
+}
+
+function unplayedBeatsCashier() {
+  const arc = ensureCashierArc();
+  const step = currentCashierStep();
+  const list = [];
+  const seenHs = new Set();
+  // Register hotspot is always clickable in cashier POV — its behavior is
+  // contextual (advance next guest / trigger anchor). We surface either the
+  // current anchor beat (real index) or a stub (index -1) purely so
+  // renderHotspots draws a hit-target at the register position.
+  if (arc.guestPresent && step && step.anchorKey) {
+    const found = findCashierBeatByKey(step.anchorKey);
+    if (found) { list.push({ beat: found.beat, index: found.index }); seenHs.add('register'); }
+  } else if (step) {
+    list.push({ beat: { hs: 'register', __registerStub: true }, index: -1 });
+    seenHs.add('register');
+  }
+  const shards = (step && step.shards) || [];
+  for (const key of shards) {
+    if (arc.playedShards.indexOf(key) >= 0) continue;
+    const found = findCashierBeatByKey(key);
+    if (!found) continue;
+    const hs = found.beat.hs;
+    if (seenHs.has(hs)) continue;
+    seenHs.add(hs);
+    list.push({ beat: found.beat, index: found.index });
   }
   return list;
 }
@@ -4568,7 +4600,13 @@ function renderHotspots() {
       hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', 60);
       hit.setAttribute('fill', 'transparent');
       hit.setAttribute('style', 'pointer-events:auto;cursor:pointer;');
-      hit.addEventListener('click', () => triggerBeatByIndex(index));
+      hit.addEventListener('click', () => {
+        if (state.currentPOV === 'cashier' && beat && beat.hs === 'register') {
+          handleRegisterClick();
+        } else {
+          triggerBeatByIndex(index);
+        }
+      });
       overlay.appendChild(hit);
     });
 
@@ -4584,13 +4622,22 @@ function isCharPresent(id) {
   // playable POVs (nurse/driver/teen) are customers; they only appear as
   // dimmed silhouettes after their arc has been played this run.
   if (id === 'cashier') return true;
+  // Cashier POV: presence follows the timeline's current guestPresent
+  // (includes NPCs like cleaner/driverAlt/oldman).
+  if (state.currentPOV === 'cashier') {
+    const arc = ensureCashierArc();
+    return arc.guestPresent === id;
+  }
+  // Other POVs — legacy: cross-POV silhouettes based on arrival flags.
   if (id === 'oldman') {
     return !!(state.world && state.world.oldmanArrived);
   }
   if (id === 'driver') {
-    // Driver arrives on the first door chime of the cashier's shift.
+    // Driver's silhouette appears once cashier arc has seen him.
     return !!(state.world && state.world.driverArrived) || state.completed.has(id);
   }
+  // Passerby NPCs (cleaner/driverAlt) are cashier-arc-only: never drawn in other POVs.
+  if (id === 'cleaner' || id === 'driverAlt') return false;
   return state.completed.has(id);
 }
 
