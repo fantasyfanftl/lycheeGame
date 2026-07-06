@@ -499,6 +499,28 @@ body {
   </div>
 </div>
 
+
+<!-- 小镇详情弹窗 -->
+<div id="townDetailModal" class="modal">
+  <div class="modal-box" style="max-width:340px;">
+    <div id="tdIconWrap" style="text-align:center;padding:12px 0;">
+      <img id="tdIcon" src="" style="width:120px;height:120px;object-fit:contain;">
+    </div>
+    <h2 id="tdName" style="margin-bottom:4px;">村名</h2>
+    <div id="tdType" style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:12px;color:white;background:#7c3aed;margin-bottom:8px;">类型</div>
+    <div id="tdStars" style="font-size:22px;color:#f59e0b;letter-spacing:3px;margin:6px 0;">☆☆☆</div>
+    <div style="text-align:left;background:#fef7e6;border-radius:10px;padding:12px;margin:10px 0;">
+      <div style="display:flex;margin-bottom:6px;"><span style="width:70px;color:#78350f;font-weight:600;">🔓 解锁</span><span id="tdUnlock">初始解锁</span></div>
+      <div style="display:flex;margin-bottom:6px;"><span style="width:70px;color:#78350f;font-weight:600;">📦 产出</span><span id="tdOutput">-</span></div>
+      <div style="display:flex;align-items:center;"><span style="width:70px;color:#78350f;font-weight:600;">🏷️ 标签</span><span id="tdTags"></span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="big-btn secondary" onclick="closeTownDetail()">取消</button>
+      <button class="big-btn" id="tdEnterBtn" onclick="enterFromDetail()">进入</button>
+    </div>
+  </div>
+</div>
+
 <!-- 商店 -->
 <div id="shopModal" class="modal">
   <div class="modal-box" style="max-width:360px;">
@@ -730,6 +752,21 @@ const TOWNS = [
   ]},
 ];
 
+// ==== 参考方案 · 每村扩展信息 ====
+const TOWN_META = {
+  t2:  { type:'果园',   color:'#f97316', unlockCondition:'游戏开始即解锁', mainOutput:'荔枝、各类水果', tags:['水果','新手'] },
+  t3:  { type:'饮品',   color:'#78350f', unlockCondition:'果园村通关',   mainOutput:'咖啡原料',       tags:['饮品','咖啡'] },
+  t4:  { type:'饮品',   color:'#db2777', unlockCondition:'咖啡镇通关',   mainOutput:'奶茶、珍珠',     tags:['饮品','奶茶'] },
+  t5:  { type:'烘焙',   color:'#c2410c', unlockCondition:'奶茶镇通关',   mainOutput:'面包、面粉',     tags:['烘焙'] },
+  t6:  { type:'休闲',   color:'#7c3aed', unlockCondition:'面包镇通关',   mainOutput:'盲盒、玩偶',     tags:['娱乐','潮玩'] },
+  t7:  { type:'花卉',   color:'#15803d', unlockCondition:'盲盒岛通关',   mainOutput:'鲜花、花艺材料', tags:['园艺'] },
+  t8:  { type:'甜品',   color:'#e11d48', unlockCondition:'花溪村通关',   mainOutput:'糖果、甜品',     tags:['甜品'] },
+  t9:  { type:'餐饮',   color:'#b45309', unlockCondition:'甜心镇通关',   mainOutput:'披萨、食材',     tags:['西餐'] },
+  t10: { type:'商圈',   color:'#0369a1', unlockCondition:'披萨湾通关',   mainOutput:'万能材料、金币', tags:['综合'] },
+  t11: { type:'终极',   color:'#b45309', unlockCondition:'星光广场通关', mainOutput:'高阶稀有道具',   tags:['地标'] },
+};
+
+
 /* =====================================================
    成就
 ===================================================== */
@@ -920,8 +957,7 @@ function renderMap() {
       '<div class="town-marker">' + markerImg + '</div>' +
       '<div class="town-label">' + t.name + '</div>' +
       '<div class="town-stars">' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>';
-    if (unlocked) node.onclick = () => enterTown(t.id);
-    else node.onclick = () => toast('通关上一个村庄解锁');
+    node.onclick = () => openTownDetail(t.id);
     area.appendChild(node);
   });
 }
