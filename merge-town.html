@@ -1068,9 +1068,38 @@ function bounceXY(t) {
   const e = 1 - Math.pow(1 - p, 2);  // ease-out
   return { sx: a[1] + (b[1] - a[1]) * e, sy: a[2] + (b[2] - a[2]) * e };
 }
-function pushBounce(r, c) {
+// 放置弹跳(轻,不抢合成焦点):幅度 1.1, 时长 200
+function bounceXY_place(t) {
+  if (t <= 0) return {sx: 0.85, sy: 0.85};
+  if (t >= 1) return {sx: 1, sy: 1};
+  if (t < 0.4) {
+    const p = t / 0.4, e = 1 - Math.pow(1 - p, 2);
+    return { sx: 0.85 + 0.25 * e, sy: 0.85 + 0.25 * e };  // 0.85 → 1.1
+  }
+  const p = (t - 0.4) / 0.6, e = 1 - Math.pow(1 - p, 2);
+  return { sx: 1.1 - 0.1 * e, sy: 1.1 - 0.1 * e };  // 1.1 → 1.0
+}
+function pushBounce(r, c, kind) {
   bounceCells = bounceCells.filter(b => !(b.r === r && b.c === c));
-  bounceCells.push({ r, c, t0: performance.now(), dur: 320 });
+  const dur = kind === 'place' ? 200 : 320;
+  bounceCells.push({ r, c, t0: performance.now(), dur, kind: kind || 'merge' });
+}
+// 错误抖动:格子红色高亮 + x 轴正弦晃
+let shakeCells = [];  // {r, c, t0, dur}
+function pushShake(r, c) {
+  shakeCells = shakeCells.filter(s => !(s.r === r && s.c === c));
+  shakeCells.push({ r, c, t0: performance.now(), dur: 220 });
+}
+// 合成音效节流 + 连锁递进
+let lastMergeSoundTime = 0;
+function soundMergeChained(tier, chainIdx) {
+  const now = performance.now();
+  if (now - lastMergeSoundTime < 100) return;  // 节流 100ms
+  const freq = (900 - Math.min(tier, 8) * 50) * (1 + Math.min(chainIdx, 5) * 0.08);
+  const dur = 140 + Math.min(tier, 8) * 15;
+  beep(freq, dur, 'triangle', 0.15);
+  if (tier >= 5) setTimeout(() => beep(freq * 1.5, dur * 0.7, 'sine', 0.10), 40);
+  lastMergeSoundTime = now;
 }
 
 
@@ -1123,10 +1152,26 @@ function drawBoard() {
         let sx = 1, sy = 1;
         if (b) {
           const t = (now - b.t0) / b.dur;
-          if (t < 1) { const sc = bounceXY(t); sx = sc.sx; sy = sc.sy; }
-          else bounceCells = bounceCells.filter(bb => bb !== b);
+          if (t < 1) {
+            const sc = b.kind === 'place' ? bounceXY_place(t) : bounceXY(t);
+            sx = sc.sx; sy = sc.sy;
+          } else bounceCells = bounceCells.filter(bb => bb !== b);
         }
         drawItem(x + TILE/2, y + TILE/2, lvl, sx, sy);
+      }
+      // 错误抖动:红框 + 正弦晃 x
+      const sh = shakeCells.find(s => s.r === r && s.c === c);
+      if (sh) {
+        const t = (now - sh.t0) / sh.dur;
+        if (t < 1) {
+          const dx = Math.sin(t * Math.PI * 6) * 3 * (1 - t);  // 3px 幅衰减
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 3;
+          ctx.globalAlpha = 1 - t;
+          roundRect(x + 2 + dx, y + 2, TILE - 4, TILE - 4, 6);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        } else shakeCells = shakeCells.filter(s => s !== sh);
       }
       // 高亮闪烁
       const fl = flashCells.find(f => f.r === r && f.c === c);
@@ -1216,7 +1261,7 @@ function drawBoard() {
   }
   // 清理已过期高亮
   flashCells = flashCells.filter(f => now - f.t0 < f.dur);
-  if (flashCells.length || bounceCells.length) requestAnimationFrame(drawBoard);
+  if (flashCells.length || bounceCells.length || shakeCells.length) requestAnimationFrame(drawBoard);
 }
 
 function drawItem(cx, cy, level, scaleX, scaleY) {
@@ -1327,9 +1372,9 @@ function doMergeCascade(town, r, c) {
       town.board[or][oc] = newLvl;
       queue.push([or, oc]);
       flashCells.push({ r: or, c: oc, t0: performance.now(), dur: 400 });
-      pushBounce(or, oc);
+      pushBounce(or, oc, 'merge');
     }
-    soundMerge(newLvl);
+    soundMergeChained(newLvl, chains);
     chains++;
     // 屏幕飘字(在第一个输出位)
     const [fr, fc] = outPos[0];
@@ -1544,7 +1589,7 @@ function commitPlacement() {
   st.steps++;
   initAudio();
   soundPlace();
-  pushBounce(r, c);
+  pushBounce(r, c, 'place');
   st.queue.shift();
   st.queue.push(randomItem());
   doMergeCascade(st, r, c);
