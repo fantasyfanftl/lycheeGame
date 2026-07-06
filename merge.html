@@ -863,11 +863,10 @@ function move(dir) {
   for (const ev of mergeEvents) {
     flyScore(ev.gain, ev.x + ev.w / 2 - 0.5, ev.y + ev.h / 2 - 0.5, cellSize, gap);
   }
-  // Haptic tiers: 10ms per merge, 30ms if multi (2+), 50ms if new max value
+  // Haptic tiers: 10ms per merge, 30ms if multi (2+), 50ms if any merge ≥ 128
   if (mergeEvents.length) {
     const maxThisTurn = Math.max(...mergeEvents.map(e => e.value));
-    const prevMax = tiles.reduce((m, t) => Math.max(m, t.value), 0);
-    if (maxThisTurn >= prevMax && maxThisTurn >= 128) haptic(50);
+    if (maxThisTurn >= 128) haptic(50);
     else if (mergeEvents.length >= 2) haptic(30);
     else haptic(10);
   }
