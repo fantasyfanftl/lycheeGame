@@ -4267,11 +4267,19 @@ function handleRegisterClick() {
     playCashierAnchor(step.anchorKey);
     return;
   }
+  // Terminal idle step — register click is player's "下班" signal.
+  const terminal = arc.step >= CASHIER_TIMELINE.length - 1;
+  if (terminal && step.kind === 'idle') {
+    arc._downshifted = true;
+    maybeCompleteCashierArc();
+    saveState();
+    render();
+    return;
+  }
   if (!arc.guestPresent && step.kind === 'idle') {
     advanceCashierStep();
     return;
   }
-  // Safety: guest step but no guest present — advance.
   if (!arc.guestPresent) advanceCashierStep();
 }
 
@@ -4363,8 +4371,11 @@ function afterCashierShard(shardKey) {
 function maybeCompleteCashierArc() {
   const arc = ensureCashierArc();
   const atTerminal = arc.step >= CASHIER_TIMELINE.length - 1;
+  // Player can end the shift by either observing the door-gap shard or
+  // clicking the register while idle at the terminal step ("下班" gesture).
   const doorwaySeen = arc.playedShards.indexOf('doorway') >= 0;
-  if (!(atTerminal && doorwaySeen)) return;
+  const downshifted = !!arc._downshifted;
+  if (!(atTerminal && (doorwaySeen || downshifted))) return;
   if (state.completed.has('cashier')) return;
   state.completed.add('cashier');
   if (typeof playArcComplete === 'function') playArcComplete();
@@ -4525,7 +4536,7 @@ function isArcExhausted(char) {
   if (char === 'cashier') {
     const arc = state.world && state.world.cashierArc;
     if (!arc) return false;
-    return arc.step >= CASHIER_TIMELINE.length - 1 && (arc.playedShards || []).indexOf('doorway') >= 0;
+    return arc.step >= CASHIER_TIMELINE.length - 1;
   }
   const played = state.playedBeats[char] || new Set();
   return played.size >= (BEATS[char] || []).length;
@@ -5660,6 +5671,13 @@ function buildEndingLines(w) {
   if (w.teenDoorSit === 'ask') hidden.push('藏在小声敲响的那扇玻璃门里');
   if (w.teenNurse === 'thanks') hidden.push('藏在小声说出的那个"谢谢"里');
   if (w.teenElder === 'invite') hidden.push('藏在"它很乖的"里');
+  // 店员 · 新增碎片（观察类 + 路人）
+  if (w.nurseObserved) hidden.push('藏在没让她察觉的那一次余光里');
+  if (w.teenObserved) hidden.push('藏在窗里没多看一眼的那一秒里');
+  if (w.cleanerCheckout === 'normal') hidden.push('藏在朝保洁阿姨点了的那一下头里');
+  if (w.cleanerCheckout === 'warm') hidden.push('藏在替她换下的那个破塑料袋里');
+  if (w.driverAltCheckout === 'normal') hidden.push('藏在跟代驾对上的那个眼神里');
+  if (w.driverAltCheckout === 'warm') hidden.push('藏在"夜里冷，慢点骑"里');
 
   if (hidden.length >= 3) {
     lines.push('他们把好意藏得那么深——');
