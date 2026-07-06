@@ -4556,29 +4556,32 @@ function unplayedBeatsCashier() {
   const step = currentCashierStep();
   const list = [];
   const seenHs = new Set();
-  // Shards first — so the first-beat nudge (items[0]) points at something
-  // observable in the scene rather than the register (which is contextual).
-  const shards = (step && step.shards) || [];
-  for (const key of shards) {
-    if (arc.playedShards.indexOf(key) >= 0) continue;
-    const found = findCashierBeatByKey(key);
-    if (!found) continue;
-    const hs = found.beat.hs;
-    if (seenHs.has(hs)) continue;
-    seenHs.add(hs);
-    list.push({ beat: found.beat, index: found.index });
-  }
-  // Register hotspot is always clickable in cashier POV — its behavior is
-  // contextual (advance next guest / trigger anchor). We surface either the
-  // current anchor beat (real index) or a stub (index -1) purely so
-  // renderHotspots draws a hit-target at the register position.
-  if (arc.guestPresent && step && step.anchorKey) {
-    const found = findCashierBeatByKey(step.anchorKey);
-    if (found && !seenHs.has('register')) { list.push({ beat: found.beat, index: found.index }); seenHs.add('register'); }
-  } else if (step && !seenHs.has('register')) {
-    list.push({ beat: { hs: 'register', __registerStub: true }, index: -1 });
-    seenHs.add('register');
-  }
+  const pushRegister = () => {
+    if (seenHs.has('register')) return;
+    if (arc.guestPresent && step && step.anchorKey) {
+      const f = findCashierBeatByKey(step.anchorKey);
+      if (f) { list.push({ beat: f.beat, index: f.index }); seenHs.add('register'); }
+    } else if (step) {
+      list.push({ beat: { hs: 'register', __registerStub: true }, index: -1 });
+      seenHs.add('register');
+    }
+  };
+  const pushShards = () => {
+    const shards = (step && step.shards) || [];
+    for (const key of shards) {
+      if (arc.playedShards.indexOf(key) >= 0) continue;
+      const found = findCashierBeatByKey(key);
+      if (!found) continue;
+      const hs = found.beat.hs;
+      if (seenHs.has(hs)) continue;
+      seenHs.add(hs);
+      list.push({ beat: found.beat, index: found.index });
+    }
+  };
+  // Idle (no guest) — nudge should point at register first (advance the wave).
+  // Guest present — nudge should point at their shard first (observe before checkout).
+  if (arc.guestPresent) { pushShards(); pushRegister(); }
+  else                  { pushRegister(); pushShards(); }
   return list;
 }
 
@@ -4639,11 +4642,19 @@ function renderHotspots() {
   const items = unplayedBeats();
   if (!items.length) { hideBeatNudge(); return; }
 
-  // First-beat nudge: if the player has NOT played any beat yet in this POV,
-  // show a subtle text chip near the first unplayed beat's hotspot to hint
-  // where to click. Once they interact, no more nudges — pure observation.
+  // First-beat nudge: subtle text chip pointing at items[0]. For non-cashier
+  // POVs this fires only until the first interaction; for cashier POV it
+  // keeps firing while the arc is between guests (empty store) so the player
+  // always knows what to look at next.
   const played = state.playedBeats[state.currentPOV] || new Set();
-  if (played.size === 0 && items[0]) {
+  let showNudge = played.size === 0;
+  if (state.currentPOV === 'cashier') {
+    const arc = ensureCashierArc();
+    // Show nudge whenever the store is empty (idle) — points at register
+    // (advance) or the current step's remaining shard.
+    showNudge = !arc.guestPresent;
+  }
+  if (showNudge && items[0]) {
     showBeatNudge(items[0]);
   } else {
     hideBeatNudge();
