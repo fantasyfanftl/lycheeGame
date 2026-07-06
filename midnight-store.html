@@ -3593,6 +3593,82 @@ const BEATS = {
           cps: [{ id: 'cp9' }]
         }
       ]
+    },
+    {
+      key: 'nurseObserve', kind: 'shard',
+      hs: 'nurseObserve',
+      title: '护 士 · 你 余 光 看 到 的',
+      text: '她坐在窗边高脚凳上，一直没脱那件深色外套。热奶盒放在台面，还没开封。\n\n袖口翻起来一小截——手腕内侧一圈碘伏印，边缘蜡黄。指节上有两三道细口子。\n\n她的手就搁在膝盖上，没动。也没看手机。\n\n你收回目光。'
+    },
+    {
+      key: 'teenObserve', kind: 'shard',
+      hs: 'teenObserve',
+      title: '少 年 · 你 从 窗 里 看 出 去',
+      branches: [
+        {
+          when: (w) => w && w.catBowl === 'full',
+          text: '你从窗里看出去。他蹲在台阶上，扶着猫碗看了一会儿。\n\n碗里有一小把粮——不是他今天带来的那种牌子。他愣了一秒，把口袋里那袋撕开一角，只倒了很少一点补上去。\n\n他没朝店里看。\n\n橘猫先闻了闻，又低头吃。'
+        },
+        {
+          when: (w) => w && w.catBowl === 'water',
+          text: '你从窗里看出去。他蹲下来，先摸了摸水碗——水是新的。粮碗被摆正了。\n\n他停了一下，才把口袋里那袋猫粮撕开一角，倒了一点点。\n\n他没朝店里看。你也没让自己看太久。'
+        },
+        {
+          // catBowl === 'ignored' or undefined
+          text: '你从窗里看出去。他蹲下来，看着那两个空碗——碗是歪的。\n\n他没吭声，把歪的碗摆正，从口袋里掏出一袋猫粮撕开一角倒了些。水碗空着——他自己没水。\n\n橘猫蹭他的手，他把连帽衫拉低。'
+        }
+      ]
+    },
+    {
+      key: 'cleanerCheckout', kind: 'anchor',
+      hs: 'register',
+      title: '保 洁 阿 姨 · 一 袋 临 期 面 包',
+      text: '门铃响。一个五十岁上下的阿姨拎着扫把和一个塑料袋进来——袋里几个临期减价的方包。\n\n她走到收银台，把袋子放上台面。塑料袋磨破了一个小口。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '扫码结账。找零推过去。',
+          text: '你扫了码，把找零推过去。她把面包塞回袋里，扫把夹在腋下走了。\n\n没多说什么。你也没抬头。',
+          effects: (w) => { w.cleanerCheckout = 'cold'; }
+        },
+        {
+          label: '扫完抬头点了个头。',
+          text: '你扫完码，抬头朝她点了个头，把找零递过去。\n\n"辛苦了。" 她只轻轻嗯了一声，扫把夹好走了。\n\n塑料袋那个小口，你没提。',
+          effects: (w) => { w.cleanerCheckout = 'normal'; }
+        },
+        {
+          voice: { text: '这个袋子破了，换一个。', rate: 0.9, pitch: 0.95 },
+          label: '弯腰抽个新袋子，替她把面包装好。',
+          text: '你弯腰从下面抽了个新袋子——"这个袋子破了，换一个。"——把面包一袋袋换过去。\n\n她愣了一下。"哎，谢谢啊小伙子。"\n\n你摇摇头，把找零一起放袋口。她拎着新袋子，扫把夹好走了。',
+          effects: (w) => { w.cleanerCheckout = 'warm'; }
+        }
+      ]
+    },
+    {
+      key: 'driverAltCheckout', kind: 'anchor',
+      hs: 'register',
+      title: '代 驾 小 哥 · 一 瓶 水 一 颗 蛋',
+      sfx: 'doorChime',
+      text: '门铃响。反光背心。头盔夹在腋下，手上拎着一瓶矿泉水、一颗茶叶蛋。\n\n他掏手机扫码，动作很快——像是随时要接下一单。',
+      choicePrompt: '你怎么办？',
+      choices: [
+        {
+          label: '扫完把东西推过去。',
+          text: '你扫完，把水和茶叶蛋推过去。他抓了就走，头盔往头上一戴。\n\n门铃又响了一次。他已经跨上电动车。',
+          effects: (w) => { w.driverAltCheckout = 'cold'; }
+        },
+        {
+          label: '找零时点了个头。',
+          text: '你扫完码，抬头朝他点了个头。他也点头回应，抓了东西就走。\n\n跨上电动车之前，他把水拧开喝了一口。',
+          effects: (w) => { w.driverAltCheckout = 'normal'; }
+        },
+        {
+          voice: { text: '夜里冷，慢点骑。', rate: 0.9, pitch: 0.92 },
+          label: '"夜 里 冷 ， 慢 点 骑 。"',
+          text: '你扫完码，看着他往外走。\n\n"夜里冷，慢点骑。"\n\n他回头看你——好像没料到——嗯了一声，戴上头盔跨车走了。\n\n你不知道自己刚才为什么多说那一句。',
+          effects: (w) => { w.driverAltCheckout = 'warm'; }
+        }
+      ]
     }
   ],
   nurse: [
