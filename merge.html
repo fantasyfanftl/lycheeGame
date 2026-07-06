@@ -1194,6 +1194,7 @@ function newGame() {
   tilesEl.innerHTML = '';
   hideHint();
   boardWrap.classList.remove('warn-pulse');
+  clearSavedGame();
   spawn();
   spawn();
   renderTiles();
@@ -1203,6 +1204,7 @@ function newGame() {
   updateBoardWarning();
   updateInfoText();
   overlay.classList.remove('show');
+  saveGameDebounced();
 }
 
 function showTutorialDone() {
