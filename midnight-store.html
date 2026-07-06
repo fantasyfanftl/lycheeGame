@@ -3279,7 +3279,9 @@ const CHARACTERS = {
 const CHAR_ORDER = ['cashier', 'nurse', 'driver', 'teen'];
 // NPC — referenced by beats/CPs but not playable
 const NPC = {
-  oldman: { name: '独居老人', short: '老人' }
+  oldman:    { name: '独居老人', short: '老' },
+  cleaner:   { name: '夜班保洁', short: '洁' },
+  driverAlt: { name: '代驾小哥', short: '驾' }
 };
 
 // Hotspot scene positions (SVG coords)
@@ -3294,12 +3296,18 @@ const HOTSPOTS = {
   milkCabinet:    { card: 'shelves',   x: 210, y: 175 },
   register:       { card: 'register',  x: 200, y: 305 },
   phone:          { card: 'register',  x: 155, y: 310 },
+  // Cashier arc — observation shards (only clickable when the corresponding guest is present)
+  nurseObserve:   { card: 'window',    x: 140, y: 345 },
+  teenObserve:    { card: 'doorstep',  x: 110, y: 490 },
   // Character positions (used for click-on-character hotspot beats)
   cashier:        { card: 'register',  x: 200, y: 288 },
   nurse:          { card: 'dispenser', x: 340, y: 480 },
   driver:         { card: 'window',    x: 200, y: 355 },
   teen:           { card: 'doorstep',  x: 100, y: 500 },
-  oldman:         { card: 'shelves',   x: 200, y: 490 }
+  oldman:         { card: 'shelves',   x: 200, y: 490 },
+  // Passerby NPCs (cashier arc only) — silhouettes drawn while guestPresent matches
+  cleaner:        { card: 'shelves',   x: 140, y: 440 },
+  driverAlt:      { card: 'shelves',   x: 280, y: 440 }
 };
 
 // Beats — filled by later batches (empty scaffolds for now)
@@ -5533,6 +5541,16 @@ function characterSVG(id) {
       body: '#8b6f47',
       // cane
       extra: '<line x1="46" y1="50" x2="52" y2="94" stroke="#3d2f24" stroke-width="1.5"/><path d="M50 50 Q54 46 58 48" stroke="#3d2f24" stroke-width="1.5" fill="none"/>'
+    },
+    cleaner: {
+      body: '#3a5a72',
+      // broom leaning across right shoulder + a small dust cap
+      extra: '<line x1="42" y1="30" x2="56" y2="80" stroke="#6b5842" stroke-width="1.6"/><path d="M52 76 L60 88 L48 84 Z" fill="#a68a5a"/><path d="M18 12 Q30 6 42 12 L42 18 L18 18 Z" fill="#3a5a72"/>'
+    },
+    driverAlt: {
+      body: '#d9773a',
+      // reflective vest bands (two horizontal light strips) + helmet dome
+      extra: '<rect x="18" y="42" width="24" height="2.5" fill="#f4e6a1"/><rect x="18" y="60" width="24" height="2.5" fill="#f4e6a1"/><path d="M14 14 Q30 2 46 14 L46 20 L14 20 Z" fill="#5a4a3a"/>'
     }
   };
   const spec = specs[id] || { body: '#3d2f24', extra: '' };
