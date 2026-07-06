@@ -7,6 +7,7 @@
 <link rel="icon" type="image/png" href="lychee-logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { touch-action: manipulation; }  /* 根治移动端双击缩放，不影响长按/单击 */
   body {
     font-family: 'Segoe UI', -apple-system, Tahoma, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -69,7 +70,12 @@
     gap: 6px;
     align-items: center;
   }
-  .info .stat b { color: #764ba2; font-size: 16px; }
+  .info .stat b {
+    color: #764ba2;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;  /* 数字等宽，计时跳动不错位 */
+    letter-spacing: 0.5px;
+  }
   .face {
     background: none;
     border: none;
@@ -213,8 +219,92 @@
     font-size: 12px;
     margin-bottom: 10px;
     letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
   .best b { color: #d4382a; font-weight: 700; }
+  .best-clear {
+    background: none;
+    border: 1px solid #e0d5ec;
+    color: #9b7ab8;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-family: inherit;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .best-clear:hover { background: #f0e8f7; color: #764ba2; border-color: #c9a8e0; }
+
+  /* 清空记录弹窗 */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 10, 40, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    animation: overlayIn 0.15s ease-out;
+  }
+  .modal-overlay.open { display: flex; }
+  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 22px 18px;
+    max-width: 320px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    animation: cardIn 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+  }
+  @keyframes cardIn {
+    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  .modal-card h3 {
+    color: #333;
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+  .modal-card .rec-list {
+    background: #faf8fd;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .modal-card .rec-list .empty { color: #aaa; }
+  .modal-card .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .modal-card button {
+    padding: 9px 14px;
+    border: 2px solid #e0d5ec;
+    background: #fff;
+    color: #555;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .modal-card button:hover { border-color: #764ba2; color: #764ba2; }
+  .modal-card button.danger { color: #c1121f; border-color: #f5c6cb; }
+  .modal-card button.danger:hover { background: #fbebed; border-color: #c1121f; color: #a01414; }
+  .modal-card button.cancel { border-color: transparent; color: #999; }
+  .modal-card button.cancel:hover { color: #666; background: #f5f5f5; border-color: transparent; }
+  .modal-card button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .modal-card button:disabled:hover { border-color: #e0d5ec; color: #555; background: #fff; }
   .changelog {
     margin-top: 18px;
     padding: 8px 14px;
@@ -259,11 +349,14 @@
     <button data-d="medium">中级 · 16×16 · 40雷</button>
     <button data-d="hard">高级 · 16×30 · 99雷</button>
   </div>
-  <div class="best" id="best">🏆 最佳: —</div>
+  <div class="best">
+    <span id="best">🏆 最佳: —</span>
+    <button class="best-clear" id="clearBestBtn" type="button">清空记录</button>
+  </div>
   <div class="info">
     <span class="stat">💣 <b id="mineCount">10</b></span>
     <button class="face" id="face">🙂</button>
-    <span class="stat">⏱ <b id="timer">0</b></span>
+    <span class="stat">⏱ <b id="timer">000</b></span>
   </div>
   <div style="text-align:center; margin-bottom: 10px;">
     <button class="mode-toggle" id="flagModeBtn"><span class="icon">🚩</span><span>标旗模式</span></button>
@@ -274,8 +367,14 @@
   </div>
   <div class="message" id="message"></div>
   <details class="changelog">
-    <summary>更新日志 · 2026-07-07 · 核心 7 项优化</summary>
-    <h4>本次改动</h4>
+    <summary>更新日志 · 最近改动</summary>
+    <h4>2026-07-07 · 补丁三项</h4>
+    <ul>
+      <li>移动端根治双击缩放（<code>touch-action: manipulation</code>）</li>
+      <li>计时器 3 位补零显示（000~999，超时不截断），数字等宽不错位</li>
+      <li>「清空记录」按钮 + 弹窗二次确认：可清空当前难度或全部难度</li>
+    </ul>
+    <h4>2026-07-07 · 核心 7 项优化</h4>
     <ul>
       <li>跨端统一 Chord：桌面/手机单击已翻数字批量开盖；标旗数量匹配才展开，位置错了照样会踩雷（原版规则保留）</li>
       <li>分难度本地最佳计时常驻显示，破纪录金色高光；Chord 速通成绩正常计入</li>
@@ -291,6 +390,18 @@
       <li>返回链接、标旗模式、笑脸重置、原版配色与数字分色</li>
     </ul>
   </details>
+</div>
+
+<div class="modal-overlay" id="clearModal" role="dialog" aria-modal="true" aria-labelledby="clearModalTitle">
+  <div class="modal-card">
+    <h3 id="clearModalTitle">清空最佳记录</h3>
+    <div class="rec-list" id="clearModalList"></div>
+    <div class="actions">
+      <button class="danger" id="clearCurrentBtn" type="button">清空当前难度</button>
+      <button class="danger" id="clearAllBtn" type="button">清空全部难度</button>
+      <button class="cancel" id="clearCancelBtn" type="button">取消</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -318,6 +429,8 @@ const messageEl = document.getElementById('message');
 const bestEl = document.getElementById('best');
 
 function key(r, c) { return `${r},${c}`; }
+// 计时补前导零：< 3 位补到 3 位（000~999），超 999 秒自然溢出 4 位不截断
+function pad3(n) { return String(n).padStart(3, '0'); }
 
 // ---- localStorage ----
 function loadBests() {
@@ -360,7 +473,7 @@ function initGame() {
   gameOver = false; won = false; firstMove = true;
   elapsed = 0;
   clearInterval(timerId);
-  timerEl.textContent = '0';
+  timerEl.textContent = '000';
   mineCountEl.textContent = total;
   faceEl.textContent = '🙂';
   messageEl.textContent = ''; messageEl.className = 'message';
@@ -426,7 +539,7 @@ function reveal(r, c) {
   if (firstMove) {
     firstMove = false;
     placeMines(r, c);
-    timerId = setInterval(() => { elapsed++; timerEl.textContent = elapsed; }, 1000);
+    timerId = setInterval(() => { elapsed++; timerEl.textContent = pad3(elapsed); }, 1000);
   }
   if (mines.has(k)) {
     explodedKey = k;
@@ -666,7 +779,70 @@ document.querySelectorAll('.diff button').forEach(btn => {
 
 // R 键快速重开（避免在输入框场景冲突 —— 目前无输入框，直接监听）
 document.addEventListener('keydown', e => {
-  if (e.key === 'r' || e.key === 'R') { initGame(); }
+  if (e.key === 'Escape' && clearModalEl.classList.contains('open')) {
+    closeClearModal();
+    return;
+  }
+  if (e.key === 'r' || e.key === 'R') {
+    if (clearModalEl.classList.contains('open')) return; // 弹窗打开时不重开
+    initGame();
+  }
+});
+
+// ==== 清空记录弹窗 ====
+const DIFF_NAMES = { easy: '初级', medium: '中级', hard: '高级' };
+const clearModalEl = document.getElementById('clearModal');
+const clearModalListEl = document.getElementById('clearModalList');
+const clearCurrentBtn = document.getElementById('clearCurrentBtn');
+const clearAllBtn = document.getElementById('clearAllBtn');
+
+function openClearModal() {
+  const bests = loadBests();
+  const lines = Object.keys(DIFF).map(d => {
+    const t = bests[d];
+    const mark = d === currentDiff ? '  ⬅ 当前' : '';
+    const val = t != null ? `<b>${t}</b> 秒` : `<span class="empty">— 未通关</span>`;
+    return `${DIFF_NAMES[d]}：${val}${mark}`;
+  });
+  clearModalListEl.innerHTML = lines.join('<br>');
+  clearCurrentBtn.disabled = bests[currentDiff] == null;
+  clearAllBtn.disabled = !Object.keys(DIFF).some(d => bests[d] != null);
+  clearCurrentBtn.textContent = `清空「${DIFF_NAMES[currentDiff]}」记录`;
+  clearModalEl.classList.add('open');
+}
+function closeClearModal() { clearModalEl.classList.remove('open'); }
+
+function clearBestFor(diff) {
+  const b = loadBests();
+  if (b[diff] == null) return;
+  delete b[diff];
+  try { localStorage.setItem(LS_BEST, JSON.stringify(b)); } catch (e) {}
+  updateBestDisplay();
+}
+function clearAllBests() {
+  try { localStorage.removeItem(LS_BEST); } catch (e) {}
+  updateBestDisplay();
+}
+
+document.getElementById('clearBestBtn').addEventListener('click', openClearModal);
+document.getElementById('clearCancelBtn').addEventListener('click', closeClearModal);
+// 点击遮罩层（不含卡片）关闭
+clearModalEl.addEventListener('click', e => {
+  if (e.target === clearModalEl) closeClearModal();
+});
+clearCurrentBtn.addEventListener('click', () => {
+  const t = loadBests()[currentDiff];
+  if (t == null) return;
+  if (confirm(`确定清空「${DIFF_NAMES[currentDiff]}」的最佳记录（${t} 秒）？此操作不可恢复。`)) {
+    clearBestFor(currentDiff);
+    closeClearModal();
+  }
+});
+clearAllBtn.addEventListener('click', () => {
+  if (confirm('确定清空全部难度的最佳记录？此操作不可恢复。')) {
+    clearAllBests();
+    closeClearModal();
+  }
 });
 
 // 页面卸载兜底：清定时器，防止后台标签泄漏
