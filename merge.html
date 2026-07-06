@@ -924,6 +924,21 @@ function hasMovesLeft() {
   return false;
 }
 
+// Count empty cells (for the full-board warning)
+function countEmptyCells() {
+  let n = 0;
+  for (let y = 0; y < SIZE; y++)
+    for (let x = 0; x < SIZE; x++)
+      if (!grid[y][x]) n++;
+  return n;
+}
+function updateBoardWarning() {
+  // Level-1 warning: crowded (≤ 2 empty cells) but game not yet lost
+  const empties = countEmptyCells();
+  const crowded = empties <= 2 && empties > 0 && hasMovesLeft();
+  boardWrap.classList.toggle('warn-pulse', crowded);
+}
+
 // ============ Render ============
 function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) {
   const wrap = boardWrap.getBoundingClientRect();
