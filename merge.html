@@ -898,7 +898,7 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
       }
       el.dataset.rk = rk;
     }
-    if (renderMode !== '3d' && renderMode !== 'immortal' && renderMode !== 'suzhou') {
+    if (renderMode !== '3d' && renderMode !== 'immortal' && renderMode !== 'suzhou' && renderMode !== 'shop') {
       const style = tierStyleFor(t.value);
       const numEl = el.querySelector('.tile-num');
       numEl.textContent = t.value;
