@@ -4174,8 +4174,10 @@ const BEATS = {
 // ============================================================
 const CASHIER_TIMELINE = [
   // step 0 — opening idle (01:47). Player wakes into the shift.
+  // 'phone' opening is auto-triggered on POV entry (see switchPOV); listing
+  // it as a shard would let the player skip it by clicking register first.
   { kind: 'idle', label: '开局空窗',
-    shards: ['phone', 'catBowl'] },
+    shards: ['catBowl'] },
   // step 1 — 独居老人
   { kind: 'guest', guest: 'oldman',    enterCard: 'shelves',
     shards: ['milkCabinet'],           anchorKey: 'oldmanCheckout' },
@@ -4261,6 +4263,13 @@ function findCashierBeatByKey(key) {
 // the current guest's checkout anchor.
 function handleRegisterClick() {
   const arc = ensureCashierArc();
+  // Guardrail: if the opening beat hasn't been seen yet, always play it
+  // first — never let a register click skip the opening.
+  if (arc.playedShards.indexOf('phone') < 0) {
+    const found = findCashierBeatByKey('phone');
+    if (found && !state.dialogueOpen) { _currentBeatIndex = found.index; playBeat(found.beat); }
+    return;
+  }
   const step = currentCashierStep();
   if (!step) return;
   if (arc.guestPresent && step.kind === 'guest' && step.anchorKey) {
@@ -4851,6 +4860,26 @@ function switchPOV(char) {
       // in case the container size changed once bars finished laying out.
       setTimeout(() => scrollToCard(homeCard, true), 60);
       setTimeout(() => scrollToCard(homeCard, true), 320);
+    }
+  }
+
+  // Cashier POV — auto-play the opening beat (phone/earbud moment) if it
+  // hasn't been seen yet. This IS the shift's opening cutscene; forcing a
+  // hotspot click would let the player skip it by advancing to step 1 first.
+  if (char === 'cashier') {
+    const arc = ensureCashierArc();
+    if ((arc.playedShards || []).indexOf('phone') < 0 && !state.dialogueOpen) {
+      setTimeout(() => {
+        if (state.currentPOV !== 'cashier' || state.dialogueOpen) return;
+        const a = ensureCashierArc();
+        if ((a.playedShards || []).indexOf('phone') >= 0) return;
+        const found = findCashierBeatByKey('phone');
+        if (!found) return;
+        // Auto-scroll to register card so the phone overlay makes sense.
+        if (typeof scrollToCard === 'function') scrollToCard('register', true);
+        _currentBeatIndex = found.index;
+        playBeat(found.beat);
+      }, 700);
     }
   }
 
