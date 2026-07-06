@@ -4219,6 +4219,31 @@ function ensureCashierArc() {
   return state.world.cashierArc;
 }
 
+// Where each cashier-arc guest actually stands, keyed by zone. Falls back
+// to HOTSPOTS[id] if no dynamic override matches — that's the default coord
+// used by other POVs' character overlays.
+const GUEST_ZONE_POS = {
+  'oldman:shelves':    { card: 'shelves',  x: 200, y: 240 },
+  'nurse:shelves':     { card: 'shelves',  x: 260, y: 320 },
+  'nurse:window':      { card: 'window',   x: 140, y: 345 },
+  'driver:window':     { card: 'window',   x: 200, y: 355 },
+  'teen:doorstep':     { card: 'doorstep', x: 100, y: 500 },
+  'cleaner:shelves':   { card: 'shelves',  x: 140, y: 440 },
+  'driverAlt:shelves': { card: 'shelves',  x: 280, y: 440 }
+};
+
+function guestPositionFor(id) {
+  if (state.currentPOV === 'cashier') {
+    const arc = ensureCashierArc();
+    const zone = arc.guestZone && arc.guestZone[id];
+    if (zone) {
+      const dyn = GUEST_ZONE_POS[id + ':' + zone];
+      if (dyn) return dyn;
+    }
+  }
+  return HOTSPOTS[id] || null;
+}
+
 function currentCashierStep() {
   const arc = ensureCashierArc();
   return CASHIER_TIMELINE[arc.step] || null;
@@ -4679,13 +4704,17 @@ function hideBeatNudge() {
 function renderCharacters() {
   document.querySelectorAll('[data-card-chars]').forEach(el => { el.innerHTML = ''; });
   const list = CHAR_ORDER.slice();
-  // NPC old man is also drawn (in whichever card he's assigned)
-  if (typeof NPC !== 'undefined' && NPC.oldman) list.push('oldman');
+  // NPCs drawn if a POV branch says so (isCharPresent handles routing).
+  if (typeof NPC !== 'undefined') {
+    if (NPC.oldman)    list.push('oldman');
+    if (NPC.cleaner)   list.push('cleaner');
+    if (NPC.driverAlt) list.push('driverAlt');
+  }
   if (!window._prevCharsRendered) window._prevCharsRendered = new Set();
   const nowRendered = new Set();
   list.forEach(id => {
     if (!isCharPresent(id)) return;
-    const pos = HOTSPOTS[id];
+    const pos = guestPositionFor(id);
     if (!pos) return;
     const cardEl = document.querySelector('[data-card-chars="' + pos.card + '"]');
     if (!cardEl) return;
