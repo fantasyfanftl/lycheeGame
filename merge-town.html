@@ -1050,20 +1050,27 @@ function soundMerge(tier) {
 }
 function soundError() { beep(180, 90, 'sawtooth', 0.10); }
 
-// 弹跳缓动:0→0.4 冲高到 1.25, 0.4→1 回落到 1.0
-function bounceScale(t) {
-  if (t >= 1) return 1;
-  if (t < 0) return 0;
-  if (t < 0.4) {
-    const p = t / 0.4;
-    return 0.55 + 0.7 * (1 - Math.pow(1 - p, 2));  // 0.55 → 1.25
-  }
-  const p = (t - 0.4) / 0.6;
-  return 1.25 - 0.25 * (1 - Math.pow(1 - p, 2));   // 1.25 → 1.0
+// 果冻挤压缓动:X/Y 非同步缩放(落地压扁 → 回弹拉长 → 微调 → 归位)
+function bounceXY(t) {
+  if (t <= 0) return {sx: 0.7, sy: 0.7};
+  if (t >= 1) return {sx: 1, sy: 1};
+  const stops = [
+    [0.00, 0.70, 0.70],
+    [0.35, 1.25, 0.78],  // 落地挤压 —— 横宽纵扁
+    [0.55, 0.88, 1.12],  // 回弹拉长 —— 纵拉横收
+    [0.75, 1.05, 0.96],  // 二次微调
+    [1.00, 1.00, 1.00],  // 归位
+  ];
+  let i = 0;
+  while (i < stops.length - 1 && t > stops[i+1][0]) i++;
+  const a = stops[i], b = stops[i+1];
+  const p = (t - a[0]) / (b[0] - a[0]);
+  const e = 1 - Math.pow(1 - p, 2);  // ease-out
+  return { sx: a[1] + (b[1] - a[1]) * e, sy: a[2] + (b[2] - a[2]) * e };
 }
 function pushBounce(r, c) {
   bounceCells = bounceCells.filter(b => !(b.r === r && b.c === c));
-  bounceCells.push({ r, c, t0: performance.now(), dur: 280 });
+  bounceCells.push({ r, c, t0: performance.now(), dur: 320 });
 }
 
 
@@ -1113,13 +1120,13 @@ function drawBoard() {
       const lvl = st.board[r][c];
       if (lvl !== null) {
         const b = bounceCells.find(bb => bb.r === r && bb.c === c);
-        let s = 1;
+        let sx = 1, sy = 1;
         if (b) {
           const t = (now - b.t0) / b.dur;
-          if (t < 1) s = bounceScale(t);
+          if (t < 1) { const sc = bounceXY(t); sx = sc.sx; sy = sc.sy; }
           else bounceCells = bounceCells.filter(bb => bb !== b);
         }
-        drawItem(x + TILE/2, y + TILE/2, lvl, s);
+        drawItem(x + TILE/2, y + TILE/2, lvl, sx, sy);
       }
       // 高亮闪烁
       const fl = flashCells.find(f => f.r === r && f.c === c);
@@ -1212,20 +1219,23 @@ function drawBoard() {
   if (flashCells.length || bounceCells.length) requestAnimationFrame(drawBoard);
 }
 
-function drawItem(cx, cy, level, scale) {
+function drawItem(cx, cy, level, scaleX, scaleY) {
   const a = getItem(level);
+  if (scaleY === undefined) scaleY = scaleX;
   // 按等级递增尺寸,整体放大让棋盘立体感强
   const isWc = level === WILDCARD_LVL;
   const tier = isWc ? 5 : level;
   const tierScale = tier <= 2 ? 1.0 : tier <= 5 ? 1.15 : tier <= 8 ? 1.3 : 1.5;
-  const size = TILE * tierScale * scale;
+  const sizeW = TILE * tierScale * scaleX;
+  const sizeH = TILE * tierScale * scaleY;
+  const size = Math.max(sizeW, sizeH);  // 兜底用于阴影/emoji fallback
   const img = iconImages[a.icon];
-  // 底对齐格子底部,自然向上溢出
+  // 底对齐格子底部,自然向上溢出;X/Y 分别缩,实现果冻挤压
   const bottomY = cy + TILE * 0.5;
-  const drawY = bottomY - size;
-  const drawX = cx - size / 2;
+  const drawY = bottomY - sizeH;
+  const drawX = cx - sizeW / 2;
   if (img && img.complete && img.naturalWidth > 0) {
-    ctx.drawImage(img, drawX, drawY, size, size);
+    ctx.drawImage(img, drawX, drawY, sizeW, sizeH);
   } else {
     // 图未加载完的兜底:方块底 + emoji
     ctx.fillStyle = 'rgba(0,0,0,0.15)';
