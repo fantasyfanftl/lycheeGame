@@ -1241,9 +1241,23 @@ document.addEventListener('keydown', e => {
   if (map[e.key]) { move(map[e.key]); e.preventDefault(); }
 });
 let touchStart = null;
+const TOUCH_DRIFT_MAX = 5;  // px — how far the board visually follows the finger before the actual move fires
 boardWrap.addEventListener('touchstart', e => {
   const t = e.touches[0];
   touchStart = { x: t.clientX, y: t.clientY };
+}, { passive: true });
+boardWrap.addEventListener('touchmove', e => {
+  if (!touchStart || animating) return;
+  const t = e.touches[0];
+  const dx = t.clientX - touchStart.x;
+  const dy = t.clientY - touchStart.y;
+  const ax = Math.abs(dx), ay = Math.abs(dy);
+  // Bias to the dominant axis so the board feels like it's leaning that way
+  const useX = ax > ay;
+  const driftX = useX ? Math.max(-TOUCH_DRIFT_MAX, Math.min(TOUCH_DRIFT_MAX, dx * 0.35)) : 0;
+  const driftY = useX ? 0 : Math.max(-TOUCH_DRIFT_MAX, Math.min(TOUCH_DRIFT_MAX, dy * 0.35));
+  tilesEl.style.transform = `translate(${driftX}px, ${driftY}px)`;
+  tilesEl.style.transition = 'none';
 }, { passive: true });
 boardWrap.addEventListener('touchend', e => {
   if (!touchStart) return;
@@ -1252,6 +1266,10 @@ boardWrap.addEventListener('touchend', e => {
   const dy = t.clientY - touchStart.y;
   const ax = Math.abs(dx), ay = Math.abs(dy);
   touchStart = null;
+  // Snap the drift back
+  tilesEl.style.transition = 'transform 140ms ease-out';
+  tilesEl.style.transform = '';
+  setTimeout(() => { tilesEl.style.transition = ''; }, 160);
   if (Math.max(ax, ay) < 24) return;
   if (ax > ay) move(dx > 0 ? 'right' : 'left');
   else move(dy > 0 ? 'down' : 'up');
