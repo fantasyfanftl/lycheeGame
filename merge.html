@@ -1285,6 +1285,58 @@ function bumpBoard(dir) {
   haptic(15);
 }
 
+// ============ Auto-save ============
+const SAVE_KEY = 'mergeSaveState';
+let saveTimer = null;
+function saveGame() {
+  if (!tiles) return;
+  const snap = {
+    tiles: tiles.map(t => ({ id: t.id, value: t.value, x: t.x, y: t.y, w: t.w, h: t.h })),
+    score, nextId, won, wonEver, size: SIZE, inTutorial,
+    // Keep the most recent undo point so users don't lose it across reloads
+    lastUndo: history.length ? history[history.length - 1] : null,
+  };
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(snap)); } catch (e) {}
+}
+function saveGameDebounced() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveGame, 100);
+}
+function clearSavedGame() {
+  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+}
+function loadSavedGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const s = JSON.parse(raw);
+    if (!s || !s.tiles || !s.tiles.length) return false;
+    SIZE = s.size;
+    setBoardSize();
+    tiles = s.tiles.map(t => ({...t}));
+    grid = emptyGrid();
+    for (const t of tiles) placeOnGrid(t);
+    score = s.score || 0;
+    displayedScore = score;
+    nextId = s.nextId || (Math.max(0, ...tiles.map(t => t.id)) + 1);
+    won = !!s.won;
+    wonEver = !!s.wonEver;
+    inTutorial = !!s.inTutorial;
+    history = s.lastUndo ? [s.lastUndo] : [];
+    animating = false;
+    tilesEl.innerHTML = '';
+    renderTiles();
+    scoreEl.textContent = score;
+    bestEl.textContent = best;
+    updateUndoBtn();
+    updateItemBtns();
+    updateBoardWarning();
+    updateInfoText();
+    return true;
+  } catch (e) { return false; }
+}
+window.addEventListener('beforeunload', saveGame);
+
 document.getElementById('restartBtn').addEventListener('click', () => {
   if (tiles && tiles.length > 2 && !confirm('重开一局？')) return;
   newGame();
