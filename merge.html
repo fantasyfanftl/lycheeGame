@@ -1240,6 +1240,14 @@ boardWrap.addEventListener('touchend', e => {
 
 function haptic(ms = 12) { if (navigator.vibrate) navigator.vibrate(ms); }
 
+function bumpBoard(dir) {
+  const cls = 'bump-' + dir;
+  boardWrap.classList.remove('bump-up', 'bump-down', 'bump-left', 'bump-right');
+  void boardWrap.offsetHeight;
+  boardWrap.classList.add(cls);
+  haptic(15);
+}
+
 document.getElementById('restartBtn').addEventListener('click', () => {
   if (tiles && tiles.length > 2 && !confirm('重开一局？')) return;
   newGame();
