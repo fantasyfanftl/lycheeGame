@@ -109,6 +109,62 @@ body {
 
 /* ============ 游戏 ============ */
 #gameScreen { background: linear-gradient(180deg, #86efac 0%, #4ade80 100%); }
+
+/* ==== 参考求合体风格 顶栏 + 副栏 ==== */
+.topbar.compact { padding: 30px 12px 6px; }
+.topbar.compact .title { font-size: 20px; }
+
+#scoreBar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, #3d2817 0%, #2b1a10 100%);
+  color: #fef3e2;
+  flex-shrink: 0;
+  gap: 10px;
+}
+.sb-left, .sb-right { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; font-weight: 700; font-size: 14px; }
+.sb-right { align-items: flex-end; flex-direction: row; gap: 6px; align-items: center; }
+.sb-score, .sb-steps, .sb-coins { display: flex; align-items: center; gap: 3px; background: rgba(0,0,0,0.35); padding: 4px 8px; border-radius: 6px; border: 1px solid #6b4423; }
+.sb-score b, .sb-steps b, .sb-coins b { color: #fef3c7; font-size: 15px; }
+.sb-preview {
+  width: 60px; height: 60px;
+  background: linear-gradient(180deg, #5c3a1e, #3d2817);
+  border: 2px solid #8b5a3c;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+.sb-preview-img { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 34px; }
+.sb-preview-img img { width: 88%; height: 88%; object-fit: contain; }
+.sb-btn {
+  border: 1px solid #8b5a3c; background: #d4a574;
+  color: #3d2817; font-weight: 700; font-size: 13px;
+  padding: 6px 10px; border-radius: 8px; cursor: pointer;
+}
+.sb-btn:active { background: #b8935e; }
+.shop-btn-mini { background: linear-gradient(180deg, #fbbf24, #d97706); color: white; border-color: #b45309; }
+
+#promoBar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  background: #2b1a10;
+  border-top: 1px solid #5c3a1e;
+  border-bottom: 1px solid #5c3a1e;
+  color: #fef3e2;
+  flex-shrink: 0;
+}
+.promo-formula { color: #fbbf24; font-weight: 700; font-size: 14px; }
+.promo-formula span { font-size: 22px; vertical-align: middle; }
+.promo-btn {
+  border: 1px solid #4b9edb; background: #6bb5eb;
+  color: white; font-weight: 700; font-size: 12px;
+  padding: 6px 10px; border-radius: 14px; cursor: pointer;
+  box-shadow: 0 2px 0 #3d7ab8;
+}
+.promo-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #3d7ab8; }
+.promo-btn.rainbow { background: linear-gradient(90deg, #f472b6, #a78bfa, #60a5fa); border-color: #7c3aed; box-shadow: 0 2px 0 #6b21a8; }
+
 #statsBar {
   padding: 10px 14px; background: #fff8ec; color: #6b4423;
   display: flex; justify-content: space-around; align-items: center;
