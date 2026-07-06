@@ -882,9 +882,10 @@ function move(dir) {
     animating = false;
     updateUndoBtn();
     updateItemBtns();
+    updateBoardWarning();
     if (won) showWin();
     else if (tutorialGraduated) showTutorialDone();
-    else if (!hasMovesLeft()) showLose();
+    else if (!hasMovesLeft()) { haptic(50); showLose(); }
   }, 140);
 }
 
@@ -1178,8 +1179,7 @@ function shuffle() {
 // ============ Game control ============
 function newGame() {
   inTutorial = !localStorage.getItem('mergeTutorialDone');
-  SIZE = inTutorial ? TUTORIAL_SIZE : INITIAL_SIZE;
-  setBoardSize();
+  SIZE = inTutorial ? TUTORIAL_SIZE : INITIAL_SIZE;  setBoardSize();
   tiles = [];
   grid = emptyGrid();
   nextId = 1;
