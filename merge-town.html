@@ -597,7 +597,7 @@ function switchTheme(themeName) {
 }
 function getItem(lvl) { return lvl === WILDCARD_LVL ? WILDCARD_ITEM : ITEMS[lvl]; }
 // 图片预加载
-const ICON_V = 'v=15';  // 图片资源版本,换图后 bump 一下防浏览器缓存
+const ICON_V = 'v=34';  // 图片资源版本,换图后 bump 一下防浏览器缓存
 const iconImages = {};
 function iconSrc(it) { return it.icon + '?' + ICON_V; }
 function preloadIcons() {
@@ -1051,15 +1051,18 @@ function soundMerge(tier) {
 function soundError() { beep(180, 90, 'sawtooth', 0.10); }
 
 // 果冻挤压缓动:X/Y 非同步缩放(落地压扁 → 回弹拉长 → 微调 → 归位)
-function bounceXY(t) {
+function bounceXY(t, chainIdx) {
   if (t <= 0) return {sx: 0.7, sy: 0.7};
   if (t >= 1) return {sx: 1, sy: 1};
+  const ci = chainIdx || 0;
+  const peak = Math.min(1.25 + ci * 0.04, 1.38);
+  const flat = Math.max(0.78 - ci * 0.02, 0.68);
   const stops = [
     [0.00, 0.70, 0.70],
-    [0.35, 1.25, 0.78],  // 落地挤压 —— 横宽纵扁
-    [0.55, 0.88, 1.12],  // 回弹拉长 —— 纵拉横收
-    [0.75, 1.05, 0.96],  // 二次微调
-    [1.00, 1.00, 1.00],  // 归位
+    [0.35, peak, flat],
+    [0.55, 0.88, 1.12],
+    [0.75, 1.05, 0.96],
+    [1.00, 1.00, 1.00],
   ];
   let i = 0;
   while (i < stops.length - 1 && t > stops[i+1][0]) i++;
@@ -1079,13 +1082,58 @@ function bounceXY_place(t) {
   const p = (t - 0.4) / 0.6, e = 1 - Math.pow(1 - p, 2);
   return { sx: 1.1 - 0.1 * e, sy: 1.1 - 0.1 * e };  // 1.1 → 1.0
 }
-function pushBounce(r, c, kind) {
+function pushBounce(r, c, kind, chainIdx) {
   bounceCells = bounceCells.filter(b => !(b.r === r && b.c === c));
   const dur = kind === 'place' ? 200 : 320;
-  bounceCells.push({ r, c, t0: performance.now(), dur, kind: kind || 'merge' });
+  bounceCells.push({ r, c, t0: performance.now(), dur, kind: kind || 'merge', chainIdx: chainIdx || 0 });
 }
 // 错误抖动:格子红色高亮 + x 轴正弦晃
 let shakeCells = [];  // {r, c, t0, dur}
+let pressCells = [];  // {r, c, t0, dur} —— 格子按压反馈
+let particles = [];   // {cx, cy, vx, vy, color, size, t0, dur}
+
+function pushPress(r, c) {
+  pressCells = pressCells.filter(p => !(p.r === r && p.c === c));
+  pressCells.push({ r, c, t0: performance.now(), dur: 120 });
+}
+function pressScale(t) {
+  if (t >= 1 || t < 0) return 1;
+  if (t < 0.3) return 1 - 0.05 * (t / 0.3);   // 快按下到 0.95
+  return 0.95 + 0.05 * ((t - 0.3) / 0.7);      // 缓回弹到 1.0
+}
+function spawnParticles(cx, cy, tier) {
+  if (tier < 4) return;
+  const n = Math.min(3 + Math.floor((tier - 3) * 1.2), 10);
+  const colors = tier >= 8 ? ['#fef3c7','#fbbf24','#f59e0b','#fef08a']
+                            : ['#fde68a','#fef08a','#fef3c7'];
+  const now = performance.now();
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) + i * 0.3;
+    const speed = 60 + Math.random() * 40;
+    particles.push({
+      cx, cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 20,
+      color: colors[i % colors.length],
+      size: 4 + Math.random() * 2,
+      t0: now, dur: 500,
+    });
+  }
+}
+function floatCombo(x, y, chainIdx) {
+  if (chainIdx < 1) return;
+  const el = document.createElement('div');
+  el.className = 'float';
+  el.textContent = (chainIdx + 1) + ' 连击!';
+  el.style.color = chainIdx >= 3 ? '#dc2626' : chainIdx >= 1 ? '#f97316' : '#fbbf24';
+  el.style.fontSize = (18 + chainIdx * 2) + 'px';
+  el.style.textShadow = '0 2px 4px rgba(0,0,0,0.6)';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
 function pushShake(r, c) {
   shakeCells = shakeCells.filter(s => !(s.r === r && s.c === c));
   shakeCells.push({ r, c, t0: performance.now(), dur: 220 });
@@ -1134,8 +1182,17 @@ function drawBoard() {
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('🪨', x + TILE/2, y + TILE/2 + 1);
       } else {
+        // 按压反馈:短暂缩小
+        let pS = 1;
+        const pr = pressCells.find(pp => pp.r === r && pp.c === c);
+        if (pr) {
+          const t = (now - pr.t0) / pr.dur;
+          if (t < 1) pS = pressScale(t);
+          else pressCells = pressCells.filter(pp => pp !== pr);
+        }
+        const pad = 2 + (1 - pS) * TILE * 0.5;
         ctx.fillStyle = ((r + c) % 2) ? '#fef3c7' : '#fde68a';
-        roundRect(x + 2, y + 2, TILE - 4, TILE - 4, 6);
+        roundRect(x + pad, y + pad, TILE - pad * 2, TILE - pad * 2, 6);
         ctx.fill();
       }
     }
@@ -1153,7 +1210,7 @@ function drawBoard() {
         if (b) {
           const t = (now - b.t0) / b.dur;
           if (t < 1) {
-            const sc = b.kind === 'place' ? bounceXY_place(t) : bounceXY(t);
+            const sc = b.kind === 'place' ? bounceXY_place(t) : bounceXY(t, b.chainIdx);
             sx = sc.sx; sy = sc.sy;
           } else bounceCells = bounceCells.filter(bb => bb !== b);
         }
@@ -1261,7 +1318,20 @@ function drawBoard() {
   }
   // 清理已过期高亮
   flashCells = flashCells.filter(f => now - f.t0 < f.dur);
-  if (flashCells.length || bounceCells.length || shakeCells.length) requestAnimationFrame(drawBoard);
+  // 粒子 渲染
+  particles = particles.filter(pt => {
+    const t = (now - pt.t0) / pt.dur;
+    if (t >= 1) return false;
+    const dt = (now - pt.t0) / 1000;
+    const px = pt.cx + pt.vx * dt;
+    const py = pt.cy + pt.vy * dt + 0.5 * 300 * dt * dt;
+    ctx.globalAlpha = 1 - t * t;
+    ctx.fillStyle = pt.color;
+    ctx.beginPath(); ctx.arc(px, py, pt.size, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    return true;
+  });
+  if (flashCells.length || bounceCells.length || shakeCells.length || pressCells.length || particles.length) requestAnimationFrame(drawBoard);
 }
 
 function drawItem(cx, cy, level, scaleX, scaleY) {
@@ -1372,9 +1442,21 @@ function doMergeCascade(town, r, c) {
       town.board[or][oc] = newLvl;
       queue.push([or, oc]);
       flashCells.push({ r: or, c: oc, t0: performance.now(), dur: 400 });
-      pushBounce(or, oc, 'merge');
+      pushBounce(or, oc, 'merge', chains);
+      // 高级 粒子
+      spawnParticles(PAD + oc*TILE + TILE/2, PAD_TOP + or*TILE + TILE/2, newLvl);
     }
     soundMergeChained(newLvl, chains);
+    // combo 飘字
+    if (chains >= 1) {
+      const rect = canvas.getBoundingClientRect();
+      const [fr, fc] = outPos[0];
+      floatCombo(
+        rect.left + (PAD + fc*TILE + TILE/2) * (rect.width / boardW),
+        rect.top + (PAD_TOP + fr*TILE - TILE*0.3) * (rect.height / boardH),
+        chains
+      );
+    }
     chains++;
     // 屏幕飘字(在第一个输出位)
     const [fr, fc] = outPos[0];
@@ -1589,6 +1671,7 @@ function commitPlacement() {
   st.steps++;
   initAudio();
   soundPlace();
+  pushPress(r, c);
   pushBounce(r, c, 'place');
   st.queue.shift();
   st.queue.push(randomItem());

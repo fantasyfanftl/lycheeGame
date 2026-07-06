@@ -3434,3 +3434,1957 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
 
 </div>
 
+<script>
+
+// ============================================================
+// 《凌晨两点的便利店》v1.0 · 收银员单视角 · JS 层从零重写
+// ============================================================
+'use strict';
+
+// ============================================================
+// DATA
+// ============================================================
+
+const CHARACTERS = {
+  cashier: { short: '店员', long: '便 利 店 店 员' },
+  nurse:   { short: '护士', long: '夜 班 护 士' },
+  driver:  { short: '司机', long: '网 约 车 司 机' },
+  teen:    { short: '少年', long: '叛 逆 少 年' }
+};
+const CHAR_ORDER = ['cashier', 'nurse', 'driver', 'teen'];
+const NPC = {
+  oldman:    { short: '独居老人' },
+  cleaner:   { short: '保洁阿姨' },
+  driverAlt: { short: '代驾小哥' }
+};
+
+// HOTSPOTS · v1.0 完全沿用 legacy 坐标（复用旧场景图）
+const HOTSPOTS = {
+  doorway:        { card: 'doorstep',  x: 165, y: 320 },
+  catBowl:        { card: 'doorstep',  x: 80,  y: 440 },
+  driverSeat:     { card: 'window',    x: 200, y: 340 },
+  waterDispenser: { card: 'dispenser', x: 90,  y: 175 },
+  odenPot:        { card: 'dispenser', x: 225, y: 305 },
+  shelves:        { card: 'shelves',   x: 210, y: 320 },
+  milkCabinet:    { card: 'shelves',   x: 210, y: 175 },
+  register:       { card: 'register',  x: 200, y: 305 },
+  phone:          { card: 'register',  x: 155, y: 310 },
+  nurseObserve:   { card: 'window',    x: 140, y: 345 },
+  teenObserve:    { card: 'doorstep',  x: 110, y: 490 },
+  cashier:        { card: 'register',  x: 200, y: 288 },
+  nurse:          { card: 'dispenser', x: 340, y: 480 },
+  driver:         { card: 'window',    x: 200, y: 355 },
+  teen:           { card: 'doorstep',  x: 100, y: 500 },
+  oldman:         { card: 'shelves',   x: 200, y: 490 },
+  cleaner:        { card: 'shelves',   x: 140, y: 440 },
+  driverAlt:      { card: 'shelves',   x: 280, y: 440 }
+};
+
+// 客人分区位置（arch §6）
+const GUEST_ZONE_POS = {
+  'oldman:shelves':    { card: 'shelves',   x: 200, y: 240 },
+  'nurse:shelves':     { card: 'shelves',   x: 260, y: 320 },
+  'nurse:window':      { card: 'window',    x: 140, y: 345 },
+  'driver:window':     { card: 'window',    x: 200, y: 355 },
+  'teen:doorstep':     { card: 'doorstep',  x: 100, y: 500 },
+  'cleaner:shelves':   { card: 'shelves',   x: 140, y: 440 },
+  'driverAlt:shelves': { card: 'shelves',   x: 280, y: 440 }
+};
+
+// CASHIER_TIMELINE · arch §2
+const CASHIER_TIMELINE = [
+  { kind: 'idle',  shards: ['catBowl'] },
+  { kind: 'guest', guest: 'oldman',    enterCard: 'shelves',                   shards: ['milkCabinet'],              anchorKey: 'oldmanCheckout' },
+  { kind: 'guest', guest: 'nurse',     enterCard: 'shelves', walkTo: 'window', shards: ['odenPot', 'nurseObserve'],  anchorKey: 'nurseCheckout' },
+  { kind: 'guest', guest: 'cleaner',   enterCard: 'shelves',                   shards: [],                            anchorKey: 'cleanerCheckout' },
+  { kind: 'guest', guest: 'driver',    enterCard: 'window',                    shards: ['driverSeat'],                anchorKey: 'driverCheckout' },
+  { kind: 'guest', guest: 'driverAlt', enterCard: 'shelves',                   shards: [],                            anchorKey: 'driverAltCheckout' },
+  { kind: 'guest', guest: 'teen',      enterCard: 'doorstep',                  shards: ['teenObserve'],               anchorKey: 'teenCheckout' },
+  { kind: 'idle',  shards: ['doorway'], persistGuest: 'teen', persistZone: 'doorstep' }
+];
+
+// ============================================================
+// BEATS.cashier · 14 段 · 完全按 [[midnight-store-cashier-canon]] 落地
+// ============================================================
+const BEATS = {
+  cashier: [
+    // 0. 开场 · phone (opening) · arch §14
+    {
+      key: 'phone', kind: 'opening', hs: null,
+      text: `斜靠在收银台边缘，右耳塞着半只有线耳机，音量压得极低，只剩模糊的旋律漏出来。
+
+左手无意识转着一支黑色马克笔，目光落在玻璃门外的空街上，没什么焦点。
+
+收银台底下的手机震了两下，短促的两声。你垂眼扫了一眼。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '把音量拧小 · 留半只耳听门口',
+          text: `你把音量拧小。歌声只剩薄薄一层，压在店里的嗡上。
+
+夜班要留半只耳朵。这份心不放，其他的也做不好。`,
+          effects: (w) => { w.earbud = 'half'; if (typeof setEarbudSongVolume === 'function') setEarbudSongVolume(0.15); }
+        },
+        {
+          label: '摘下一只放桌上 · 另一只塞着',
+          text: `你把耳机的一只摘下来放到桌上，另一只留在耳朵里。
+
+冷藏柜的嗡从没听清过，现在听清了。`,
+          effects: (w) => { w.earbud = 'one'; if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(1.2); }
+        },
+        {
+          label: '两只都摘下 · 塞进兜里',
+          text: `你把耳机线绕两圈揣进卫衣口袋。
+
+店里安静下来。冷柜的低噪。关东煮的咕嘟。都是这个夜里的东西。`,
+          effects: (w) => { w.earbud = 'off'; if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(0.8); }
+        }
+      ]
+    },
+
+    // 1. catBowl shard · step 0 idle · 门口台阶橘猫
+    {
+      key: 'catBowl', kind: 'shard', hs: 'catBowl',
+      text: `视线越过玻璃门，落在门口台阶上。
+
+橘猫扒着空水碗，喉咙里发出很轻的一声。碗歪在一边，底儿还有一点没干的水渍。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '收回目光 · 继续整理零钱',
+          text: `你把目光收回来，指尖继续按面额码硬币。
+
+猫叫也就一两声，风一大就听不见了。`,
+          effects: (w) => { w.catBowl = 'ignored'; }
+        },
+        {
+          label: '起身去把碗摆正 · 加一点水',
+          text: `你顺手拿了纸杯接了点温水，走出去把碗摆正，把水倒进去，没蹲下。
+
+猫低头喝了两口，尾巴慢慢地摆。`,
+          effects: (w) => { w.catBowl = 'water'; }
+        },
+        {
+          label: '从柜台底拿备用猫粮 · 顺手倒一点',
+          text: `你从柜台底下摸出半袋备用猫粮，出去倒了一小堆在碗边。
+
+橘猫没抬头，凑过去就吃。`,
+          effects: (w) => { w.catBowl = 'full'; }
+        }
+      ]
+    },
+
+    // 2. milkCabinet shard · step 1 老人段 · 帮老人够牛奶
+    {
+      key: 'milkCabinet', kind: 'shard', hs: 'milkCabinet',
+      text: `视线越过收银台，能看见老人踮着脚，伸手够上层最里面的那盒牛奶。
+
+他晃了一下，扶住柜边稳住身子，又接着够。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '目光扫过就收回 · 继续数硬币',
+          text: `你的目光扫过就收回，指尖继续按面额码硬币，像没看见。`,
+          effects: (w) => { w.milkHelp = 'none'; }
+        },
+        {
+          label: '抬眼盯两秒 · 身体微微前倾',
+          text: `你抬眼盯了两秒，右手撑了下收银台边缘，身体微微前倾。
+
+老人自己够到了。你又默默坐回去。`,
+          effects: (w) => { w.milkHelp = 'ready'; }
+        },
+        {
+          label: '绕出收银台 · 递到他手里',
+          text: `你没出声，绕出收银台走过去，伸手取下那盒牛奶递到老人手里，转身就往回走。
+
+全程没说话。`,
+          effects: (w) => { w.milkHelp = 'given'; }
+        }
+      ]
+    },
+
+    // 3. oldmanCheckout anchor · step 1
+    {
+      key: 'oldmanCheckout', kind: 'anchor', hs: 'register',
+      text: `老人挪到台前，把布零钱包放在台面上，拉链拉了两下才拉开。
+
+他掏出一把硬币，手抖着数了两遍，没数清。
+
+「小伙子……麻烦结下账。」`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '「可以扫二维码，更快。」',
+          text: `你语气平淡，指尖敲了敲收款码牌。
+
+老人愣了愣，皱着眉继续数硬币。你才不耐烦地伸手接过硬币，数完找零推过去，全程没抬头。`,
+          effects: (w) => { w.cashService = 'cold'; }
+        },
+        {
+          label: '数到第三下 · 伸手接过来',
+          text: `你等老人数了第三下还没数清，伸手把硬币接过来，指尖飞快点数，找零按面额码好推过去。
+
+没说话。`,
+          effects: (w) => { w.cashService = 'normal'; }
+        },
+        {
+          label: '先报总价 · 帮他拢起硬币码好',
+          text: `你先报了总价，伸手把散硬币拢到自己跟前，一枚枚理整齐数完。
+
+找零的纸币叠得方正，硬币码成小摞递过去。「您拿好。」`,
+          effects: (w) => { w.cashService = 'fast'; }
+        }
+      ]
+    },
+
+    // 4. odenPot shard · step 2 护士段 · 煮关东煮
+    {
+      key: 'odenPot', kind: 'shard', hs: 'odenPot',
+      text: `护士拿了盒热牛奶，走去窗边靠里的位置坐下，把外套搭在椅背上，低头揉着手腕。
+
+关东煮的锅只开了保温档，汤面浮着一层细白热气。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '让锅一直保温 · 不加热',
+          text: `你没管锅。
+
+汤面还是那层薄薄的白热气。`,
+          effects: (w) => { w.odenState = 'off'; }
+        },
+        {
+          label: '起身把火加大 · 挑两串下锅',
+          text: `你起身把火加大，捡了两串常客爱吃的下锅。
+
+热气漫上来。窗边的护士往这边看了一眼，又收回目光。`,
+          effects: (w) => { w.odenState = 'hot'; }
+        },
+        {
+          label: '只把火加到中档 · 让汤慢慢冒',
+          text: `你把火拧到中档，让汤慢慢冒起来。
+
+香味漏出去一点点。`,
+          effects: (w) => { w.odenState = 'cold'; }
+        }
+      ]
+    },
+
+    // 5. nurseObserve shard · step 2 · 窗边观察护士
+    {
+      key: 'nurseObserve', kind: 'shard', hs: 'nurseObserve',
+      text: `视线越过货架和吧台之间的缝，能看到护士侧着的身影。
+
+袖口露出的碘伏印在灯下泛着一点浅黄。她按着手腕，动作很轻，像在忍疼。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '收回目光 · 不该多看',
+          text: `你收回目光，指尖继续码硬币。
+
+夜班的人各有各的疼，看多了没意思。`,
+          effects: (w) => { w.nurseObserved = true; }
+        },
+        {
+          label: '把台灯往她那边挪半格',
+          text: `你把台灯稍微朝那个方向拧了半格。
+
+灯罩偏一点，光就柔一点。`,
+          effects: (w) => { w.nurseObserved = true; }
+        },
+        {
+          label: '拿了张纸巾垫在她要经过的台面上',
+          text: `你拿了张纸巾，垫在收银台边——她待会儿放热奶盒的地方。
+
+她还没走过来。你已经把台子擦过了。`,
+          effects: (w) => { w.nurseObserved = true; }
+        }
+      ]
+    },
+
+    // 6. nurseCheckout anchor · step 2
+    {
+      key: 'nurseCheckout', kind: 'anchor', hs: 'register',
+      text: `护士起身走过来，手里拿着牛奶，另一只手拿着两串关东煮（如果煮了的话），手机递到扫码区。
+
+「你好，结账。」`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '低头扫码 · 推过去',
+          text: `你低头扫完码，把东西推过去。
+
+全程没抬头。`,
+          effects: (w) => { w.nurseCheckout = 'cold'; }
+        },
+        {
+          label: '扫到碘伏印 · 淡淡问一句「袋子要吗」',
+          text: `你扫到她袖口的碘伏印。手上没停，扫完淡淡问了句：「袋子要吗？」`,
+          effects: (w) => { w.nurseCheckout = 'normal'; }
+        },
+        {
+          label: '拿厚袋子 · 关东煮单独套一层',
+          text: `你扫完码，顺手拿了厚袋子，把关东煮单独套了一层。
+
+「汤容易洒，拿好。」`,
+          effects: (w) => { w.nurseCheckout = 'warm'; }
+        }
+      ]
+    },
+
+    // 7. cleanerCheckout anchor · step 3 · 保洁阿姨
+    {
+      key: 'cleanerCheckout', kind: 'anchor', hs: 'register',
+      text: `门铃响。穿橙黄色马甲的阿姨推门进来，手里攥着布袋子，直奔临期食品架。
+
+两分钟后，她拿着两袋面包过来结账。
+
+「小伙子，这临期的是买一送一吧？」`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '「嗯。」低头扫码',
+          text: `你低头扫码，把袋子递过去。`,
+          effects: (w) => { w.cleanerCheckout = 'cold'; }
+        },
+        {
+          label: '「对，我再给你拿一袋。」转身补一袋',
+          text: `你转身从货架补了一袋递过去。「对，我再给你拿一袋。」`,
+          effects: (w) => { w.cleanerCheckout = 'normal'; }
+        },
+        {
+          label: '扫码后顺手放一枚独立包装的小面包',
+          text: `你扫码后，顺手从货架拿了一枚独立包装的小面包，轻轻放进袋子里。
+
+声音很轻。「搭着吃。」`,
+          effects: (w) => { w.cleanerCheckout = 'warm'; }
+        }
+      ]
+    },
+
+    // 8. driverSeat shard · step 4 司机段 · 窗边看司机腰痛
+    {
+      key: 'driverSeat', kind: 'shard', hs: 'driverSeat',
+      text: `能看见男人侧着脸，眉头皱着，手掌按在腰上，按一下缓两秒，像老毛病了。
+
+肩膀绷得很紧。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '看一眼收回 · 继续理货单',
+          text: `你看了一眼就收回目光，继续理货单。`,
+          effects: (w) => { w.seatHeater = 'off'; }
+        },
+        {
+          label: '按下温控面板 · 暖气调高半格',
+          text: `你伸手按了下温控面板，把窗边的暖气调高了半格。
+
+没起身，也没出声。`,
+          effects: (w) => { w.seatHeater = 'normal'; }
+        },
+        {
+          label: '假装整理冷柜 · 把靠垫悄悄挪过去',
+          text: `你起身假装去整理旁边的冷饮冰箱，顺手把墙角闲置的靠垫，悄悄挪到他座位旁边的台面上，转身就走。`,
+          effects: (w) => { w.seatHeater = 'cushion'; }
+        }
+      ]
+    },
+
+    // 9. driverCheckout anchor · step 4
+    {
+      key: 'driverCheckout', kind: 'anchor', hs: 'register',
+      text: `男人坐了八分钟左右，直起身活动了一下腰，往收银台走。
+
+他拿了一瓶常温白水，放在台面上，指尖冻得发红。
+
+「拿瓶水。」`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '扫码收钱 · 把水推过去',
+          text: `你扫码，收钱，把水推过去。
+
+零交流。`,
+          effects: (w) => { w.driverCheckout = 'cold'; }
+        },
+        {
+          label: '扫到冻红的手 · 停顿半秒 · 把水推近一点',
+          text: `你扫到他冻红的指尖，停顿了半秒，没说话。
+
+把水往他那边推了推。`,
+          effects: (w) => { w.driverCheckout = 'normal'; }
+        },
+        {
+          label: '从保温机接一杯温白水 · 递过去',
+          text: `你扫完码，转身从保温机接了一杯温白水递过去。
+
+「凉的伤胃，这个免费。」`,
+          effects: (w) => { w.driverCheckout = 'warm'; }
+        }
+      ]
+    },
+
+    // 10. driverAltCheckout anchor · step 5 · 代驾小哥
+    {
+      key: 'driverAltCheckout', kind: 'anchor', hs: 'register',
+      text: `门铃轻响。穿头盔的小哥快步走进来，头盔挂在胳膊上，直奔冷藏柜拿了瓶矿泉水，又抓了两个茶叶蛋。
+
+「麻烦快点结，我那边还有单等着。」`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '低头快速扫码 · 递过去',
+          text: `你低头快速扫码，递过去。
+
+没说话。`,
+          effects: (w) => { w.driverAltCheckout = 'cold'; }
+        },
+        {
+          label: '「袋子要吗？」手上不停',
+          text: `「袋子要吗？」你手上动作没停。`,
+          effects: (w) => { w.driverAltCheckout = 'normal'; }
+        },
+        {
+          label: '「茶叶蛋给你拿的热的。」顺手塞纸巾',
+          text: `「茶叶蛋给你拿的热的。」你顺手塞了个纸巾在袋子里。`,
+          effects: (w) => { w.driverAltCheckout = 'warm'; }
+        }
+      ]
+    },
+
+    // 11. teenObserve shard · step 6 少年段 · 门口台阶观察
+    {
+      key: 'teenObserve', kind: 'shard', hs: 'teenObserve',
+      text: `少年蹲在台阶上，橘猫蹭他的手背，他动作很轻，一下一下顺着猫毛。
+
+肩膀很瘦，卫衣袖子有点长，盖住半只手。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '收回目光 · 继续擦台面',
+          text: `你收回目光，继续擦台面。
+
+不是每个人都想被看到。`,
+          effects: (w) => { w.teenObserved = true; }
+        },
+        {
+          label: '把门口那盏灯稍微拧亮一点',
+          text: `你按了下门口的灯，让它稍微亮一点。
+
+不是很亮，只是从很暗到不那么暗。`,
+          effects: (w) => { w.teenObserved = true; }
+        },
+        {
+          label: '从柜台底下抽出一根备用充电线放在台前',
+          text: `你从柜台底下抽出一根备用充电线，放在台前。
+
+线头露出来一小截。他还没走进来。`,
+          effects: (w) => { w.teenObserved = true; }
+        }
+      ]
+    },
+
+    // 12. teenCheckout anchor · step 6
+    {
+      key: 'teenCheckout', kind: 'anchor', hs: 'register',
+      text: `少年低着头走进来，手里攥着一袋最便宜的猫粮，放在台面上。
+
+掏手机时按了好几下，屏幕黑着。他手指顿了顿，更用力地按了一下，还是没亮。
+
+「……这个。」声音很小，几乎听不清。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '扫完码把猫粮推过去 · 当没看见',
+          text: `你扫完码把猫粮推过去，看见黑屏也当没看见。
+
+全程没抬头。`,
+          effects: (w) => { w.chargerState = 'none'; }
+        },
+        {
+          label: '抬眼扫一下 · 没说话 · 继续整理零钱',
+          text: `你抬眼扫了一下黑屏的手机，没说话，继续低头整理零钱。`,
+          effects: (w) => { w.chargerState = 'seen'; }
+        },
+        {
+          label: '弯腰摸出充电线 · 推到他面前 · 没等他谢',
+          text: `你弯腰从柜台底下摸出一根备用充电线，推到他面前。
+
+没说话，也没等他道谢。`,
+          effects: (w) => { w.chargerState = 'given'; }
+        }
+      ]
+    },
+
+    // 13. doorway shard · step 7 收尾 · 留门缝
+    {
+      key: 'doorway', kind: 'shard', hs: 'doorway',
+      text: `少年出门蹲回台阶上，背对着店门，抱着膝盖。橘猫蜷在他脚边。
+
+玻璃门上映着他模糊的影子，门外的少年缩成小小的一团。`,
+      choicePrompt: '',
+      choices: [
+        {
+          label: '看一眼 · 收回目光 · 继续发呆',
+          text: `你看了一眼，收回目光，继续坐着发呆。`,
+          effects: (w) => { w.doorGap = 'none'; }
+        },
+        {
+          label: '偶尔抬眼扫一下门口 · 没开门',
+          text: `你偶尔抬眼扫一下门口，怕他出事，但没开门。`,
+          effects: (w) => { w.doorGap = 'watched'; }
+        },
+        {
+          label: '走到门边 · 拉开一条细缝',
+          text: `你起身走到门边，把玻璃门拉开一条细缝。
+
+暖气顺着缝漏出去。你在心里找了个借口：店里闷，透透气。`,
+          effects: (w) => { w.doorGap = 'open'; }
+        }
+      ]
+    }
+  ],
+  nurse: [], driver: [], teen: []  // v2.0 再补
+};
+
+// ============================================================
+// 图鉴 9 条 · arch A4 + 图鉴解锁对应表
+// ============================================================
+const NOTEBOOK_ENTRIES = [
+  { id: 'milkHelp',       caption: '踮 起 脚 · 够 那 盒 牛 奶',   isUnlocked: (w, a) => a.playedShards.indexOf('milkCabinet') >= 0 },
+  { id: 'cashService',    caption: '一 把 数 不 清 的 硬 币',     isUnlocked: (w, a) => a.playedAnchors.indexOf('oldmanCheckout') >= 0 },
+  { id: 'odenState',      caption: '保 温 档 上 的 一 锅 汤',     isUnlocked: (w, a) => a.playedShards.indexOf('odenPot') >= 0 },
+  { id: 'nurseCheckout',  caption: '袖 口 的 一 圈 碘 伏',       isUnlocked: (w, a) => a.playedAnchors.indexOf('nurseCheckout') >= 0 },
+  { id: 'seatHeater',     caption: '手 按 着 后 腰 的 那 个 人',  isUnlocked: (w, a) => a.playedShards.indexOf('driverSeat') >= 0 },
+  { id: 'driverCheckout', caption: '冻 红 的 手 指 · 一 瓶 水',   isUnlocked: (w, a) => a.playedAnchors.indexOf('driverCheckout') >= 0 },
+  { id: 'catBowl',        caption: '台 阶 上 的 空 猫 碗',       isUnlocked: (w, a) => a.playedShards.indexOf('catBowl') >= 0 },
+  { id: 'chargerState',   caption: '按 不 亮 的 那 块 屏 幕',     isUnlocked: (w, a) => a.playedAnchors.indexOf('teenCheckout') >= 0 },
+  { id: 'doorGap',        caption: '门 缝 · 一 条 窄 光',         isUnlocked: (w, a) => a.playedShards.indexOf('doorway') >= 0 }
+];
+
+// ============================================================
+// STATE (v3)
+// ============================================================
+const SAVE_KEY = 'midnight-store.save.v3';
+
+function makeDefaultWorld() {
+  return {
+    catBowl:           'ignored',
+    milkHelp:          'none',
+    odenState:         'off',
+    seatHeater:        'off',
+    doorGap:           'none',
+    cashService:       'normal',
+    nurseCheckout:     'normal',
+    driverCheckout:    'normal',
+    chargerState:      'none',
+    cleanerCheckout:   null,
+    driverAltCheckout: null,
+    nurseObserved:     false,
+    teenObserved:      false,
+    earbud:            null
+  };
+}
+
+function makeDefaultCashierArc() {
+  return {
+    step: 0,
+    guestPresent: null,
+    guestZone: {},
+    playedShards: [],
+    playedAnchors: [],
+    finalDownshifted: false,
+    completed: false,
+    openingPlayed: false
+  };
+}
+
+const state = {
+  currentPOV: null,
+  currentBeat: null,
+  dialogueOpen: false,
+  world: makeDefaultWorld(),
+  cashierArc: makeDefaultCashierArc(),
+  beatsCompleted: 0
+};
+
+// ============================================================
+// Utilities
+// ============================================================
+function $(id) { return document.getElementById(id); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  const el = $(id);
+  if (el) el.classList.remove('hidden');
+}
+
+function renderTextWithQuotes(text) {
+  if (!text) return '';
+  return text.replace(/[“”「」]([^“”「」]+)[“”「」]/g, '<span class="quote">$1</span>');
+}
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  const container = document.querySelector('.scene-wrap') || document.body;
+  container.appendChild(t);
+  setTimeout(() => { try { t.remove(); } catch (e) {} }, 3200);
+}
+
+function subtleError(msg) {
+  const t = document.createElement('div');
+  t.className = 'subtle-error';
+  t.textContent = msg;
+  const container = document.querySelector('.scene-wrap') || document.body;
+  container.appendChild(t);
+  setTimeout(() => { try { t.remove(); } catch (e) {} }, 3800);
+}
+
+// ============================================================
+// Cashier arc functions
+// ============================================================
+function ensureCashierArc() {
+  if (!state.cashierArc) state.cashierArc = makeDefaultCashierArc();
+  return state.cashierArc;
+}
+
+function currentCashierStep() {
+  const arc = ensureCashierArc();
+  return CASHIER_TIMELINE[arc.step] || null;
+}
+
+function findCashierBeatByKey(key) {
+  return BEATS.cashier.find(b => b.key === key) || null;
+}
+
+function isShardPlayed(key) { return ensureCashierArc().playedShards.indexOf(key) >= 0; }
+function isAnchorPlayed(key) { return ensureCashierArc().playedAnchors.indexOf(key) >= 0; }
+
+function handleRegisterClick() {
+  if (state.currentPOV !== 'cashier') return;
+  if (state.dialogueOpen) return;
+  const arc = ensureCashierArc();
+  if (arc.completed) return;
+
+  if (!arc.openingPlayed) {
+    const openingBeat = findCashierBeatByKey('phone');
+    if (openingBeat) {
+      state.currentBeat = openingBeat;
+      showPhoneOverlay(openingBeat);
+    }
+    return;
+  }
+
+  const step = currentCashierStep();
+  if (!step) return;
+
+  if (arc.guestPresent && step.kind === 'guest') {
+    if (!step.anchorKey) return;
+    if (isAnchorPlayed(step.anchorKey)) return;
+    playCashierAnchor(step.anchorKey);
+    return;
+  }
+
+  if (!arc.guestPresent && step.kind === 'idle') {
+    const isTerminal = arc.step === CASHIER_TIMELINE.length - 1;
+    if (isTerminal) {
+      arc.finalDownshifted = true;
+      saveState();
+      maybeCompleteCashierArc();
+      return;
+    }
+    advanceCashierStep();
+    return;
+  }
+}
+
+function advanceCashierStep() {
+  const arc = ensureCashierArc();
+  if (arc.step >= CASHIER_TIMELINE.length - 1) return;
+  arc.step += 1;
+  const step = currentCashierStep();
+  if (!step) return;
+  if (step.kind === 'guest') {
+    spawnCashierGuest(step);
+  } else if (step.kind === 'idle') {
+    if (step.persistGuest) {
+      arc.guestPresent = step.persistGuest;
+      arc.guestZone[step.persistGuest] = step.persistZone || 'doorstep';
+    }
+  }
+  render();
+  saveState();
+}
+
+function spawnCashierGuest(step) {
+  const arc = ensureCashierArc();
+  if (arc.guestPresent) return;
+  arc.guestPresent = step.guest;
+  arc.guestZone = arc.guestZone || {};
+  arc.guestZone[step.guest] = step.enterCard || 'shelves';
+  try { playDoorChime(); } catch (e) {}
+  setTimeout(() => {
+    if (step.enterCard) scrollToCard(step.enterCard);
+    if (step.walkTo) {
+      setTimeout(() => {
+        if (arc.guestPresent === step.guest) {
+          arc.guestZone[step.guest] = step.walkTo;
+          scrollToCard(step.walkTo);
+          render();
+        }
+      }, 2400);
+    }
+  }, 120);
+  render();
+  saveState();
+}
+
+function playCashierAnchor(anchorKey) {
+  const beat = findCashierBeatByKey(anchorKey);
+  if (!beat) return;
+  playInlineBeat(beat);
+}
+
+function afterCashierAnchor(anchorKey) {
+  const arc = ensureCashierArc();
+  if (arc.playedAnchors.indexOf(anchorKey) < 0) arc.playedAnchors.push(anchorKey);
+  const leavingGuest = arc.guestPresent;
+  arc.guestPresent = null;
+  if (leavingGuest && arc.guestZone) delete arc.guestZone[leavingGuest];
+  setTimeout(() => { try { playDoorChime(); } catch (e) {} }, 150);
+  if (arc.step < CASHIER_TIMELINE.length - 1) {
+    arc.step += 1;
+    const newStep = currentCashierStep();
+    if (newStep && newStep.kind === 'idle' && newStep.persistGuest) {
+      arc.guestPresent = newStep.persistGuest;
+      arc.guestZone[newStep.persistGuest] = newStep.persistZone || 'doorstep';
+      // Scroll to that card so player sees them
+      setTimeout(() => scrollToCard(newStep.persistZone || 'doorstep'), 400);
+    }
+  }
+  render();
+  saveState();
+  maybeCompleteCashierArc();
+}
+
+function afterCashierShard(shardKey) {
+  const arc = ensureCashierArc();
+  if (arc.playedShards.indexOf(shardKey) < 0) arc.playedShards.push(shardKey);
+  if (shardKey === 'nurseObserve') state.world.nurseObserved = true;
+  if (shardKey === 'teenObserve') state.world.teenObserved = true;
+  render();
+  saveState();
+  maybeCompleteCashierArc();
+}
+
+function maybeCompleteCashierArc() {
+  const arc = ensureCashierArc();
+  if (arc.completed) return;
+  if (arc.step === CASHIER_TIMELINE.length - 1 && arc.finalDownshifted) {
+    arc.completed = true;
+    try { playArcComplete(); } catch (e) {}
+    saveState();
+    setTimeout(() => showEnding(), 1600);
+  }
+}
+
+// ============================================================
+// Render layer
+// ============================================================
+function guestPositionFor(id) {
+  const arc = state.cashierArc;
+  if (arc && arc.guestZone && arc.guestZone[id]) {
+    const zone = arc.guestZone[id];
+    const key = id + ':' + zone;
+    if (GUEST_ZONE_POS[key]) return GUEST_ZONE_POS[key];
+  }
+  return HOTSPOTS[id] || null;
+}
+
+function renderCharacters() {
+  const cardsMap = { doorstep: [], window: [], shelves: [], register: [], dispenser: [] };
+  if (state.currentPOV === 'cashier') {
+    const arc = state.cashierArc;
+    const g = arc && arc.guestPresent;
+    if (g) {
+      const pos = guestPositionFor(g);
+      if (pos) {
+        const cardName = (arc.guestZone && arc.guestZone[g]) || (HOTSPOTS[g] && HOTSPOTS[g].card);
+        if (cardName && cardsMap[cardName]) cardsMap[cardName].push({ id: g, x: pos.x, y: pos.y });
+      }
+    }
+  }
+  document.querySelectorAll('.chars-layer').forEach(layer => {
+    const card = layer.dataset.cardChars;
+    const chars = cardsMap[card] || [];
+    layer.innerHTML = chars.map(({ id, x, y }) => {
+      const w = 60, h = 120;
+      const leftPct = (x / 400) * 100;
+      const bottomPct = ((550 - y) / 550) * 100;
+      return '<svg viewBox="0 0 60 120" class="char-svg arriving" style="position:absolute; left:calc(' + leftPct + '% - ' + (w / 2) + 'px); bottom:calc(' + bottomPct + '% - 12px); width:' + w + 'px; height:' + h + 'px; pointer-events:none;">' + characterSVG(id) + '</svg>';
+    }).join('');
+  });
+}
+
+function renderHotspots() {
+  const cardsMap = { doorstep: [], window: [], shelves: [], register: [], dispenser: [] };
+  if (state.currentPOV === 'cashier' && !state.cashierArc.completed && state.cashierArc.openingPlayed) {
+    const arc = state.cashierArc;
+    const step = currentCashierStep();
+    const regPos = HOTSPOTS.register;
+    if (regPos) cardsMap[regPos.card].push({ hs: 'register', pos: regPos });
+    const shards = (step && step.shards) || [];
+    shards.forEach(shardKey => {
+      if (isShardPlayed(shardKey)) return;
+      const pos = HOTSPOTS[shardKey];
+      if (!pos) return;
+      cardsMap[pos.card].push({ hs: shardKey, pos });
+    });
+  }
+  document.querySelectorAll('.hotspots-layer').forEach(layer => {
+    const card = layer.dataset.cardHotspots;
+    const items = cardsMap[card] || [];
+    layer.innerHTML = items.map(({ hs, pos }) => {
+      const size = 48;
+      const leftPct = (pos.x / 400) * 100;
+      const topPct  = (pos.y / 550) * 100;
+      return '<div data-hs="' + hs + '" style="position:absolute; left:calc(' + leftPct + '% - ' + (size / 2) + 'px); top:calc(' + topPct + '% - ' + (size / 2) + 'px); width:' + size + 'px; height:' + size + 'px; cursor:pointer; display:flex; align-items:center; justify-content:center;">'
+        + '<svg viewBox="0 0 ' + size + ' ' + size + '" style="width:100%;height:100%;pointer-events:none;">'
+        + '<circle class="hotspot-ring" cx="' + (size / 2) + '" cy="' + (size / 2) + '" r="10" fill="none" stroke="#f5c88a" stroke-width="1" opacity="0.75"/>'
+        + '<circle class="hotspot-dot" cx="' + (size / 2) + '" cy="' + (size / 2) + '" r="4.5" fill="#f5c88a" opacity="0.85"/>'
+        + '</svg></div>';
+    }).join('');
+    layer.style.pointerEvents = 'none';
+    layer.querySelectorAll('[data-hs]').forEach(el => {
+      el.style.pointerEvents = 'auto';
+      el.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const hs = el.dataset.hs;
+        if (hs === 'register') handleRegisterClick();
+        else triggerShard(hs);
+      });
+    });
+  });
+}
+
+function triggerShard(hs) {
+  if (state.dialogueOpen) return;
+  if (state.currentPOV !== 'cashier') return;
+  if (state.cashierArc.completed) return;
+  const step = currentCashierStep();
+  if (!step || !step.shards || step.shards.indexOf(hs) < 0) return;
+  if (isShardPlayed(hs)) return;
+  const beat = findCashierBeatByKey(hs);
+  if (!beat) return;
+  playInlineBeat(beat);
+}
+
+function render() {
+  renderCharacters();
+  renderHotspots();
+  updateCardDots();
+  updateDevPanel();
+  const povName = $('pov-name');
+  if (povName && state.currentPOV) {
+    povName.textContent = (CHARACTERS[state.currentPOV] || {}).long || state.currentPOV;
+  }
+  const povHint = $('pov-hint');
+  if (povHint) {
+    const arc = state.cashierArc;
+    if (state.currentPOV === 'cashier' && !arc.completed) {
+      if (!arc.openingPlayed) povHint.textContent = '';
+      else if (arc.guestPresent) povHint.textContent = '· 点 收 银 台 · 结 账 ·';
+      else povHint.textContent = '· 点 收 银 台 · 下 一 位 ·';
+    } else {
+      povHint.textContent = '';
+    }
+  }
+  // Body arc class for CSS ambience
+  document.body.classList.toggle('playing-arc', !!(state.currentPOV && !state.cashierArc.completed));
+}
+
+// ============================================================
+// switchPOV
+// ============================================================
+function switchPOV(char) {
+  state.currentPOV = char;
+  document.body.classList.remove('pov-cashier', 'pov-nurse', 'pov-driver', 'pov-teen');
+  document.body.classList.add('pov-' + char);
+  ensureCashierArc();
+  if (char === 'cashier') {
+    try { startAmbient('cashier'); } catch (e) {}
+    if (!state.cashierArc.openingPlayed) {
+      setTimeout(() => {
+        if (state.currentPOV === 'cashier' && !state.cashierArc.openingPlayed && !state.dialogueOpen) {
+          const openingBeat = findCashierBeatByKey('phone');
+          if (openingBeat) {
+            state.currentBeat = openingBeat;
+            showPhoneOverlay(openingBeat);
+          }
+        }
+      }, 700);
+    }
+  }
+  scrollToCard('register', true);
+  render();
+}
+
+// ============================================================
+// Inline beat play (main path)
+// ============================================================
+function playInlineBeat(beat) {
+  if (state.dialogueOpen) return;
+  state.currentBeat = beat;
+  state.dialogueOpen = true;
+  const panel = $('inline-panel');
+  const sub = $('inline-subtitle');
+  const choices = $('inline-choices');
+  const cont = $('inline-continue');
+  const cue = $('inline-cue');
+  if (!panel || !sub || !choices || !cont) return;
+  panel.classList.remove('hidden');
+  if (cue) cue.classList.add('hidden');
+  cont.classList.add('hidden');
+  choices.innerHTML = '';
+  sub.classList.remove('hidden');
+  sub.innerHTML = renderTextWithQuotes(beat.text || '');
+  sub.style.opacity = '0';
+  requestAnimationFrame(() => {
+    sub.style.transition = 'opacity 0.2s ease-out';
+    sub.style.opacity = '1';
+  });
+  setTimeout(() => {
+    if (state.currentBeat !== beat) return;
+    if (beat.choices && beat.choices.length) {
+      if (beat.choicePrompt) {
+        const p = document.createElement('div');
+        p.style.cssText = 'color:#f5c88a; font-size:11px; letter-spacing:3px; text-align:center; padding:4px 0 6px; opacity:0.85;';
+        p.textContent = beat.choicePrompt;
+        choices.appendChild(p);
+      }
+      beat.choices.forEach((ch, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'inline-choice-btn';
+        btn.textContent = ch.label;
+        btn.style.opacity = '0';
+        setTimeout(() => { btn.style.transition = 'opacity 0.3s ease-out'; btn.style.opacity = '1'; }, 40 + i * 60);
+        btn.addEventListener('click', () => pickInlineChoice(i));
+        choices.appendChild(btn);
+      });
+    } else {
+      cont.classList.remove('hidden');
+    }
+  }, 350);
+  updateDevPanel();
+}
+
+function pickInlineChoice(idx) {
+  const beat = state.currentBeat;
+  if (!beat || !beat.choices || !beat.choices[idx]) return;
+  const choice = beat.choices[idx];
+  if (typeof choice.effects === 'function') {
+    try { choice.effects(state.world); } catch (e) { console.warn('effect err', e); }
+  }
+  const sub = $('inline-subtitle');
+  const choices = $('inline-choices');
+  const cont = $('inline-continue');
+  choices.style.transition = 'opacity 0.2s ease-out';
+  choices.style.opacity = '0';
+  setTimeout(() => {
+    choices.innerHTML = '';
+    choices.style.opacity = '1';
+    sub.style.transition = 'opacity 0.3s ease-out';
+    sub.style.opacity = '0';
+    setTimeout(() => {
+      sub.innerHTML = renderTextWithQuotes(choice.text || '');
+      sub.style.opacity = '1';
+      cont.classList.remove('hidden');
+      if (choice.voice) { try { speakLine(choice.voice, 300); } catch (e) {} }
+    }, 300);
+  }, 200);
+}
+
+function dismissInlineBeat() {
+  const beat = state.currentBeat;
+  if (!beat) return;
+  const panel = $('inline-panel');
+  const cont = $('inline-continue');
+  const sub = $('inline-subtitle');
+  const choices = $('inline-choices');
+  if (panel) panel.classList.add('hidden');
+  if (cont) cont.classList.add('hidden');
+  if (sub) sub.classList.add('hidden');
+  if (choices) choices.innerHTML = '';
+  state.dialogueOpen = false;
+  state.beatsCompleted += 1;
+  if (beat.kind === 'shard') afterCashierShard(beat.key);
+  else if (beat.kind === 'anchor') afterCashierAnchor(beat.key);
+  state.currentBeat = null;
+  updateDevPanel();
+}
+
+// ============================================================
+// Phone overlay (opening) · arch A2 + §14
+// ============================================================
+function showPhoneOverlay(beat) {
+  const overlay = $('phone-overlay');
+  const choices = $('phone-choices');
+  if (!overlay || !choices) return;
+  overlay.classList.remove('hidden');
+  choices.innerHTML = '';
+  state.dialogueOpen = true;
+  state.currentBeat = beat;
+  const notice = $('pp-carrier-notice');
+  if (notice) {
+    notice.classList.remove('fading');
+    setTimeout(() => { if (notice) notice.classList.add('fading'); }, 3000);
+  }
+  // Clean any leftover text
+  const existingText = overlay.querySelector('.phone-overlay-text');
+  if (existingText) existingText.remove();
+  const paras = (beat.text || '').split(/\n\n+/);
+  const overlayText = document.createElement('div');
+  overlayText.className = 'phone-overlay-text';
+  overlayText.style.cssText = 'max-width:340px; padding:14px 18px; background:rgba(20,25,40,0.72); backdrop-filter:blur(8px); border:1px solid rgba(245,200,138,0.35); border-radius:10px; color:#f2ede0; font-size:13.5px; line-height:1.75; letter-spacing:0.5px; text-align:center; opacity:0; transition:opacity 0.4s ease-out; white-space:pre-wrap;';
+  overlay.appendChild(overlayText);
+  let idx = 0;
+  let skipped = false;
+  const showNext = () => {
+    if (idx >= paras.length) { renderPhoneChoices(beat); return; }
+    overlayText.style.opacity = '0';
+    setTimeout(() => {
+      overlayText.textContent = paras[idx];
+      overlayText.style.opacity = '1';
+      idx += 1;
+      if (!skipped && idx < paras.length) {
+        overlay._nextTimer = setTimeout(showNext, 1600);
+      } else if (!skipped) {
+        setTimeout(renderPhoneChoices.bind(null, beat), 1200);
+      }
+    }, idx === 0 ? 100 : 300);
+  };
+  const skipToChoices = () => {
+    if (skipped) return;
+    skipped = true;
+    if (overlay._nextTimer) clearTimeout(overlay._nextTimer);
+    overlayText.style.opacity = '0';
+    setTimeout(() => {
+      overlayText.textContent = paras[paras.length - 1] || '';
+      overlayText.style.opacity = '1';
+      renderPhoneChoices(beat);
+    }, 200);
+  };
+  overlay._skipHandler = (ev) => {
+    if (ev.target.closest('.phone-choice-btn')) return;
+    if (ev.target.closest('.phone-frame')) return;
+    skipToChoices();
+  };
+  overlay.addEventListener('click', overlay._skipHandler);
+  showNext();
+}
+
+function renderPhoneChoices(beat) {
+  const choices = $('phone-choices');
+  if (!choices) return;
+  choices.innerHTML = '';
+  if (beat.choicePrompt) {
+    const p = document.createElement('div');
+    p.style.cssText = 'color:#f5c88a; font-size:12px; letter-spacing:3px; text-align:center; padding:8px 0; opacity:0.9;';
+    p.textContent = beat.choicePrompt;
+    choices.appendChild(p);
+  }
+  (beat.choices || []).forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'phone-choice-btn';
+    btn.textContent = ch.label;
+    btn.style.opacity = '0';
+    setTimeout(() => { btn.style.transition = 'opacity 0.3s ease-out'; btn.style.opacity = '1'; }, 100 + i * 80);
+    btn.addEventListener('click', () => pickPhoneChoice(i));
+    choices.appendChild(btn);
+  });
+}
+
+function pickPhoneChoice(idx) {
+  const beat = state.currentBeat;
+  if (!beat || !beat.choices || !beat.choices[idx]) return;
+  const choice = beat.choices[idx];
+  try { if (choice.effects) choice.effects(state.world); } catch (e) {}
+  const overlay = $('phone-overlay');
+  const overlayText = overlay ? overlay.querySelector('.phone-overlay-text') : null;
+  const choices = $('phone-choices');
+  if (choices) choices.innerHTML = '';
+  if (overlayText) {
+    overlayText.style.opacity = '0';
+    setTimeout(() => {
+      overlayText.textContent = choice.text || '';
+      overlayText.style.opacity = '1';
+    }, 300);
+  }
+  const cont = document.createElement('button');
+  cont.className = 'phone-choice-btn';
+  cont.textContent = '· 继 续 ·';
+  cont.style.marginTop = '14px';
+  cont.style.opacity = '0';
+  setTimeout(() => { cont.style.transition = 'opacity 0.3s ease-out'; cont.style.opacity = '1'; }, 800);
+  cont.addEventListener('click', dismissPhoneOverlay);
+  if (choices) choices.appendChild(cont);
+}
+
+function dismissPhoneOverlay() {
+  const beat = state.currentBeat;
+  const overlay = $('phone-overlay');
+  if (!overlay) return;
+  overlay.classList.add('hidden');
+  if (overlay._skipHandler) { overlay.removeEventListener('click', overlay._skipHandler); overlay._skipHandler = null; }
+  const overlayText = overlay.querySelector('.phone-overlay-text');
+  if (overlayText) overlayText.remove();
+  const choicesEl = $('phone-choices');
+  if (choicesEl) choicesEl.innerHTML = '';
+  state.dialogueOpen = false;
+  if (beat) {
+    state.cashierArc.openingPlayed = true;
+    if (state.cashierArc.playedShards.indexOf('phone') < 0) {
+      state.cashierArc.playedShards.push('phone');
+    }
+    state.beatsCompleted += 1;
+    setTimeout(() => {
+      if (typeof startCashierBackgroundMusic === 'function' && !AUDIO.bgMusic) {
+        try { startCashierBackgroundMusic(0.18); } catch (e) {}
+      }
+    }, 1000);
+    saveState();
+  }
+  state.currentBeat = null;
+  render();
+  updateDevPanel();
+}
+
+// ============================================================
+// Notebook (店 员 篇 · 9 / 9)
+// ============================================================
+function showNotebook() {
+  showScreen('notebook-screen');
+  const list = $('cp-list');
+  if (!list) return;
+  list.innerHTML = '';
+  let unlockCount = 0;
+  const arc = ensureCashierArc();
+  NOTEBOOK_ENTRIES.forEach((entry, i) => {
+    const unlocked = entry.isUnlocked(state.world, arc);
+    if (unlocked) unlockCount += 1;
+    const row = document.createElement('div');
+    row.className = 'cp-entry-single' + (unlocked ? '' : ' locked');
+    row.innerHTML = '<div class="cp-entry-num">' + String(i + 1).padStart(2, '0') + '</div>'
+      + '<div class="cp-entry-caption">' + (unlocked ? entry.caption : '？ ？ ？') + '</div>';
+    list.appendChild(row);
+  });
+  const count = $('notebook-count');
+  if (count) count.textContent = String(unlockCount);
+}
+
+function hideNotebook() {
+  showScreen('game-screen');
+  render();
+}
+
+// ============================================================
+// Ending
+// ============================================================
+function buildEndingLines(w) {
+  const base = [
+    '他重新坐回收银台，拿起那半只耳机，塞回耳朵里，没开声音。',
+    '关东煮还在咕嘟。台阶上的少年还蹲着。耳机里的歌循环到第三遍。',
+    '玻璃窗上映着他自己模糊的影子，比他以为的样子更疲惫一点。'
+  ];
+  const incr = [];
+  if (w.catBowl === 'water') incr.push('门外那只碗歪得没那么厉害了。');
+  if (w.catBowl === 'full')  incr.push('台阶上有几粒散落的猫粮。');
+  if (w.milkHelp === 'ready') incr.push('收银台边缘的木漆磨得比别处深一点。');
+  if (w.milkHelp === 'given') incr.push('热奶柜顶层空出的位置很整齐。');
+  if (w.cashService === 'fast') incr.push('收银机抽屉里的硬币按面额码成三堆。');
+  if (w.odenState === 'cold') incr.push('关东煮锅里剩着几根空签子。');
+  if (w.odenState === 'hot')  incr.push('保温档亮着。他没关。');
+  if (w.nurseObserved === true) incr.push('窗边高脚凳上还留着一点体温的印子。');
+  if (w.nurseCheckout === 'warm') incr.push('收银台上多出一小张纸巾。是他刚才垫热奶盒的。');
+  if (w.cleanerCheckout === 'warm') incr.push('台面上少了一个薄塑料袋。');
+  if (w.seatHeater === 'normal') incr.push('窗那边不再冷。');
+  if (w.seatHeater === 'cushion') incr.push('靠垫落回了原来的位置。');
+  if (w.driverCheckout === 'warm') incr.push('保温机的水位下去了小半格。');
+  if (w.driverAltCheckout === 'warm') incr.push('门外的电动车已经没影了。');
+  if (w.teenObserved === true) incr.push('玻璃窗上映着的不只是他一个人。');
+  if (w.chargerState === 'given') incr.push('柜台底下那根充电线还没收。');
+  if (w.doorGap === 'watched') incr.push('收银台后面的角度，正好能看到台阶上那团缩着的影子。');
+  if (w.doorGap === 'open')    incr.push('门缝漏出的暖光落在台阶上，那团影子挪近了一点点。');
+  const closing = ['', '这 个 夜 晚 · 还 有 很 长。'];
+  return base.concat(incr).concat(closing);
+}
+
+function showEnding() {
+  showScreen('ending-screen');
+  const w = state.world || {};
+  const lines = buildEndingLines(w);
+  const container = $('ending-text');
+  if (!container) return;
+  container.innerHTML = '';
+  lines.forEach((line, i) => {
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.style.animationDelay = (0.4 + i * 0.5) + 's';
+    div.textContent = line;
+    container.appendChild(div);
+  });
+  document.body.classList.remove('ending-oden-hot', 'ending-door-open', 'ending-charger-given', 'ending-milk-given', 'ending-cat-full', 'ending-cleaner-warm');
+  if (w.odenState === 'hot') document.body.classList.add('ending-oden-hot');
+  if (w.doorGap === 'open')  document.body.classList.add('ending-door-open');
+  if (w.chargerState === 'given') document.body.classList.add('ending-charger-given');
+  if (w.milkHelp === 'given') document.body.classList.add('ending-milk-given');
+  if (w.catBowl === 'full')  document.body.classList.add('ending-cat-full');
+  if (w.cleanerCheckout === 'warm') document.body.classList.add('ending-cleaner-warm');
+}
+
+// ============================================================
+// Save / Load (v3)
+// ============================================================
+function saveState() {
+  try {
+    const payload = {
+      v: 3,
+      currentPOV: state.currentPOV,
+      world: state.world,
+      cashierArc: state.cashierArc,
+      beatsCompleted: state.beatsCompleted
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+  } catch (e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const p = JSON.parse(raw);
+    if (!p || p.v !== 3) return false;
+    state.world = Object.assign(makeDefaultWorld(), p.world || {});
+    state.cashierArc = Object.assign(makeDefaultCashierArc(), p.cashierArc || {});
+    state.beatsCompleted = p.beatsCompleted || 0;
+    state.currentPOV = p.currentPOV;
+    return true;
+  } catch (e) { return false; }
+}
+
+function clearSave() {
+  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+}
+
+function hasValidSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (!p || p.v !== 3) return null;
+    const arc = p.cashierArc || {};
+    const played = (arc.playedShards || []).length + (arc.playedAnchors || []).length;
+    return { step: arc.step || 0, played, completed: !!arc.completed };
+  } catch (e) { return null; }
+}
+
+// ============================================================
+// Dev panel
+// ============================================================
+function updateDevPanel() {
+  const body = $('dev-panel-body');
+  if (!body) return;
+  const arc = state.cashierArc || {};
+  const step = currentCashierStep();
+  const w = state.world || {};
+  const stepDesc = step ? (step.kind + (step.guest ? '(' + step.guest + ')' : '')) : '—';
+  let flagRows = '';
+  Object.keys(w).sort().forEach(k => {
+    flagRows += '<div><span class="dev-panel-label">' + k + ':</span> <span class="dev-panel-value">' + JSON.stringify(w[k]) + '</span></div>';
+  });
+  body.innerHTML =
+    '<div><span class="dev-panel-label">POV:</span> <span class="dev-panel-value">' + (state.currentPOV || '—') + '</span></div>' +
+    '<div><span class="dev-panel-label">step:</span> <span class="dev-panel-value">' + (arc.step || 0) + ' / ' + (CASHIER_TIMELINE.length - 1) + '</span> · ' + stepDesc + '</div>' +
+    '<div><span class="dev-panel-label">guest:</span> <span class="dev-panel-value">' + (arc.guestPresent || '—') + '</span></div>' +
+    '<div><span class="dev-panel-label">openingPlayed:</span> <span class="dev-panel-value">' + !!arc.openingPlayed + '</span></div>' +
+    '<div><span class="dev-panel-label">completed:</span> <span class="dev-panel-value">' + !!arc.completed + '</span></div>' +
+    '<div><span class="dev-panel-label">shards:</span> <span class="dev-panel-value">' + JSON.stringify(arc.playedShards || []) + '</span></div>' +
+    '<div><span class="dev-panel-label">anchors:</span> <span class="dev-panel-value">' + JSON.stringify(arc.playedAnchors || []) + '</span></div>' +
+    '<div class="dev-panel-block"><span class="dev-panel-label">world flags:</span></div>' +
+    '<div style="font-size:12.5px; line-height:1.55; padding-left:6px;">' + flagRows + '</div>' +
+    '<div class="dev-cashier-controls">' +
+      '<button id="dev-advance">跳阶段 →</button>' +
+      '<button id="dev-clear">清空存档</button>' +
+      '<select id="dev-force-anchor">' +
+        '<option value="">强制锚点…</option>' +
+        '<option value="oldmanCheckout">oldman</option>' +
+        '<option value="nurseCheckout">nurse</option>' +
+        '<option value="cleanerCheckout">cleaner</option>' +
+        '<option value="driverCheckout">driver</option>' +
+        '<option value="driverAltCheckout">driverAlt</option>' +
+        '<option value="teenCheckout">teen</option>' +
+      '</select>' +
+      '<button id="dev-jump-end">→ 结局</button>' +
+    '</div>';
+  const adv = $('dev-advance');
+  if (adv) adv.addEventListener('click', () => { advanceCashierStep(); render(); });
+  const clr = $('dev-clear');
+  if (clr) clr.addEventListener('click', () => { clearSave(); location.reload(); });
+  const sel = $('dev-force-anchor');
+  if (sel) sel.addEventListener('change', (e) => {
+    const key = e.target.value;
+    if (key) { playCashierAnchor(key); e.target.value = ''; }
+  });
+  const je = $('dev-jump-end');
+  if (je) je.addEventListener('click', () => { state.cashierArc.completed = true; showEnding(); });
+}
+
+// ============================================================
+// Character SVG (copied from legacy — silhouettes)
+// ============================================================
+function characterSVG(id) {
+  const specs = {
+    cashier: {
+      body: '#5a4a3a',
+      extra: '<rect x="10" y="17" width="4" height="7" fill="#3d2f24"/><rect x="46" y="17" width="4" height="7" fill="#3d2f24"/><path d="M14 20 Q30 8 46 20" stroke="#3d2f24" stroke-width="1" fill="none"/>'
+    },
+    nurse: {
+      body: '#f9f3e8',
+      extra: '<line x1="30" y1="42" x2="30" y2="54" stroke="#c17b52" stroke-width="2.5"/><line x1="24" y1="48" x2="36" y2="48" stroke="#c17b52" stroke-width="2.5"/>'
+    },
+    driver: {
+      body: '#2a3448',
+      extra: '<line x1="18" y1="60" x2="14" y2="80" stroke="#3d2f24" stroke-width="1.5"/>'
+    },
+    teen: {
+      body: '#3d2f24',
+      extra: '<path d="M12 22 Q30 6 48 22 L48 32 L12 32 Z" fill="#5a4a3a" opacity="0.85"/>'
+    },
+    oldman: {
+      body: '#8b6f47',
+      extra: '<line x1="46" y1="50" x2="52" y2="94" stroke="#3d2f24" stroke-width="1.5"/><path d="M50 50 Q54 46 58 48" stroke="#3d2f24" stroke-width="1.5" fill="none"/>'
+    },
+    cleaner: {
+      body: '#3a5a72',
+      extra: '<line x1="42" y1="30" x2="56" y2="80" stroke="#6b5842" stroke-width="1.6"/><path d="M52 76 L60 88 L48 84 Z" fill="#a68a5a"/><path d="M18 12 Q30 6 42 12 L42 18 L18 18 Z" fill="#3a5a72"/>'
+    },
+    driverAlt: {
+      body: '#d9773a',
+      extra: '<rect x="18" y="42" width="24" height="2.5" fill="#f4e6a1"/><rect x="18" y="60" width="24" height="2.5" fill="#f4e6a1"/><path d="M14 14 Q30 2 46 14 L46 20 L14 20 Z" fill="#5a4a3a"/>'
+    }
+  };
+  const spec = specs[id] || { body: '#3d2f24', extra: '' };
+  const meta = CHARACTERS[id] || NPC[id] || { short: id };
+  return '<circle cx="30" cy="20" r="14" fill="#3d2f24"/>'
+    + '<rect class="char-body" x="18" y="34" width="24" height="60" fill="' + spec.body + '" stroke="#3d2f24" stroke-width="0.8"/>'
+    + spec.extra
+    + '<text x="30" y="112" font-size="9" fill="#3d2f24" text-anchor="middle" letter-spacing="1">' + meta.short + '</text>';
+}
+
+function charIconSVG(id) {
+  return '<circle cx="21" cy="16" r="8" fill="#3d2f24"/><rect x="14" y="24" width="14" height="16" fill="#3d2f24"/>';
+}
+
+// ============================================================
+// AUDIO subsystem (copied verbatim from legacy · 已磨过的参数)
+// ============================================================
+
+const AUDIO = {
+  ctx: null,
+  master: null,
+  drone: null,
+  timers: [],
+  muted: false,
+  currentAmbient: null,
+  volume: 0.7
+};
+
+function ensureAudio() {
+  if (!AUDIO.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    AUDIO.ctx = new AC();
+    AUDIO.master = AUDIO.ctx.createGain();
+    AUDIO.master.gain.value = AUDIO.muted ? 0 : (AUDIO.volume != null ? AUDIO.volume : 0.9);
+    AUDIO.master.connect(AUDIO.ctx.destination);
+  }
+  if (AUDIO.ctx.state === 'suspended') {
+    AUDIO.ctx.resume().catch(() => {});
+  }
+  return true;
+}
+
+function startAmbient(character) {
+  if (AUDIO.currentAmbient === character) return;
+  stopAmbient(true);
+  if (!ensureAudio()) return;
+  AUDIO.currentAmbient = character;
+  if (character === 'cashier') startCashierAmbient();
+  else if (character === 'nurse') startNurseAmbient();
+  else if (character === 'driver')  startDriverAmbient();
+  else if (character === 'teen')    startTeenAmbient();
+}
+
+function stopAmbient(instant) {
+  AUDIO.currentAmbient = null;
+  if (!AUDIO.ctx) return;
+  const now = AUDIO.ctx.currentTime;
+  if (typeof stopCashierBackgroundMusic === 'function') stopCashierBackgroundMusic(instant ? 0.15 : 1.0);
+  if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(instant ? 0.15 : 1.0);
+  if (AUDIO.drone) {
+    const d = AUDIO.drone;
+    AUDIO.drone = null;
+    try {
+      const g = d.gain.gain;
+      g.cancelScheduledValues(now);
+      g.setValueAtTime(g.value, now);
+      g.linearRampToValueAtTime(0, now + (instant ? 0.15 : 1.4));
+    } catch (e) {}
+    setTimeout(() => {
+      (d.oscillators || []).forEach(o => { try { o.stop(); } catch (e) {} });
+    }, instant ? 200 : 1600);
+  }
+  (AUDIO.timers || []).forEach(t => clearTimeout(t));
+  AUDIO.timers = [];
+}
+
+function startNurseAmbient() {
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const osc1 = ctx.createOscillator();
+  osc1.type = 'sine'; osc1.frequency.value = 55;
+  const osc2 = ctx.createOscillator();
+  osc2.type = 'sine'; osc2.frequency.value = 82.5;
+  const droneGain = ctx.createGain();
+  droneGain.gain.value = 0;
+  droneGain.gain.linearRampToValueAtTime(0.09, now + 2.2);
+  osc1.connect(droneGain); osc2.connect(droneGain);
+  droneGain.connect(AUDIO.master);
+  osc1.start(); osc2.start();
+  AUDIO.drone = { oscillators: [osc1, osc2], gain: droneGain };
+}
+
+function startCashierAmbient() {
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const osc1 = ctx.createOscillator();
+  osc1.type = 'sine'; osc1.frequency.value = 50;
+  const osc2 = ctx.createOscillator();
+  osc2.type = 'sine'; osc2.frequency.value = 100;
+  const droneGain = ctx.createGain();
+  droneGain.gain.value = 0;
+  droneGain.gain.linearRampToValueAtTime(0.06, now + 2);
+  osc1.connect(droneGain); osc2.connect(droneGain);
+  droneGain.connect(AUDIO.master);
+  osc1.start(); osc2.start();
+  AUDIO.drone = { oscillators: [osc1, osc2], gain: droneGain };
+  const scheduleFluor = () => {
+    if (AUDIO.currentAmbient !== 'cashier') return;
+    AUDIO.timers.push(setTimeout(() => { playFluorescent(); scheduleFluor(); }, 3200 + Math.random() * 6000));
+  };
+  scheduleFluor();
+  const scheduleVibration = () => {
+    if (AUDIO.currentAmbient !== 'cashier') return;
+    AUDIO.timers.push(setTimeout(() => { playPhoneVibration(); scheduleVibration(); }, 25000 + Math.random() * 30000));
+  };
+  scheduleVibration();
+  // Opening 未播 → earbud song；已播 → background music
+  const arc = state && state.cashierArc;
+  const openingSeen = arc && arc.openingPlayed;
+  if (!openingSeen) {
+    startCashierEarbudSong();
+  } else {
+    startCashierBackgroundMusic();
+  }
+}
+
+function startDriverAmbient() {}
+function startTeenAmbient() {}
+
+// Suno mp3 background music (cashier's in-store bgm)
+const CASHIER_BG_TRACKS = [
+  'assets/audio/Aisle Four Glow01.mp3',
+  'assets/audio/Aisle Four Glow02.mp3'
+];
+function startCashierBackgroundMusic(targetVol) {
+  if (AUDIO.bgMusic) return;
+  const track = CASHIER_BG_TRACKS[Math.floor(Math.random() * CASHIER_BG_TRACKS.length)];
+  const audio = new Audio(track);
+  audio.loop = true;
+  audio.volume = 0;
+  const target = (targetVol != null ? targetVol : 0.22);
+  audio.play().catch(() => {});
+  AUDIO.bgMusic = { audio, track, target };
+  if (AUDIO.muted) { try { audio.pause(); } catch (e) {} return; }
+  const t0 = performance.now();
+  const dur = 2200;
+  const step = () => {
+    if (!AUDIO.bgMusic || AUDIO.bgMusic.audio !== audio) return;
+    const t = performance.now() - t0;
+    if (t >= dur) { audio.volume = target * (AUDIO.volume || 1); return; }
+    audio.volume = target * (t / dur) * (AUDIO.volume || 1);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function stopCashierBackgroundMusic(fadeSeconds) {
+  if (!AUDIO.bgMusic) return;
+  const bg = AUDIO.bgMusic; AUDIO.bgMusic = null;
+  const startVol = bg.audio.volume;
+  const dur = Math.max(80, (fadeSeconds != null ? fadeSeconds : 1.0) * 1000);
+  const t0 = performance.now();
+  const step = () => {
+    const t = performance.now() - t0;
+    if (t >= dur) { try { bg.audio.pause(); bg.audio.currentTime = 0; } catch (e) {} return; }
+    bg.audio.volume = startVol * (1 - t / dur);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// Cashier's earbud song
+const CASHIER_EARBUD_SONG = 'assets/audio/掌心的温度.mp3';
+const CASHIER_EARBUD_SKIP = 10;
+function startCashierEarbudSong() {
+  if (AUDIO.earbudSong) return;
+  const audio = new Audio(CASHIER_EARBUD_SONG);
+  audio.loop = true;
+  audio.volume = 0;
+  const target = 0.42;
+  const applySkip = () => { try { audio.currentTime = CASHIER_EARBUD_SKIP; } catch (e) {} };
+  audio.addEventListener('loadedmetadata', applySkip, { once: true });
+  audio.addEventListener('ended', applySkip);
+  audio.play().catch(() => {});
+  AUDIO.earbudSong = { audio, target };
+  if (AUDIO.muted) { try { audio.pause(); } catch (e) {} return; }
+  const t0 = performance.now();
+  const dur = 1800;
+  const step = () => {
+    if (!AUDIO.earbudSong || AUDIO.earbudSong.audio !== audio) return;
+    const t = performance.now() - t0;
+    if (t >= dur) { audio.volume = target * (AUDIO.volume || 1); return; }
+    audio.volume = target * (t / dur) * (AUDIO.volume || 1);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function stopCashierEarbudSong(fadeSeconds) {
+  if (!AUDIO.earbudSong) return;
+  const es = AUDIO.earbudSong; AUDIO.earbudSong = null;
+  const startVol = es.audio.volume;
+  const dur = Math.max(80, (fadeSeconds != null ? fadeSeconds : 1.2) * 1000);
+  const t0 = performance.now();
+  const step = () => {
+    const t = performance.now() - t0;
+    if (t >= dur) { try { es.audio.pause(); } catch (e) {} return; }
+    es.audio.volume = startVol * (1 - t / dur);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function setEarbudSongVolume(newTargetVol, fadeSeconds) {
+  if (!AUDIO.earbudSong) return;
+  const es = AUDIO.earbudSong;
+  const startVol = es.audio.volume;
+  const target = Math.max(0, Math.min(1, newTargetVol));
+  es.target = target;
+  const dur = Math.max(80, (fadeSeconds != null ? fadeSeconds : 1.2) * 1000);
+  const t0 = performance.now();
+  const step = () => {
+    if (!AUDIO.earbudSong || AUDIO.earbudSong !== es) return;
+    const t = performance.now() - t0;
+    if (t >= dur) { es.audio.volume = target * (AUDIO.volume || 1); return; }
+    es.audio.volume = (startVol + (target - startVol) * (t / dur)) * (AUDIO.volume || 1);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function playPhoneVibration() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'cashier' || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  [0, 0.22].forEach(offset => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = 130;
+    const g = ctx.createGain();
+    const t0 = now + offset;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.025, t0 + 0.02);
+    g.gain.linearRampToValueAtTime(0.025, t0 + 0.14);
+    g.gain.linearRampToValueAtTime(0, t0 + 0.18);
+    osc.connect(g); g.connect(AUDIO.master);
+    osc.start(t0); osc.stop(t0 + 0.2);
+  });
+}
+
+function playDoorChime() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const notes = [{ f: 987.77, d: 0, dur: 0.32 }, { f: 783.99, d: 0.30, dur: 0.55 }];
+  notes.forEach(({ f, d, dur }) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = f;
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sine'; osc2.frequency.value = f * 2.001;
+    const oscG = ctx.createGain(); oscG.gain.value = 0.3;
+    const g = ctx.createGain();
+    const t0 = now + d;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.20, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+    osc.connect(g); osc2.connect(oscG); oscG.connect(g); g.connect(AUDIO.master);
+    osc.start(t0); osc.stop(t0 + dur + 0.05);
+    osc2.start(t0); osc2.stop(t0 + dur + 0.05);
+  });
+}
+
+function playFluorescent() {
+  if (!AUDIO.ctx || AUDIO.currentAmbient !== 'cashier' || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const bufferSize = Math.floor(ctx.sampleRate * 0.22);
+  const buf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 2600 + Math.random() * 1800;
+  filter.Q.value = 6;
+  const g = ctx.createGain();
+  g.gain.value = 0;
+  g.gain.linearRampToValueAtTime(0.05, now + 0.02);
+  g.gain.linearRampToValueAtTime(0.02, now + 0.06);
+  g.gain.linearRampToValueAtTime(0, now + 0.18);
+  noise.connect(filter); filter.connect(g); g.connect(AUDIO.master);
+  noise.start(now); noise.stop(now + 0.22);
+}
+
+function playArcComplete() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  [{ f: 261.63, d: 0 }, { f: 329.63, d: 0.22 }, { f: 392, d: 0.46 }].forEach(({ f, d }) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = f;
+    const g = ctx.createGain();
+    const t0 = now + d;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.22, t0 + 0.025);
+    g.gain.exponentialRampToValueAtTime(0.0008, t0 + 2.8);
+    osc.connect(g); g.connect(AUDIO.master);
+    osc.start(t0); osc.stop(t0 + 2.9);
+  });
+}
+
+function playSwipeSFX() {
+  if (!ensureAudio() || AUDIO.muted) return;
+  const ctx = AUDIO.ctx;
+  const now = ctx.currentTime;
+  const bufSize = Math.floor(ctx.sampleRate * 0.18);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize) * 0.6;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 1200;
+  filter.Q.value = 1.5;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.09, now + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+  noise.connect(filter); filter.connect(g); g.connect(AUDIO.master);
+  noise.start(now); noise.stop(now + 0.2);
+}
+
+function applyVolume() {
+  const v = AUDIO.muted ? 0 : (AUDIO.volume != null ? AUDIO.volume : 0.7);
+  if (AUDIO.ctx && AUDIO.master) {
+    const now = AUDIO.ctx.currentTime;
+    AUDIO.master.gain.cancelScheduledValues(now);
+    AUDIO.master.gain.setValueAtTime(AUDIO.master.gain.value, now);
+    AUDIO.master.gain.linearRampToValueAtTime(v, now + 0.25);
+  }
+  [AUDIO.bgMusic, AUDIO.earbudSong].forEach(entry => {
+    if (!entry) return;
+    try {
+      entry.audio.volume = entry.target * v;
+      if (v > 0 && entry.audio.paused) entry.audio.play().catch(() => {});
+      else if (v <= 0 && !entry.audio.paused) entry.audio.pause();
+    } catch (e) {}
+  });
+  const btn = $('mute-btn');
+  if (btn) {
+    if (AUDIO.muted || v === 0) btn.textContent = '🔇';
+    else if (v < 0.35) btn.textContent = '🔈';
+    else if (v < 0.7) btn.textContent = '🔉';
+    else btn.textContent = '🔊';
+  }
+  try { localStorage.setItem('midnight-store.volume', String(v)); } catch (e) {}
+  try { localStorage.setItem('midnight-store.muted', AUDIO.muted ? '1' : '0'); } catch (e) {}
+}
+
+function toggleMute() { AUDIO.muted = !AUDIO.muted; applyVolume(); }
+function setVolume(v) {
+  AUDIO.volume = Math.max(0, Math.min(1, v));
+  if (AUDIO.volume > 0) AUDIO.muted = false;
+  applyVolume();
+}
+
+function getZhVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const vs = speechSynthesis.getVoices();
+  if (!vs.length) return null;
+  const zh = vs.filter(v => /^zh/i.test(v.lang));
+  if (!zh.length) return null;
+  const neural = zh.find(v => /natural|neural|online|wavenet|studio/i.test(v.name));
+  if (neural) return neural;
+  const female = zh.find(v => /xiao(xiao|yi|meng|yun|hui|mo|qi)|meijia|tingting|female/i.test(v.name));
+  if (female) return female;
+  return zh.find(v => /zh-CN/i.test(v.lang)) || zh[0];
+}
+function speakLine(spec, delayMs) {
+  if (AUDIO.muted) return;
+  const opts = (typeof spec === 'string') ? { text: spec } : spec;
+  if (!opts || !opts.text) return;
+  const doTTS = () => {
+    if (!('speechSynthesis' in window)) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(opts.text);
+      u.lang = 'zh-CN';
+      u.rate = opts.rate != null ? opts.rate : 0.88;
+      u.pitch = opts.pitch != null ? opts.pitch : 0.95;
+      u.volume = (opts.volume != null ? opts.volume : 0.9) * (AUDIO.volume || 1);
+      const voice = getZhVoice();
+      if (voice) u.voice = voice;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  };
+  if (delayMs) setTimeout(doTTS, delayMs); else doTTS();
+}
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+}
+
+// ============================================================
+// Card navigation
+// ============================================================
+const CARDS = ['doorstep', 'window', 'shelves', 'register', 'dispenser'];
+let currentCardIdx = 0;
+let _scrollingAuto = false;
+
+function scrollToCard(cardName, instant) {
+  const idx = CARDS.indexOf(cardName);
+  if (idx < 0) return;
+  const container = $('scene-cards');
+  const card = container && container.children[idx];
+  if (!card) return;
+  _scrollingAuto = true;
+  card.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
+  currentCardIdx = idx;
+  updateCardDots();
+  setTimeout(() => { _scrollingAuto = false; }, instant ? 120 : 700);
+}
+
+function updateCardDots() {
+  document.querySelectorAll('.card-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentCardIdx);
+    dot.classList.toggle('has-hotspot', false);
+  });
+  const prev = $('card-prev');
+  const next = $('card-next');
+  if (prev) prev.disabled = currentCardIdx === 0;
+  if (next) next.disabled = currentCardIdx === CARDS.length - 1;
+}
+
+function initCardNav() {
+  const container = $('scene-cards');
+  if (!container) return;
+  let scrollTimer;
+  container.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const width = container.clientWidth;
+      const idx = Math.round(container.scrollLeft / width);
+      if (idx !== currentCardIdx) {
+        if (!_scrollingAuto) { try { playSwipeSFX(); } catch (e) {} }
+        currentCardIdx = idx;
+        updateCardDots();
+      }
+    }, 100);
+  });
+  document.querySelectorAll('.card-dot').forEach((dot, i) => {
+    dot.addEventListener('click', () => scrollToCard(CARDS[i]));
+  });
+  const prev = $('card-prev');
+  const next = $('card-next');
+  if (prev) prev.addEventListener('click', () => { if (currentCardIdx > 0) scrollToCard(CARDS[currentCardIdx - 1]); });
+  if (next) next.addEventListener('click', () => { if (currentCardIdx < CARDS.length - 1) scrollToCard(CARDS[currentCardIdx + 1]); });
+  // SVG obj-zone clicks (backup path — same routing as hotspots)
+  document.querySelectorAll('.card-svg').forEach(svg => {
+    svg.addEventListener('click', (e) => {
+      const t = e.target;
+      if (!t || !t.dataset || !t.dataset.hs) return;
+      const hs = t.dataset.hs;
+      if (state.dialogueOpen) return;
+      if (state.currentPOV !== 'cashier') return;
+      if (state.cashierArc.completed) return;
+      if (hs === 'register' || hs === 'phone') { handleRegisterClick(); return; }
+      // Shard path
+      const step = currentCashierStep();
+      if (step && step.shards && step.shards.indexOf(hs) >= 0 && !isShardPlayed(hs)) {
+        triggerShard(hs);
+      }
+    });
+  });
+  updateCardDots();
+}
+
+// ============================================================
+// bindEvents / init
+// ============================================================
+function bindEvents() {
+  document.querySelectorAll('.char-picker-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const char = card.dataset.char;
+      if (!char) return;
+      if (card.classList.contains('locked')) {
+        const t = $('pov-locked-toast');
+        if (t) {
+          t.classList.remove('hidden');
+          t.classList.add('visible');
+          clearTimeout(t._hideTimer);
+          t._hideTimer = setTimeout(() => {
+            t.classList.remove('visible');
+            setTimeout(() => t.classList.add('hidden'), 400);
+          }, 2000);
+        }
+        return;
+      }
+      ensureAudio();
+      // Fresh start (unless resuming via continue-btn)
+      state.world = makeDefaultWorld();
+      state.cashierArc = makeDefaultCashierArc();
+      state.beatsCompleted = 0;
+      state.currentPOV = null;
+      state.currentBeat = null;
+      state.dialogueOpen = false;
+      showScreen('game-screen');
+      switchPOV(char);
+      render();
+    });
+  });
+  const continueBtn = $('continue-btn');
+  if (continueBtn) {
+    continueBtn.addEventListener('click', () => {
+      if (loadState()) {
+        ensureAudio();
+        showScreen('game-screen');
+        const pov = state.currentPOV || 'cashier';
+        // Re-apply POV without re-triggering opening if already played
+        state.currentPOV = pov;
+        document.body.classList.remove('pov-cashier', 'pov-nurse', 'pov-driver', 'pov-teen');
+        document.body.classList.add('pov-' + pov);
+        try { startAmbient('cashier'); } catch (e) {}
+        scrollToCard('register', true);
+        if (state.cashierArc && state.cashierArc.completed) {
+          showEnding();
+        } else {
+          render();
+        }
+      }
+    });
+  }
+  const clearBtn = $('save-clear-btn');
+  if (clearBtn) clearBtn.addEventListener('click', () => { clearSave(); refreshSaveUI(); });
+
+  const inlineCont = $('inline-continue');
+  if (inlineCont) inlineCont.addEventListener('click', dismissInlineBeat);
+  const inlineSub = $('inline-subtitle');
+  if (inlineSub) inlineSub.addEventListener('click', dismissInlineBeat);
+
+  // Dev panel toggle
+  const devPanel = $('dev-panel');
+  const devShow = $('dev-panel-show');
+  const devToggle = $('dev-panel-toggle');
+  const applyDevVisibility = (visible) => {
+    if (devPanel) devPanel.classList.toggle('hidden', !visible);
+    if (devShow) devShow.classList.toggle('hidden', visible);
+    try { localStorage.setItem('midnight-store.dev-panel', visible ? '1' : '0'); } catch (e) {}
+  };
+  const savedDev = (() => { try { return localStorage.getItem('midnight-store.dev-panel'); } catch (e) { return null; } })();
+  applyDevVisibility(savedDev === '1');  // default hidden (opt-in via URL ?dev=1)
+  const urlDev = /[?&]dev=1/.test(location.search);
+  if (urlDev) applyDevVisibility(true);
+  if (devToggle) devToggle.addEventListener('click', () => applyDevVisibility(false));
+  if (devShow) devShow.addEventListener('click', () => applyDevVisibility(true));
+
+  const nb = $('notebook-btn'); if (nb) nb.addEventListener('click', showNotebook);
+  const nbc = $('notebook-close'); if (nbc) nbc.addEventListener('click', hideNotebook);
+  const mute = $('mute-btn'); if (mute) mute.addEventListener('click', toggleMute);
+  const volSlider = $('volume-slider');
+  if (volSlider) {
+    try {
+      const savedVol = parseFloat(localStorage.getItem('midnight-store.volume'));
+      const savedMuted = localStorage.getItem('midnight-store.muted') === '1';
+      if (!isNaN(savedVol)) AUDIO.volume = Math.max(0, Math.min(1, savedVol)); else AUDIO.volume = 0.7;
+      AUDIO.muted = savedMuted;
+      volSlider.value = Math.round((AUDIO.volume || 0) * 100);
+    } catch (e) { AUDIO.volume = 0.7; }
+    volSlider.addEventListener('input', (e) => setVolume(parseInt(e.target.value, 10) / 100));
+    applyVolume();
+  }
+
+  // Ending restart
+  const er = $('ending-restart');
+  if (er) er.addEventListener('click', () => {
+    stopAmbient(true);
+    clearSave();
+    state.world = makeDefaultWorld();
+    state.cashierArc = makeDefaultCashierArc();
+    state.beatsCompleted = 0;
+    state.currentPOV = null;
+    document.body.classList.remove('ending-oden-hot', 'ending-door-open', 'ending-charger-given', 'ending-milk-given', 'ending-cat-full', 'ending-cleaner-warm');
+    refreshSaveUI();
+    showScreen('title-screen');
+  });
+}
+
+function refreshSaveUI() {
+  const info = hasValidSave();
+  const box = $('save-resume');
+  if (!box) return;
+  if (info && (info.played > 0 || info.completed)) {
+    box.style.display = 'flex';
+    const infoEl = $('save-info');
+    if (infoEl) {
+      if (info.completed) infoEl.textContent = '上 次 已 走 完 · 可 再 走 一 遍';
+      else infoEl.textContent = '上 次 进 度 · 第 ' + (info.step + 1) + ' 阶 段';
+    }
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+function init() {
+  try { bindEvents(); } catch (e) { console.error('bindEvents', e); }
+  try { initCardNav(); } catch (e) { console.error('initCardNav', e); }
+  try { refreshSaveUI(); } catch (e) {}
+  try { render(); } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
