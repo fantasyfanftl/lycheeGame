@@ -2074,6 +2074,217 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
   .ending-text .char-header { font-size: 13px; letter-spacing: 4px; margin: 14px 0 6px; }
 }
 
+/* ========== v1.0 rewrite additions ========== */
+/* Locked POV cards on title screen (per arch A3) */
+.char-picker-card.locked {
+  opacity: 0.28;
+  filter: grayscale(0.8);
+  cursor: not-allowed;
+  border-style: dashed;
+}
+.char-picker-card.locked:hover {
+  transform: none;
+  background: rgba(232, 220, 196, 0.05);
+  border-color: rgba(232, 220, 196, 0.28);
+  box-shadow: none;
+}
+.pov-locked-toast {
+  margin-top: 18px;
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: rgba(232, 220, 196, 0.7);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  min-height: 16px;
+}
+.pov-locked-toast.visible {
+  opacity: 0.9;
+}
+.pov-locked-toast.hidden { visibility: hidden; }
+
+/* Phone overlay v1.0 - carrier notice only (per arch A2) */
+.phone-lockscreen {
+  background: #0a0a0e !important;
+  animation: none !important;
+  color: #f9f3e8 !important;
+  padding: 44px 16px 22px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+.pp-carrier-notice {
+  background: rgba(245, 200, 138, 0.09);
+  border: 1px solid rgba(245, 200, 138, 0.35);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: #f2ede0;
+  backdrop-filter: blur(4px);
+  animation: pp-notice-glow 0.6s ease-out;
+}
+.pp-carrier-notice.fading {
+  animation: pp-notice-fade 1.2s ease-in-out forwards;
+}
+.pp-carrier-app {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #f5c88a;
+  margin-bottom: 6px;
+}
+.pp-carrier-text {
+  font-size: 13px;
+  letter-spacing: 1px;
+  line-height: 1.6;
+  color: #f2ede0;
+}
+@keyframes pp-notice-glow {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pp-notice-fade {
+  from { opacity: 1; }
+  to   { opacity: 0.32; background: rgba(20, 20, 24, 0.4); border-color: rgba(80, 80, 92, 0.35); }
+}
+.phone-lockscreen .pp-mini-player {
+  border-top: 1px solid rgba(245, 200, 138, 0.18);
+  padding: 12px 4px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.phone-lockscreen .pp-mini-art {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.phone-lockscreen .pp-mini-art svg { display: block; width: 100%; height: 100%; }
+.phone-lockscreen .pp-mini-left {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+}
+.phone-lockscreen .pp-mini-track {
+  font-size: 11px; letter-spacing: 1px; color: #f2ede0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.phone-lockscreen .pp-mini-sub {
+  font-size: 9px; color: rgba(242, 237, 224, 0.55); margin-top: 2px;
+}
+.phone-lockscreen .pp-mini-pause {
+  background: none; border: none; color: #f5c88a; font-size: 20px;
+  cursor: default; opacity: 0.85; font-family: inherit;
+}
+
+/* Notebook footnote (per arch A4) */
+.notebook-footnote {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--ink-mid);
+  opacity: 0.5;
+  margin: 24px 0 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--paper-edge);
+}
+@media (max-width: 640px) {
+  .notebook-footnote { font-size: 10px; letter-spacing: 2px; margin: 16px 0 12px; }
+}
+
+/* Notebook entry v1.0 layout (single POV — no CP grid) */
+.cp-entry-single {
+  padding: 12px 16px;
+  border: 1px solid var(--paper-edge);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cp-entry-single.locked {
+  background: transparent;
+  border-style: dashed;
+  opacity: 0.55;
+}
+.cp-entry-num {
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  min-width: 32px;
+  text-align: center;
+  font-weight: bold;
+}
+.cp-entry-single.locked .cp-entry-num {
+  color: var(--ink-light);
+}
+.cp-entry-caption {
+  font-size: 15px;
+  letter-spacing: 3px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.cp-entry-single.locked .cp-entry-caption {
+  color: var(--ink-light);
+  font-style: italic;
+}
+@media (max-width: 640px) {
+  .cp-entry-single { padding: 8px 12px; gap: 10px; }
+  .cp-entry-num { font-size: 16px; min-width: 22px; }
+  .cp-entry-caption { font-size: 12.5px; letter-spacing: 2px; }
+}
+
+/* Ending screen (single-POV per arch A5) */
+.ending-title {
+  margin-top: 20px !important;
+}
+#ending-screen .ending-content {
+  padding-top: 40px;
+}
+
+/* Dev panel: cashier arc controls */
+.dev-cashier-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(245, 200, 138, 0.25);
+}
+.dev-cashier-controls button, .dev-cashier-controls select {
+  background: rgba(245, 200, 138, 0.1);
+  color: #f5c88a;
+  border: 1px solid rgba(245, 200, 138, 0.5);
+  border-radius: 3px;
+  padding: 3px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+}
+.dev-cashier-controls button:hover { background: rgba(245, 200, 138, 0.25); }
+.dev-cashier-controls select { padding: 3px 6px; }
+
+/* Fallback error toast (per arch §19) — static bottom line */
+.subtle-error {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(232, 220, 196, 0.55);
+  opacity: 0;
+  animation: subtle-err-fade 3.6s ease-in-out forwards;
+  pointer-events: none;
+  z-index: 40;
+}
+@keyframes subtle-err-fade {
+  0%   { opacity: 0; }
+  15%  { opacity: 0.85; }
+  75%  { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
 </style>
 </head>
 <body>
@@ -2085,11 +2296,8 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
   <!-- ========== Title Screen ========== -->
   <div id="title-screen" class="screen">
     <div class="title-content">
-      <div class="title-time">01 : 47 AM</div>
       <h1 class="title-main">凌晨两点的便利店</h1>
-      <p class="title-sub">在这座失眠的城市</p>
-      <p class="title-sub">四个陌生人，交汇成一场安静的</p>
-      <p class="title-sub2">无人知晓的温柔</p>
+      <p class="title-sub">在 这 座 失 眠 的 城 市</p>
 
       <div class="title-pick-hint">选 一 个 人 · 走 进 这 一 晚</div>
       <div class="char-picker" id="char-picker">
@@ -2098,22 +2306,24 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
           <div class="char-picker-name">便 利 店 店 员</div>
           <div class="char-picker-tag">值 夜 班</div>
         </button>
-        <button class="char-picker-card" data-char="nurse">
+        <button class="char-picker-card locked" data-char="nurse">
           <div class="char-picker-icon">🏥</div>
           <div class="char-picker-name">夜 班 护 士</div>
-          <div class="char-picker-tag">刚 从 急 诊 出 来</div>
+          <div class="char-picker-tag">敬 请 期 待</div>
         </button>
-        <button class="char-picker-card" data-char="driver">
+        <button class="char-picker-card locked" data-char="driver">
           <div class="char-picker-icon">🚗</div>
-          <div class="char-picker-name">长 途 司 机</div>
-          <div class="char-picker-tag">跑 了 十 二 个 小 时</div>
+          <div class="char-picker-name">网 约 车 司 机</div>
+          <div class="char-picker-tag">敬 请 期 待</div>
         </button>
-        <button class="char-picker-card" data-char="teen">
+        <button class="char-picker-card locked" data-char="teen">
           <div class="char-picker-icon">🐈</div>
-          <div class="char-picker-name">少 年</div>
-          <div class="char-picker-tag">来 给 猫 买 粮</div>
+          <div class="char-picker-name">叛 逆 少 年</div>
+          <div class="char-picker-tag">敬 请 期 待</div>
         </button>
       </div>
+
+      <div class="pov-locked-toast hidden" id="pov-locked-toast">专 属 故 事 · 敬 请 期 待</div>
 
       <div class="save-resume" id="save-resume" style="display: none;">
         <div class="save-info" id="save-info"></div>
@@ -2128,7 +2338,6 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
 
     <div class="top-bar">
       <div class="top-title">凌晨两点的便利店</div>
-      <div class="cp-counter"><span class="count" id="cp-count">0</span> / 15 · 交汇</div>
       <div class="volume-ctl" id="volume-ctl" style="display:inline-flex;align-items:center;gap:6px;margin-right:10px;">
         <button class="notebook-btn" id="mute-btn" title="静音" style="margin:0;padding:6px 8px;">🔊</button>
         <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70" title="音量" style="width:80px;accent-color:#c17b52;cursor:pointer;">
@@ -2455,7 +2664,7 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
             <circle cx="360" cy="80" r="1.5" fill="#3d2f24"/>
             <line class="clock-min" x1="360" y1="80" x2="360" y2="66" stroke="#3d2f24" stroke-width="1.2"/>
             <line x1="360" y1="80" x2="370" y2="80" stroke="#3d2f24" stroke-width="1.2"/>
-            <text class="clock-time" x="360" y="115" font-size="9" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif">01 : 47</text>
+            <text class="clock-time" x="360" y="115" font-size="9" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif"></text>
 
             <!-- ==== Wall behind counter: cigarette cabinet ==== -->
             <rect x="60" y="70" width="280" height="150" fill="#8b6f47" stroke="#3d2f24" stroke-width="1.2"/>
@@ -2588,7 +2797,7 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
             <circle cx="200" cy="65" r="1.5" fill="#3d2f24"/>
             <line class="clock-min" x1="200" y1="65" x2="200" y2="53" stroke="#3d2f24" stroke-width="1.2"/>
             <line x1="200" y1="65" x2="210" y2="65" stroke="#3d2f24" stroke-width="1.2"/>
-            <text class="clock-time" x="200" y="98" font-size="9" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif">01 : 47</text>
+            <text class="clock-time" x="200" y="98" font-size="9" fill="#3d2f24" text-anchor="middle" letter-spacing="1" font-family="serif"></text>
 
             <!-- Store interior seen beyond the counter (aisle glimpse + door glow) -->
             <!-- Left aisle shelf hint -->
@@ -3046,60 +3255,22 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
       </div>
     </div>
 
-    <!-- ==== Phone player overlay (Act 1 opening for cashier beat 0) ==== -->
+    <!-- ==== Phone overlay (opening: carrier balance notice) ==== -->
     <div class="phone-overlay hidden" id="phone-overlay">
       <div class="phone-frame">
         <div class="phone-notch"></div>
-        <div class="phone-screen">
-          <div class="pp-statusbar">
-            <span>01:47</span>
-            <span class="pp-icons">📶 🔋</span>
-          </div>
-          <div class="pp-lock-time">
-            <div class="pp-lock-date">5 月 20 日 · 周 一</div>
-            <div class="pp-lock-clock">01 : 47</div>
-          </div>
-          <div class="pp-notif-list">
-            <div class="pp-notif">
-              <div class="pp-notif-icon pp-icon-wechat">微</div>
-              <div class="pp-notif-body">
-                <div class="pp-notif-head">
-                  <span class="pp-notif-app">微 信 · 妈</span>
-                  <span class="pp-notif-time">昨 天 22 : 35</span>
-                </div>
-                <div class="pp-notif-text">还 好。</div>
-              </div>
-            </div>
-            <div class="pp-notif">
-              <div class="pp-notif-icon pp-icon-alipay">支</div>
-              <div class="pp-notif-body">
-                <div class="pp-notif-head">
-                  <span class="pp-notif-app">支 付</span>
-                  <span class="pp-notif-time">今 天 08 : 00</span>
-                </div>
-                <div class="pp-notif-text">你 有 一 笔 待 还 款 ¥ 1 , 240 · 5 月 25 日 到 期</div>
-              </div>
-            </div>
-            <div class="pp-notif">
-              <div class="pp-notif-icon pp-icon-meituan">团</div>
-              <div class="pp-notif-body">
-                <div class="pp-notif-head">
-                  <span class="pp-notif-app">外 卖</span>
-                  <span class="pp-notif-time">昨 天 23 : 10</span>
-                </div>
-                <div class="pp-notif-text">3 天 后 有 一 笔 借 款 到 期 · ¥ 480</div>
-              </div>
-            </div>
+        <div class="phone-screen phone-lockscreen">
+          <div class="pp-carrier-notice" id="pp-carrier-notice">
+            <div class="pp-carrier-app">运 营 商 提 醒</div>
+            <div class="pp-carrier-text">您 的 账 户 余 额 已 不 足 10 元</div>
           </div>
           <div class="pp-mini-player">
             <div class="pp-mini-left">
               <div class="pp-mini-art">
                 <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
                   <rect width="40" height="40" fill="#1a1f2c"/>
-                  <circle cx="12" cy="10" r="4" fill="#f5c88a" opacity="0.85"/>
-                  <circle cx="14" cy="8" r="3" fill="#1a1f2c"/>
-                  <path d="M0 26 L0 20 L8 20 L8 16 L18 16 L18 24 L28 24 L28 18 L40 18 L40 26 Z" fill="#0e1622"/>
-                  <rect x="16" y="26" width="12" height="9" fill="#f5c88a" opacity="0.4"/>
+                  <circle cx="20" cy="20" r="10" fill="#3d3548" stroke="#c17b52" stroke-width="0.8"/>
+                  <circle cx="20" cy="20" r="3" fill="#1a1f2c"/>
                 </svg>
               </div>
               <div class="pp-mini-info">
@@ -3112,7 +3283,6 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
         </div>
         <div class="phone-home"></div>
       </div>
-      <div class="phone-cue hidden" id="phone-cue">· 门 铃 响 了 · 有 人 进 来 ·</div>
       <div class="phone-choices" id="phone-choices"></div>
     </div>
 
@@ -3242,10 +3412,11 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
   <div id="notebook-screen" class="screen hidden">
     <div class="notebook">
       <div class="notebook-header">
-        <div class="notebook-title">交 汇 图 鉴</div>
-        <div class="notebook-sub">六 组 不 经 意 的 相 遇</div>
+        <div class="notebook-title">店 员 篇 · <span id="notebook-count">0</span> / 9</div>
+        <div class="notebook-sub">凌 晨 的 便 利 店 · 看 见 的 九 件 事</div>
       </div>
       <div class="cp-list" id="cp-list"></div>
+      <div class="notebook-footnote">— 更 多 人 物 篇 章 · 敬 请 期 待 —</div>
       <div class="notebook-close-row">
         <button class="paper-btn" id="notebook-close">合 上 笔 记 本</button>
       </div>
@@ -3255,8 +3426,7 @@ body.pov-cashier .scene-card[data-card="dispenser"] { background-image: url('ass
   <!-- ========== Ending Screen ========== -->
   <div id="ending-screen" class="screen hidden">
     <div class="ending-content">
-      <div class="ending-time" id="ending-time">03 : 00 AM</div>
-      <h2 class="ending-title" id="ending-title">而这个夜晚，终究是被谁温柔地接住了</h2>
+      <h2 class="ending-title" id="ending-title">这 个 夜 晚 · 还 有 很 长</h2>
       <div class="ending-text" id="ending-text"></div>
       <button class="paper-btn" id="ending-restart">再 次 推 开 那 扇 门</button>
     </div>
