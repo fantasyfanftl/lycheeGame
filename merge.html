@@ -1394,7 +1394,7 @@ bestEl.textContent = best;
 renderMode = localStorage.getItem('mergeRenderMode');
 if (!renderMode) {
   showModePicker();
-} else {
+} else if (!loadSavedGame()) {
   newGame();
 }
 </script>
