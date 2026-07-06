@@ -4503,22 +4503,41 @@ function unplayedBeats() {
   return list;
 }
 
+// True if `char`'s arc has been touched but isn't finished. For non-cashier
+// POVs this is the legacy "played at least one beat and not completed" rule;
+// for cashier it consults the timeline arc state.
+function isArcInProgress(char) {
+  if (!char) return false;
+  if (state.completed.has(char)) return false;
+  if (char === 'cashier') {
+    const arc = state.world && state.world.cashierArc;
+    if (!arc) return false;
+    return arc.step > 0 || (arc.playedShards && arc.playedShards.length > 0) || (arc.playedAnchors && arc.playedAnchors.length > 0);
+  }
+  return (state.progress[char] || 0) > 0;
+}
+
+// True if `char`'s arc has no more meaningful actions available (used by the
+// POV hint under the character name).
+function isArcExhausted(char) {
+  if (!char) return false;
+  if (state.completed.has(char)) return true;
+  if (char === 'cashier') {
+    const arc = state.world && state.world.cashierArc;
+    if (!arc) return false;
+    return arc.step >= CASHIER_TIMELINE.length - 1 && (arc.playedShards || []).indexOf('doorway') >= 0;
+  }
+  const played = state.playedBeats[char] || new Set();
+  return played.size >= (BEATS[char] || []).length;
+}
+
 function unplayedBeatsCashier() {
   const arc = ensureCashierArc();
   const step = currentCashierStep();
   const list = [];
   const seenHs = new Set();
-  // Register hotspot is always clickable in cashier POV — its behavior is
-  // contextual (advance next guest / trigger anchor). We surface either the
-  // current anchor beat (real index) or a stub (index -1) purely so
-  // renderHotspots draws a hit-target at the register position.
-  if (arc.guestPresent && step && step.anchorKey) {
-    const found = findCashierBeatByKey(step.anchorKey);
-    if (found) { list.push({ beat: found.beat, index: found.index }); seenHs.add('register'); }
-  } else if (step) {
-    list.push({ beat: { hs: 'register', __registerStub: true }, index: -1 });
-    seenHs.add('register');
-  }
+  // Shards first — so the first-beat nudge (items[0]) points at something
+  // observable in the scene rather than the register (which is contextual).
   const shards = (step && step.shards) || [];
   for (const key of shards) {
     if (arc.playedShards.indexOf(key) >= 0) continue;
@@ -4528,6 +4547,17 @@ function unplayedBeatsCashier() {
     if (seenHs.has(hs)) continue;
     seenHs.add(hs);
     list.push({ beat: found.beat, index: found.index });
+  }
+  // Register hotspot is always clickable in cashier POV — its behavior is
+  // contextual (advance next guest / trigger anchor). We surface either the
+  // current anchor beat (real index) or a stub (index -1) purely so
+  // renderHotspots draws a hit-target at the register position.
+  if (arc.guestPresent && step && step.anchorKey) {
+    const found = findCashierBeatByKey(step.anchorKey);
+    if (found && !seenHs.has('register')) { list.push({ beat: found.beat, index: found.index }); seenHs.add('register'); }
+  } else if (step && !seenHs.has('register')) {
+    list.push({ beat: { hs: 'register', __registerStub: true }, index: -1 });
+    seenHs.add('register');
   }
   return list;
 }
@@ -4540,7 +4570,7 @@ function renderCharTabs() {
   const wrap = $('char-tabs');
   wrap.innerHTML = '';
   const cur = state.currentPOV;
-  const midArc = cur && !state.completed.has(cur) && state.progress[cur] > 0;
+  const midArc = cur && isArcInProgress(cur);
 
   CHAR_ORDER.forEach(id => {
     const c = CHARACTERS[id];
@@ -4572,11 +4602,9 @@ function renderPOVIndicator() {
     return;
   }
   $('pov-name').textContent = CHARACTERS[state.currentPOV].name;
-  const played = state.playedBeats[state.currentPOV] || new Set();
-  const total = (BEATS[state.currentPOV] || []).length;
-  const remaining = total - played.size;
+  const exhausted = isArcExhausted(state.currentPOV);
   const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
-  if (remaining <= 0) {
+  if (exhausted) {
     $('pov-hint').textContent = '这 一 段 走 完 了 · 选 下 一 位';
   } else if (isMobile) {
     $('pov-hint').textContent = '· 左 右 滑 动 · 找 会 亮 的 地 方';
@@ -4672,14 +4700,16 @@ function isCharPresent(id) {
 // player has interacted with anything.
 const NUDGE_TEXT_BY_HS = {
   phone:     '· 试 试 手 上 的 手 机 ·',
-  register:  '· 桌 面 上 有 东 西 ·',
+  register:  '· 点 一 下 收 银 台 ·',
   catBowl:   '· 门 口 那 只 猫 ·',
   doorway:   '· 玻 璃 门 边 ·',
   odenPot:   '· 关 东 煮 的 盆 ·',
   waterDispenser: '· 饮 水 机 ·',
   shelves:   '· 货 架 中 段 ·',
   milkCabinet: '· 热 奶 柜 顶 层 ·',
-  driverSeat:  '· 靠 窗 的 位 子 ·'
+  driverSeat:  '· 靠 窗 的 位 子 ·',
+  nurseObserve: '· 窗 边 那 位 · 余 光 里 ·',
+  teenObserve:  '· 门 外 台 阶 · 蹲 着 的 那 个 ·'
 };
 function showBeatNudge(item) {
   const pos = HOTSPOTS[item.beat.hs];
@@ -4776,7 +4806,7 @@ function switchPOV(char) {
   if (!state.unlocked.has(char)) return;
   const cur = state.currentPOV;
   // Lock: mid-arc can't switch away
-  if (cur && cur !== char && state.progress[cur] > 0 && !state.completed.has(cur)) {
+  if (cur && cur !== char && isArcInProgress(cur)) {
     toast('先 走 完 ' + CHARACTERS[cur].name + ' 这 一 段');
     return;
   }
@@ -4828,9 +4858,10 @@ function triggerBeatByIndex(idx) {
 
 // Legacy shim in case anything else calls triggerHotspot(hs)
 function triggerHotspot(hs) {
+  if (state.currentPOV === 'cashier' && hs === 'register') { handleRegisterClick(); return; }
   const items = unplayedBeats();
   const match = items.find(x => x.beat.hs === hs);
-  if (match) triggerBeatByIndex(match.index);
+  if (match && match.index >= 0) triggerBeatByIndex(match.index);
 }
 
 function resolveBranch(beat) {
@@ -5721,7 +5752,7 @@ const SAVE_KEY = 'midnight-store.save.v1';
 function saveState() {
   try {
     const s = {
-      v: 1,
+      v: 2,
       currentPOV: state.currentPOV,
       progress: state.progress,
       completed: Array.from(state.completed),
@@ -5746,7 +5777,9 @@ function loadState() {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return false;
     const s = JSON.parse(raw);
-    if (!s || s.v !== 1) return false;
+    // v1 saves are from before the cashier-arc timeline refactor; the flat
+    // BEATS indices don't line up anymore. Reject them — player restarts.
+    if (!s || s.v !== 2) return false;
     // Meaningful progress check: at least one beat played
     const anyProgress = s.progress && Object.values(s.progress).some(v => v > 0);
     if (!anyProgress) return false;
@@ -5787,7 +5820,7 @@ function hasValidSave() {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
     const s = JSON.parse(raw);
-    if (!s || s.v !== 1) return null;
+    if (!s || s.v !== 2) return null;
     const anyProgress = s.progress && Object.values(s.progress).some(v => v > 0);
     if (!anyProgress) return null;
     // Return summary for UI
