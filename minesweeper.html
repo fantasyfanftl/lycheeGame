@@ -215,6 +215,31 @@
     letter-spacing: 0.5px;
   }
   .best b { color: #d4382a; font-weight: 700; }
+  .changelog {
+    margin-top: 18px;
+    padding: 8px 14px;
+    border: 1px solid #e0d5ec;
+    border-radius: 10px;
+    background: #faf8fd;
+    font-size: 13px;
+    color: #555;
+  }
+  .changelog summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #764ba2;
+    padding: 4px 0;
+    outline: none;
+  }
+  .changelog summary::marker { color: #a888c8; }
+  .changelog[open] { padding-bottom: 12px; }
+  .changelog h4 {
+    margin: 10px 0 4px;
+    font-size: 13px;
+    color: #333;
+  }
+  .changelog ul { padding-left: 20px; margin: 0 0 6px; }
+  .changelog li { margin-bottom: 3px; line-height: 1.55; }
 
   @media (max-width: 480px) {
     .cell { width: 36px; height: 36px; font-size: 16px; }
@@ -248,6 +273,24 @@
     电脑：<b>左键</b>翻开 · <b>右键</b>标记 · <b>双击数字</b>自动展开 · <b>R</b>重开<br>手机：<b>点</b>翻开 · <b>长按</b>标记 · <b>点已翻数字</b>自动展开 · 或开<b>🚩标旗模式</b>
   </div>
   <div class="message" id="message"></div>
+  <details class="changelog">
+    <summary>更新日志 · 2026-07-07 · 核心 7 项优化</summary>
+    <h4>本次改动</h4>
+    <ul>
+      <li>跨端统一 Chord：桌面/手机单击已翻数字批量开盖；标旗数量匹配才展开，位置错了照样会踩雷（原版规则保留）</li>
+      <li>分难度本地最佳计时常驻显示，破纪录金色高光；Chord 速通成绩正常计入</li>
+      <li>难度选择本地记忆（键 <code>minesweeper.diff.v1</code>），刷新自动恢复；后续升 v2/v3 隔离脏数据</li>
+      <li>失败分层视觉：被踩雷深红 + 抖动，错误标旗打叉高亮</li>
+      <li>邻雷数预计算缓存，高难度 480 格消除重复遍历卡顿</li>
+      <li>DocumentFragment 批量构建棋盘，切换/重置仅 1 次回流</li>
+      <li>R 键一键重开；<code>beforeunload</code> 兜底销毁计时器，修复内存泄漏</li>
+    </ul>
+    <h4>完整保留</h4>
+    <ul>
+      <li>首点 3×3 安全布雷、事件委托、长按防抖、震动反馈</li>
+      <li>返回链接、标旗模式、笑脸重置、原版配色与数字分色</li>
+    </ul>
+  </details>
 </div>
 
 <script>
