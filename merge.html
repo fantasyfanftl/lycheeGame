@@ -883,6 +883,7 @@ function move(dir) {
     updateUndoBtn();
     updateItemBtns();
     updateBoardWarning();
+    saveGameDebounced();
     if (won) showWin();
     else if (tutorialGraduated) showTutorialDone();
     else if (!hasMovesLeft()) { haptic(50); showLose(); }
