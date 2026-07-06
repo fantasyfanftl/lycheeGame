@@ -982,13 +982,55 @@ function renderTiles(mergedIds = new Set(), forceRefresh = false, shake = null) 
   }
 }
 
+// ============ Score reflection (rolling + floating +N + record flash) ============
+let displayedScore = 0;
+let scoreAnimHandle = null;
 function updateScore() {
-  scoreEl.textContent = score;
+  // Roll displayed score toward `score` (200 ms lerp)
+  if (scoreAnimHandle) cancelAnimationFrame(scoreAnimHandle);
+  const from = displayedScore;
+  const to = score;
+  const start = performance.now();
+  const dur = 200;
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - t, 2);
+    const val = Math.round(from + (to - from) * eased);
+    scoreEl.textContent = val;
+    if (t < 1) scoreAnimHandle = requestAnimationFrame(step);
+    else { displayedScore = to; scoreAnimHandle = null; }
+  };
+  scoreAnimHandle = requestAnimationFrame(step);
+
+  // Record break — flash the "最高" box the moment we surpass it
   if (score > best) {
     best = score;
     localStorage.setItem('bestMerge', best);
+    bestEl.textContent = best;
+    const bestBox = bestEl.closest('.score-box');
+    if (bestBox) {
+      bestBox.classList.remove('flash-record');
+      void bestBox.offsetHeight;
+      bestBox.classList.add('flash-record');
+    }
+  } else {
+    bestEl.textContent = best;
   }
-  bestEl.textContent = best;
+}
+
+function flyScore(gain, cellX, cellY, cellSize, gap) {
+  if (!gain) return;
+  const wrap = boardWrap.getBoundingClientRect();
+  const boardRect = tilesEl.getBoundingClientRect();
+  const originX = boardRect.left - wrap.left + cellX * (cellSize + gap) + cellSize / 2;
+  const originY = boardRect.top  - wrap.top  + cellY * (cellSize + gap) + cellSize / 2;
+  const fly = document.createElement('div');
+  fly.className = 'score-fly';
+  fly.textContent = '+' + gain;
+  fly.style.left = originX + 'px';
+  fly.style.top = originY + 'px';
+  boardWrap.appendChild(fly);
+  setTimeout(() => fly.remove(), 720);
 }
 
 function updateUndoBtn() {
