@@ -124,16 +124,39 @@
     box-shadow: none;
   }
   .cell.mine { background: #f65e3b; color: #fff; box-shadow: 0 0 12px rgba(246,94,59,0.5); }
+  .cell.exploded {
+    background: #c1121f;
+    color: #fff;
+    box-shadow: 0 0 18px rgba(193,18,31,0.75);
+    animation: shake 0.45s ease-in-out;
+  }
+  .cell.wrong {
+    background: #ffd6d6;
+    color: #a01414;
+    font-size: 15px;
+  }
   .cell.flag {
     color: #d4382a;
     font-size: 16px;
     background: linear-gradient(135deg, #ffe5e0, #ffcabf);
     animation: flagPop 0.2s ease-out;
   }
+  .cell.chord-flash { animation: chordFlash 0.35s ease-out; }
   @keyframes flagPop {
     0% { transform: scale(0.6); }
     60% { transform: scale(1.15); }
     100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+  @keyframes chordFlash {
+    0% { background: #fff6c2; }
+    100% { background: #eef1f8; }
   }
   .cell[data-n="1"] { color: #1e6fea; }
   .cell[data-n="2"] { color: #178f4c; }
@@ -182,7 +205,16 @@
     font-size: 14px;
   }
   .message.win { background: #d4edda; color: #155724; }
+  .message.win.record { background: linear-gradient(135deg, #fff3b0, #ffd166); color: #6b3f00; box-shadow: 0 0 20px rgba(255,209,102,0.6); }
   .message.lose { background: #f8d7da; color: #721c24; }
+  .best {
+    text-align: center;
+    color: #764ba2;
+    font-size: 12px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+  .best b { color: #d4382a; font-weight: 700; }
 
   @media (max-width: 480px) {
     .cell { width: 36px; height: 36px; font-size: 16px; }
@@ -202,6 +234,7 @@
     <button data-d="medium">中级 · 16×16 · 40雷</button>
     <button data-d="hard">高级 · 16×30 · 99雷</button>
   </div>
+  <div class="best" id="best">🏆 最佳: —</div>
   <div class="info">
     <span class="stat">💣 <b id="mineCount">10</b></span>
     <button class="face" id="face">🙂</button>
@@ -212,7 +245,7 @@
   </div>
   <div class="board-wrap"><div class="board" id="board"></div></div>
   <div class="hint">
-    电脑：<b>左键</b>翻开 · <b>右键</b>标记<br>手机：<b>点</b>翻开 · <b>长按</b>标记 · 或开<b>🚩标旗模式</b>直接点标
+    电脑：<b>左键</b>翻开 · <b>右键</b>标记 · <b>双击数字</b>自动展开 · <b>R</b>重开<br>手机：<b>点</b>翻开 · <b>长按</b>标记 · <b>点已翻数字</b>自动展开 · 或开<b>🚩标旗模式</b>
   </div>
   <div class="message" id="message"></div>
 </div>
@@ -223,8 +256,13 @@ const DIFF = {
   medium: { rows: 16, cols: 16, mines: 40 },
   hard:   { rows: 16, cols: 30, mines: 99 },
 };
+const LS_BEST = 'minesweeper.best.v1';
+const LS_DIFF = 'minesweeper.diff.v1';
+
 let rows, cols, total;
 let mines, revealed, flagged;
+let numberGrid;           // 缓存邻雷数，避免每次 render 重算
+let explodedKey = null;   // 记录被踩中的那颗雷，视觉上和其他雷区分
 let gameOver, won, firstMove;
 let elapsed, timerId;
 let currentDiff = 'easy';
@@ -234,8 +272,39 @@ const mineCountEl = document.getElementById('mineCount');
 const timerEl = document.getElementById('timer');
 const faceEl = document.getElementById('face');
 const messageEl = document.getElementById('message');
+const bestEl = document.getElementById('best');
 
 function key(r, c) { return `${r},${c}`; }
+
+// ---- localStorage ----
+function loadBests() {
+  try { return JSON.parse(localStorage.getItem(LS_BEST) || '{}'); }
+  catch (e) { return {}; }
+}
+function saveBest(diff, time) {
+  const b = loadBests();
+  const prev = b[diff];
+  if (prev == null || time < prev) {
+    b[diff] = time;
+    try { localStorage.setItem(LS_BEST, JSON.stringify(b)); } catch (e) {}
+    return true;
+  }
+  return false;
+}
+function updateBestDisplay() {
+  const b = loadBests();
+  const t = b[currentDiff];
+  bestEl.innerHTML = t != null ? `🏆 最佳: <b>${t}</b> 秒` : '🏆 最佳: —';
+}
+function loadLastDiff() {
+  try {
+    const d = localStorage.getItem(LS_DIFF);
+    if (d && DIFF[d]) currentDiff = d;
+  } catch (e) {}
+}
+function saveLastDiff() {
+  try { localStorage.setItem(LS_DIFF, currentDiff); } catch (e) {}
+}
 
 function initGame() {
   const d = DIFF[currentDiff];
@@ -243,6 +312,8 @@ function initGame() {
   mines = new Set();
   revealed = new Set();
   flagged = new Set();
+  numberGrid = null;
+  explodedKey = null;
   gameOver = false; won = false; firstMove = true;
   elapsed = 0;
   clearInterval(timerId);
@@ -250,16 +321,20 @@ function initGame() {
   mineCountEl.textContent = total;
   faceEl.textContent = '🙂';
   messageEl.textContent = ''; messageEl.className = 'message';
+  updateBestDisplay();
   boardEl.style.gridTemplateColumns = `repeat(${cols}, 32px)`;
+  // 一次性 fragment 插入，避免高难度棋盘逐格 append 造成的重排
   boardEl.innerHTML = '';
+  const frag = document.createDocumentFragment();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.dataset.r = r; cell.dataset.c = c;
-      boardEl.appendChild(cell);
+      frag.appendChild(cell);
     }
   }
+  boardEl.appendChild(frag);
 }
 
 function placeMines(safeR, safeC) {
@@ -271,10 +346,18 @@ function placeMines(safeR, safeC) {
   for (let r=0; r<rows; r++)
     for (let c=0; c<cols; c++)
       if (!forbidden.has(key(r,c))) pool.push([r,c]);
-  pool.sort(() => Math.random() - 0.5);
-  for (let i=0; i<total; i++) {
+  // Fisher–Yates 只洗到需要的数量，避免 sort 随机不均匀
+  for (let i=0; i<total && i<pool.length; i++) {
+    const j = i + Math.floor(Math.random() * (pool.length - i));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
     const [r, c] = pool[i];
     mines.add(key(r, c));
+  }
+  // 预计算所有格子的邻雷数，此后 render/chord 直接查
+  numberGrid = Array.from({length: rows}, () => new Array(cols).fill(0));
+  for (const mk of mines) {
+    const [mr, mc] = mk.split(',').map(Number);
+    for (const [nr, nc] of neighbors(mr, mc)) numberGrid[nr][nc]++;
   }
 }
 
@@ -289,10 +372,8 @@ function neighbors(r, c) {
   return out;
 }
 
-function countMines(r, c) {
-  let n = 0;
-  for (const [nr, nc] of neighbors(r, c)) if (mines.has(key(nr, nc))) n++;
-  return n;
+function cellNumber(r, c) {
+  return numberGrid ? numberGrid[r][c] : 0;
 }
 
 function reveal(r, c) {
@@ -305,31 +386,59 @@ function reveal(r, c) {
     timerId = setInterval(() => { elapsed++; timerEl.textContent = elapsed; }, 1000);
   }
   if (mines.has(k)) {
+    explodedKey = k;
     revealed.add(k);
     gameOver = true;
     faceEl.textContent = '💀';
     for (const m of mines) revealed.add(m);
     render();
-    showMessage('💥 踩中了 —— 再来一局？', 'lose');
+    showMessage('💥 踩中了 —— 按 R 或点笑脸再来一局', 'lose');
     if (navigator.vibrate) navigator.vibrate([80, 40, 80, 40, 120]);
     clearInterval(timerId);
     return;
   }
-  // Flood
-  const stack = [[r, c]];
-  while (stack.length) {
-    const [cr, cc] = stack.pop();
+  // BFS flood — 用队列避免 stack.pop() 顺序造成的视觉抖动
+  const queue = [[r, c]];
+  while (queue.length) {
+    const [cr, cc] = queue.shift();
     const ck = key(cr, cc);
     if (revealed.has(ck) || flagged.has(ck)) continue;
     revealed.add(ck);
-    if (countMines(cr, cc) === 0) {
+    if (cellNumber(cr, cc) === 0) {
       for (const [nr, nc] of neighbors(cr, cc)) {
-        if (!revealed.has(key(nr, nc))) stack.push([nr, nc]);
+        if (!revealed.has(key(nr, nc))) queue.push([nr, nc]);
       }
     }
   }
   render();
   checkWin();
+}
+
+// chord: 已翻数字格上，若周围旗数 = 数字，翻开剩余未标记邻格
+// 关键行为：如果标错旗 → 会踩雷，这是原版扫雷的核心风险
+function chord(r, c) {
+  if (gameOver || firstMove) return;
+  const k = key(r, c);
+  if (!revealed.has(k) || mines.has(k)) return;
+  const n = cellNumber(r, c);
+  if (n === 0) return;
+  const nbrs = neighbors(r, c);
+  let flagCount = 0;
+  for (const [nr, nc] of nbrs) if (flagged.has(key(nr, nc))) flagCount++;
+  if (flagCount !== n) return; // 数字对不上，不动
+  // 高亮触发格作为视觉反馈
+  const idx = r*cols + c;
+  const trigger = boardEl.children[idx];
+  if (trigger) {
+    trigger.classList.remove('chord-flash');
+    void trigger.offsetWidth;
+    trigger.classList.add('chord-flash');
+  }
+  for (const [nr, nc] of nbrs) {
+    const nk = key(nr, nc);
+    if (!flagged.has(nk) && !revealed.has(nk)) reveal(nr, nc);
+    if (gameOver) return; // 踩雷时立即停止后续展开
+  }
 }
 
 function toggleFlag(r, c) {
@@ -352,21 +461,29 @@ function render() {
     for (let c=0; c<cols; c++) {
       const cell = cells[r*cols + c];
       const k = key(r, c);
-      cell.className = 'cell';
+      // 保留可能存在的 chord-flash 动画类
+      const flashing = cell.classList.contains('chord-flash');
+      cell.className = 'cell' + (flashing ? ' chord-flash' : '');
       cell.textContent = '';
       cell.dataset.n = '';
       if (revealed.has(k)) {
         cell.classList.add('revealed');
         if (mines.has(k)) {
-          cell.classList.add('mine');
+          cell.classList.add(k === explodedKey ? 'exploded' : 'mine');
           cell.textContent = '💣';
         } else {
-          const n = countMines(r, c);
+          const n = cellNumber(r, c);
           if (n > 0) { cell.textContent = n; cell.dataset.n = n; }
         }
       } else if (flagged.has(k)) {
-        cell.classList.add('flag');
-        cell.textContent = '🚩';
+        // 输了以后，插在非雷格上的旗打叉标出来
+        if (gameOver && !won && !mines.has(k)) {
+          cell.classList.add('wrong');
+          cell.textContent = '✖';
+        } else {
+          cell.classList.add('flag');
+          cell.textContent = '🚩';
+        }
       }
     }
 }
@@ -375,12 +492,18 @@ function checkWin() {
   if (rows*cols - revealed.size === total) {
     gameOver = true; won = true;
     faceEl.textContent = '😎';
-    // Flag all mines
     for (const m of mines) flagged.add(m);
     updateMineCount();
     render();
-    showMessage(`🎉 通关！用时 ${elapsed} 秒`, 'win');
-    if (navigator.vibrate) navigator.vibrate([30, 40, 60, 40, 30]);
+    const isRecord = saveBest(currentDiff, elapsed);
+    updateBestDisplay();
+    if (isRecord) {
+      showMessage(`🏆 新纪录！${elapsed} 秒通关`, 'win record');
+      if (navigator.vibrate) navigator.vibrate([60, 30, 60, 30, 60, 30, 120]);
+    } else {
+      showMessage(`🎉 通关！用时 ${elapsed} 秒`, 'win');
+      if (navigator.vibrate) navigator.vibrate([30, 40, 60, 40, 30]);
+    }
     clearInterval(timerId);
   }
 }
@@ -405,11 +528,19 @@ boardEl.addEventListener('click', e => {
   const cell = e.target.closest('.cell');
   if (!cell) return;
   if (justFlagged) { justFlagged = false; return; }  // 忽略长按后的 click
+  const r = +cell.dataset.r, c = +cell.dataset.c;
+  const k = key(r, c);
+  // 已翻的数字格 → chord（安全：数字对不上时什么都不发生）
+  if (revealed.has(k) && !mines.has(k) && cellNumber(r, c) > 0) {
+    chord(r, c);
+    haptic(20);
+    return;
+  }
   if (flagMode) {
-    toggleFlag(+cell.dataset.r, +cell.dataset.c);
+    toggleFlag(r, c);
     haptic(40);
   } else {
-    reveal(+cell.dataset.r, +cell.dataset.c);
+    reveal(r, c);
   }
 });
 boardEl.addEventListener('contextmenu', e => {
@@ -485,10 +616,24 @@ document.querySelectorAll('.diff button').forEach(btn => {
     document.querySelectorAll('.diff button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentDiff = btn.dataset.d;
+    saveLastDiff();
     initGame();
   });
 });
 
+// R 键快速重开（避免在输入框场景冲突 —— 目前无输入框，直接监听）
+document.addEventListener('keydown', e => {
+  if (e.key === 'r' || e.key === 'R') { initGame(); }
+});
+
+// 页面卸载兜底：清定时器，防止后台标签泄漏
+window.addEventListener('beforeunload', () => clearInterval(timerId));
+
+// 启动：读上次难度，同步按钮激活态
+loadLastDiff();
+document.querySelectorAll('.diff button').forEach(b => {
+  b.classList.toggle('active', b.dataset.d === currentDiff);
+});
 initGame();
 </script>
 </body>
