@@ -4861,16 +4861,19 @@ function playBeat(beat) {
   const effective = resolveBranch(beat);
   _currentEffective = effective;
 
-  // Beat-start SFX (fires for both inline + modal paths)
+  // Beat-start SFX (fires for both inline + modal paths). Door chime is a
+  // pure audio cue — arrivals are set explicitly by spawnCashierGuest (for
+  // cashier POV) or by the beat's own effects (for other POVs). Do NOT flip
+  // oldmanArrived here — the milkCabinet beat's chime would then falsely
+  // trigger on POV switches or replays.
   if (effective.sfx === 'doorChime' || (beat && beat.sfx === 'doorChime')) {
     playDoorChime();
-    if (!state.world) state.world = {};
-    state.world.oldmanArrived = true;
   }
 
-  // Cashier's beat 0 = "01:47 · 摘下一只耳机" — he takes off one earbud,
-  // so the earbud song fades out and the in-store background music comes up.
-  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0) {
+  // Opening beat (cashier's phone / earbud song moment) — swap earbud song
+  // out and bring in-store background music up. Keyed off kind not index so
+  // the beat can move within BEATS.cashier without breaking this hook.
+  if (state.currentPOV === 'cashier' && effective.kind === 'opening') {
     if (typeof stopCashierEarbudSong === 'function') stopCashierEarbudSong(1.4);
     setTimeout(() => {
       if (state.currentPOV === 'cashier' && typeof startCashierBackgroundMusic === 'function') {
@@ -5162,9 +5165,9 @@ function pickPhoneChoice(idx) {
 function playInlineBeat(effective) {
   updateDevPanel(effective, 'beat');
 
-  // Cashier's beat 0 — Act 1 opening: show the phone player overlay
-  // (music player UI with 3 choices) instead of the standard inline panel.
-  if (state.currentPOV === 'cashier' && _currentBeatIndex === 0 && effective.choices) {
+  // Cashier's opening beat — phone player overlay (3 choices about earbud
+  // volume) instead of the standard inline panel. Keyed off kind, not index.
+  if (state.currentPOV === 'cashier' && _currentEffective && _currentEffective.kind === 'opening' && effective.choices) {
     showPhoneOverlay(effective);
     return;
   }
@@ -5366,6 +5369,7 @@ function closeBeat() {
   $('inline-panel').classList.add('hidden');
 
   const c = state.currentPOV;
+  const closingBeat = _currentBeat;
   if (_currentBeatIndex >= 0) {
     if (!state.playedBeats[c]) state.playedBeats[c] = new Set();
     state.playedBeats[c].add(_currentBeatIndex);
@@ -5373,7 +5377,16 @@ function closeBeat() {
   state.progress[c] = state.playedBeats[c] ? state.playedBeats[c].size : 0;
   _currentBeatIndex = -1;
 
-  if (state.progress[c] >= (BEATS[c] || []).length) {
+  // Cashier POV — completion & post-beat routing goes through the timeline
+  // state machine, NOT the flat progress===BEATS.length check (BEATS.cashier
+  // now has 14 entries but the arc only runs 8 anchors + up to 6 shards).
+  if (c === 'cashier' && closingBeat && closingBeat.key) {
+    if (closingBeat.kind === 'anchor') {
+      afterCashierAnchor(closingBeat.key);
+    } else if (closingBeat.kind === 'shard' || closingBeat.kind === 'opening') {
+      afterCashierShard(closingBeat.key);
+    }
+  } else if (c && state.progress[c] >= (BEATS[c] || []).length) {
     if (!state.completed.has(c)) {
       state.completed.add(c);
       playArcComplete();
@@ -5969,26 +5982,15 @@ function startCashierAmbient() {
     AUDIO.timers.push(setTimeout(() => { playPhoneVibration(); scheduleVibration(); }, 25000 + Math.random() * 30000));
   };
   scheduleVibration();
-  // Cashier's shift: initially the player only hears the EARBUD SONG (he's
-  // zoned out). After ~7s an automatic door chime + "欢迎光临" fires as a
-  // narrative cue — this is what pulls him back and motivates beat 0
-  // ("摘下一只耳机"). Background store music only starts AFTER beat 0.
-  const played = (state.playedBeats && state.playedBeats.cashier) || new Set();
-  if (!played.has(0)) {
+  // Cashier's shift starts with earbud song only (he's zoned out). The
+  // opening beat ("摘下一只耳机") swaps earbud song for in-store bg music.
+  // Guest arrivals are driven by CASHIER_TIMELINE (spawnCashierGuest), not
+  // by an ambient-side timer — no auto door chime here.
+  const arc = (state.world && state.world.cashierArc) || null;
+  const openingSeen = arc && arc.playedShards && arc.playedShards.indexOf('phone') >= 0;
+  if (!openingSeen) {
     startCashierEarbudSong();
-    AUDIO.timers.push(setTimeout(() => {
-      if (AUDIO.currentAmbient !== 'cashier') return;
-      const p = (state.playedBeats && state.playedBeats.cashier) || new Set();
-      if (p.has(0)) return; // already dealt with it
-      playDoorChime();
-      // The first door chime of the shift = driver arrives. Mark it so his
-      // silhouette shows up in the window seat area from now on.
-      if (!state.world) state.world = {};
-      state.world.driverArrived = true;
-      if (typeof render === 'function') render();
-    }, 7500));
   } else {
-    // Already past beat 0 in an earlier run: background music, no earbud song.
     startCashierBackgroundMusic();
   }
 }
