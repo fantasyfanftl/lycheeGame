@@ -1010,138 +1010,197 @@ footer strong { color: #7d84a8; }
 
     <div class="card">
       <div class="card-title">想法池 · 讨论产出 15 条</div>
-      <div class="pool-intro">本次讨论冒出的所有想法 · 按状态归档 · 一周后回看时可判断「哪些定型 / 哪些还漂着」</div>
+      <div class="pool-intro">按讨论时序排列 · 每条标来源(你/AI/共同)与触发链 · 一条想法怎么演化成结论 · 一眼看清</div>
 
-      <div class="pool-section-label pool-label-confirmed">
-        已确认 / 已升级 <span class="count">9</span>
+      <div class="pool-filter">
+        <button class="filter-chip active" data-filter="all">全部 <span class="count-num">15</span></button>
+        <button class="filter-chip" data-filter="confirmed">已定型 <span class="count-num">9</span></button>
+        <button class="filter-chip" data-filter="pending">待验证 <span class="count-num">3</span></button>
+        <button class="filter-chip" data-filter="archived">悬置 <span class="count-num">3</span></button>
       </div>
 
-      <div class="pool-item item-upgraded">
+      <div class="pool-timeline">
+
+      <div class="pool-item item-upgraded" data-status="confirmed">
         <div class="pool-num">01</div>
         <div class="pool-content">
           <div class="pool-title">iPad = 各 AI 跳转中枢</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span>·</span>
+            <span>讨论开局</span>
+          </div>
           <div class="pool-status"><span class="tag tag-upgraded">已升级</span>演化成 v3 定位骨架</div>
         </div>
       </div>
 
-      <div class="pool-item item-confirmed">
+      <div class="pool-item item-confirmed" data-status="confirmed">
         <div class="pool-num">02</div>
         <div class="pool-content">
           <div class="pool-title">网页加主屏比原生 App 好</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span class="pool-link">由 <span class="arrow">#01</span> 触发</span>
+          </div>
           <div class="pool-status"><span class="tag tag-confirmed">已确认</span>入口层做法定型</div>
         </div>
       </div>
 
-      <div class="pool-item item-confirmed">
+      <div class="pool-item item-confirmed" data-status="confirmed">
         <div class="pool-num">03</div>
         <div class="pool-content">
           <div class="pool-title">主屏 AI 矩阵 · 一屏铺开</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">承接 <span class="arrow">#02</span> · 你选</span>
+          </div>
           <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 2</div>
         </div>
       </div>
 
-      <div class="pool-item item-confirmed">
+      <div class="pool-item item-archived" data-status="archived">
         <div class="pool-num">04</div>
         <div class="pool-content">
+          <div class="pool-title">场景 folder 不按 AI 名分</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">承接 <span class="arrow">#03</span> · 你未选</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-archived">悬置</span>抛过未采纳 · 保留</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">05</div>
+        <div class="pool-content">
           <div class="pool-title">剪贴板作 AI 之间的传送带</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">承接 <span class="arrow">#01</span> · 你选</span>
+          </div>
           <div class="pool-status"><span class="tag tag-confirmed">已确认</span>流转层核心机制</div>
         </div>
       </div>
 
-      <div class="pool-item item-upgraded">
-        <div class="pool-num">05</div>
-        <div class="pool-content">
-          <div class="pool-title">iPad 是视觉落地方便的地方</div>
-          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>v3 定位骨架</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-confirmed">
+      <div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">06</div>
         <div class="pool-content">
-          <div class="pool-title">姿势-精度分工(语音 / 触屏 / 键盘)</div>
-          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>矩阵沉淀 · 用户认同「这就是我的感受」</div>
+          <div class="pool-title">分屏双 AI 对话</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">承接 <span class="arrow">#05</span></span>
+          </div>
+          <div class="pool-status"><span class="tag tag-observing">观察中</span>iPad 独占 · 未实测</div>
         </div>
       </div>
 
-      <div class="pool-item item-upgraded">
+      <div class="pool-item item-upgraded" data-status="confirmed">
         <div class="pool-num">07</div>
         <div class="pool-content">
+          <div class="pool-title">iPad 是视觉落地方便的地方</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span class="pool-link">推翻 <span class="arrow">v2 中控台</span></span>
+          </div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>v3 定位骨架 · 承载层</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">08</div>
+        <div class="pool-content">
+          <div class="pool-title">姿势-精度分工(语音 / 触屏 / 键盘)</div>
+          <div class="pool-meta">
+            <span class="pool-source src-both">共同</span>
+            <span class="pool-link">我抛 · 你验证</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>「这就是我的感受」认同点</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-upgraded" data-status="confirmed">
+        <div class="pool-num">09</div>
+        <div class="pool-content">
           <div class="pool-title">豆包语音发散 · Mac 键盘落地</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span class="pool-link">承接 <span class="arrow">#08</span></span>
+          </div>
           <div class="pool-status"><span class="tag tag-upgraded">已升级</span>三设备分工矩阵</div>
         </div>
       </div>
 
-      <div class="pool-item item-confirmed">
-        <div class="pool-num">08</div>
+      <div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">10</div>
         <div class="pool-content">
           <div class="pool-title">交接包 Handoff prompt</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">解决 <span class="arrow">上下文丢失</span></span>
+          </div>
           <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 1 · 待 pin 飞书</div>
         </div>
       </div>
 
-      <div class="pool-item item-upgraded">
-        <div class="pool-num">09</div>
-        <div class="pool-content">
-          <div class="pool-title">荔枝当分发中心 · URL 通吃所有设备</div>
-          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>本次讨论最大发现 · B 阶段分发层雏形</div>
-        </div>
-      </div>
-
-      <div class="pool-section-label pool-label-observing">
-        观察中 / 待验证 <span class="count">3</span>
-      </div>
-
-      <div class="pool-item item-observing">
-        <div class="pool-num">10</div>
-        <div class="pool-content">
-          <div class="pool-title">分屏双 AI 对话(iPad 独占优势)</div>
-          <div class="pool-status"><span class="tag tag-observing">观察中</span>未实测 · 一周后看用不用</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-pending">
+      <div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">11</div>
         <div class="pool-content">
           <div class="pool-title">让 AI 自己判断交接给谁</div>
-          <div class="pool-status"><span class="tag tag-pending">待验证</span>交接包里加「建议给谁」· 找实际场景试</div>
+          <div class="pool-status" style="margin-top: 0;"><span class="pool-source src-ai" style="font-size: 9px;">我抛</span> <span class="pool-link" style="font-size: 9px;">扩展 <span class="arrow">#10</span></span></div>
+          <div class="pool-status" style="margin-top: 4px;"><span class="tag tag-pending">待验证</span>交接包加「建议给谁」· 找场景试</div>
         </div>
       </div>
 
-      <div class="pool-item item-pending">
+      <div class="pool-item item-archived" data-status="archived">
         <div class="pool-num">12</div>
         <div class="pool-content">
-          <div class="pool-title">各家 AI 分开 pin · 不聚合</div>
-          <div class="pool-status"><span class="tag tag-pending">待验证</span>承认壁垒 · 但实际操作还没跑过</div>
+          <div class="pool-title">快捷指令暂缓 · 等「做烦」信号</div>
+          <div class="pool-meta">
+            <span class="pool-source src-both">共同</span>
+            <span>·</span>
+            <span>你倾向不做 · 我认同</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-archived">已归档</span>未来触发再动</div>
         </div>
       </div>
 
-      <div class="pool-section-label pool-label-archived">
-        已归档 · 悬置 <span class="count">3</span>
-      </div>
-
-      <div class="pool-item item-archived">
+      <div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">13</div>
         <div class="pool-content">
-          <div class="pool-title">场景 folder 不按 AI 名分</div>
-          <div class="pool-status"><span class="tag tag-archived">悬置</span>抛过未采纳 · 你没选</div>
+          <div class="pool-title">各家 AI 分开 pin · 不聚合</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span>·</span>
+            <span>承认壁垒</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-pending">待验证</span>操作还没跑过 · 需实测</div>
         </div>
       </div>
 
-      <div class="pool-item item-archived">
+      <div class="pool-item item-archived" data-status="archived">
         <div class="pool-num">14</div>
         <div class="pool-content">
-          <div class="pool-title">快捷指令暂缓 · 等「做烦」信号</div>
-          <div class="pool-status"><span class="tag tag-archived">已归档</span>未来触发再动 · 不预设</div>
+          <div class="pool-title">AI 状态盘(能量分布 / 心智地图)</div>
+          <div class="pool-meta">
+            <span class="pool-source src-both">共同</span>
+            <span class="pool-link">Kimi 触发 · 你我共判</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-archived">已归档</span>不属工作台 → personal-dashboard.html</div>
         </div>
       </div>
 
-      <div class="pool-item item-archived">
+      <div class="pool-item item-upgraded" data-status="confirmed">
         <div class="pool-num">15</div>
         <div class="pool-content">
-          <div class="pool-title">AI 状态盘(能量分布 / 心智地图)</div>
-          <div class="pool-status"><span class="tag tag-archived">已归档</span>不属工作台主题 → 独立到 personal-dashboard.html · 未来做</div>
+          <div class="pool-title">荔枝当分发中心 · URL 通吃所有设备</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span class="pool-link">★ 最大发现</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>B 阶段分发层雏形 · 已跑通</div>
         </div>
+      </div>
+
       </div>
     </div>
 
@@ -1199,6 +1258,28 @@ document.addEventListener("DOMContentLoaded", function() {
       tab.classList.add("active");
       document.querySelector("[data-panel=\"" + target + "\"]").classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+
+  var filterChips = document.querySelectorAll(".filter-chip");
+  var poolItems = document.querySelectorAll(".pool-item");
+  filterChips.forEach(function(chip) {
+    chip.addEventListener("click", function() {
+      var filter = chip.getAttribute("data-filter");
+      filterChips.forEach(function(c) { c.classList.remove("active"); });
+      chip.classList.add("active");
+      poolItems.forEach(function(item) {
+        if (filter === "all") {
+          item.classList.remove("hidden");
+        } else {
+          var status = item.getAttribute("data-status");
+          if (status === filter) {
+            item.classList.remove("hidden");
+          } else {
+            item.classList.add("hidden");
+          }
+        }
+      });
     });
   });
 });
