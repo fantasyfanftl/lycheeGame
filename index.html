@@ -169,6 +169,22 @@
     text-decoration: none;
     border-bottom: 1px dashed rgba(255,255,255,0.4);
   }
+  footer .secret-brain {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+    opacity: 0.25;
+    text-decoration: none;
+    border: none;
+    filter: grayscale(0.6);
+    transition: all 0.3s;
+    vertical-align: middle;
+  }
+  footer .secret-brain:hover {
+    opacity: 1;
+    filter: grayscale(0);
+    transform: scale(1.3) rotate(-8deg);
+  }
 
   /* Refresh button (fixed top-right) */
   .refresh-btn {
@@ -426,7 +442,7 @@
   </div>
 
   <footer>
-    <p>由 <a href="https://github.com/fantasyfanftl/lycheeGame" target="_blank">fantasyfanftl</a> 制作</p>
+    <p>由 <a href="https://github.com/fantasyfanftl/lycheeGame" target="_blank">fantasyfanftl</a> 制作<a href="brain.html" class="secret-brain" title="🧠">🧠</a></p>
   </footer>
 </div>
 
