@@ -37,42 +37,48 @@ body {
 .container {
   max-width: 640px;
   margin: 0 auto;
-  padding: 24px 16px 0;
+  padding: 14px 16px 0;
 }
 
 .hero {
   color: white;
-  text-align: center;
-  padding: 20px 8px 24px;
+  padding: 4px 4px 14px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+.hero-left {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 .hero-title {
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.3px;
-  margin-bottom: 6px;
+  letter-spacing: -0.2px;
 }
 .hero-version {
   display: inline-block;
-  font-size: 12px;
+  font-size: 10px;
   background: rgba(255,255,255,0.22);
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 2px 8px;
+  border-radius: 12px;
   font-weight: 600;
   letter-spacing: 1px;
-  margin-left: 4px;
-  vertical-align: 5px;
+  vertical-align: 2px;
 }
 .hero-subtitle {
-  font-size: 14px;
-  opacity: 0.85;
-  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.75;
   font-weight: 400;
 }
 .hero-meta {
-  font-size: 11px;
-  opacity: 0.65;
-  margin-top: 8px;
-  letter-spacing: 1px;
+  font-size: 10px;
+  opacity: 0.55;
+  letter-spacing: 0.5px;
 }
 
 /* ==== Tabs ==== */
@@ -84,9 +90,9 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   position: sticky;
-  top: 52px;
+  top: 50px;
   z-index: 50;
   box-shadow: 0 4px 16px rgba(76, 62, 130, 0.15);
 }
@@ -564,9 +570,12 @@ footer strong { color: rgba(255,255,255,0.9); }
 <div class="container">
 
   <div class="hero">
-    <div class="hero-title">iPad AI 工作台<span class="hero-version">v0.1</span></div>
-    <div class="hero-subtitle">多 AI 的视觉呈现场 · 手机大屏延伸</div>
-    <div class="hero-meta">GitHub Claude · 2026-07-22 · A 阶段快照</div>
+    <div class="hero-left">
+      <span class="hero-title">iPad AI 工作台</span>
+      <span class="hero-version">v0.1</span>
+      <span class="hero-subtitle">视觉呈现场 · 手机大屏延伸</span>
+    </div>
+    <span class="hero-meta">2026-07-22</span>
   </div>
 
   <div class="tab-bar">
