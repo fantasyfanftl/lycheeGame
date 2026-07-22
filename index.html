@@ -177,23 +177,10 @@
     text-decoration: none !important;
     border: none !important;
     border-bottom: none !important;
-    transition: all 0.3s;
     vertical-align: middle;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-  }
-  footer .secret-brain:hover {
-    opacity: 1;
-    transform: scale(1.3) rotate(-8deg);
-  }
-  footer .secret-brain.tap-progress {
-    animation: brainTap 0.25s;
-  }
-  @keyframes brainTap {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.4); }
-    100% { transform: scale(1); }
   }
 
   /* Refresh button (fixed top-right) */
@@ -468,9 +455,6 @@
   const RESET_MS = 1500;
   portal.addEventListener('click', () => {
     count++;
-    portal.classList.remove('tap-progress');
-    void portal.offsetWidth;
-    portal.classList.add('tap-progress');
     if (count >= NEEDED) {
       location.href = 'brain.html';
       return;
