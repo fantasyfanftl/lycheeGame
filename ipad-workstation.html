@@ -1120,6 +1120,118 @@ footer strong { color: #7d84a8; }
   color: #9ca3b8;
   line-height: 1.6;
 }
+
+/* ==== 最新复盘板块 ==== */
+.brain-review {
+  background: linear-gradient(135deg, rgba(125, 211, 252, 0.08) 0%, rgba(180, 120, 255, 0.05) 100%);
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  border-radius: 10px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.brain-review::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #7dd3fc, #b478ff, transparent);
+}
+.brain-review-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #7dd3fc;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-family: "SF Mono", monospace;
+}
+.brain-review-title .num {
+  background: rgba(125, 211, 252, 0.15);
+  color: #7dd3fc;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  border: 1px solid rgba(125, 211, 252, 0.3);
+}
+.brain-review-title .date {
+  margin-left: auto;
+  font-size: 9px;
+  color: #6b7295;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+.review-block {
+  margin-bottom: 12px;
+}
+.review-block:last-child { margin-bottom: 0; }
+.review-block-label {
+  font-size: 10px;
+  color: #a4b3ff;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  font-family: "SF Mono", monospace;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.review-block-label::before {
+  content: "▸";
+  color: #7dd3fc;
+}
+.review-track {
+  padding: 8px 10px;
+  background: rgba(22, 26, 46, 0.4);
+  border-radius: 6px;
+  border-left: 2px solid #7dd3fc;
+  font-size: 11px;
+  color: #d8dcec;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.review-track .step {
+  color: #7dd3fc;
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  margin-right: 6px;
+}
+.review-track .arrow { color: #b478ff; }
+.review-insight {
+  padding: 8px 10px;
+  background: rgba(22, 26, 46, 0.4);
+  border-radius: 6px;
+  border-left: 2px solid #b478ff;
+  font-size: 12px;
+  color: #d8dcec;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.review-insight .idx {
+  color: #d6b4ff;
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  margin-right: 6px;
+  font-size: 10px;
+}
+.review-meta-reflect {
+  padding: 10px 12px;
+  background: rgba(180, 120, 255, 0.06);
+  border-radius: 6px;
+  border-left: 2px solid #b478ff;
+  font-size: 11px;
+  color: #b8c0d8;
+  line-height: 1.6;
+  font-style: italic;
+}
+.review-meta-reflect strong {
+  color: #d6b4ff;
+  font-style: normal;
+}
 .topic-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(124, 157, 255, 0.2), transparent);
