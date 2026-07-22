@@ -519,6 +519,53 @@ tr:last-child td { border-bottom: none; }
   line-height: 1.5;
   border: 1px solid rgba(124, 157, 255, 0.08);
 }
+
+/* Filter chips */
+.pool-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(124, 157, 255, 0.15);
+}
+.filter-chip {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: "SF Mono", monospace;
+  border: 1px solid;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.filter-chip:active { transform: scale(0.95); }
+.filter-chip[data-filter="all"] {
+  color: #a4b3ff;
+  border-color: rgba(124, 157, 255, 0.4);
+}
+.filter-chip[data-filter="confirmed"] {
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.35);
+}
+.filter-chip[data-filter="pending"] {
+  color: #ffb457;
+  border-color: rgba(255, 176, 87, 0.35);
+}
+.filter-chip[data-filter="archived"] {
+  color: #9ca3b8;
+  border-color: rgba(124, 130, 155, 0.3);
+}
+.filter-chip.active {
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+}
+.filter-chip.active .chip-label { color: #0e1024; }
+.filter-chip.active .count-num { color: #0e1024; }
+
 .pool-section-label {
   font-size: 10px;
   font-weight: 700;
@@ -555,38 +602,106 @@ tr:last-child td { border-bottom: none; }
   border-color: rgba(124, 130, 155, 0.25);
 }
 
+/* Timeline connector */
+.pool-timeline {
+  position: relative;
+  padding-left: 6px;
+}
+.pool-timeline::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: linear-gradient(180deg,
+    rgba(124, 157, 255, 0.4) 0%,
+    rgba(124, 157, 255, 0.1) 50%,
+    rgba(124, 157, 255, 0.4) 100%);
+}
+
 .pool-item {
   display: flex;
-  gap: 8px;
-  padding: 8px 10px;
-  margin-bottom: 4px;
+  gap: 10px;
+  padding: 10px 10px 10px 8px;
+  margin-bottom: 6px;
   background: rgba(30, 34, 55, 0.45);
   border-radius: 6px;
   border-left: 2px solid;
   align-items: flex-start;
+  position: relative;
+  transition: all 0.3s;
 }
-.pool-item.item-confirmed { border-color: #34d399; }
-.pool-item.item-upgraded { border-color: #b478ff; }
-.pool-item.item-observing { border-color: #ffb457; }
-.pool-item.item-pending { border-color: #7c9dff; }
-.pool-item.item-archived { border-color: #6b7295; }
+.pool-item::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #14192a;
+  border: 2px solid currentColor;
+  z-index: 1;
+}
+.pool-item.item-confirmed { border-color: #34d399; color: #34d399; }
+.pool-item.item-upgraded { border-color: #b478ff; color: #b478ff; }
+.pool-item.item-observing { border-color: #ffb457; color: #ffb457; }
+.pool-item.item-pending { border-color: #7c9dff; color: #7c9dff; }
+.pool-item.item-archived { border-color: #6b7295; color: #6b7295; }
+
+.pool-item.hidden {
+  display: none;
+}
 
 .pool-num {
   font-size: 10px;
   font-weight: 700;
   color: #5b6488;
-  min-width: 18px;
+  min-width: 22px;
   font-family: "SF Mono", monospace;
-  padding-top: 2px;
+  padding-top: 3px;
+  padding-left: 10px;
 }
-.pool-content { flex: 1; }
+.pool-content { flex: 1; color: #d8dcec; }
 .pool-title {
   font-size: 12px;
   font-weight: 600;
   color: #eaecf5;
   line-height: 1.4;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
+.pool-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+  font-size: 9px;
+  color: #6b7295;
+  font-family: "SF Mono", monospace;
+  margin-bottom: 4px;
+}
+.pool-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.pool-source::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.pool-source.src-user { color: #a4b3ff; }
+.pool-source.src-ai { color: #b478ff; }
+.pool-source.src-both { color: #6ee7b7; }
+.pool-link {
+  color: #7d84a8;
+  font-size: 9px;
+}
+.pool-link .arrow { color: #b478ff; }
 .pool-status {
   font-size: 10px;
   color: #7d84a8;
