@@ -1120,6 +1120,9 @@ footer strong { color: #7d84a8; }
   color: #9ca3b8;
   line-height: 1.6;
 }
+.brain-tabs { margin-bottom: 14px; }
+.brain-panel { display: none; }
+.brain-panel.active { display: block; animation: fadeIn 0.2s; }
 
 /* ==== 最新复盘板块 ==== */
 .brain-review {
@@ -2916,6 +2919,25 @@ footer strong { color: #7d84a8; }
       </div>
     </div>
 
+    </div><!-- /.brain-panel meta -->
+
+    <!-- 复盘 tab · 大脑本身的复盘 · 目前为空 -->
+    <div class="brain-panel" data-brain-panel="review" style="display:none;">
+      <div class="topic-placeholder">
+        <div class="ph-icon">🔄</div>
+        <div class="ph-title">大脑主题 · 复盘</div>
+        <div class="ph-desc">
+          <strong>目前为空</strong><br><br>
+          此 tab 承载:<br>
+          · <strong>大脑本身的演化复盘</strong>(元层认知 / 记忆 / 连接方式的迭代)<br>
+          · 不是某个具体主题的复盘<br><br>
+          <span style="font-size: 10px; color: #6b7295;">
+          本次讨论产出的复盘 → 主题 01 · 复盘 tab
+          </span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ===== 全局想法池 ===== -->
@@ -2965,7 +2987,7 @@ footer strong { color: #7d84a8; }
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  var tabs = document.querySelectorAll(".tab-btn");
+  var tabs = document.querySelectorAll(".tab-bar:not(.brain-tabs) .tab-btn");
   var panels = document.querySelectorAll(".tab-panel");
   tabs.forEach(function(tab) {
     tab.addEventListener("click", function() {
@@ -3018,6 +3040,26 @@ document.addEventListener("DOMContentLoaded", function() {
       var targetContent = document.querySelector("[data-topic-content=\"" + target + "\"]");
       if (targetContent) targetContent.style.display = "block";
       if (scopeName) scopeName.textContent = topicNames[target] || target;
+    });
+  });
+
+  var brainTabs = document.querySelectorAll(".brain-tabs .tab-btn");
+  var brainPanels = document.querySelectorAll(".brain-panel");
+  brainTabs.forEach(function(bt) {
+    bt.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var target = bt.getAttribute("data-brain-tab");
+      brainTabs.forEach(function(t) { t.classList.remove("active"); });
+      bt.classList.add("active");
+      brainPanels.forEach(function(p) {
+        p.style.display = "none";
+        p.classList.remove("active");
+      });
+      var targetPanel = document.querySelector("[data-brain-panel=\"" + target + "\"]");
+      if (targetPanel) {
+        targetPanel.style.display = "block";
+        targetPanel.classList.add("active");
+      }
     });
   });
 
