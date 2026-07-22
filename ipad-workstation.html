@@ -1232,6 +1232,147 @@ footer strong { color: #7d84a8; }
   color: #d6b4ff;
   font-style: normal;
 }
+
+/* ==== 洞察板块 ==== */
+.brain-insight {
+  background: rgba(22, 26, 46, 0.6);
+  border: 1px solid rgba(125, 211, 252, 0.15);
+  border-radius: 10px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+}
+.insight-half {
+  margin-bottom: 14px;
+}
+.insight-half:last-child { margin-bottom: 0; }
+.insight-half-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-family: "SF Mono", monospace;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.insight-half-label.good {
+  background: rgba(52, 211, 153, 0.1);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+.insight-half-label.bad {
+  background: rgba(255, 87, 108, 0.1);
+  color: #ff8c9c;
+  border: 1px solid rgba(255, 87, 108, 0.3);
+}
+.insight-half-label .count-badge {
+  margin-left: auto;
+  background: rgba(255,255,255,0.1);
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-size: 9px;
+}
+.insight-item {
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-radius: 7px;
+  border-left: 2px solid;
+  font-size: 12px;
+  color: #d8dcec;
+  line-height: 1.55;
+}
+.insight-item.good {
+  background: rgba(52, 211, 153, 0.06);
+  border-color: #34d399;
+}
+.insight-item.bad {
+  background: rgba(255, 87, 108, 0.06);
+  border-color: #ff8c9c;
+}
+.insight-item .title {
+  font-weight: 600;
+  color: #eaecf5;
+  margin-bottom: 4px;
+  font-size: 12.5px;
+}
+.insight-item.good .title { color: #d1fae5; }
+.insight-item.bad .title { color: #fecdd3; }
+.insight-item .num {
+  display: inline-block;
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 6px;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.insight-item.good .num { color: #6ee7b7; background: rgba(52, 211, 153, 0.15); }
+.insight-item.bad .num { color: #ff8c9c; background: rgba(255, 87, 108, 0.15); }
+.insight-item .desc {
+  color: #b8c0d8;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.insight-item .desc em {
+  color: #a4b3ff;
+  font-style: normal;
+  font-weight: 600;
+}
+.insight-item.bad .desc em { color: #ffb457; }
+
+.meta-insight {
+  background: linear-gradient(135deg, rgba(180, 120, 255, 0.12) 0%, rgba(125, 211, 252, 0.08) 100%);
+  border: 1px solid rgba(180, 120, 255, 0.3);
+  border-radius: 10px;
+  padding: 16px 16px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.meta-insight::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #b478ff, #7dd3fc, transparent);
+  box-shadow: 0 0 10px rgba(180, 120, 255, 0.5);
+}
+.meta-insight-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d6b4ff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-family: "SF Mono", monospace;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.meta-insight-title::before {
+  content: "★";
+  color: #ffb457;
+  text-shadow: 0 0 8px rgba(255, 180, 87, 0.6);
+}
+.meta-insight-body {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #eaecf5;
+}
+.meta-insight-body strong {
+  color: #d6b4ff;
+}
+.meta-insight-body .lesson {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(180, 120, 255, 0.25);
+  font-size: 12px;
+  color: #b8c0d8;
+}
+.meta-insight-body .lesson strong { color: #ffb457; }
 .topic-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(124, 157, 255, 0.2), transparent);
