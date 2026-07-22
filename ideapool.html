@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>想法池 · 荔枝游戏</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', -apple-system, "PingFang SC", "Microsoft YaHei", Tahoma, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #333;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* Left · idea list */
+  .sidebar {
+    background: rgba(0,0,0,0.15);
+    backdrop-filter: blur(10px);
+    padding: 20px 14px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    position: sticky; top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+  .back-link {
+    display: inline-block;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 4px 8px;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  .back-link:hover { color: #fff; }
+  .brand {
+    color: #fff;
+    padding: 4px 8px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .brand-emoji { font-size: 26px; }
+  .brand-title { font-size: 17px; letter-spacing: 3px; font-weight: 600; }
+
+  .add-idea {
+    display: flex; gap: 6px;
+    margin-bottom: 14px;
+    padding: 0 4px;
+  }
+  .add-idea input {
+    flex: 1;
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .add-idea input::placeholder { color: rgba(255,255,255,0.4); }
+  .add-idea input:focus { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+  .add-idea button {
+    padding: 9px 14px;
+    background: #ffd89b;
+    color: #4a3d6b;
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .idea-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+  }
+  .idea-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.8);
+    font-family: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.4;
+  }
+  .idea-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+  }
+  .idea-item.active {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+    font-weight: 500;
+  }
+  .idea-item .idea-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+  }
+  .idea-item .idea-status {
+    flex-shrink: 0;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+  }
+  .idea-item.filled .idea-status { background: #ffd89b; }
+  .idea-item.done .idea-status { background: #7bd88f; }
+
+  .sidebar-footer {
+    padding: 10px 4px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+  }
+  .btn-mini {
+    flex: 1;
+    padding: 7px 8px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.65);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .btn-mini:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+
+  /* Right · detail */
+  .main {
+    padding: 30px 40px 60px;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+  .empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+
+  .detail-header {
+    color: #fff;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .detail-title-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #fff;
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    outline: none;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .detail-title-input:hover, .detail-title-input:focus {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+  }
+  .detail-actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.9);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { background: rgba(255,255,255,0.2); }
+  .btn.danger:hover { background: rgba(255,80,80,0.35); color: #fff; }
+
+  .fields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .field {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: all 0.2s;
+  }
+  .field:focus-within {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,216,155,0.4);
+  }
+  .field-label {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .field-label .en {
+    font-size: 10px;
+    color: #ffd89b;
+    letter-spacing: 3px;
+    font-weight: 700;
+    font-family: "SF Mono", monospace;
+  }
+  .field-label .cn {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 2px;
+  }
+  .field-label .hint {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    margin-left: auto;
+  }
+  .field textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.7;
+    outline: none;
+    resize: none;
+    min-height: 60px;
+    letter-spacing: 0.3px;
+  }
+  .field textarea::placeholder { color: rgba(255,255,255,0.25); }
+
+  .save-hint {
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-top: 20px;
+  }
+  .save-hint.saved { color: #ffd89b; }
+
+  /* Modal · 导出 */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .modal.show { display: flex; }
+  .modal-box {
+    background: linear-gradient(135deg, #4a3d6b 0%, #6b4a8b 100%);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 560px;
+    width: 100%;
+    color: #fff;
+  }
+  .modal-title {
+    font-size: 15px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+  .modal p {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .modal textarea {
+    width: 100%;
+    min-height: 300px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    border-radius: 8px;
+    font-family: "SF Mono", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    outline: none;
+    resize: vertical;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar {
+      position: relative;
+      height: auto;
+      max-height: 40vh;
+      border-right: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .main { padding: 20px 16px 40px; }
+    .fields { grid-template-columns: 1fr; gap: 10px; }
+    .detail-title-input { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+    <div class="brand">
+      <span class="brand-emoji">💡</span>
+      <span class="brand-title">想 法 池</span>
+    </div>
+
+    <div class="add-idea">
+      <input id="add-input" placeholder="打一个想法..." spellcheck="false" autocomplete="off">
+      <button id="add-btn">+</button>
+    </div>
+
+    <div class="idea-list" id="idea-list"></div>
+
+    <div class="sidebar-footer">
+      <button class="btn-mini" id="export-btn">导出</button>
+      <button class="btn-mini" id="clear-btn">清空</button>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="empty-state" id="empty">左边加一个想法 · 或点击列表选一个开始填 5W1H</div>
+  </main>
+</div>
+
+<!-- Export modal -->
+<div class="modal" id="export-modal">
+  <div class="modal-box">
+    <div class="modal-title">📤 导出所有想法</div>
+    <p>复制下方文本 · 发给 GitHub Claude 或其他 AI · 让它帮你分析 / 落地。</p>
+    <textarea id="export-text" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeExport()">关闭</button>
+      <button class="btn" onclick="copyExport()">复制</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'lychee_ideapool_v1';
+const FIELDS = [
+  { key: 'what',  en: 'WHAT',  cn: '做什么',    hint: '一句话说清楚' },
+  { key: 'why',   en: 'WHY',   cn: '为什么',    hint: '解决什么问题 / 满足什么欲' },
+  { key: 'who',   en: 'WHO',   cn: '给谁玩',    hint: '目标玩家 / 使用场景' },
+  { key: 'when',  en: 'WHEN',  cn: '什么时候玩',  hint: '什么心情 / 什么时机' },
+  { key: 'where', en: 'WHERE', cn: '在哪玩',    hint: '手机 / 电脑 / 单人 / 联机' },
+  { key: 'how',   en: 'HOW',   cn: '怎么做',    hint: '玩法核心 · 关键机制' }
+];
+
+let ideas = [];
+let currentId = null;
+let saveTimer = null;
+
+function loadIdeas() {
+  try {
+    ideas = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch (e) { ideas = []; }
+  if (!ideas.length) {
+    // 占位例子
+    ideas = [
+      {
+        id: uid(),
+        title: '连连看修仙版',
+        what: '经典连连看 + 每次消掉一对就"渡劫"升级',
+        why: '给贪吃蛇修仙那种沙雕修仙节奏找一个新载体 · 但比蛇更休闲',
+        who: '不想动脑但又想有点成长感的人',
+        when: '碎片时间 · 通勤 · 睡前',
+        where: '手机为主 · 竖屏',
+        how: '格子越多难度越高 · 每消 10 对进阶一个境界 · 有升级动画',
+        createdAt: '2026-07-22'
+      },
+      {
+        id: uid(),
+        title: '',
+        what: '',
+        why: '',
+        who: '',
+        when: '',
+        where: '',
+        how: '',
+        createdAt: '2026-07-22'
+      }
+    ];
+    save();
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ideas));
+}
+
+function uid() {
+  return 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function ideaFillLevel(idea) {
+  const filled = FIELDS.filter(f => (idea[f.key] || '').trim()).length;
+  if (filled === 0 && !(idea.title || '').trim()) return 'empty';
+  if (filled >= 5) return 'done';
+  if (filled >= 1) return 'filled';
+  return 'empty';
+}
+
+function renderSidebar() {
+  const listEl = document.getElementById('idea-list');
+  listEl.innerHTML = ideas.map(idea => {
+    const status = ideaFillLevel(idea);
+    const title = (idea.title || '').trim() || '（未命名）';
+    const active = idea.id === currentId ? ' active' : '';
+    const cls = 'idea-item' + active + ' ' + status;
+    return `<button class="${cls}" data-id="${idea.id}">
+      <span class="idea-status"></span>
+      <span class="idea-title">${escapeHtml(title)}</span>
+    </button>`;
+  }).join('');
+  listEl.querySelectorAll('.idea-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentId = btn.dataset.id;
+      renderSidebar();
+      renderDetail();
+    });
+  });
+}
+
+function renderDetail() {
+  const main = document.getElementById('main');
+  const idea = ideas.find(i => i.id === currentId);
+  if (!idea) {
+    main.innerHTML = `<div class="empty-state" id="empty">左边加一个想法 · 或点击列表选一个开始填 5W1H</div>`;
+    return;
+  }
+
+  main.innerHTML = `
+    <div class="detail-header">
+      <input class="detail-title-input" id="title-input" value="${escapeAttr(idea.title || '')}" placeholder="给这个想法起个名字...">
+      <div class="detail-actions">
+        <button class="btn danger" id="del-btn">删 除</button>
+      </div>
+    </div>
+    <div class="fields">
+      ${FIELDS.map(f => `
+        <div class="field">
+          <div class="field-label">
+            <span class="en">${f.en}</span>
+            <span class="cn">${f.cn}</span>
+            <span class="hint">${f.hint}</span>
+          </div>
+          <textarea data-key="${f.key}" placeholder="${f.hint}">${escapeHtml(idea[f.key] || '')}</textarea>
+        </div>
+      `).join('')}
+    </div>
+    <div class="save-hint" id="save-hint">自动保存 · 每次编辑即存</div>
+  `;
+
+  // 自动高度
+  main.querySelectorAll('textarea').forEach(ta => {
+    autoResize(ta);
+    ta.addEventListener('input', () => {
+      autoResize(ta);
+      const key = ta.dataset.key;
+      idea[key] = ta.value;
+      queueSave();
+    });
+  });
+
+  const titleInput = document.getElementById('title-input');
+  titleInput.addEventListener('input', () => {
+    idea.title = titleInput.value;
+    queueSave();
+    renderSidebar();
+  });
+
+  document.getElementById('del-btn').addEventListener('click', () => {
+    if (!confirm('删除这个想法？不可撤销。')) return;
+    ideas = ideas.filter(i => i.id !== idea.id);
+    currentId = ideas[0]?.id || null;
+    save();
+    renderSidebar();
+    renderDetail();
+  });
+}
+
+function autoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = Math.max(60, ta.scrollHeight) + 'px';
+}
+
+function queueSave() {
+  clearTimeout(saveTimer);
+  const hint = document.getElementById('save-hint');
+  if (hint) hint.textContent = '编辑中...';
+  saveTimer = setTimeout(() => {
+    save();
+    renderSidebar();
+    const hint2 = document.getElementById('save-hint');
+    if (hint2) {
+      hint2.textContent = '已保存 ✓';
+      hint2.classList.add('saved');
+      setTimeout(() => {
+        if (hint2) {
+          hint2.classList.remove('saved');
+          hint2.textContent = '自动保存 · 每次编辑即存';
+        }
+      }, 1500);
+    }
+  }, 400);
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+function escapeAttr(s) {
+  return escapeHtml(s);
+}
+
+// ============ 添加 ============
+function addIdea(title) {
+  const t = (title || '').trim();
+  const newIdea = {
+    id: uid(),
+    title: t,
+    what: '', why: '', who: '', when: '', where: '', how: '',
+    createdAt: new Date().toISOString().split('T')[0]
+  };
+  ideas.unshift(newIdea);
+  currentId = newIdea.id;
+  save();
+  renderSidebar();
+  renderDetail();
+  // 聚焦标题
+  setTimeout(() => {
+    const t2 = document.getElementById('title-input');
+    if (t2 && !t2.value) t2.focus();
+  }, 50);
+}
+
+document.getElementById('add-btn').addEventListener('click', () => {
+  const input = document.getElementById('add-input');
+  addIdea(input.value);
+  input.value = '';
+});
+document.getElementById('add-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    addIdea(e.target.value);
+    e.target.value = '';
+  }
+});
+
+// ============ 导出 ============
+function buildExport() {
+  return ideas.map((idea, i) => {
+    const title = (idea.title || '（未命名）').trim();
+    const lines = [`【想法 ${i+1}】${title}`, `创建: ${idea.createdAt || ''}`];
+    FIELDS.forEach(f => {
+      const val = (idea[f.key] || '').trim();
+      if (val) lines.push(`${f.en} · ${f.cn}: ${val}`);
+    });
+    return lines.join('\n');
+  }).join('\n\n───\n\n');
+}
+function openExport() {
+  document.getElementById('export-text').value = buildExport();
+  document.getElementById('export-modal').classList.add('show');
+}
+function closeExport() {
+  document.getElementById('export-modal').classList.remove('show');
+}
+function copyExport() {
+  const ta = document.getElementById('export-text');
+  ta.select();
+  document.execCommand('copy');
+  const btn = event.target;
+  const t = btn.textContent;
+  btn.textContent = '已复制 ✓';
+  setTimeout(() => { btn.textContent = t; }, 1200);
+}
+document.getElementById('export-btn').addEventListener('click', openExport);
+document.getElementById('export-modal').addEventListener('click', e => {
+  if (e.target.id === 'export-modal') e.target.classList.remove('show');
+});
+
+// ============ 清空 ============
+document.getElementById('clear-btn').addEventListener('click', () => {
+  if (!confirm('清空所有想法？不可撤销。请确认已导出重要内容。')) return;
+  ideas = [];
+  currentId = null;
+  save();
+  renderSidebar();
+  renderDetail();
+});
+
+// ============ Boot ============
+loadIdeas();
+currentId = ideas[0]?.id || null;
+renderSidebar();
+renderDetail();
+</script>
+</body>
+</html>
