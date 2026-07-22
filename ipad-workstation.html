@@ -409,6 +409,91 @@ tr:last-child td { border-bottom: none; }
 .tl-item.active .tl-version { color: #764ba2; font-weight: 700; }
 .tl-desc { font-size: 12px; color: #9ca3af; margin-top: 2px; }
 
+/* ==== 想法池 ==== */
+.pool-intro {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 10px 12px;
+  background: #faf9ff;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.pool-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pool-section-label .count {
+  background: rgba(255,255,255,0.6);
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.pool-label-confirmed { background: #d1fae5; color: #065f46; }
+.pool-label-observing { background: #fef3c7; color: #92400e; }
+.pool-label-pending { background: #dbeafe; color: #1e40af; }
+.pool-label-archived { background: #f3f4f6; color: #4b5563; }
+
+.pool-item {
+  display: flex;
+  gap: 10px;
+  padding: 12px 12px;
+  margin-bottom: 6px;
+  background: #faf9ff;
+  border-radius: 10px;
+  border-left: 3px solid;
+  align-items: flex-start;
+}
+.pool-item.item-confirmed { border-color: #10b981; }
+.pool-item.item-upgraded { border-color: #8b5cf6; }
+.pool-item.item-observing { border-color: #f59e0b; }
+.pool-item.item-pending { border-color: #3b82f6; }
+.pool-item.item-archived { border-color: #9ca3af; }
+
+.pool-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  min-width: 22px;
+  font-family: "SF Mono", monospace;
+  padding-top: 2px;
+}
+.pool-content { flex: 1; }
+.pool-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c2c3e;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.pool-status {
+  font-size: 11px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.pool-status .tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 6px;
+  letter-spacing: 0.3px;
+}
+.tag-confirmed { background: #d1fae5; color: #065f46; }
+.tag-upgraded { background: #ede9fe; color: #6d28d9; }
+.tag-observing { background: #fef3c7; color: #92400e; }
+.tag-pending { background: #dbeafe; color: #1e40af; }
+.tag-archived { background: #f3f4f6; color: #4b5563; }
+
 /* ==== Footer ==== */
 footer {
   text-align: center;
@@ -602,6 +687,143 @@ footer strong { color: rgba(255,255,255,0.9); }
       <span class="chip">大件硬件追加</span>
     </div>
     <div class="chip-note">等条件成熟再动 · 不预设需求</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">想法池 · 讨论产出 15 条</div>
+    <div class="pool-intro">本次讨论冒出的所有想法 · 按状态归档 · 一周后回看时可判断"哪些定型 / 哪些还漂着"</div>
+
+    <div class="pool-section-label pool-label-confirmed">
+      已确认 / 已升级 <span class="count">9</span>
+    </div>
+
+    <div class="pool-item item-upgraded">
+      <div class="pool-num">01</div>
+      <div class="pool-content">
+        <div class="pool-title">iPad = 各 AI 跳转中枢</div>
+        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>演化成 v3 定位骨架</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-confirmed">
+      <div class="pool-num">02</div>
+      <div class="pool-content">
+        <div class="pool-title">网页加主屏比原生 App 好</div>
+        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>入口层做法定型</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-confirmed">
+      <div class="pool-num">03</div>
+      <div class="pool-content">
+        <div class="pool-title">主屏 AI 矩阵 · 一屏铺开</div>
+        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 2</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-confirmed">
+      <div class="pool-num">04</div>
+      <div class="pool-content">
+        <div class="pool-title">剪贴板作 AI 之间的传送带</div>
+        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>流转层核心机制</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-upgraded">
+      <div class="pool-num">05</div>
+      <div class="pool-content">
+        <div class="pool-title">iPad 是视觉落地方便的地方</div>
+        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>v3 定位骨架</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-confirmed">
+      <div class="pool-num">06</div>
+      <div class="pool-content">
+        <div class="pool-title">姿势-精度分工(语音 / 触屏 / 键盘)</div>
+        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>矩阵沉淀 · 用户认同"这就是我的感受"</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-upgraded">
+      <div class="pool-num">07</div>
+      <div class="pool-content">
+        <div class="pool-title">豆包语音发散 · Mac 键盘落地</div>
+        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>三设备分工矩阵</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-confirmed">
+      <div class="pool-num">08</div>
+      <div class="pool-content">
+        <div class="pool-title">交接包 Handoff prompt</div>
+        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 1 · 待 pin 飞书</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-upgraded">
+      <div class="pool-num">09</div>
+      <div class="pool-content">
+        <div class="pool-title">荔枝当分发中心 · URL 通吃所有设备</div>
+        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>本次讨论最大发现 · B 阶段分发层雏形</div>
+      </div>
+    </div>
+
+    <div class="pool-section-label pool-label-observing">
+      观察中 / 待验证 <span class="count">3</span>
+    </div>
+
+    <div class="pool-item item-observing">
+      <div class="pool-num">10</div>
+      <div class="pool-content">
+        <div class="pool-title">分屏双 AI 对话(iPad 独占优势)</div>
+        <div class="pool-status"><span class="tag tag-observing">观察中</span>未实测 · 一周后看用不用</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-pending">
+      <div class="pool-num">11</div>
+      <div class="pool-content">
+        <div class="pool-title">让 AI 自己判断交接给谁</div>
+        <div class="pool-status"><span class="tag tag-pending">待验证</span>交接包里加"建议给谁" · 找实际场景试</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-pending">
+      <div class="pool-num">12</div>
+      <div class="pool-content">
+        <div class="pool-title">各家 AI 分开 pin · 不聚合</div>
+        <div class="pool-status"><span class="tag tag-pending">待验证</span>承认壁垒 · 但实际操作还没跑过</div>
+      </div>
+    </div>
+
+    <div class="pool-section-label pool-label-archived">
+      已归档 · 悬置 <span class="count">3</span>
+    </div>
+
+    <div class="pool-item item-archived">
+      <div class="pool-num">13</div>
+      <div class="pool-content">
+        <div class="pool-title">场景 folder 不按 AI 名分</div>
+        <div class="pool-status"><span class="tag tag-archived">悬置</span>抛过未采纳 · 你没选</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-archived">
+      <div class="pool-num">14</div>
+      <div class="pool-content">
+        <div class="pool-title">快捷指令暂缓 · 等"做烦"信号</div>
+        <div class="pool-status"><span class="tag tag-archived">已归档</span>未来触发再动 · 不预设</div>
+      </div>
+    </div>
+
+    <div class="pool-item item-archived">
+      <div class="pool-num">15</div>
+      <div class="pool-content">
+        <div class="pool-title">AI 状态盘(能量分布 / 心智地图)</div>
+        <div class="pool-status"><span class="tag tag-archived">已归档</span>不属工作台主题 → 独立到 personal-dashboard.html · 未来做</div>
+      </div>
+    </div>
   </div>
 
   <div class="card">
