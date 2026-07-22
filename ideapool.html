@@ -343,15 +343,27 @@
   }
   .save-hint.saved { color: #ffd89b; }
 
+  /* 发散 + SOP 并列 */
+  .bs-sop-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  @media (max-width: 900px) {
+    .bs-sop-row { grid-template-columns: 1fr; gap: 12px; }
+  }
+
   /* 发散区 */
   .brainstorm {
-    margin-top: 20px;
     background: rgba(255,255,255,0.06);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     padding: 16px 18px;
     transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
   }
   .brainstorm:focus-within {
     background: rgba(255,255,255,0.12);
@@ -388,10 +400,67 @@
     line-height: 1.75;
     outline: none;
     resize: none;
-    min-height: 120px;
+    min-height: 200px;
     letter-spacing: 0.3px;
+    flex: 1;
   }
   .brainstorm textarea::placeholder { color: rgba(255,255,255,0.25); }
+
+  /* SOP 右列 */
+  .sop-panel {
+    background: rgba(255,216,155,0.08);
+    border: 1px solid rgba(255,216,155,0.25);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .sop-panel-title {
+    color: #ffd89b;
+    font-size: 13px;
+    letter-spacing: 3px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sop-panel-steps {
+    display: flex; flex-direction: column;
+    gap: 10px;
+  }
+  .sop-panel-step {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .sop-panel-step .sop-num {
+    font-size: 16px;
+    line-height: 1.2;
+    flex-shrink: 0;
+    width: 22px;
+    text-align: center;
+  }
+  .sop-panel-step .sop-body { flex: 1; }
+  .sop-panel-step .sop-name {
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+    font-size: 13px;
+  }
+  .sop-panel-step .sop-desc {
+    color: rgba(255,255,255,0.55);
+    font-size: 11px;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+  .sop-panel-tail {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    padding-top: 12px;
+    margin-top: 12px;
+    border-top: 1px dashed rgba(255,255,255,0.15);
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+  }
 
   /* Modal · 导出 */
   .modal {
@@ -469,58 +538,6 @@
     <div class="brand">
       <span class="brand-emoji">💡</span>
       <span class="brand-title">想 法 池</span>
-    </div>
-
-    <div class="sop-card">
-      <div class="sop-title">🎯 做游戏 SOP</div>
-      <div class="sop-steps">
-        <div class="sop-step">
-          <span class="sop-num">🌱</span>
-          <div class="sop-body">
-            <div class="sop-name">起念</div>
-            <div class="sop-desc">一句话原始想法·不修饰</div>
-          </div>
-        </div>
-        <div class="sop-step">
-          <span class="sop-num">📐</span>
-          <div class="sop-body">
-            <div class="sop-name">5W1H 拆解</div>
-            <div class="sop-desc">拆完再动·想法卡完整</div>
-          </div>
-        </div>
-        <div class="sop-step">
-          <span class="sop-num">🎨</span>
-          <div class="sop-body">
-            <div class="sop-name">定风格·出样本</div>
-            <div class="sop-desc">1 页样本·验收再往下</div>
-          </div>
-        </div>
-        <div class="sop-step">
-          <span class="sop-num">📝</span>
-          <div class="sop-body">
-            <div class="sop-name">写完整版</div>
-            <div class="sop-desc">数据 UI 分离·避硬雷</div>
-          </div>
-        </div>
-        <div class="sop-step">
-          <span class="sop-num">🚀</span>
-          <div class="sop-body">
-            <div class="sop-name">上线挂主页</div>
-            <div class="sop-desc">加卡片·30-60 秒生效</div>
-          </div>
-        </div>
-        <div class="sop-step">
-          <span class="sop-num">🔄</span>
-          <div class="sop-body">
-            <div class="sop-name">复盘迭代</div>
-            <div class="sop-desc">手机真玩·归档所学</div>
-          </div>
-        </div>
-      </div>
-      <div class="sop-tail">
-        ✗ 不追完美 · ✗ 不并行铺 · ✗ 不预设用户<br>
-        用户是你自己 · 你玩得爽就是成功
-      </div>
     </div>
 
     <div class="add-idea">
