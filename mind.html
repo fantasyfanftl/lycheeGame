@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>心镜</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Songti SC', 'STSong', 'Songti TC', Georgia, serif;
+    background: linear-gradient(135deg, #6b5b95 0%, #4a3d6b 100%);
+    min-height: 100vh;
+    padding: 20px 14px 40px;
+    color: #333;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .container { max-width: 560px; margin: 0 auto; }
+  .back-link {
+    display: inline-block; color: #fff; text-decoration: none;
+    font-size: 13px; margin-bottom: 8px; opacity: 0.7;
+    letter-spacing: 1px;
+  }
+  header {
+    text-align: center; color: #fff; margin-bottom: 22px;
+  }
+  header h1 { font-size: 26px; letter-spacing: 8px; margin-bottom: 4px; }
+  header p { font-size: 12px; opacity: 0.65; letter-spacing: 3px; font-style: italic; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+  .tab {
+    flex: 1; padding: 8px 6px; background: transparent;
+    color: rgba(255,255,255,0.65);
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 999px;
+    font-family: inherit; font-size: 12px; letter-spacing: 3px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .tab.active {
+    background: rgba(255,255,255,0.95); color: #4a3d6b;
+    border-color: transparent;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .story-page {
+    background: #f7efe0;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, rgba(139, 108, 78, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(139, 108, 78, 0.04) 0%, transparent 50%);
+    border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.4) inset;
+    padding: 32px 26px 28px;
+    min-height: 460px;
+    position: relative;
+  }
+  .story-page::before {
+    content: '';
+    position: absolute; top: 20px; bottom: 20px; left: 12px;
+    width: 1px; background: rgba(139, 108, 78, 0.15);
+  }
+
+  .story-header {
+    text-align: center;
+    font-size: 12px; letter-spacing: 4px;
+    color: #a67240; margin-bottom: 22px;
+    font-style: italic;
+  }
+
+  .paragraph {
+    font-size: 15px; line-height: 2.05;
+    color: #3d2f24; letter-spacing: 0.5px;
+    margin-bottom: 18px;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    text-indent: 2em;
+  }
+  .paragraph.show { opacity: 1; transform: none; }
+
+  .continue-hint {
+    text-align: center; padding-top: 20px;
+    color: #a67240; font-size: 12px; letter-spacing: 4px;
+    opacity: 0;
+    cursor: pointer;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .continue-hint.show { opacity: 1; }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .reveal-section {
+    margin-top: 24px; padding-top: 22px;
+    border-top: 1px dashed rgba(139, 108, 78, 0.35);
+    display: none;
+  }
+  .reveal-section.show { display: block; }
+  .reveal-section .reveal-label {
+    text-align: center;
+    font-size: 11px; letter-spacing: 6px;
+    color: #a67240; margin-bottom: 18px;
+    font-style: italic;
+  }
+  .reveal-para {
+    font-size: 15px; line-height: 2;
+    color: #4a3728; letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    text-indent: 2em;
+  }
+  .reveal-para.show { opacity: 1; transform: none; }
+  .effect-stamp {
+    text-align: center;
+    margin: 30px 0 8px;
+    opacity: 0; transform: scale(0.9);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .effect-stamp.show { opacity: 1; transform: scale(1); }
+  .effect-stamp .frame {
+    display: inline-block;
+    border: 2px double #a67240;
+    padding: 12px 26px;
+    letter-spacing: 8px;
+    font-size: 18px;
+    color: #6b4820;
+    font-weight: 700;
+  }
+  .effect-stamp .en {
+    display: block; font-size: 10px;
+    letter-spacing: 2px; color: #a67240;
+    margin-top: 4px; font-style: italic;
+    font-family: Georgia, serif;
+  }
+  .next-btn {
+    display: block; margin: 22px auto 0;
+    padding: 10px 28px; background: #6b4820; color: #f7efe0;
+    border: none; border-radius: 3px;
+    font-family: inherit; font-size: 13px; letter-spacing: 4px;
+    cursor: pointer;
+    opacity: 0; transition: opacity 0.6s;
+  }
+  .next-btn.show { opacity: 1; }
+  .next-btn:hover { background: #3d2f24; }
+
+  .end-page {
+    text-align: center; padding: 60px 20px;
+  }
+  .end-page .icon { font-size: 40px; margin-bottom: 16px; }
+  .end-page h3 { color: #6b4820; letter-spacing: 4px; margin-bottom: 12px; font-size: 20px; }
+  .end-page p { color: #7a5d40; font-size: 14px; line-height: 1.9; letter-spacing: 1px; margin-bottom: 14px; }
+  .end-page button {
+    margin: 8px 4px; padding: 8px 20px;
+    background: transparent; color: #6b4820;
+    border: 1px solid #6b4820; border-radius: 3px;
+    font-family: inherit; font-size: 13px; letter-spacing: 3px;
+    cursor: pointer;
+  }
+  .end-page button.primary { background: #6b4820; color: #f7efe0; border-color: #6b4820; }
+
+  .dex-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .dex-item {
+    background: #f7efe0; border-radius: 8px; padding: 16px 10px 14px;
+    text-align: center; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: transform 0.15s;
+    position: relative; min-height: 100px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .dex-item:hover { transform: translateY(-2px); }
+  .dex-item .emoji { font-size: 26px; margin-bottom: 8px; display: block; }
+  .dex-item .name { font-size: 13px; color: #6b4820; letter-spacing: 2px; }
+  .dex-item.locked { background: rgba(247,239,224,0.35); }
+  .dex-item.locked .emoji, .dex-item.locked .name { visibility: hidden; }
+  .dex-item.locked::after {
+    content: '？'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: rgba(107,72,32,0.35);
+    font-family: Georgia;
+  }
+
+  .dex-modal {
+    position: fixed; inset: 0; background: rgba(30,20,50,0.85);
+    backdrop-filter: blur(6px); z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .dex-modal.show { display: flex; }
+  .dex-modal .story-page { max-width: 480px; width: 100%; min-height: auto; }
+  .dex-name-big {
+    text-align: center;
+    font-size: 22px; color: #6b4820; letter-spacing: 6px;
+    margin-bottom: 4px;
+  }
+  .dex-en {
+    text-align: center;
+    font-size: 11px; color: #a67240; letter-spacing: 3px;
+    margin-bottom: 20px; font-style: italic;
+    font-family: Georgia, serif;
+  }
+  .dex-def, .dex-ex {
+    font-size: 14px; line-height: 1.9; color: #4a3728;
+    margin-bottom: 14px; text-indent: 2em;
+  }
+  .dex-ex {
+    padding: 12px 14px; background: rgba(139, 108, 78, 0.08);
+    border-radius: 4px; text-indent: 0;
+  }
+  .dex-ex::before { content: '例 · '; color: #a67240; letter-spacing: 2px; }
+  .dex-close {
+    display: block; margin: 18px auto 0; padding: 8px 24px;
+    background: transparent; color: #6b4820;
+    border: 1px solid #6b4820; border-radius: 3px;
+    font-family: inherit; font-size: 13px; letter-spacing: 3px;
+    cursor: pointer;
+  }
+
+  .foot-hint {
+    color: rgba(255,255,255,0.5); text-align: center;
+    font-size: 11px; margin-top: 16px; letter-spacing: 2px;
+  }
+  .foot-hint b { color: #ffd89b; font-weight: 400; }
+  .foot-hint .reset {
+    color: rgba(255,255,255,0.4);
+    background: none; border: none;
+    font-family: inherit; font-size: 11px;
+    cursor: pointer; margin-left: 12px;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .story-page { padding: 26px 20px 24px; min-height: 420px; }
+    .paragraph, .reveal-para { font-size: 14px; line-height: 1.95; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <header>
+    <h1>心 镜</h1>
+    <p>照见你自己 · 也照见你身边人</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-panel="story">读 一 段</button>
+    <button class="tab" data-panel="dex" id="dex-tab">图鉴 0/5</button>
+  </div>
+
+  <div class="panel active" id="panel-story">
+    <div class="story-page" id="story-page"></div>
+    <div class="foot-hint">
+      样本 · 前 <b id="story-count">5</b> 则 · 完整版陆续追加
+      <button class="reset" id="reset-btn">从头</button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-dex">
+    <div class="dex-grid" id="dex-grid"></div>
+    <div class="foot-hint">读完对应故事 · 图鉴自动点亮</div>
+  </div>
+</div>
+
+<div class="dex-modal" id="dex-modal">
+  <div class="story-page" id="dex-detail"></div>
+</div>
+
+<script>
+// ============ 效应字典 ============
+const EFFECTS = {
+  anchor: {
+    name: '锚定效应', en: 'Anchoring Effect', emoji: '⚓',
+    def: '判断数字时会被"先看到的第一个数字"（锚点）严重影响 · 即使这个数字明显荒谬也一样。',
+    example: '奢侈品店先摆 8888 的招牌款 · 再拿出 1288 的同款给你看 · 你会瞬间觉得 1288 便宜。'
+  },
+  sunk: {
+    name: '沉没成本', en: 'Sunk Cost Fallacy', emoji: '🕳',
+    def: '已经花出去、无论现在做什么选择都收不回来的时间/金钱/精力 · 不应该影响未来决策。但人类总是把它算进去。',
+    example: '看烂片看了 40 分钟 · 明知无聊却硬看完 · 因为觉得"都看这么久了不看完亏"。'
+  },
+  confirm: {
+    name: '确认偏差', en: 'Confirmation Bias', emoji: '🪞',
+    def: '大脑倾向于寻找、注意、记住"支持自己已有观点"的信息 · 同时忽略、贬低、遗忘"反对自己观点"的信息。',
+    example: '你相信某人不靠谱 · 之后看到他犯错都加深印象 · 看到他做得好的自动过滤成"这次是例外"。'
+  },
+  loss: {
+    name: '损失厌恶', en: 'Loss Aversion', emoji: '💧',
+    def: '同等金额的损失带来的痛苦 · 大约是同等金额收益带来快乐的 2 倍。',
+    example: '重仓股票跌了 30% · 明知长期会更糟 · 但就是不肯止损 · 因为"卖了就承认亏"太痛。'
+  },
+  peakend: {
+    name: '峰终定律', en: 'Peak-End Rule', emoji: '⛰',
+    def: '人对一段经历的记忆 · 不是平均值 · 而主要由「最强烈的那一刻」和「结束的那一刻」决定。',
+    example: '一场旅行 90% 疲惫 · 但看到极光的那一刻和最后回家路上的日出 · 就变成"这次旅行真棒"。'
+  }
+};
+
+// ============ 故事集 · 首批 5 则 ============
+const STORIES = [
+  {
+    header: '周 六 · 商 场',
+    paragraphs: [
+      '她走进那家包店。心里盘算 · 好一点的包也就一两千 · 差不多够了。',
+      '「您看的是这款吧？」服务员端出一个米色的斗篷包。',
+      '「8888。」',
+      '她心里咯噔一下。比想象的贵不少。她犹豫着 · 表情不太自然。',
+      '服务员像是看穿了她 · 又从柜里拿出另一款。「同系列的 · 1288。」',
+      '她的眼睛亮了一下。',
+      '「这个... 可以试试。」',
+      '她甚至没查一下别家的价 · 就掏出了手机。'
+    ],
+    reveal: {
+      paras: [
+        '三分钟前她走进店里 · 心里"这类包能接受的价"大概是 800-1000 元。',
+        '但看到 8888 之后 · 心理上的"包价参照"就被拉起来了。1288 就变成"没有那么贵"。',
+        '如果服务员一开始就拿 1288 出来 · 她多半会说 · "太贵了 · 我再看看。"'
+      ],
+      effect: 'anchor'
+    }
+  },
+  {
+    header: '周 日 · 演 唱 会',
+    paragraphs: [
+      '闹钟响的时候 · 外面在下大雨。',
+      '她躺在床上想 · 今晚有演唱会。票 800 · 三个月前买的。',
+      '她昨晚陪客户到凌晨两点。浑身酸痛。胃不舒服。',
+      '手机弹出暴雨预警。',
+      '她挣扎着坐起来。',
+      '「都花了 800 了 · 不去太亏。」',
+      '涂了防晒 · 拎了雨伞 · 地铁挤了一小时。',
+      '演唱会 3 小时。她坐得头疼。散场时被人群挤得差点摔。',
+      '半夜发烧 39 度。'
+    ],
+    reveal: {
+      paras: [
+        '那 800 块钱 · 不管她今天去不去 · 都拿不回来了。',
+        '真正应该衡量的是 · "今天再搭上 8 小时和这个身体状态去看" 和 "留在家养病" · 哪个更好。',
+        '但她算的不是这个。她算的是 · "如果不去 · 800 就白花了。"',
+        '——白花的 800 已经白花了。去 · 是又搭上一天精力和一场发烧。'
+      ],
+      effect: 'sunk'
+    }
+  },
+  {
+    header: '周 三 · 茶 水 间',
+    paragraphs: [
+      '同事说 · 「小李真的不靠谱。昨天那个方案又拖了三天。」',
+      '她在心里点头。她一直觉得小李不太行。',
+      '回到工位 · 她刷开小李的朋友圈。「昨天忙到 11 点才回家。」',
+      '她瞥了一眼 · 心想 · 「这么晚回家还拖方案？」',
+      '第二天开会 · 小李讲了个新想法 · 其实相当好。',
+      '但她没怎么听。心里在想 · 「他这么不靠谱的人 · 说得再好也做不到。」',
+      '会后 · 另一个同事私下夸小李。',
+      '她笑了笑。心里想 · 「这人是不了解他。」'
+    ],
+    reveal: {
+      paras: [
+        '「小李不靠谱」—— 一旦她心里这样认定了 · 每一条证据都变成"证明"· 每一条反证都变成"这次是例外"。',
+        '小李朋友圈说加班到 11 点 · 本可以理解成"他也在拼" · 但她读成"拖延所以加班"。',
+        '小李的好方案 · 她根本没听进去。同事的正面反馈 · 被她归为"你不了解他"。',
+        '她不是在观察小李。她是在收集"证明我判断对了"的证据。'
+      ],
+      effect: 'confirm'
+    }
+  },
+  {
+    header: '周 一 · 交 易 软 件',
+    paragraphs: [
+      '她打开 app。红的绿的跳了一屏。',
+      '她重仓的那只 · 又跌了 4%。累计 -32%。',
+      '新闻里说这家公司下个季度的订单也丢了大客户。',
+      '她盯着屏幕。',
+      '"再等等。万一涨回来呢。"',
+      '半年前 · 这只股票只是 -8%。她当时也想 · "再等等 · 万一涨回来呢。"',
+      '-15% 的时候 · 她想 · "现在卖亏太多了。"',
+      '-25% 的时候 · 她已经不敢看账户了。',
+      '今天 -32% · 她还是没按下"卖出"。',
+      '她关掉 app · 假装没这回事。'
+    ],
+    reveal: {
+      paras: [
+        '如果她一开始就没买这只股票 · 现在给她十万让她买 · 她会买吗？',
+        '不会。基本面已经烂了 · 谁都能看出来。',
+        '但她持有的这份 · 卖出去就等于"承认亏了 32%"。这个"承认"的痛 · 大脑评估成"比继续等的不确定还痛"。',
+        '所以她宁可继续跌 · 也不愿意在这一刻按下"卖"。理性上她知道该割 · 但情绪上她做不到。'
+      ],
+      effect: 'loss'
+    }
+  },
+  {
+    header: '八 月 · 冰 岛',
+    paragraphs: [
+      '这次旅行提前半年就订了。她期待了很久。',
+      '第一天飞机延误 · 折腾到凌晨三点才到酒店。',
+      '第二天下雨 · 计划的火山徒步取消。',
+      '第三天她感冒了 · 在民宿躺了一天。',
+      '第四天她终于出门 · 但导游临时变更了行程 · 她走了很多冤枉路。',
+      '第五天晚上 · 她站在一片野外。',
+      '天空突然开始出现绿色的光带。极光。',
+      '她哭了。',
+      '第六天飞回北京。落地时正好日出。云海翻涌 · 一片金红。',
+      '回到家她给闺蜜发消息 · 「这次冰岛之旅太棒了。」'
+    ],
+    reveal: {
+      paras: [
+        '整段旅行里 · 有 5 天是不顺的。发烧、下雨、走弯路、机票延误 · 加起来大概占了 90%。',
+        '但她真正记住的 · 只有极光的那一刻 · 和最后落地的日出。',
+        '大脑不会算平均分。它只留下最强烈的那一刻 · 和结束的那一刻。',
+        '所以哪怕整个旅程被人吐槽 · 只要"最高点"和"结尾"够好 · 她的记忆里就是"这次真棒"。'
+      ],
+      effect: 'peakend'
+    }
+  }
+];
+
+// ============ 状态 · 带存档 ============
+const SAVE_KEY = 'mindMirror_v1';
+let unlockedEffects = new Set();
+let currentStoryIdx = 0;
+let currentParaIdx = 0;
+let inRevealPhase = false;
+let revealParaIdx = 0;
+
+function loadSave() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    unlockedEffects = new Set(s.unlocked || []);
+    currentStoryIdx = s.storyIdx || 0;
+  } catch (e) {}
+}
+function saveState() {
+  localStorage.setItem(SAVE_KEY, JSON.stringify({
+    unlocked: [...unlockedEffects],
+    storyIdx: currentStoryIdx
+  }));
+}
+
+// ============ 渲染故事 ============
+function renderStory() {
+  const page = document.getElementById('story-page');
+  if (currentStoryIdx >= STORIES.length) {
+    page.innerHTML = `
+      <div class="end-page">
+        <div class="icon">📖</div>
+        <h3>今 日 已 尽</h3>
+        <p>你已经读完了当前所有故事。<br>正式版持续追加中。</p>
+        <button class="primary" id="restart-btn">重 读</button>
+        <button id="see-dex">看 图 鉴</button>
+      </div>`;
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      currentStoryIdx = 0;
+      saveState();
+      renderStory();
+    });
+    document.getElementById('see-dex').addEventListener('click', () => {
+      document.querySelector('.tab[data-panel="dex"]').click();
+    });
+    return;
+  }
+
+  const story = STORIES[currentStoryIdx];
+  page.innerHTML = `
+    <div class="story-header">— ${story.header} —</div>
+    <div id="paragraphs"></div>
+    <div class="continue-hint" id="continue-hint">点 击 继 续</div>
+    <div class="reveal-section" id="reveal-section">
+      <div class="reveal-label">— 揭 晓 —</div>
+      <div id="reveal-paras"></div>
+      <div class="effect-stamp" id="effect-stamp"></div>
+      <button class="next-btn" id="next-btn">下 一 则 →</button>
+    </div>
+  `;
+
+  currentParaIdx = 0;
+  inRevealPhase = false;
+  revealParaIdx = 0;
+  showNextParagraph();
+  page.onclick = handlePageClick;
+}
+
+function handlePageClick(e) {
+  if (e.target.tagName === 'BUTTON') return;
+  if (!inRevealPhase) showNextParagraph();
+  else showNextRevealParagraph();
+}
+
+function showNextParagraph() {
+  const story = STORIES[currentStoryIdx];
+  const container = document.getElementById('paragraphs');
+  if (!container) return;
+
+  if (currentParaIdx < story.paragraphs.length) {
+    const p = document.createElement('p');
+    p.className = 'paragraph';
+    p.innerHTML = story.paragraphs[currentParaIdx];
+    container.appendChild(p);
+    requestAnimationFrame(() => p.classList.add('show'));
+    currentParaIdx++;
+
+    if (currentParaIdx === story.paragraphs.length) {
+      setTimeout(() => {
+        const hint = document.getElementById('continue-hint');
+        if (hint) hint.classList.add('show');
+      }, 600);
+    }
+  } else {
+    const hint = document.getElementById('continue-hint');
+    if (hint) hint.classList.remove('show');
+    document.getElementById('reveal-section').classList.add('show');
+    inRevealPhase = true;
+    revealParaIdx = 0;
+    showNextRevealParagraph();
+  }
+}
+
+function showNextRevealParagraph() {
+  const story = STORIES[currentStoryIdx];
+  const container = document.getElementById('reveal-paras');
+  if (!container) return;
+
+  if (revealParaIdx < story.reveal.paras.length) {
+    const p = document.createElement('p');
+    p.className = 'reveal-para';
+    p.innerHTML = story.reveal.paras[revealParaIdx];
+    container.appendChild(p);
+    requestAnimationFrame(() => p.classList.add('show'));
+    revealParaIdx++;
+  } else {
+    const eff = EFFECTS[story.reveal.effect];
+    const stamp = document.getElementById('effect-stamp');
+    if (!stamp || stamp.innerHTML) return;
+    stamp.innerHTML = `
+      <div class="frame">${eff.name}</div>
+      <div class="en">${eff.en}</div>
+    `;
+    stamp.classList.add('show');
+    unlockedEffects.add(story.reveal.effect);
+    updateDexTab();
+    saveState();
+
+    setTimeout(() => {
+      const btn = document.getElementById('next-btn');
+      if (!btn) return;
+      btn.classList.add('show');
+      btn.onclick = () => {
+        currentStoryIdx++;
+        saveState();
+        renderStory();
+      };
+    }, 800);
+  }
+}
+
+// ============ 图鉴 ============
+function renderDex() {
+  const grid = document.getElementById('dex-grid');
+  grid.innerHTML = Object.entries(EFFECTS).map(([id, e]) => {
+    const locked = !unlockedEffects.has(id);
+    return `<div class="dex-item ${locked ? 'locked' : ''}" data-id="${id}">
+      <span class="emoji">${e.emoji}</span>
+      <span class="name">${e.name}</span>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.dex-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (item.classList.contains('locked')) return;
+      showDexDetail(item.dataset.id);
+    });
+  });
+}
+
+function showDexDetail(id) {
+  const e = EFFECTS[id];
+  document.getElementById('dex-detail').innerHTML = `
+    <div class="dex-name-big">${e.emoji} ${e.name}</div>
+    <div class="dex-en">${e.en}</div>
+    <p class="dex-def">${e.def}</p>
+    <p class="dex-ex">${e.example}</p>
+    <button class="dex-close" id="dex-close">合 上</button>
+  `;
+  document.getElementById('dex-modal').classList.add('show');
+  document.getElementById('dex-close').onclick = () => {
+    document.getElementById('dex-modal').classList.remove('show');
+  };
+}
+
+function updateDexTab() {
+  document.getElementById('dex-tab').textContent = `图鉴 ${unlockedEffects.size}/${Object.keys(EFFECTS).length}`;
+  document.getElementById('story-count').textContent = STORIES.length;
+}
+
+// ============ Tabs ============
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    if (tab.dataset.panel === 'dex') renderDex();
+  });
+});
+
+document.getElementById('dex-modal').addEventListener('click', e => {
+  if (e.target.id === 'dex-modal') e.target.classList.remove('show');
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!confirm('从头开始？当前进度会清空。')) return;
+  unlockedEffects = new Set();
+  currentStoryIdx = 0;
+  saveState();
+  updateDexTab();
+  renderStory();
+  renderDex();
+});
+
+// Boot
+loadSave();
+updateDexTab();
+renderStory();
+renderDex();
+</script>
+</body>
+</html>
