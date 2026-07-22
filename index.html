@@ -144,6 +144,30 @@
     border-bottom: 1px dashed rgba(255,255,255,0.4);
   }
 
+  /* Refresh button (fixed bottom-right) */
+  .refresh-btn {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 100;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .refresh-btn:hover {
+    transform: rotate(180deg);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.22);
+  }
+  .refresh-btn:active { transform: rotate(360deg); }
+
   /* ===== Portrait phones — force 2-column card grid ===== */
   @media (max-width: 640px) {
     body { padding: 30px 14px; }
@@ -370,5 +394,7 @@
     <p>由 <a href="https://github.com/fantasyfanftl/lycheeGame" target="_blank">fantasyfanftl</a> 制作</p>
   </footer>
 </div>
+
+<button class="refresh-btn" onclick="location.reload()" title="刷新" aria-label="刷新">🔄</button>
 </body>
 </html>
