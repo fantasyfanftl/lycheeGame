@@ -3099,6 +3099,18 @@ document.addEventListener("DOMContentLoaded", function() {
   document.addEventListener("touchend", function(e) {
     setTimeout(handleSelection, 50);
   });
+  document.addEventListener("pointerup", function(e) {
+    setTimeout(handleSelection, 50);
+  });
+  document.addEventListener("selectionchange", function() {
+    var sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    var text = sel.toString().trim();
+    if (text.length >= 2) {
+      clearTimeout(window._selChangeTimer);
+      window._selChangeTimer = setTimeout(handleSelection, 300);
+    }
+  });
 
   function handleSelection() {
     var sel = window.getSelection();
