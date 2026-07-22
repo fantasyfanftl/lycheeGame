@@ -969,6 +969,157 @@ footer strong { color: #7d84a8; }
   border-color: rgba(180, 120, 255, 0.4);
   background: rgba(180, 120, 255, 0.1);
 }
+.topic-badge-brain {
+  color: #7dd3fc;
+  border-color: rgba(125, 211, 252, 0.4);
+  background: rgba(125, 211, 252, 0.1);
+  box-shadow: 0 0 6px rgba(125, 211, 252, 0.25);
+}
+
+/* ==== 大脑主题内容样式 ==== */
+.brain-section {
+  background: rgba(22, 26, 46, 0.6);
+  border: 1px solid rgba(125, 211, 252, 0.15);
+  border-radius: 10px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.brain-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #7dd3fc;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-family: "SF Mono", monospace;
+}
+.brain-section-title .num {
+  background: rgba(125, 211, 252, 0.15);
+  color: #7dd3fc;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  border: 1px solid rgba(125, 211, 252, 0.3);
+}
+.brain-list { list-style: none; }
+.brain-item {
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  background: rgba(30, 34, 55, 0.5);
+  border-radius: 7px;
+  border-left: 2px solid #7dd3fc;
+  font-size: 12px;
+  color: #d8dcec;
+  line-height: 1.5;
+}
+.brain-item strong {
+  color: #a4b3ff;
+  font-family: "SF Mono", monospace;
+  font-size: 11px;
+  margin-right: 6px;
+}
+.brain-item .brain-why {
+  display: block;
+  color: #7d84a8;
+  font-size: 10px;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.brain-mem-item {
+  padding: 10px 12px;
+  margin-bottom: 5px;
+  background: rgba(30, 34, 55, 0.5);
+  border-radius: 7px;
+  border-left: 2px solid #b478ff;
+  font-size: 12px;
+  color: #d8dcec;
+  line-height: 1.5;
+}
+.brain-mem-item .mem-tag {
+  display: inline-block;
+  font-size: 8px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border: 1px solid;
+  margin-right: 6px;
+  color: #d6b4ff;
+  background: rgba(180, 120, 255, 0.1);
+  border-color: rgba(180, 120, 255, 0.3);
+}
+.brain-mem-item .mem-tag.tag-reference {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+.brain-mem-item .mem-title { font-weight: 600; color: #eaecf5; }
+.brain-mem-item .mem-desc {
+  display: block;
+  color: #7d84a8;
+  font-size: 10px;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.brain-path {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: rgba(22, 26, 46, 0.4);
+  border-radius: 7px;
+  font-size: 11px;
+  color: #9ca3b8;
+  line-height: 1.6;
+  border-left: 2px solid #ffb457;
+  font-family: "SF Mono", monospace;
+}
+.brain-path .arrow { color: #ffb457; margin: 0 4px; }
+.brain-connection {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: rgba(22, 26, 46, 0.4);
+  border-radius: 7px;
+  font-size: 11px;
+  color: #d8dcec;
+  line-height: 1.5;
+  border-left: 2px solid #34d399;
+}
+.brain-connection .link { color: #6ee7b7; font-family: "SF Mono", monospace; font-size: 10px; }
+.brain-hero {
+  text-align: center;
+  padding: 20px 16px;
+  background:
+    radial-gradient(400px 200px at 50% 50%, rgba(125, 211, 252, 0.12) 0%, transparent 70%),
+    rgba(22, 26, 46, 0.5);
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  border-radius: 12px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.brain-hero::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #7dd3fc, transparent);
+}
+.brain-hero .title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #7dd3fc;
+  margin-bottom: 4px;
+  text-shadow: 0 0 12px rgba(125, 211, 252, 0.4);
+}
+.brain-hero .subtitle {
+  font-size: 11px;
+  color: #9ca3b8;
+  line-height: 1.6;
+}
 .topic-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(124, 157, 255, 0.2), transparent);
@@ -1211,6 +1362,17 @@ footer strong { color: #7d84a8; }
           <div>
             <div class="topic-name">主题 D · 跨 AI 复用资产</div>
             <div class="topic-sub">元规则通用包 · 4 特征判定</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" data-topic="brain">
+        <div class="topic-badge topic-badge-brain">BRAIN</div>
+        <div class="topic-header">
+          <div class="topic-icon">🧠</div>
+          <div>
+            <div class="topic-name">大脑</div>
+            <div class="topic-sub">Claude 的思考方式 · 记忆网络</div>
           </div>
         </div>
       </div>
