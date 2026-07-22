@@ -343,27 +343,15 @@
   }
   .save-hint.saved { color: #ffd89b; }
 
-  /* 发散 + SOP 并列 */
-  .bs-sop-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 20px;
-  }
-  @media (max-width: 900px) {
-    .bs-sop-row { grid-template-columns: 1fr; gap: 12px; }
-  }
-
   /* 发散区 */
   .brainstorm {
+    margin-top: 20px;
     background: rgba(255,255,255,0.06);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     padding: 16px 18px;
     transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
   }
   .brainstorm:focus-within {
     background: rgba(255,255,255,0.12);
@@ -400,67 +388,10 @@
     line-height: 1.75;
     outline: none;
     resize: none;
-    min-height: 200px;
+    min-height: 120px;
     letter-spacing: 0.3px;
-    flex: 1;
   }
   .brainstorm textarea::placeholder { color: rgba(255,255,255,0.25); }
-
-  /* SOP 右列 */
-  .sop-panel {
-    background: rgba(255,216,155,0.08);
-    border: 1px solid rgba(255,216,155,0.25);
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-  .sop-panel-title {
-    color: #ffd89b;
-    font-size: 13px;
-    letter-spacing: 3px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .sop-panel-steps {
-    display: flex; flex-direction: column;
-    gap: 10px;
-  }
-  .sop-panel-step {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    font-size: 12px;
-    line-height: 1.5;
-  }
-  .sop-panel-step .sop-num {
-    font-size: 16px;
-    line-height: 1.2;
-    flex-shrink: 0;
-    width: 22px;
-    text-align: center;
-  }
-  .sop-panel-step .sop-body { flex: 1; }
-  .sop-panel-step .sop-name {
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 1px;
-    font-size: 13px;
-  }
-  .sop-panel-step .sop-desc {
-    color: rgba(255,255,255,0.55);
-    font-size: 11px;
-    margin-top: 2px;
-    letter-spacing: 0.3px;
-  }
-  .sop-panel-tail {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    padding-top: 12px;
-    margin-top: 12px;
-    border-top: 1px dashed rgba(255,255,255,0.15);
-    line-height: 1.6;
-    letter-spacing: 0.5px;
-  }
 
   /* Modal · 导出 */
   .modal {
