@@ -1644,19 +1644,19 @@ footer strong { color: #7d84a8; }
 .annotation-drawer {
   position: fixed;
   top: 0;
-  right: -420px;
+  left: -420px;
   width: 400px;
   max-width: 100vw;
   height: 100vh;
   background: linear-gradient(180deg, #14172a 0%, #1a1a35 100%);
-  border-left: 1px solid rgba(255, 176, 87, 0.25);
+  border-right: 1px solid rgba(255, 176, 87, 0.25);
   z-index: 1001;
-  transition: right 0.3s;
+  transition: left 0.3s;
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
 }
-.annotation-drawer.show { right: 0; }
+.annotation-drawer.show { left: 0; }
 .drawer-header {
   padding: 16px 18px;
   border-bottom: 1px solid rgba(255, 176, 87, 0.2);
@@ -1808,7 +1808,7 @@ footer strong { color: #7d84a8; }
 .drawer-empty .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
 
 @media (max-width: 500px) {
-  .annotation-drawer { width: 100vw; right: -100vw; }
+  .annotation-drawer { width: 100vw; left: -100vw; }
   .annotation-panel { width: 52px; height: 52px; bottom: 16px; right: 16px; font-size: 20px; }
 }
 .topic-divider {
@@ -1943,8 +1943,8 @@ footer strong { color: #7d84a8; }
   .container { max-width: 1200px; padding: 12px 16px 0; }
   .workspace-layout {
     display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
+    grid-template-columns: 280px 1fr;
+    gap: 18px;
     align-items: start;
   }
   .product-column {
@@ -1968,7 +1968,7 @@ footer strong { color: #7d84a8; }
 }
 /* 大屏 · 让内容更松弛 */
 @media (min-width: 1100px) {
-  .workspace-layout { grid-template-columns: 380px 1fr; gap: 28px; }
+  .workspace-layout { grid-template-columns: 320px 1fr; gap: 24px; }
 }
 
 @media (max-width: 400px) {
@@ -2022,17 +2022,6 @@ footer strong { color: #7d84a8; }
           <div>
             <div class="topic-name">主题 E · 怎么搭建 AI 工作台</div>
             <div class="topic-sub">当前讨论 · 已产出定位/三设备/三层等</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="topic-card" data-topic="A">
-        <div class="topic-badge topic-badge-soon">SOON</div>
-        <div class="topic-header">
-          <div class="topic-icon">🧠</div>
-          <div>
-            <div class="topic-name">主题 A · AI 矩阵入口</div>
-            <div class="topic-sub">荔枝 Brain · 已就位</div>
           </div>
         </div>
       </div>
@@ -2501,19 +2490,6 @@ footer strong { color: #7d84a8; }
   </div>
 
   </div><!-- /.topic-content E -->
-
-  <!-- ===== 主题 A · AI 矩阵入口 ===== -->
-  <div class="topic-content" data-topic-content="A" style="display:none;">
-    <div class="topic-placeholder">
-      <div class="ph-icon">🧠</div>
-      <div class="ph-title">主题 A · AI 矩阵入口</div>
-      <div class="ph-desc">
-        待展开讨论 · 5W1H 框架:<br>
-        <strong>What · Why · Who · When · Where · How</strong><br><br>
-        已就位:荔枝 Brain 是本主题的落地形态 → <a href="brain.html" style="color:#6ee7b7;">打开 brain.html</a>
-      </div>
-    </div>
-  </div>
 
   <!-- ===== 主题 B · Handoff 交接包 ===== -->
   <div class="topic-content" data-topic-content="B" style="display:none;">
@@ -3034,7 +3010,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
   var topicNames = {
     "E": "主题 E · 怎么搭建 AI 工作台",
-    "A": "主题 A · AI 矩阵入口",
     "B": "主题 B · Handoff 交接包",
     "C": "主题 C · 想法池汇总",
     "D": "主题 D · 跨 AI 复用资产",
