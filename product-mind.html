@@ -130,6 +130,70 @@
   }
   .reveal-para b { color: #2a5a48; }
 
+  .my-review {
+    background: rgba(74, 122, 90, 0.08);
+    border-left: 3px solid #4a7a5a;
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .review-head {
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    color: #4a5a4a;
+  }
+  .review-head b { color: #2a5a48; }
+  .tag-correct, .tag-wrong {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 8px;
+    border-radius: 3px;
+    margin-right: 4px;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .tag-correct { background: rgba(120, 180, 90, 0.25); color: #2a5a1a; }
+  .tag-wrong { background: rgba(200, 130, 90, 0.15); color: #8a4a2a; }
+  .see-others-btn {
+    display: block;
+    margin: 14px auto 0;
+    padding: 8px 20px;
+    background: transparent;
+    color: #4a7a5a;
+    border: 1px solid #4a7a5a;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+  }
+  .see-others-btn:hover { background: #4a7a5a; color: #f7efe0; }
+  .other-review {
+    background: rgba(200, 190, 170, 0.15);
+    border-left: 3px solid rgba(74, 122, 90, 0.3);
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .other-review.show { opacity: 1; transform: none; }
+  .principle-summary {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px dashed rgba(74, 122, 90, 0.35);
+  }
+  .summary-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: #4a7a5a;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+
   .principle-stamp {
     text-align: center;
     margin: 26px 0 8px;
@@ -355,167 +419,167 @@ const PRINCIPLES = {
   }
 };
 
-// ============ 情境题 · 首批 5 题 ============
+// ============ 情境题 · 10 题(每选项独立点评) ============
 const SCENARIOS = [
   {
     header: '客 户 反 馈',
     scenario: '客户 A 直接找你说 · <b>"你们能不能加个批量导出的按钮 · 我每次要点 20 次特别烦。"</b> 作为产品经理 · 你的第一反应是?',
     options: [
-      { text: '这个需求合理 · 排进下个版本', tag: 'wrong1' },
-      { text: '问客户 · 他们平时在什么场景下要导出这么多次', tag: 'correct' },
-      { text: '看后台数据 · 有多少人有类似操作模式', tag: 'wrong2' },
-      { text: '让开发评估工作量 · 再决定要不要做', tag: 'wrong3' }
+      { text: '这个需求合理 · 排进下个版本', correct: false,
+        note: '你把用户的"表达"当"需求"了。用户说"我想要 X"·90% 时候不是真需求·是他对某个隐藏问题的表达。直接排版本 · 大概率做完发现"其实用户要的不是这个"。' },
+      { text: '问客户 · 他们平时在什么场景下要导出这么多次', correct: true,
+        note: '这是需求真伪的正确处理姿势 —— **先追问场景**。你可能发现 · 他一直在"导出后手动改某个字段" · 真需求是"批量修改" · 而不是"批量导出"。' },
+      { text: '看后台数据 · 有多少人有类似操作模式', correct: false,
+        note: '看数据是好习惯 · 但顺序反了。**先场景 · 再数据**。不知道用户为什么这样操作 · 你看的数据就是黑盒 · 只能看到"多少人这样做" · 看不到"为什么"。' },
+      { text: '让开发评估工作量 · 再决定要不要做', correct: false,
+        note: '典型的"跳过\'该不该做\' · 直接问\'能不能做\'"。工作量小的不该做的也不该做 · 工作量大的该做的也不该跳。评估工时是最后一步 · 不是第一步。' }
     ],
-    correct: 1,
     principle: 'need',
-    reveal: {
-      right: '这是需求真伪的经典情境。客户说"我想要 X"·他其实在告诉你"我遇到问题 Y" · 但 X 不一定是最好的解法。',
-      wrong: '别急着记录需求或看数据。**先追问场景** · 你会发现 · 他可能一直在导出后手动改字段 · 真需求是"批量修改" · 不是"批量导出"。做出批量导出你解决的是表象 · 真痛点还在。'
-    }
+    summary: '这是需求真伪的经典情境。用户说"我想要 X" · 其实在说"我遇到问题 Y"。产品经理的第一反应永远是"为什么" · 不是"排期"。追问 3 次为什么 · 真需求才浮出来。'
   },
   {
     header: '功 能 优 先 级',
     scenario: '本季度只能做 3 件事 · 现在有 5 个候选 · <b>A. 新增社交分享</b>· <b>B. 修一个影响 20% 用户的 bug</b> · <b>C. 上一个高级会员付费包</b> · <b>D. 优化冷启动速度</b> · <b>E. 竞品刚上的 AI 助手</b>· 你选哪 3 个?',
     options: [
-      { text: 'A + C + E · 追新亮点·抢市场', tag: 'wrong1' },
-      { text: 'B + D + C · 修问题·打基础·上付费', tag: 'correct' },
-      { text: 'B + D + E · 修问题·打基础·跟上竞品', tag: 'wrong2' },
-      { text: '让老板拍', tag: 'wrong3' }
+      { text: 'A + C + E · 追新亮点·抢市场', correct: false,
+        note: '你被"新"迷惑了。E 是竞品陷阱 —— 竞品做那个不代表你们用户需要。A 需要有强分享动机的场景 · 你有吗?抓着"亮点"忽视了 20% 用户的痛(B) 和长期留存(D) · 短期数据可能靠 E 抢到 · 长期会崩。' },
+      { text: 'B + D + C · 修问题·打基础·上付费', correct: true,
+        note: '这是产品经理该有的判断。B(20% 用户 bug) 用户价值极高 · 不修等于每天在流失。D(冷启动) 是留存的杠杆 · 每一秒都直接转化成 DAU。C(付费包) 商业价值直接 · 且不影响用户体验。**先修痛 · 再赚钱**。' },
+      { text: 'B + D + E · 修问题·打基础·跟上竞品', correct: false,
+        note: 'B 和 D 选对了 · 但 E 是竞品陷阱 —— 他们做 AI 助手是因为他们的用户结构 · 你的用户可能压根不需要。用一个"抄"来的功能换掉"付费包" · 商业损失巨大 · 且做出来大概率不好用(因为不是从你用户需求长出来的)。' },
+      { text: '让老板拍', correct: false,
+        note: '你放弃了产品经理最核心的价值 —— 判断力。老板拍板可能没错 · 但如果只是"等他拍" · 你就只是个传声筒 · 不是产品经理。老板拍出来的方案 · 你也要能反驳能补充能验证。' }
     ],
-    correct: 1,
     principle: 'priority',
-    reveal: {
-      right: '优先级是 **用户价值 × 商业价值 × 可行性**。B(20% 用户受影响的 bug) 用户价值极高 · D(冷启动) 长期留存杠杆 · C(付费包) 商业价值直接。',
-      wrong: 'E(跟竞品的 AI) 是竞品陷阱经典款 —— 他们做是因为他们的用户结构支撑 · 你的用户可能根本不在乎。A(社交分享) 需要有强分享动机的场景才做得起来。**新亮点永远诱人 · 但砍掉 20% 用户的痛点才是产品经理的核心工作**。'
-    }
+    summary: '优先级 = 用户价值 × 商业价值 × 可行性。**拒绝比接受更需要勇气**。资源永远不够 · 你说"是"就意味着对别的说"否" —— 决定不做什么 · 才是产品经理的核心工作。'
   },
   {
     header: '新 方 向 判 断',
     scenario: '老板拍板 · <b>"我们要做个短视频功能 · 3 个月内上线 · 覆盖首页 30% 流量。"</b> 你作为产品经理 · 该怎么响应?',
     options: [
-      { text: '开干 · 立即拆解到迭代 · 分配人力', tag: 'wrong1' },
-      { text: '反对 · 我们没有短视频基因 · 会失败', tag: 'wrong2' },
-      { text: '做一个最小版本(1 个页面 · 1 个功能 · 1 类用户) · 2 周测试真实用户反应', tag: 'correct' },
-      { text: '看看抖音 / 快手怎么做的 · 抄一个减配版', tag: 'wrong3' }
+      { text: '开干 · 立即拆解到迭代 · 分配人力', correct: false,
+        note: '3 个月赌上一大堆人力 · 失败了没退路。老板拍板往往基于"我看到别家在做"·不基于"我们用户需要"。你的角色是把老板的方向落地 · 但落地方式包括"验证再全量" · 不是直接梭哈。' },
+      { text: '反对 · 我们没有短视频基因 · 会失败', correct: false,
+        note: '产品经理不该靠"基因"这种玄学反对。要反对必须靠数据(用户画像/场景匹配度/资源评估) · 不然只是主观判断 · 和老板拍脑袋一样的错。而且直接反对 · 你就变成"阻碍探索的老油条" · 长期职业致命。' },
+      { text: '做一个最小版本(1 个页面 · 1 个功能 · 1 类用户) · 2 周测试真实用户反应', correct: true,
+        note: 'MVP 的正确姿势 —— 不是"完整功能的迷你版" · 是"最能验证核心假设的最小实验"。核心假设是"我们用户愿意在我们平台看短视频" · 做 1 页 1 功能 2 周测数据 · 就足够告诉你"是否值得投入 3 个月"。' },
+      { text: '看看抖音 / 快手怎么做的 · 抄一个减配版', correct: false,
+        note: '竞品陷阱经典款。他们做那样是因为他们的用户 —— 内容创作者密度 · 算法基础设施 · 广告主生态。你抄一个减配版 · 结果是"什么都有点 · 什么都不好用"。用户不是"因为你有短视频"来的 · 是因为你原本的核心价值。' }
     ],
-    correct: 2,
     principle: 'mvp',
-    reveal: {
-      right: 'MVP 的正确姿势 · 不是"完整功能的迷你版"·是"最能验证核心假设的最小实验"。假设是"我们用户愿意在我们平台看短视频"·那就做 1 页 1 功能 · 2 周测数据。',
-      wrong: '直接开干(A) = 3 个月赌上一大堆人力·失败了没退路。直接反对(B) = 产品经理放弃了自己的角色·反对要靠数据不是靠主观判断。抄竞品(D) = 竞品陷阱·你用户不是他用户。**MVP 是给老板的"我不反对但让我先验证"**·比硬顶更专业**。'
-    }
+    summary: 'MVP 是给老板的"我不反对 · 但让我先验证" —— 比硬顶更专业 · 比梭哈更负责任。每个新方向 · 问自己"1 周内能不能做出 MVP" · 大部分时候答案是能。'
   },
   {
     header: '数 据 异 常',
     scenario: '本周新用户次日留存率突然从 45% 掉到 32% · 团队慌了。你会先做什么?',
     options: [
-      { text: '立刻组织复盘会 · 分析上周所有改动', tag: 'wrong1' },
-      { text: '先分层看数据 · 不同渠道/设备/城市 的留存分别怎么变化', tag: 'correct' },
-      { text: '发布一个恢复公告 · 承诺立即修复', tag: 'wrong2' },
-      { text: '增加投放 · 用新用户量掩盖', tag: 'wrong3' }
+      { text: '立刻组织复盘会 · 分析上周所有改动', correct: false,
+        note: '在没数据的时候组织复盘 · 就是让 10 个人一起瞎猜。会开完 · 每人都有自己的假说 · 但没有一个能验证。**先切数据 · 再开会** · 顺序反了就是浪费。' },
+      { text: '先分层看数据 · 不同渠道/设备/城市 的留存分别怎么变化', correct: true,
+        note: '数据总量掉了 · 90% 可能不是整体崩 · 是某一类用户异常拖累。可能是新渠道进来的用户不精准 · 可能是某个安卓版本崩了 · 可能是某个城市网络问题。**先分层 · 再归因**。' },
+      { text: '发布一个恢复公告 · 承诺立即修复', correct: false,
+        note: '你都不知道出了什么事就发公告 · 是自己给自己挖坑。用户看到公告只会想"原来出这么大问题了" · 焦虑放大。而且承诺"立即修复"—— 你连原因都不知道 · 修什么?' },
+      { text: '增加投放 · 用新用户量掩盖', correct: false,
+        note: '掩耳盗铃 —— 用新用户量掩盖留存问题 · 最终留存分母更大 · 数据更难看。而且不解决问题 · 只是延迟灾难。**投放和留存是两个游戏 · 不能互相替代**。' }
     ],
-    correct: 1,
     principle: 'segment',
-    reveal: {
-      right: '数据总量掉了 · **90% 的可能不是整体崩** · 而是某一类用户异常拖累。可能是新渠道进来的用户不精准 · 可能是新版本 App 崩了 · 可能是某个城市网络问题。**先分层·再归因**。',
-      wrong: '组织复盘会(A) 在没数据的时候是浪费。发公告(C) 你都没搞清出了什么事。增加投放(D) 是掩耳盗铃 —— 用新用户量掩盖留存问题·最终留存分母更大·数据更难看。**数据出问题的第一动作永远是"再切一层看"**·不是"想原因"**。'
-    }
+    summary: '"我们的用户"是产品死亡的开始。用户不是一群人 · 是一堆完全不同的子群体。数据出问题的第一动作永远是"再切一层看" · 不是"想原因"。'
   },
   {
     header: '功 能 讨 论',
     scenario: '设计师提议 · <b>"我们应该给用户加个引导教程 · 现在很多人不会用高级功能。"</b> 你怎么回应?',
     options: [
-      { text: '好啊 · 你先出方案我评审', tag: 'wrong1' },
-      { text: '看数据 · 现在多少比例的用户在用高级功能?不用会怎样?', tag: 'correct' },
-      { text: '反对 · 引导教程用户都跳过 · 白做', tag: 'wrong2' },
-      { text: '让开发估工时 · 再讨论', tag: 'wrong3' }
+      { text: '好啊 · 你先出方案我评审', correct: false,
+        note: '直接把资源投出去 · 不问动机。设计师是"提假设" · 你是"验证假设" —— 直接说好等于放弃自己的角色。而且 · 大部分"用户不会用" 是伪需求(用户没需求所以没用) · 不是真痛(用户想用但不会) · 你没验证就下结论。' },
+      { text: '看数据 · 现在多少比例的用户在用高级功能?不用会怎样?', correct: true,
+        note: '反向验证 —— 不做 X 会怎么样?如果 30% 用户用不到高级功能但没抱怨没流失 · 那"引导教程"就是伪需求。**先证明问题存在 · 再讨论解决方案**。' },
+      { text: '反对 · 引导教程用户都跳过 · 白做', correct: false,
+        note: '靠主观判断反对 · 和"设计师觉得要做"是一样的错误。引导教程确实很多人跳过 · 但你有数据吗?不同产品不同用户结构表现不一样。**没数据的反对和没数据的赞成 · 一样不专业**。' },
+      { text: '让开发估工时 · 再讨论', correct: false,
+        note: '跳过了最关键的"这事该不该做" · 直接跳到"怎么做"。工时评估的前提是"值得做" —— 你连值得做都没验证 · 让开发估工时就是浪费他时间。' }
     ],
-    correct: 1,
     principle: 'reverse',
-    reveal: {
-      right: '**反向验证** · 不做 X 会怎么样?如果 30% 用户用不到高级功能但也没抱怨没流失 · 那"引导教程"可能是伪需求。真产品经理的第一反应不是"要不要做" · 是"不做会死人吗"。',
-      wrong: '好啊(A) = 直接把资源投出去·不问动机。反对(C) = 靠主观判断·和"设计师觉得要做"一样的错误。让开发估工时(D) = 跳过了最关键的"这事该不该做"·直接跳到"怎么做"。**产品经理最贵的是"拒绝的能力"** · 每一个"要不要做" · 都要经得起反向验证**。'
-    }
+    summary: '产品经理最贵的能力是"拒绝的能力"。每个"要不要做" · 都要经得起反向验证 · "不做会死人吗?" 死不了就先不做。真需求经得起"不做"的检验。'
   },
   {
     header: 'A / B 测 试',
     scenario: '同事拍胸脯 · <b>"我玩过 3 遍这个新页面 · 我觉得肯定比老页面转化好。上线吧!"</b> 你怎么办?',
     options: [
-      { text: '相信直觉 · 快速上线抢时机', tag: 'wrong1' },
-      { text: '要求先做 A/B 测试 · 拿数据说话', tag: 'correct' },
-      { text: '再叫 3 个人体验 · 达成一致就上', tag: 'wrong2' },
-      { text: '让老板拍', tag: 'wrong3' }
+      { text: '相信直觉 · 快速上线抢时机', correct: false,
+        note: '把产品当赌博。同事的"觉得"是提出假设 · 不是验证假设。他 3 遍的感受不代表 3000 人的感受 —— 他是产品内部人 · 认知路径和真实用户天差地别。' },
+      { text: '要求先做 A/B 测试 · 拿数据说话', correct: true,
+        note: '这是尊重"用户是复杂的"这个事实。直觉可能对可能错 · 但决策必须靠数据。**只信直觉的是设计师 · 只信数据的是分析师 · 产品经理两者都要**。' },
+      { text: '再叫 3 个人体验 · 达成一致就上', correct: false,
+        note: '样本量太小 · 而且这 3 个人跟真实用户认知差别巨大 —— 大概率是同事或朋友。用"内部一致"代替"用户验证" · 是产品经理最容易犯的错。' },
+      { text: '让老板拍', correct: false,
+        note: '把决策推给老板 · 你就变成传声筒。而且老板拍板往往拍"哪个方案看起来漂亮"·不是"哪个方案对用户好" —— 因为老板没有真实数据。' }
     ],
-    correct: 1,
     principle: 'data',
-    reveal: {
-      right: '**数据 vs 直觉** · 同事的直觉是"提出假设"·A/B 测试是"验证假设"。他玩 3 遍不代表 3000 人一样感受。直觉可能对可能错·但**决策必须靠数据**。这不是不信任·是尊重"用户是复杂的"这个事实。',
-      wrong: '相信直觉(A) = 拿产品当赌博。找 3 个人体验(C) = 样本量太小·而且认知同事的人跟真实用户差别巨大。让老板拍(D) = 放弃了产品经理的责任。**只信直觉的是设计师·只信数据的是分析师·产品经理两者都要**。'
-    }
+    summary: '直觉是"提出假设" · 数据是"验证假设" · 二者互补不是二选一。每个功能上线前问自己 · "怎么知道这个起作用了?" —— 说不出成功指标 · 就别做。'
   },
   {
     header: '竞 品 动 作',
     scenario: '<b>竞品刚上线一个"AI 助手"功能 · 用户狂追捧</b>· CEO 转发到工作群 · 问 · "我们要不要也做?"你的第一反应?',
     options: [
-      { text: '做 · 而且要做得比他们好', tag: 'wrong1' },
-      { text: '不做 · 他们已经先发·跟不上', tag: 'wrong2' },
-      { text: '先问 · 他们的用户结构和我们一样吗?他们那个 AI 的核心场景是什么?我们用户有类似需求吗?', tag: 'correct' },
-      { text: '让 CEO 自己拍', tag: 'wrong3' }
+      { text: '做 · 而且要做得比他们好', correct: false,
+        note: '最省事最不专业的回答。"比他们好"是自我安慰 —— 你连"他们为什么做" 都不知道 · 怎么可能做得更好?这样跟风的功能 · 99% 出来是四不像。' },
+      { text: '不做 · 他们已经先发·跟不上', correct: false,
+        note: '拍脑袋的反面 —— 靠"跟不上"这种主观判断反对 · 也是没数据的判断。有些"晚"的产品做出来比"早"的更好(微信 vs 米聊)。**问题不是先后 · 是判断"该不该"**。' },
+      { text: '先问 · 他们的用户结构和我们一样吗?他们那个 AI 的核心场景是什么?我们用户有类似需求吗?', correct: true,
+        note: '**竞品陷阱的正确处理** —— 三个问题必须先问 · 1. 用户结构一样吗 · 2. 核心场景是什么 · 3. 我们有类似需求吗。三个都成立才考虑跟。产品经理的价值就在这个时刻 —— 给出有依据的判断。' },
+      { text: '让 CEO 自己拍', correct: false,
+        note: '把责任推走。CEO 问你意见 · 不是让你说"我不知道你决定" —— 他拍板是最终决定 · 但产品经理必须给出有依据的分析。你不说 · 你的产品经理价值就是零。' }
     ],
-    correct: 2,
     principle: 'competitor',
-    reveal: {
-      right: '**竞品陷阱**·竞品做 X 是因为他们的用户 · 你的用户可能完全不同。**先问三个问题**·1. 用户结构一样吗 · 2. 核心场景是什么 · 3. 我们有类似需求吗 · 三个都成立才考虑跟。',
-      wrong: '"做" 是最省事最不专业的回答。"不做" 是拍脑袋的反面。"让 CEO 拍" 是把责任推走。**产品经理的价值就在这个时刻 —— 给出有依据的判断**·哪怕最终结论仍是"做"·也得说清楚"为什么和竞品的做法不一样"。'
-    }
+    summary: '竞品做 X 是因为他们的用户 · 你的用户可能完全不同。看到竞品新功能第一反应不该是"我们也做" · 是"他们为什么做 · 数据是什么 · 目标用户是谁 · 和我们的一样吗?"'
   },
   {
     header: '大 项 目 决 策',
     scenario: '要做一个全新的会员付费体系 · 需要重构整个用户系统 · 老板要求 <b>1 个月内全量上线</b>· 你觉得应该?',
     options: [
-      { text: '按老板要求上 · 就是干', tag: 'wrong1' },
-      { text: '推迟到 3 个月 · 稳一点', tag: 'wrong2' },
-      { text: '先做 5% 灰度 · 一线城市试跑 2 周·看数据再全量', tag: 'correct' },
-      { text: '这么大风险 · 我不干', tag: 'wrong3' }
+      { text: '按老板要求上 · 就是干', correct: false,
+        note: '1 个月不够验证重构级改动 · 大概率上线出问题炸锅 · 而且付费体系涉及钱 · 出问题的后果是"用户投诉 + 财务麻烦" · 灾难级。' },
+      { text: '推迟到 3 个月 · 稳一点', correct: false,
+        note: '时间不解决"能不能做对"的问题 · 只是延迟灾难。你多花 2 个月做出来还是没验证过 · 全量上线还是可能炸。时间不是解药 · **验证**才是。' },
+      { text: '先做 5% 灰度 · 一线城市试跑 2 周·看数据再全量', correct: true,
+        note: '**试点小跑** · 任何超过 1 周工作量的方向 · 强制先跑 1/10 规模。滴滴、抖音、微信支付都是这么起家的。灰度不是拖延 · 是负责任。' },
+      { text: '这么大风险 · 我不干', correct: false,
+        note: '放弃了产品经理的价值。任何有价值的产品动作都有风险 —— 你的工作不是"避免风险" · 是"把风险控制在可承受范围内"。拒绝干等于宣布你不适合做产品经理。' }
     ],
-    correct: 2,
     principle: 'pilot',
-    reveal: {
-      right: '**试点小跑** · 大改动的失败成本极高·任何超过 1 周工作量的方向·先跑 1/10 规模·稳了再放大。滴滴、抖音、微信支付都是这么起家的。',
-      wrong: '按老板要求全量(A) = 1 个月不够验证·大概率上线出问题炸锅。推迟到 3 个月(B) = 时间不解决"能不能做对"的问题·只是延迟灾难。拒绝(D) = 放弃了产品经理的价值。**灰度不是拖延·是负责任**。'
-    }
+    summary: '"要做就做大的"是产品灾难。先在小范围试(1% 用户 / 1 个城市 / 1 个渠道) · 看数据 · 调 · 再放大。灰度先行 · 是产品经理对企业最大的价值。'
   },
   {
     header: '功 能 场 景',
     scenario: '你要设计一个 <b>付款码</b>· 团队讨论时·有人说 · "我们要不要加个引导页?先教用户怎么用·再显示付款码?"你怎么回应?',
     options: [
-      { text: '好·教育用户是好事·加吧', tag: 'wrong1' },
-      { text: '想象一下 · 付款码使用的场景是"排队时·左手拿东西右手掏手机·店员在催"·加引导页会怎样?', tag: 'correct' },
-      { text: '看数据 · 有多少用户不会用', tag: 'wrong2' },
-      { text: '看竞品有没有做', tag: 'wrong3' }
+      { text: '好·教育用户是好事·加吧', correct: false,
+        note: '忽视了使用场景。"教育用户"听着有道理 · 但在错误的场景做教育就是伤害体验。付款码的场景是"急、赶、单手" · 加引导页等于"店员催你的时候你还在划新手教程"。' },
+      { text: '想象一下 · 付款码使用的场景是"排队时·左手拿东西右手掏手机·店员在催"·加引导页会怎样?', correct: true,
+        note: '**场景化思维的正确姿势** —— 功能不是孤立存在的 · 它出现在某个具体的时间/地点/心情。付款码的场景决定了 · 一切让用户多等 1 秒的东西都是敌人。' },
+      { text: '看数据 · 有多少用户不会用', correct: false,
+        note: '看数据在这里不是答案 —— 就算 80% 用户"看不懂" · 你也不该在付款瞬间教育他。用户教育应该在"放松场景"(设置页 / 首次打开 / 广告页) 完成 · 不是"急迫场景"。' },
+      { text: '看竞品有没有做', correct: false,
+        note: '竞品陷阱 · 而且竞品的场景可能也不一样。微信支付付款码没引导页 · 支付宝也没有 —— 因为他们知道场景。你抄一个"竞品的教育页" · 可能抄的是他们尚未删掉的历史包袱。' }
     ],
-    correct: 1,
     principle: 'scenario',
-    reveal: {
-      right: '**场景化思维** · 功能不是孤立的·它出现在某个具体的时间/地点/心情。付款码的场景是"急、赶、单手" · 所以要"打开即扫" · 不能有引导页 · 不能弹广告 · 不能要求指纹解锁 —— **一切让用户多等 1 秒的东西都是敌人**。',
-      wrong: '好啊(A) = 忽视了使用场景。看数据(C) 在这里不是答案 —— 就算 80% 用户"看不懂"·你也不该在付款瞬间教育他。看竞品(D) = 竞品陷阱·而且竞品的场景可能也不一样。**设计任何功能前·先用一句话描述具体场景**·描述不出来就是没想清楚。'
-    }
+    summary: '设计任何功能前 · 用一句话描述"什么场景/谁/为什么用它" —— 描述不出来就是没想清楚。抽象讨论"这功能有没有用"是错的 · 应该在具体场景中判断。'
   },
   {
     header: '产 品 减 法',
     scenario: '产品上线 3 年 · 累积了 <b>20 个功能</b> · 用户反馈"越来越难用了"。团队争论 · "要不要删几个功能?" 大家纠结舍不得。你会怎么做?',
     options: [
-      { text: '不删 · 每个功能都有其用户 · 删了会失去他们', tag: 'wrong1' },
-      { text: '优化 UI · 让功能显示更清晰', tag: 'wrong2' },
-      { text: '看数据 · 每个功能的月活比例 · 低于 5% 的先隐藏 · 观察 3 个月无反馈就删', tag: 'correct' },
-      { text: '发问卷问用户 · 让用户投票删哪个', tag: 'wrong3' }
+      { text: '不删 · 每个功能都有其用户 · 删了会失去他们', correct: false,
+        note: '情感绑架产品 · 让所有用户为极少数人的功能买单。20 个功能同时展示 · 每个都在争夺注意力 —— 你以为在"照顾少数人" · 其实在伤害"所有人"。' },
+      { text: '优化 UI · 让功能显示更清晰', correct: false,
+        note: '治标不治本 · 信息更清晰不代表少 · 反而让 20 个功能都更醒目 · 用户认知负担更重。这是"设计师视角"·不是"产品经理视角" —— 产品经理该问"该不该" · 不是"怎么显示"。' },
+      { text: '看数据 · 每个功能的月活比例 · 低于 5% 的先隐藏 · 观察 3 个月无反馈就删', correct: true,
+        note: '**舍得** —— 产品经理最难的能力是"杀掉自己的孩子"。5% 门槛 + 隐藏观察 3 个月 · 是把风险控制在最小 · 让数据说话 · 不让情感主导。' },
+      { text: '发问卷问用户 · 让用户投票删哪个', correct: false,
+        note: '用户永远说"我要更多" · 但真实使用的只有几个。他们的"意向"和"行为"完全脱节。**永远不要问用户"想删什么" · 问"实际用什么"**(看数据)。' }
     ],
-    correct: 2,
     principle: 'discard',
-    reveal: {
-      right: '**舍得** · 产品经理的核心能力不是"决定做什么" · 是"决定不做什么"。每加一个功能都在给整体做减法(注意力/学习成本/维护成本)。**删功能不是失去用户·是让主流用户更爽**。5% 门槛 + 3 个月观察 · 是把风险控制在最小。',
-      wrong: '不删(A) = 情感绑架产品·让所有用户为极少数人的功能买单。优化 UI(B) = 治标不治本·信息更清晰不代表少·反而让 20 个功能都更醒目。用户投票(D) = 用户永远说"我要更多"·但真实使用的只有几个。**产品经理最难的是杀掉自己的孩子**。Instagram、微信都在做减法·Facebook 想做没成·所以越来越重。'
-    }
+    summary: '产品经理的核心能力不是"决定做什么" · 是"决定不做什么"。每加一个功能都在给整体做减法(注意力/学习成本/维护成本)。Instagram 越来越重 · 微信一直在克制 · 差距就在这里。'
   }
 ];
 
@@ -577,8 +641,8 @@ function renderScenario() {
     <div class="reveal-section" id="reveal-section">
       <div class="reveal-label">— 揭 晓 —</div>
       <div id="reveal-content"></div>
-      <div class="principle-stamp" id="principle-stamp"></div>
-      <button class="next-btn" id="next-btn">下 一 题 →</button>
+      <div class="principle-stamp" id="principle-stamp" style="display:none;"></div>
+      <button class="next-btn" id="next-btn" style="display:none;">下 一 题 →</button>
     </div>
   `;
 
@@ -589,40 +653,88 @@ function renderScenario() {
 
 function pickOption(idx) {
   const s = SCENARIOS[currentScenarioIdx];
+  const correctIdx = s.options.findIndex(o => o.correct);
   const options = document.querySelectorAll('.opt');
   options.forEach((btn, i) => {
     btn.classList.add('disabled');
-    if (i === s.correct) btn.classList.add('correct-answer');
+    if (i === correctIdx) btn.classList.add('correct-answer');
     if (i === idx) {
       btn.classList.add('picked');
-      btn.classList.add(idx === s.correct ? 'correct' : 'wrong');
+      btn.classList.add(idx === correctIdx ? 'correct' : 'wrong');
     }
   });
 
-  const isCorrect = idx === s.correct;
-  const p = PRINCIPLES[s.principle];
+  const isCorrect = idx === correctIdx;
+  const picked = s.options[idx];
 
+  // 第一步 · 只显示自己选的那条点评 + "看其他"按钮
   const reveal = document.getElementById('reveal-content');
+  const yourLabel = String.fromCharCode(65 + idx);
+  const yourVerdict = isCorrect ? '<b style="color:#2a5a48;">✓ 答对了</b>' : '<b style="color:#b57748;">✗ 换个角度想</b>';
   reveal.innerHTML = `
-    <p class="reveal-para"><b>${isCorrect ? '✓ 答对了' : '✗ 换个角度想'}</b> · ${s.reveal.right}</p>
-    <p class="reveal-para">${s.reveal.wrong}</p>
+    <div class="my-review">
+      <div class="review-head">${yourVerdict} · 你选的是 <b>${yourLabel}</b></div>
+      <p class="reveal-para">${picked.note}</p>
+    </div>
+    <button class="see-others-btn" id="see-others">看看其他 3 个怎么错的 →</button>
   `;
-
-  document.getElementById('principle-stamp').innerHTML = `
-    <div class="frame">${p.emoji} ${p.name}</div>
-    <div class="en">${p.en}</div>
-  `;
-
   document.getElementById('reveal-section').classList.add('show');
-  unlockedPrinciples.add(s.principle);
-  updateDexTab();
-  saveState();
 
-  document.getElementById('next-btn').addEventListener('click', () => {
-    currentScenarioIdx++;
-    saveState();
-    renderScenario();
+  document.getElementById('see-others').addEventListener('click', () => {
+    document.getElementById('see-others').remove();
+    // 逐个显示其他答案的 note
+    const container = reveal;
+    s.options.forEach((o, i) => {
+      if (i === idx) return;  // 跳过自己已选的
+      const label = String.fromCharCode(65 + i);
+      const div = document.createElement('div');
+      div.className = 'other-review';
+      const tag = o.correct ? '<span class="tag-correct">正解</span>' : '<span class="tag-wrong">错解</span>';
+      div.innerHTML = `
+        <div class="review-head">${tag} <b>${label}</b> · ${escapeHtml(o.text)}</div>
+        <p class="reveal-para">${o.note}</p>
+      `;
+      container.appendChild(div);
+      requestAnimationFrame(() => div.classList.add('show'));
+    });
+
+    // 最后显示原则总结 + 下一题按钮
+    setTimeout(() => {
+      const p = PRINCIPLES[s.principle];
+      const summary = document.createElement('div');
+      summary.className = 'principle-summary';
+      summary.innerHTML = `
+        <div class="summary-label">— 原 则 —</div>
+        <p class="reveal-para">${s.summary}</p>
+      `;
+      container.appendChild(summary);
+
+      const stamp = document.getElementById('principle-stamp');
+      stamp.innerHTML = `
+        <div class="frame">${p.emoji} ${p.name}</div>
+        <div class="en">${p.en}</div>
+      `;
+      stamp.style.display = 'block';
+
+      unlockedPrinciples.add(s.principle);
+      updateDexTab();
+      saveState();
+
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.style.display = 'block';
+      nextBtn.addEventListener('click', () => {
+        currentScenarioIdx++;
+        saveState();
+        renderScenario();
+      });
+    }, 400);
   });
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
 }
 
 // ============ 图鉴 ============
