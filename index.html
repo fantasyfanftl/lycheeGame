@@ -132,6 +132,32 @@
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(245, 167, 107, 0.3);
   }
+
+  /* Section divider */
+  .section-title {
+    color: #fff;
+    text-align: center;
+    margin: 8px 0 22px;
+    font-size: 15px;
+    letter-spacing: 6px;
+    font-weight: 500;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .section-title::before,
+  .section-title::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: rgba(255,255,255,0.35);
+  }
+  .section-title .emoji { font-size: 18px; }
+  .section-title.second { margin-top: 40px; }
+
   footer {
     text-align: center;
     margin-top: 60px;
