@@ -34,6 +34,65 @@
     overflow-y: auto;
     display: flex; flex-direction: column;
   }
+
+  /* SOP 板块 */
+  .sop-card {
+    background: rgba(255,216,155,0.08);
+    border: 1px solid rgba(255,216,155,0.25);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+  .sop-title {
+    color: #ffd89b;
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sop-steps {
+    display: flex; flex-direction: column;
+    gap: 8px;
+  }
+  .sop-step {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.85);
+  }
+  .sop-step .sop-num {
+    font-size: 14px;
+    line-height: 1.2;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+  }
+  .sop-step .sop-body {
+    flex: 1;
+  }
+  .sop-step .sop-name {
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .sop-step .sop-desc {
+    color: rgba(255,255,255,0.55);
+    font-size: 11px;
+    margin-top: 1px;
+    letter-spacing: 0.3px;
+  }
+  .sop-tail {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.15);
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+  }
   .back-link {
     display: inline-block;
     color: rgba(255,255,255,0.65);
@@ -284,6 +343,56 @@
   }
   .save-hint.saved { color: #ffd89b; }
 
+  /* 发散区 */
+  .brainstorm {
+    margin-top: 20px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: all 0.2s;
+  }
+  .brainstorm:focus-within {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,216,155,0.4);
+  }
+  .brainstorm-label {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .brainstorm-label .emoji {
+    font-size: 15px;
+  }
+  .brainstorm-label .name {
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 3px;
+    font-weight: 600;
+  }
+  .brainstorm-label .hint {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    margin-left: auto;
+    letter-spacing: 1px;
+  }
+  .brainstorm textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.75;
+    outline: none;
+    resize: none;
+    min-height: 120px;
+    letter-spacing: 0.3px;
+  }
+  .brainstorm textarea::placeholder { color: rgba(255,255,255,0.25); }
+
   /* Modal · 导出 */
   .modal {
     position: fixed; inset: 0;
@@ -360,6 +469,58 @@
     <div class="brand">
       <span class="brand-emoji">💡</span>
       <span class="brand-title">想 法 池</span>
+    </div>
+
+    <div class="sop-card">
+      <div class="sop-title">🎯 做游戏 SOP</div>
+      <div class="sop-steps">
+        <div class="sop-step">
+          <span class="sop-num">🌱</span>
+          <div class="sop-body">
+            <div class="sop-name">起念</div>
+            <div class="sop-desc">一句话原始想法·不修饰</div>
+          </div>
+        </div>
+        <div class="sop-step">
+          <span class="sop-num">📐</span>
+          <div class="sop-body">
+            <div class="sop-name">5W1H 拆解</div>
+            <div class="sop-desc">拆完再动·想法卡完整</div>
+          </div>
+        </div>
+        <div class="sop-step">
+          <span class="sop-num">🎨</span>
+          <div class="sop-body">
+            <div class="sop-name">定风格·出样本</div>
+            <div class="sop-desc">1 页样本·验收再往下</div>
+          </div>
+        </div>
+        <div class="sop-step">
+          <span class="sop-num">📝</span>
+          <div class="sop-body">
+            <div class="sop-name">写完整版</div>
+            <div class="sop-desc">数据 UI 分离·避硬雷</div>
+          </div>
+        </div>
+        <div class="sop-step">
+          <span class="sop-num">🚀</span>
+          <div class="sop-body">
+            <div class="sop-name">上线挂主页</div>
+            <div class="sop-desc">加卡片·30-60 秒生效</div>
+          </div>
+        </div>
+        <div class="sop-step">
+          <span class="sop-num">🔄</span>
+          <div class="sop-body">
+            <div class="sop-name">复盘迭代</div>
+            <div class="sop-desc">手机真玩·归档所学</div>
+          </div>
+        </div>
+      </div>
+      <div class="sop-tail">
+        ✗ 不追完美 · ✗ 不并行铺 · ✗ 不预设用户<br>
+        用户是你自己 · 你玩得爽就是成功
+      </div>
     </div>
 
     <div class="add-idea">
@@ -506,6 +667,16 @@ function renderDetail() {
         </div>
       `).join('')}
     </div>
+
+    <div class="brainstorm">
+      <div class="brainstorm-label">
+        <span class="emoji">💭</span>
+        <span class="name">发 散 区</span>
+        <span class="hint">随便写 · 想到就加 · 未来归纳</span>
+      </div>
+      <textarea data-key="brainstorm" placeholder="讨论时冒出来的碎片直接粗暴塞这&#10;不用管结构 不用管顺序 想到就写&#10;GitHub Claude 说的、你自己想的、突然联想到的&#10;导出时也会带出去">${escapeHtml(idea.brainstorm || '')}</textarea>
+    </div>
+
     <div class="save-hint" id="save-hint">自动保存 · 每次编辑即存</div>
   `;
 
@@ -614,6 +785,8 @@ function buildExport() {
       const val = (idea[f.key] || '').trim();
       if (val) lines.push(`${f.en} · ${f.cn}: ${val}`);
     });
+    const bs = (idea.brainstorm || '').trim();
+    if (bs) lines.push(`\n💭 发散区:\n${bs}`);
     return lines.join('\n');
   }).join('\n\n───\n\n');
 }
