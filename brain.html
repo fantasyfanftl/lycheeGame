@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>荔枝 Brain</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', -apple-system, "PingFang SC", "Microsoft YaHei", Tahoma, sans-serif;
+    background: linear-gradient(135deg, #2c3e50 0%, #4a3d6b 50%, #6b4a8b 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #fff;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* ============ Password lock screen ============ */
+  .lock-screen {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #2c1b3e 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 999;
+    padding: 20px;
+  }
+  .lock-screen.hidden { display: none; }
+  .lock-icon {
+    font-size: 60px; margin-bottom: 22px;
+    opacity: 0.85;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .lock-title {
+    color: rgba(255,255,255,0.8);
+    font-size: 15px;
+    letter-spacing: 6px;
+    margin-bottom: 30px;
+  }
+  .lock-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 260px;
+  }
+  .lock-input {
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-align: center;
+    outline: none;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lock-input:focus {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.5);
+  }
+  .lock-input.shake {
+    animation: shake 0.4s;
+    border-color: #ff6b6b;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+  .lock-btn {
+    padding: 10px;
+    background: rgba(255,255,255,0.9);
+    color: #2c1b3e;
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lock-btn:hover { background: #fff; transform: translateY(-1px); }
+  .lock-hint {
+    margin-top: 18px;
+    color: rgba(255,255,255,0.35);
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+  .lock-back {
+    position: absolute;
+    top: 20px; left: 20px;
+    color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+  .lock-back:hover { color: rgba(255,255,255,0.7); }
+
+  /* ============ Brain content ============ */
+  header { text-align: center; color: #fff; margin-bottom: 40px; }
+  header .icon { font-size: 48px; margin-bottom: 8px; display: block; }
+  header h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    margin-bottom: 8px;
+    letter-spacing: 6px;
+    font-weight: 500;
+  }
+  header p {
+    font-size: 13px;
+    opacity: 0.6;
+    letter-spacing: 3px;
+    font-style: italic;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+  .back-link:hover { color: #fff; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.12);
+  }
+  .card .emoji { font-size: 48px; line-height: 1; }
+  .card h2 { font-size: 18px; color: #fff; letter-spacing: 2px; }
+  .card p { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.55; flex-grow: 1; }
+  .card .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .card .tags span {
+    font-size: 10px;
+    padding: 3px 9px;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.75);
+    border-radius: 999px;
+    letter-spacing: 1px;
+  }
+  .card .play {
+    color: #ffd89b;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+  .card .play::after {
+    content: ' →';
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .card:hover .play::after { transform: translateX(4px); }
+
+  .empty-section {
+    color: rgba(255,255,255,0.35);
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 16px;
+  }
+
+  .section-title {
+    color: #fff;
+    text-align: center;
+    margin: 8px 0 22px;
+    font-size: 14px;
+    letter-spacing: 6px;
+    opacity: 0.85;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .section-title::before,
+  .section-title::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+  }
+  .section-title.second { margin-top: 40px; }
+
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 30px 14px; }
+    header { margin-bottom: 30px; }
+    header .icon { font-size: 40px; }
+    header h1 { font-size: 26px; letter-spacing: 4px; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .card { padding: 16px 14px; }
+    .card .emoji { font-size: 36px; }
+    .card h2 { font-size: 15px; }
+    .card p { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Password lock -->
+<div class="lock-screen" id="lock-screen">
+  <a href="index.html" class="lock-back">← 返回</a>
+  <div class="lock-icon">🧠</div>
+  <div class="lock-title">私 密 区 域</div>
+  <div class="lock-form">
+    <input type="password" class="lock-input" id="pwd-input" placeholder="口令" autocomplete="off" autocapitalize="off">
+    <button class="lock-btn" id="pwd-btn">进 入</button>
+  </div>
+  <div class="lock-hint">仅本人可见</div>
+</div>
+
+<!-- Content -->
+<div class="container" id="brain-content" style="display:none;">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+
+  <header>
+    <span class="icon">🧠</span>
+    <h1>荔 枝 Brain</h1>
+    <p>私人 AI 内容池</p>
+  </header>
+
+  <h2 class="section-title">工 具</h2>
+  <div class="grid">
+    <a href="ipad-workstation.html" class="card">
+      <div class="emoji">📋</div>
+      <h2>iPad AI 工作台</h2>
+      <p>iPad Safari 打开 · 添加到主屏 · 成为仪表盘 App</p>
+      <div class="tags">
+        <span>工具</span>
+        <span>iPad</span>
+        <span>仪表盘</span>
+      </div>
+      <span class="play">打开</span>
+    </a>
+  </div>
+
+  <h2 class="section-title second">别 的 AI 推 来 的</h2>
+  <div class="empty-section">
+    这里等 AI 推送内容 · 你把 HTML 保存到目录 · 我来加卡片
+  </div>
+
+  <footer>
+    只有你能看 · 请勿分享 URL
+  </footer>
+</div>
+
+<script>
+const PWD = 'Futl0818';
+const KEY = 'lychee_brain_unlocked';
+
+function unlock() {
+  document.getElementById('lock-screen').classList.add('hidden');
+  document.getElementById('brain-content').style.display = 'block';
+}
+
+function tryUnlock() {
+  const input = document.getElementById('pwd-input');
+  if (input.value === PWD) {
+    sessionStorage.setItem(KEY, '1');
+    unlock();
+  } else {
+    input.classList.add('shake');
+    input.value = '';
+    setTimeout(() => input.classList.remove('shake'), 500);
+  }
+}
+
+// Session-persistent unlock
+if (sessionStorage.getItem(KEY) === '1') {
+  unlock();
+} else {
+  setTimeout(() => document.getElementById('pwd-input').focus(), 300);
+}
+
+document.getElementById('pwd-btn').addEventListener('click', tryUnlock);
+document.getElementById('pwd-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryUnlock();
+});
+</script>
+</body>
+</html>
