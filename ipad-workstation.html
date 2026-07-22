@@ -43,7 +43,7 @@ body {
 .hero {
   color: white;
   text-align: center;
-  padding: 20px 8px 32px;
+  padding: 20px 8px 24px;
 }
 .hero-title {
   font-size: 30px;
@@ -73,6 +73,49 @@ body {
   opacity: 0.65;
   margin-top: 8px;
   letter-spacing: 1px;
+}
+
+/* ==== Tabs ==== */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 52px;
+  z-index: 50;
+  box-shadow: 0 4px 16px rgba(76, 62, 130, 0.15);
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+}
+.tab-btn:active { transform: scale(0.97); }
+.tab-btn.active {
+  background: white;
+  color: #764ba2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.25s; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .card {
@@ -134,7 +177,6 @@ body {
   padding: 14px 8px;
   text-align: center;
   border: 1px solid #eeebf9;
-  position: relative;
 }
 .device.ipad {
   background: linear-gradient(180deg, #ede9fe 0%, #ddd6fe 100%);
@@ -287,7 +329,7 @@ tr:last-child td { border-bottom: none; }
 .step-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; color: #2c2c3e; }
 .step-desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
 
-/* ==== Callout · 一周后 3 问 ==== */
+/* ==== Callout ==== */
 .callout {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   border-radius: 14px;
@@ -353,6 +395,90 @@ tr:last-child td { border-bottom: none; }
   padding-left: 4px;
 }
 
+/* ==== 想法池 ==== */
+.pool-intro {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 10px 12px;
+  background: #faf9ff;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.pool-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pool-section-label .count {
+  background: rgba(255,255,255,0.6);
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.pool-label-confirmed { background: #d1fae5; color: #065f46; }
+.pool-label-observing { background: #fef3c7; color: #92400e; }
+.pool-label-archived { background: #f3f4f6; color: #4b5563; }
+
+.pool-item {
+  display: flex;
+  gap: 10px;
+  padding: 12px 12px;
+  margin-bottom: 6px;
+  background: #faf9ff;
+  border-radius: 10px;
+  border-left: 3px solid;
+  align-items: flex-start;
+}
+.pool-item.item-confirmed { border-color: #10b981; }
+.pool-item.item-upgraded { border-color: #8b5cf6; }
+.pool-item.item-observing { border-color: #f59e0b; }
+.pool-item.item-pending { border-color: #3b82f6; }
+.pool-item.item-archived { border-color: #9ca3af; }
+
+.pool-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  min-width: 22px;
+  font-family: "SF Mono", monospace;
+  padding-top: 2px;
+}
+.pool-content { flex: 1; }
+.pool-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c2c3e;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.pool-status {
+  font-size: 11px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.pool-status .tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 6px;
+  letter-spacing: 0.3px;
+}
+.tag-confirmed { background: #d1fae5; color: #065f46; }
+.tag-upgraded { background: #ede9fe; color: #6d28d9; }
+.tag-observing { background: #fef3c7; color: #92400e; }
+.tag-pending { background: #dbeafe; color: #1e40af; }
+.tag-archived { background: #f3f4f6; color: #4b5563; }
+
 /* ==== Chips ==== */
 .chip-wrap {
   display: flex;
@@ -409,91 +535,6 @@ tr:last-child td { border-bottom: none; }
 .tl-item.active .tl-version { color: #764ba2; font-weight: 700; }
 .tl-desc { font-size: 12px; color: #9ca3af; margin-top: 2px; }
 
-/* ==== 想法池 ==== */
-.pool-intro {
-  font-size: 12px;
-  color: #6b7280;
-  padding: 10px 12px;
-  background: #faf9ff;
-  border-radius: 10px;
-  margin-bottom: 14px;
-  line-height: 1.6;
-}
-.pool-section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  margin: 14px 0 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pool-section-label .count {
-  background: rgba(255,255,255,0.6);
-  padding: 1px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 700;
-}
-.pool-label-confirmed { background: #d1fae5; color: #065f46; }
-.pool-label-observing { background: #fef3c7; color: #92400e; }
-.pool-label-pending { background: #dbeafe; color: #1e40af; }
-.pool-label-archived { background: #f3f4f6; color: #4b5563; }
-
-.pool-item {
-  display: flex;
-  gap: 10px;
-  padding: 12px 12px;
-  margin-bottom: 6px;
-  background: #faf9ff;
-  border-radius: 10px;
-  border-left: 3px solid;
-  align-items: flex-start;
-}
-.pool-item.item-confirmed { border-color: #10b981; }
-.pool-item.item-upgraded { border-color: #8b5cf6; }
-.pool-item.item-observing { border-color: #f59e0b; }
-.pool-item.item-pending { border-color: #3b82f6; }
-.pool-item.item-archived { border-color: #9ca3af; }
-
-.pool-num {
-  font-size: 11px;
-  font-weight: 700;
-  color: #9ca3af;
-  min-width: 22px;
-  font-family: "SF Mono", monospace;
-  padding-top: 2px;
-}
-.pool-content { flex: 1; }
-.pool-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #2c2c3e;
-  line-height: 1.5;
-  margin-bottom: 4px;
-}
-.pool-status {
-  font-size: 11px;
-  color: #6b7280;
-  line-height: 1.5;
-}
-.pool-status .tag {
-  display: inline-block;
-  padding: 1px 7px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  margin-right: 6px;
-  letter-spacing: 0.3px;
-}
-.tag-confirmed { background: #d1fae5; color: #065f46; }
-.tag-upgraded { background: #ede9fe; color: #6d28d9; }
-.tag-observing { background: #fef3c7; color: #92400e; }
-.tag-pending { background: #dbeafe; color: #1e40af; }
-.tag-archived { background: #f3f4f6; color: #4b5563; }
-
 /* ==== Footer ==== */
 footer {
   text-align: center;
@@ -512,6 +553,7 @@ footer strong { color: rgba(255,255,255,0.9); }
   .device { padding: 12px 4px; }
   .device-name { font-size: 12px; }
   .device-tag { font-size: 9px; padding: 2px 5px; }
+  .tab-btn { font-size: 13px; padding: 10px 4px; }
 }
 </style>
 </head>
@@ -527,96 +569,110 @@ footer strong { color: rgba(255,255,255,0.9); }
     <div class="hero-meta">GitHub Claude · 2026-07-22 · A 阶段快照</div>
   </div>
 
-  <div class="card definition-card">
-    <div class="card-title">当前定位</div>
-    <div class="definition-text">iPad = <span class="accent">视觉呈现场</span> + <span class="accent">手机大屏延伸</span></div>
-    <div class="definition-note">不替代 Mac · 与手机 / Mac 互补 · 承载层而非操作层</div>
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="main">主视图</button>
+    <button class="tab-btn" data-tab="action">行动</button>
+    <button class="tab-btn" data-tab="pool">想法池</button>
   </div>
 
-  <div class="card">
-    <div class="card-title">三设备分工</div>
-    <div class="devices">
-      <div class="device">
-        <div class="device-icon">📱</div>
-        <div class="device-name">手机</div>
-        <div class="device-role">输入器</div>
-        <span class="device-tag">语音 · 发散</span>
+  <!-- ========== TAB 1 · 主视图 ========== -->
+  <div class="tab-panel active" data-panel="main">
+
+    <div class="card definition-card">
+      <div class="card-title">当前定位</div>
+      <div class="definition-text">iPad = <span class="accent">视觉呈现场</span> + <span class="accent">手机大屏延伸</span></div>
+      <div class="definition-note">不替代 Mac · 与手机 / Mac 互补 · 承载层而非操作层</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">三设备分工</div>
+      <div class="devices">
+        <div class="device">
+          <div class="device-icon">📱</div>
+          <div class="device-name">手机</div>
+          <div class="device-role">输入器</div>
+          <span class="device-tag">语音 · 发散</span>
+        </div>
+        <div class="device ipad">
+          <div class="device-icon">📲</div>
+          <div class="device-name">iPad ★</div>
+          <div class="device-role">显示器</div>
+          <span class="device-tag">触屏 · 呈现</span>
+        </div>
+        <div class="device">
+          <div class="device-icon">💻</div>
+          <div class="device-name">Mac</div>
+          <div class="device-role">加工厂</div>
+          <span class="device-tag">键盘 · 收敛</span>
+        </div>
       </div>
-      <div class="device ipad">
-        <div class="device-icon">📲</div>
-        <div class="device-name">iPad ★</div>
-        <div class="device-role">显示器</div>
-        <span class="device-tag">触屏 · 呈现</span>
+      <div class="axis">发 散 ─ ─ ─ ─ ─ ─ ─ ─ 收 敛</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">iPad 三层结构</div>
+      <div class="layer layer-1">
+        <div class="layer-num">01</div>
+        <div class="layer-content">
+          <div class="layer-name">入口层 · AI 矩阵</div>
+          <div class="layer-desc">网页快捷方式加主屏 · 一屏铺开 3-6 个 AI</div>
+        </div>
       </div>
-      <div class="device">
-        <div class="device-icon">💻</div>
-        <div class="device-name">Mac</div>
-        <div class="device-role">加工厂</div>
-        <span class="device-tag">键盘 · 收敛</span>
+      <div class="layer layer-2">
+        <div class="layer-num">02</div>
+        <div class="layer-content">
+          <div class="layer-name">流转层 · 传送带</div>
+          <div class="layer-desc">通用剪贴板 + 分屏双 AI · 跨 AI 上下文接力</div>
+        </div>
+      </div>
+      <div class="layer layer-3">
+        <div class="layer-num">03</div>
+        <div class="layer-content">
+          <div class="layer-name">承载层 · 视觉呈现</div>
+          <div class="layer-desc">大字号阅读 · 触屏圈选 · 姿势自由</div>
+        </div>
       </div>
     </div>
-    <div class="axis">发 散 ─ ─ ─ ─ ─ ─ ─ ─ 收 敛</div>
+
+    <div class="card">
+      <div class="card-title">姿势 × 精度 × 场景</div>
+      <div class="matrix-wrap">
+        <table>
+          <thead>
+            <tr><th>姿势</th><th>频率</th><th>精度</th><th>场景</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gesture">语音</td>
+              <td><span class="badge badge-high">高</span></td>
+              <td><span class="badge badge-low">低</span></td>
+              <td class="scenario">发散 · 初稿</td>
+            </tr>
+            <tr>
+              <td class="gesture">触屏</td>
+              <td><span class="badge badge-mid">中</span></td>
+              <td><span class="badge badge-mid">中</span></td>
+              <td class="scenario">圈选 · 追问</td>
+            </tr>
+            <tr>
+              <td class="gesture">键盘</td>
+              <td><span class="badge badge-low">低</span></td>
+              <td><span class="badge badge-high">高</span></td>
+              <td class="scenario">收敛 · 定稿</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
-  <div class="card">
-    <div class="card-title">iPad 三层结构</div>
-    <div class="layer layer-1">
-      <div class="layer-num">01</div>
-      <div class="layer-content">
-        <div class="layer-name">入口层 · AI 矩阵</div>
-        <div class="layer-desc">网页快捷方式加主屏 · 一屏铺开 3-6 个 AI</div>
-      </div>
-    </div>
-    <div class="layer layer-2">
-      <div class="layer-num">02</div>
-      <div class="layer-content">
-        <div class="layer-name">流转层 · 传送带</div>
-        <div class="layer-desc">通用剪贴板 + 分屏双 AI · 跨 AI 上下文接力</div>
-      </div>
-    </div>
-    <div class="layer layer-3">
-      <div class="layer-num">03</div>
-      <div class="layer-content">
-        <div class="layer-name">承载层 · 视觉呈现</div>
-        <div class="layer-desc">大字号阅读 · 触屏圈选 · 姿势自由</div>
-      </div>
-    </div>
-  </div>
+  <!-- ========== TAB 2 · 行动 ========== -->
+  <div class="tab-panel" data-panel="action">
 
-  <div class="card">
-    <div class="card-title">姿势 × 精度 × 场景</div>
-    <div class="matrix-wrap">
-      <table>
-        <thead>
-          <tr><th>姿势</th><th>频率</th><th>精度</th><th>场景</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="gesture">语音</td>
-            <td><span class="badge badge-high">高</span></td>
-            <td><span class="badge badge-low">低</span></td>
-            <td class="scenario">发散 · 初稿</td>
-          </tr>
-          <tr>
-            <td class="gesture">触屏</td>
-            <td><span class="badge badge-mid">中</span></td>
-            <td><span class="badge badge-mid">中</span></td>
-            <td class="scenario">圈选 · 追问</td>
-          </tr>
-          <tr>
-            <td class="gesture">键盘</td>
-            <td><span class="badge badge-low">低</span></td>
-            <td><span class="badge badge-high">高</span></td>
-            <td class="scenario">收敛 · 定稿</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Handoff · 跨 AI 交接包</div>
-    <div class="prompt-box">整理这次对话 · 给下一个 AI 接手 · 格式:
+    <div class="card">
+      <div class="card-title">Handoff · 跨 AI 交接包</div>
+      <div class="prompt-box">整理这次对话 · 给下一个 AI 接手 · 格式:
 
 【背景】1-2 句 · 我们最初想解决什么
 【过程】3-5 点 · 讨论了哪些方向 · 各自为什么否决
@@ -625,227 +681,234 @@ footer strong { color: rgba(255,255,255,0.9); }
 + 建议交接给谁 · 1 句理由
 
 要求:总字数 300 字内</div>
-    <div class="fallback-note">兜底 · 分不清发给谁 → 一律先甩飞书 IM「给自己」</div>
-  </div>
+      <div class="fallback-note">兜底 · 分不清发给谁 → 一律先甩飞书 IM「给自己」</div>
+    </div>
 
-  <div class="card">
-    <div class="card-title">A 阶段 · 下一步 3 件</div>
-    <ol class="step-list">
-      <li class="step-item">
-        <span class="step-num">1</span>
-        <div>
-          <div class="step-title">Handoff prompt pin 到飞书「给自己」</div>
-          <div class="step-desc">未来任何跨 AI 交接 · 3 秒调用</div>
-        </div>
-      </li>
-      <li class="step-item">
-        <span class="step-num">2</span>
-        <div>
-          <div class="step-title">iPad 主屏铺 AI 矩阵</div>
-          <div class="step-desc">Safari 打开各 AI 网页 → 分享 → 添加到主屏幕</div>
-        </div>
-      </li>
-      <li class="step-item">
-        <span class="step-num">3</span>
-        <div>
-          <div class="step-title">让每个 AI 出一版仪表盘 · 用一周</div>
-          <div class="step-desc">对比风格 · 选最舒服的往下走</div>
-        </div>
-      </li>
-    </ol>
+    <div class="card">
+      <div class="card-title">A 阶段 · 下一步 3 件</div>
+      <ol class="step-list">
+        <li class="step-item">
+          <span class="step-num">1</span>
+          <div>
+            <div class="step-title">Handoff prompt pin 到飞书「给自己」</div>
+            <div class="step-desc">未来任何跨 AI 交接 · 3 秒调用</div>
+          </div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">2</span>
+          <div>
+            <div class="step-title">iPad 主屏铺 AI 矩阵</div>
+            <div class="step-desc">Safari 打开各 AI 网页 → 分享 → 添加到主屏幕</div>
+          </div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">3</span>
+          <div>
+            <div class="step-title">让每个 AI 出一版仪表盘 · 用一周</div>
+            <div class="step-desc">对比风格 · 选最舒服的往下走</div>
+          </div>
+        </li>
+      </ol>
 
-    <div class="callout">
-      <div class="callout-title">▎一周后必须自问 3 个问题</div>
-      <ul class="callout-list">
-        <li class="callout-item"><span class="q-mark">Q1</span>打开了几次?</li>
-        <li class="callout-item"><span class="q-mark">Q2</span>哪块最爱看?</li>
-        <li class="callout-item"><span class="q-mark">Q3</span>哪块空着从不看?</li>
+      <div class="callout">
+        <div class="callout-title">▎一周后必须自问 3 个问题</div>
+        <ul class="callout-list">
+          <li class="callout-item"><span class="q-mark">Q1</span>打开了几次?</li>
+          <li class="callout-item"><span class="q-mark">Q2</span>哪块最爱看?</li>
+          <li class="callout-item"><span class="q-mark">Q3</span>哪块空着从不看?</li>
+        </ul>
+        <div class="callout-note">这 3 个答案 = B 阶段(真第二大脑)的真正设计输入</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">B 阶段准备 · 5 个数据源</div>
+      <ul class="source-list">
+        <li class="source-item"><span class="source-name">飞书表</span><span class="source-purpose">工作 / SOP</span></li>
+        <li class="source-item"><span class="source-name">GitHub memory</span><span class="source-purpose">sop-active / feedback / user</span></li>
+        <li class="source-item"><span class="source-name">飞书 IM「给自己」</span><span class="source-purpose">想法暂存</span></li>
+        <li class="source-item"><span class="source-name">轻记 H5</span><span class="source-purpose">个人事务</span></li>
+        <li class="source-item"><span class="source-name">各家 AI 对话</span><span class="source-purpose">讨论沉淀</span></li>
       </ul>
-      <div class="callout-note">这 3 个答案 = B 阶段(真第二大脑)的真正设计输入</div>
+      <div class="source-note">未来挑战:让这 5 个「串起来」或「选中心归拢」</div>
     </div>
+
   </div>
 
-  <div class="card">
-    <div class="card-title">B 阶段准备 · 5 个数据源</div>
-    <ul class="source-list">
-      <li class="source-item"><span class="source-name">飞书表</span><span class="source-purpose">工作 / SOP</span></li>
-      <li class="source-item"><span class="source-name">GitHub memory</span><span class="source-purpose">sop-active / feedback / user</span></li>
-      <li class="source-item"><span class="source-name">飞书 IM「给自己」</span><span class="source-purpose">想法暂存</span></li>
-      <li class="source-item"><span class="source-name">轻记 H5</span><span class="source-purpose">个人事务</span></li>
-      <li class="source-item"><span class="source-name">各家 AI 对话</span><span class="source-purpose">讨论沉淀</span></li>
-    </ul>
-    <div class="source-note">未来挑战:让这 5 个「串起来」或「选中心归拢」</div>
-  </div>
+  <!-- ========== TAB 3 · 想法池 ========== -->
+  <div class="tab-panel" data-panel="pool">
 
-  <div class="card">
-    <div class="card-title">暂缓 · 否决</div>
-    <div class="chip-wrap">
-      <span class="chip">快捷指令</span>
-      <span class="chip">强行聚合 pin</span>
-      <span class="chip">主动扩展用法</span>
-      <span class="chip">B 阶段全套</span>
-      <span class="chip">大件硬件追加</span>
-    </div>
-    <div class="chip-note">等条件成熟再动 · 不预设需求</div>
-  </div>
+    <div class="card">
+      <div class="card-title">想法池 · 讨论产出 15 条</div>
+      <div class="pool-intro">本次讨论冒出的所有想法 · 按状态归档 · 一周后回看时可判断「哪些定型 / 哪些还漂着」</div>
 
-  <div class="card">
-    <div class="card-title">想法池 · 讨论产出 15 条</div>
-    <div class="pool-intro">本次讨论冒出的所有想法 · 按状态归档 · 一周后回看时可判断"哪些定型 / 哪些还漂着"</div>
+      <div class="pool-section-label pool-label-confirmed">
+        已确认 / 已升级 <span class="count">9</span>
+      </div>
 
-    <div class="pool-section-label pool-label-confirmed">
-      已确认 / 已升级 <span class="count">9</span>
-    </div>
+      <div class="pool-item item-upgraded">
+        <div class="pool-num">01</div>
+        <div class="pool-content">
+          <div class="pool-title">iPad = 各 AI 跳转中枢</div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>演化成 v3 定位骨架</div>
+        </div>
+      </div>
 
-    <div class="pool-item item-upgraded">
-      <div class="pool-num">01</div>
-      <div class="pool-content">
-        <div class="pool-title">iPad = 各 AI 跳转中枢</div>
-        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>演化成 v3 定位骨架</div>
+      <div class="pool-item item-confirmed">
+        <div class="pool-num">02</div>
+        <div class="pool-content">
+          <div class="pool-title">网页加主屏比原生 App 好</div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>入口层做法定型</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-confirmed">
+        <div class="pool-num">03</div>
+        <div class="pool-content">
+          <div class="pool-title">主屏 AI 矩阵 · 一屏铺开</div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 2</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-confirmed">
+        <div class="pool-num">04</div>
+        <div class="pool-content">
+          <div class="pool-title">剪贴板作 AI 之间的传送带</div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>流转层核心机制</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-upgraded">
+        <div class="pool-num">05</div>
+        <div class="pool-content">
+          <div class="pool-title">iPad 是视觉落地方便的地方</div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>v3 定位骨架</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-confirmed">
+        <div class="pool-num">06</div>
+        <div class="pool-content">
+          <div class="pool-title">姿势-精度分工(语音 / 触屏 / 键盘)</div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>矩阵沉淀 · 用户认同「这就是我的感受」</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-upgraded">
+        <div class="pool-num">07</div>
+        <div class="pool-content">
+          <div class="pool-title">豆包语音发散 · Mac 键盘落地</div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>三设备分工矩阵</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-confirmed">
+        <div class="pool-num">08</div>
+        <div class="pool-content">
+          <div class="pool-title">交接包 Handoff prompt</div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 1 · 待 pin 飞书</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-upgraded">
+        <div class="pool-num">09</div>
+        <div class="pool-content">
+          <div class="pool-title">荔枝当分发中心 · URL 通吃所有设备</div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>本次讨论最大发现 · B 阶段分发层雏形</div>
+        </div>
+      </div>
+
+      <div class="pool-section-label pool-label-observing">
+        观察中 / 待验证 <span class="count">3</span>
+      </div>
+
+      <div class="pool-item item-observing">
+        <div class="pool-num">10</div>
+        <div class="pool-content">
+          <div class="pool-title">分屏双 AI 对话(iPad 独占优势)</div>
+          <div class="pool-status"><span class="tag tag-observing">观察中</span>未实测 · 一周后看用不用</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-pending">
+        <div class="pool-num">11</div>
+        <div class="pool-content">
+          <div class="pool-title">让 AI 自己判断交接给谁</div>
+          <div class="pool-status"><span class="tag tag-pending">待验证</span>交接包里加「建议给谁」· 找实际场景试</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-pending">
+        <div class="pool-num">12</div>
+        <div class="pool-content">
+          <div class="pool-title">各家 AI 分开 pin · 不聚合</div>
+          <div class="pool-status"><span class="tag tag-pending">待验证</span>承认壁垒 · 但实际操作还没跑过</div>
+        </div>
+      </div>
+
+      <div class="pool-section-label pool-label-archived">
+        已归档 · 悬置 <span class="count">3</span>
+      </div>
+
+      <div class="pool-item item-archived">
+        <div class="pool-num">13</div>
+        <div class="pool-content">
+          <div class="pool-title">场景 folder 不按 AI 名分</div>
+          <div class="pool-status"><span class="tag tag-archived">悬置</span>抛过未采纳 · 你没选</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-archived">
+        <div class="pool-num">14</div>
+        <div class="pool-content">
+          <div class="pool-title">快捷指令暂缓 · 等「做烦」信号</div>
+          <div class="pool-status"><span class="tag tag-archived">已归档</span>未来触发再动 · 不预设</div>
+        </div>
+      </div>
+
+      <div class="pool-item item-archived">
+        <div class="pool-num">15</div>
+        <div class="pool-content">
+          <div class="pool-title">AI 状态盘(能量分布 / 心智地图)</div>
+          <div class="pool-status"><span class="tag tag-archived">已归档</span>不属工作台主题 → 独立到 personal-dashboard.html · 未来做</div>
+        </div>
       </div>
     </div>
 
-    <div class="pool-item item-confirmed">
-      <div class="pool-num">02</div>
-      <div class="pool-content">
-        <div class="pool-title">网页加主屏比原生 App 好</div>
-        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>入口层做法定型</div>
+    <div class="card">
+      <div class="card-title">定位演化史</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-version">v0 · 全能 AI 工作台</div>
+          <div class="tl-desc">触发修正:成本低 + 边干边发现</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-version">v1 · 探索型底盘</div>
+          <div class="tl-desc">触发修正:硬件齐了但没盘活</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-version">v2 · AI 中控台(操作层)</div>
+          <div class="tl-desc">触发修正:iPad 是视觉落地方便的地方</div>
+        </div>
+        <div class="tl-item active">
+          <div class="tl-version">v3 · 视觉呈现场 + 手机大屏延伸 ★</div>
+          <div class="tl-desc">定型 · 承载层 · 不替代 Mac</div>
+        </div>
       </div>
     </div>
 
-    <div class="pool-item item-confirmed">
-      <div class="pool-num">03</div>
-      <div class="pool-content">
-        <div class="pool-title">主屏 AI 矩阵 · 一屏铺开</div>
-        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 2</div>
+    <div class="card">
+      <div class="card-title">暂缓 · 否决</div>
+      <div class="chip-wrap">
+        <span class="chip">快捷指令</span>
+        <span class="chip">强行聚合 pin</span>
+        <span class="chip">主动扩展用法</span>
+        <span class="chip">B 阶段全套</span>
+        <span class="chip">大件硬件追加</span>
       </div>
+      <div class="chip-note">等条件成熟再动 · 不预设需求</div>
     </div>
 
-    <div class="pool-item item-confirmed">
-      <div class="pool-num">04</div>
-      <div class="pool-content">
-        <div class="pool-title">剪贴板作 AI 之间的传送带</div>
-        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>流转层核心机制</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-upgraded">
-      <div class="pool-num">05</div>
-      <div class="pool-content">
-        <div class="pool-title">iPad 是视觉落地方便的地方</div>
-        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>v3 定位骨架</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-confirmed">
-      <div class="pool-num">06</div>
-      <div class="pool-content">
-        <div class="pool-title">姿势-精度分工(语音 / 触屏 / 键盘)</div>
-        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>矩阵沉淀 · 用户认同"这就是我的感受"</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-upgraded">
-      <div class="pool-num">07</div>
-      <div class="pool-content">
-        <div class="pool-title">豆包语音发散 · Mac 键盘落地</div>
-        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>三设备分工矩阵</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-confirmed">
-      <div class="pool-num">08</div>
-      <div class="pool-content">
-        <div class="pool-title">交接包 Handoff prompt</div>
-        <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 1 · 待 pin 飞书</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-upgraded">
-      <div class="pool-num">09</div>
-      <div class="pool-content">
-        <div class="pool-title">荔枝当分发中心 · URL 通吃所有设备</div>
-        <div class="pool-status"><span class="tag tag-upgraded">已升级</span>本次讨论最大发现 · B 阶段分发层雏形</div>
-      </div>
-    </div>
-
-    <div class="pool-section-label pool-label-observing">
-      观察中 / 待验证 <span class="count">3</span>
-    </div>
-
-    <div class="pool-item item-observing">
-      <div class="pool-num">10</div>
-      <div class="pool-content">
-        <div class="pool-title">分屏双 AI 对话(iPad 独占优势)</div>
-        <div class="pool-status"><span class="tag tag-observing">观察中</span>未实测 · 一周后看用不用</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-pending">
-      <div class="pool-num">11</div>
-      <div class="pool-content">
-        <div class="pool-title">让 AI 自己判断交接给谁</div>
-        <div class="pool-status"><span class="tag tag-pending">待验证</span>交接包里加"建议给谁" · 找实际场景试</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-pending">
-      <div class="pool-num">12</div>
-      <div class="pool-content">
-        <div class="pool-title">各家 AI 分开 pin · 不聚合</div>
-        <div class="pool-status"><span class="tag tag-pending">待验证</span>承认壁垒 · 但实际操作还没跑过</div>
-      </div>
-    </div>
-
-    <div class="pool-section-label pool-label-archived">
-      已归档 · 悬置 <span class="count">3</span>
-    </div>
-
-    <div class="pool-item item-archived">
-      <div class="pool-num">13</div>
-      <div class="pool-content">
-        <div class="pool-title">场景 folder 不按 AI 名分</div>
-        <div class="pool-status"><span class="tag tag-archived">悬置</span>抛过未采纳 · 你没选</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-archived">
-      <div class="pool-num">14</div>
-      <div class="pool-content">
-        <div class="pool-title">快捷指令暂缓 · 等"做烦"信号</div>
-        <div class="pool-status"><span class="tag tag-archived">已归档</span>未来触发再动 · 不预设</div>
-      </div>
-    </div>
-
-    <div class="pool-item item-archived">
-      <div class="pool-num">15</div>
-      <div class="pool-content">
-        <div class="pool-title">AI 状态盘(能量分布 / 心智地图)</div>
-        <div class="pool-status"><span class="tag tag-archived">已归档</span>不属工作台主题 → 独立到 personal-dashboard.html · 未来做</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">定位演化史</div>
-    <div class="timeline">
-      <div class="tl-item">
-        <div class="tl-version">v0 · 全能 AI 工作台</div>
-        <div class="tl-desc">触发修正:成本低 + 边干边发现</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-version">v1 · 探索型底盘</div>
-        <div class="tl-desc">触发修正:硬件齐了但没盘活</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-version">v2 · AI 中控台(操作层)</div>
-        <div class="tl-desc">触发修正:iPad 是视觉落地方便的地方</div>
-      </div>
-      <div class="tl-item active">
-        <div class="tl-version">v3 · 视觉呈现场 + 手机大屏延伸 ★</div>
-        <div class="tl-desc">定型 · 承载层 · 不替代 Mac</div>
-      </div>
-    </div>
   </div>
 
 </div>
@@ -854,6 +917,23 @@ footer strong { color: rgba(255,255,255,0.9); }
   <strong>GitHub Claude</strong> · v0.1 快照 · 2026-07-22<br>
   一周后回来 · 加载 Kimi / 豆包版本对比
 </footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var tabs = document.querySelectorAll(".tab-btn");
+  var panels = document.querySelectorAll(".tab-panel");
+  tabs.forEach(function(tab) {
+    tab.addEventListener("click", function() {
+      var target = tab.getAttribute("data-tab");
+      tabs.forEach(function(t) { t.classList.remove("active"); });
+      panels.forEach(function(p) { p.classList.remove("active"); });
+      tab.classList.add("active");
+      document.querySelector("[data-panel=\"" + target + "\"]").classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+});
+</script>
 
 </body>
 </html>
