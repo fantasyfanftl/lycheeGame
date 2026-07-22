@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>荔枝 · 工作台</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #2c3e50 0%, #4a3d6b 50%, #6b4a8b 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #fff;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Layout */
+  .app {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(10px);
+    padding: 24px 14px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    position: sticky; top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .brand {
+    color: #fff;
+    letter-spacing: 4px;
+    font-size: 15px;
+    padding: 4px 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand .brand-icon { font-size: 22px; }
+  .back-link {
+    display: block;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 12px;
+    padding: 6px 8px;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  .back-link:hover { color: rgba(255,255,255,0.9); }
+
+  .cat-list { display: flex; flex-direction: column; gap: 2px; }
+  .cat-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cat-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .cat-btn.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-weight: 600;
+  }
+  .cat-btn .emoji { font-size: 16px; }
+  .cat-btn .count {
+    margin-left: auto;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0;
+  }
+
+  /* Main */
+  .main {
+    padding: 24px 28px 60px;
+    min-width: 0;
+  }
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .search {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  .search::placeholder { color: rgba(255,255,255,0.35); }
+  .search:focus { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.4); }
+
+  .btn {
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { background: rgba(255,255,255,0.18); }
+  .btn.primary { background: #ffd89b; color: #4a3d6b; border-color: transparent; font-weight: 600; }
+  .btn.primary:hover { background: #fff; }
+
+  /* Section title */
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.5);
+    margin: 20px 0 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .link-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 76px;
+    position: relative;
+  }
+  .link-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .link-card .card-name {
+    font-size: 13px;
+    color: #fff;
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    word-break: break-word;
+  }
+  .link-card .card-host {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.3px;
+    font-family: "SF Mono", "JetBrains Mono", monospace;
+    margin-top: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .link-card .del-btn {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 18px; height: 18px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: rgba(255,255,255,0.6);
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+  }
+  .link-card:hover .del-btn { display: flex; }
+  .link-card .del-btn:hover { background: rgba(255,100,100,0.4); color: #fff; }
+
+  /* Local zone */
+  .local-tag {
+    display: inline-block;
+    background: rgba(255,216,155,0.2);
+    color: #ffd89b;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .empty-hint {
+    color: rgba(255,255,255,0.35);
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 12px;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .modal.show { display: flex; }
+  .modal-box {
+    background: linear-gradient(135deg, #3a2d5b 0%, #4a3d6b 100%);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+    color: #fff;
+  }
+  .modal-title {
+    font-size: 15px;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+  }
+  .modal .field { margin-bottom: 12px; }
+  .modal label {
+    display: block;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .modal input, .modal select, .modal textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  .modal textarea {
+    min-height: 200px;
+    resize: vertical;
+    font-family: "SF Mono", monospace;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .modal input:focus, .modal select:focus, .modal textarea:focus {
+    border-color: rgba(255,216,155,0.6);
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar {
+      position: fixed; top: 0; left: -240px;
+      width: 220px;
+      height: 100vh;
+      z-index: 90;
+      transition: left 0.3s;
+    }
+    .sidebar.open { left: 0; }
+    .main { padding: 60px 16px 60px; }
+    .menu-btn {
+      position: fixed;
+      top: 12px; left: 12px;
+      width: 36px; height: 36px;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 80;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cards-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .link-card { padding: 12px 14px; min-height: 68px; }
+    .link-card .card-name { font-size: 12px; }
+    .link-card .del-btn { display: flex; }
+  }
+  @media (min-width: 721px) {
+    .menu-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-btn" id="menu-btn">☰</button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="brand-icon">🌱</span>工作台</div>
+    <a href="brain.html" class="back-link">← 返回荔枝Brain</a>
+    <div class="cat-list" id="cat-list"></div>
+  </aside>
+
+  <main class="main">
+    <div class="toolbar">
+      <input class="search" id="search" placeholder="搜索名字 或 直接粘贴 URL 暂存" spellcheck="false" autocomplete="off">
+      <button class="btn primary" id="add-btn">+ 暂存</button>
+      <button class="btn" id="export-btn">导 出</button>
+    </div>
+
+    <div id="content"></div>
+  </main>
+</div>
+
+<!-- Add modal -->
+<div class="modal" id="add-modal">
+  <div class="modal-box">
+    <div class="modal-title">📌 暂存到本地</div>
+    <div class="field">
+      <label>URL</label>
+      <input id="add-url" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label>名字（可选 · 空则用域名）</label>
+      <input id="add-name" placeholder="自定义显示名字">
+    </div>
+    <div class="field">
+      <label>分类</label>
+      <select id="add-cat"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeAdd()">取消</button>
+      <button class="btn primary" onclick="doAdd()">存 起 来</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export modal -->
+<div class="modal" id="export-modal">
+  <div class="modal-box">
+    <div class="modal-title">📤 导出本设备暂存的链接</div>
+    <p style="color:rgba(255,255,255,0.6); font-size:12px; line-height:1.7; margin-bottom:12px;">
+      复制下面 JSON · 发给 GitHub Claude · 让它合并进权威数据。<br>
+      合并后 · 你可以点「清空本地暂存」。
+    </p>
+    <textarea id="export-text" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeExport()">关闭</button>
+      <button class="btn" onclick="clearLocal()">清空本地暂存</button>
+      <button class="btn primary" onclick="copyExport()">复制</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOCAL_KEY = 'lychee_workstation_local';
+let AUTHORITY = { categories: [], links: [] };
+let LOCAL = [];
+let currentCat = 'all';
+
+// ============ 加载权威数据 ============
+async function loadAuthority() {
+  try {
+    const res = await fetch('workstation-data.json?t=' + Date.now());
+    AUTHORITY = await res.json();
+  } catch (e) {
+    console.error('权威数据加载失败', e);
+    AUTHORITY = { categories: [], links: [] };
+  }
+}
+function loadLocal() {
+  try {
+    LOCAL = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
+  } catch (e) { LOCAL = []; }
+}
+function saveLocal() {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(LOCAL));
+}
+
+// ============ 渲染 ============
+function extractHost(url) {
+  try { return new URL(url).host.replace(/^www\./, ''); }
+  catch (e) { return url.slice(0, 30); }
+}
+
+function renderSidebar() {
+  const list = document.getElementById('cat-list');
+  const total = AUTHORITY.links.length + LOCAL.length;
+  let html = `<button class="cat-btn ${currentCat==='all'?'active':''}" data-cat="all">
+    <span class="emoji">📚</span>全部<span class="count">${total}</span>
+  </button>`;
+  AUTHORITY.categories.forEach(c => {
+    const n = AUTHORITY.links.filter(l => l.cat === c.id).length +
+              LOCAL.filter(l => l.cat === c.id).length;
+    html += `<button class="cat-btn ${currentCat===c.id?'active':''}" data-cat="${c.id}">
+      <span class="emoji">${c.emoji}</span>${c.name}<span class="count">${n}</span>
+    </button>`;
+  });
+  html += `<button class="cat-btn ${currentCat==='local'?'active':''}" data-cat="local">
+    <span class="emoji">📌</span>本地暂存<span class="count">${LOCAL.length}</span>
+  </button>`;
+  list.innerHTML = html;
+  list.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentCat = btn.dataset.cat;
+      renderSidebar();
+      renderContent();
+      document.getElementById('sidebar').classList.remove('open');
+    });
+  });
+}
+
+function renderContent() {
+  const content = document.getElementById('content');
+  const q = document.getElementById('search').value.trim().toLowerCase();
+
+  let authList = AUTHORITY.links;
+  let localList = LOCAL;
+
+  if (currentCat === 'local') {
+    authList = [];
+  } else if (currentCat !== 'all') {
+    authList = authList.filter(l => l.cat === currentCat);
+    localList = localList.filter(l => l.cat === currentCat);
+  }
+
+  if (q) {
+    authList = authList.filter(l =>
+      (l.name || '').toLowerCase().includes(q) ||
+      (l.url || '').toLowerCase().includes(q));
+    localList = localList.filter(l =>
+      (l.name || '').toLowerCase().includes(q) ||
+      (l.url || '').toLowerCase().includes(q));
+  }
+
+  let html = '';
+
+  if (authList.length) {
+    html += `<div class="section-title">权 威</div>`;
+    html += `<div class="cards-grid">`;
+    authList.forEach(l => {
+      html += cardHTML(l, false);
+    });
+    html += `</div>`;
+  }
+
+  if (localList.length) {
+    html += `<div class="section-title">本地暂存（本设备）</div>`;
+    html += `<div class="cards-grid">`;
+    localList.forEach((l, i) => {
+      html += cardHTML(l, true, i);
+    });
+    html += `</div>`;
+  }
+
+  if (!authList.length && !localList.length) {
+    html = `<div class="empty-hint">${q ? '没找到匹配项' : '这个分类还没有内容'}</div>`;
+  }
+
+  content.innerHTML = html;
+
+  content.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const idx = +btn.dataset.idx;
+      if (confirm('删除这条本地暂存？')) {
+        LOCAL.splice(idx, 1);
+        saveLocal();
+        renderSidebar();
+        renderContent();
+      }
+    });
+  });
+}
+
+function cardHTML(link, isLocal, idx) {
+  const host = extractHost(link.url);
+  const name = link.name || host;
+  return `<a class="link-card" href="${link.url}" target="_blank" rel="noopener">
+    ${isLocal ? `<button class="del-btn" data-idx="${idx}" title="删除">×</button>` : ''}
+    <div class="card-name">${escapeHtml(name)}${isLocal ? '<span class="local-tag">本地</span>' : ''}</div>
+    <div class="card-host">${escapeHtml(host)}</div>
+  </a>`;
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+// ============ 暂存 ============
+function openAdd(prefillUrl) {
+  document.getElementById('add-url').value = prefillUrl || '';
+  document.getElementById('add-name').value = '';
+  const catSel = document.getElementById('add-cat');
+  catSel.innerHTML = AUTHORITY.categories.map(c =>
+    `<option value="${c.id}">${c.emoji} ${c.name}</option>`
+  ).join('') + '<option value="__uncategorized__">未分类</option>';
+  if (currentCat !== 'all' && currentCat !== 'local') {
+    catSel.value = currentCat;
+  }
+  document.getElementById('add-modal').classList.add('show');
+  setTimeout(() => document.getElementById('add-url').focus(), 100);
+}
+function closeAdd() {
+  document.getElementById('add-modal').classList.remove('show');
+}
+function doAdd() {
+  const url = document.getElementById('add-url').value.trim();
+  const name = document.getElementById('add-name').value.trim();
+  const cat = document.getElementById('add-cat').value;
+  if (!url) { alert('URL 不能空'); return; }
+  LOCAL.push({ url, name, cat, addedAt: new Date().toISOString().split('T')[0] });
+  saveLocal();
+  closeAdd();
+  renderSidebar();
+  renderContent();
+}
+
+// ============ 导出 ============
+function openExport() {
+  const text = LOCAL.length ?
+    JSON.stringify(LOCAL, null, 2) :
+    '（本地暂存为空）';
+  document.getElementById('export-text').value = text;
+  document.getElementById('export-modal').classList.add('show');
+}
+function closeExport() {
+  document.getElementById('export-modal').classList.remove('show');
+}
+function copyExport() {
+  const ta = document.getElementById('export-text');
+  ta.select();
+  document.execCommand('copy');
+  const btn = event.target;
+  const t = btn.textContent;
+  btn.textContent = '已复制 ✓';
+  setTimeout(() => { btn.textContent = t; }, 1200);
+}
+function clearLocal() {
+  if (!confirm('清空本设备的暂存？删除前请确认已经导出发送给 GitHub Claude。')) return;
+  LOCAL = [];
+  saveLocal();
+  closeExport();
+  renderSidebar();
+  renderContent();
+}
+
+// ============ Event ============
+document.getElementById('add-btn').addEventListener('click', () => {
+  const q = document.getElementById('search').value.trim();
+  const looksLikeUrl = /^https?:\/\//.test(q);
+  openAdd(looksLikeUrl ? q : '');
+});
+document.getElementById('export-btn').addEventListener('click', openExport);
+document.getElementById('search').addEventListener('input', renderContent);
+document.getElementById('search').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const q = e.target.value.trim();
+    if (/^https?:\/\//.test(q)) openAdd(q);
+  }
+});
+document.getElementById('menu-btn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// close modal on backdrop
+['add-modal', 'export-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target.id === id) e.target.classList.remove('show');
+  });
+});
+
+// ============ Boot ============
+(async function() {
+  await loadAuthority();
+  loadLocal();
+  renderSidebar();
+  renderContent();
+})();
+</script>
+</body>
+</html>
