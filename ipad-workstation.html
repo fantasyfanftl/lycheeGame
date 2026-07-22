@@ -1124,6 +1124,65 @@ footer strong { color: #7d84a8; }
 .brain-panel { display: none; }
 .brain-panel.active { display: block; animation: fadeIn 0.2s; }
 
+/* ==== Pin 警示条 ==== */
+.pin-note {
+  background:
+    linear-gradient(135deg, rgba(255, 140, 156, 0.1) 0%, rgba(255, 176, 87, 0.06) 100%);
+  border: 1px solid rgba(255, 140, 156, 0.3);
+  border-left: 3px solid #ff8c9c;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.pin-note::before {
+  content: "📌";
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 16px;
+  opacity: 0.4;
+}
+.pin-note-tag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 8px;
+  border-radius: 3px;
+  background: rgba(255, 140, 156, 0.15);
+  color: #ff8c9c;
+  border: 1px solid rgba(255, 140, 156, 0.4);
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.pin-note-title {
+  font-size: 11px;
+  color: #fecdd3;
+  font-family: "SF Mono", monospace;
+  letter-spacing: 1.2px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.pin-note-body {
+  font-size: 15px;
+  color: #fecdd3;
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.pin-note-body strong {
+  color: #ffb4c0;
+  font-weight: 700;
+}
+.pin-note-sub {
+  font-size: 11px;
+  color: #9ca3b8;
+  line-height: 1.6;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 140, 156, 0.2);
+}
+
 /* ==== 最新复盘板块 ==== */
 .brain-review {
   background: linear-gradient(135deg, rgba(125, 211, 252, 0.08) 0%, rgba(180, 120, 255, 0.05) 100%);
@@ -2780,6 +2839,18 @@ footer strong { color: #7d84a8; }
 
     <!-- 元层 tab -->
     <div class="brain-panel active" data-brain-panel="meta">
+
+    <!-- Pin · 用户校准警报 -->
+    <div class="pin-note">
+      <div class="pin-note-tag">PIN</div>
+      <div class="pin-note-title">给自己看的一句话</div>
+      <div class="pin-note-body">
+        「<strong>任何 AI + 任何长对话 · 都会往讨好漂移</strong>」
+      </div>
+      <div class="pin-note-sub">
+        无法对抗 · 承认现实 · 我(天蓝)自己当警报器 —— 感觉 AI 说话太漂亮时 · 回来看这一句
+      </div>
+    </div>
 
     <!-- 1. 思考方式 -->
     <div class="brain-section">
