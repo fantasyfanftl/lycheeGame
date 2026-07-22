@@ -663,23 +663,34 @@ tr:last-child td { border-bottom: none; }
   padding-top: 3px;
   padding-left: 10px;
 }
-.pool-content { flex: 1; color: #d8dcec; }
+.pool-content {
+  flex: 1;
+  color: #d8dcec;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  align-items: start;
+}
 .pool-title {
   font-size: 12px;
   font-weight: 600;
   color: #eaecf5;
   line-height: 1.4;
-  margin-bottom: 3px;
+  grid-column: 1;
+  grid-row: 1;
 }
 .pool-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 8px;
   align-items: center;
+  justify-content: flex-end;
   font-size: 9px;
   color: #6b7295;
   font-family: "SF Mono", monospace;
-  margin-bottom: 4px;
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
 }
 .pool-source {
   display: inline-flex;
@@ -706,6 +717,8 @@ tr:last-child td { border-bottom: none; }
   font-size: 10px;
   color: #7d84a8;
   line-height: 1.4;
+  grid-column: 1 / -1;
+  grid-row: 2;
 }
 .pool-status .tag {
   display: inline-block;
@@ -1146,8 +1159,11 @@ footer strong { color: #7d84a8; }
         <div class="pool-num">11</div>
         <div class="pool-content">
           <div class="pool-title">让 AI 自己判断交接给谁</div>
-          <div class="pool-status" style="margin-top: 0;"><span class="pool-source src-ai" style="font-size: 9px;">我抛</span> <span class="pool-link" style="font-size: 9px;">扩展 <span class="arrow">#10</span></span></div>
-          <div class="pool-status" style="margin-top: 4px;"><span class="tag tag-pending">待验证</span>交接包加「建议给谁」· 找场景试</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">扩展 <span class="arrow">#10</span></span>
+          </div>
+          <div class="pool-status"><span class="tag tag-pending">待验证</span>交接包加「建议给谁」· 找场景试</div>
         </div>
       </div>
 
