@@ -238,20 +238,7 @@
 </head>
 <body>
 
-<!-- Password lock -->
-<div class="lock-screen" id="lock-screen">
-  <a href="index.html" class="lock-back">← 返回</a>
-  <div class="lock-icon">🧠</div>
-  <div class="lock-title">私 密 区 域</div>
-  <div class="lock-form">
-    <input type="password" class="lock-input" id="pwd-input" placeholder="口令" autocomplete="off" autocapitalize="off">
-    <button class="lock-btn" id="pwd-btn">进 入</button>
-  </div>
-  <div class="lock-hint">仅本人可见</div>
-</div>
-
-<!-- Content -->
-<div class="container" id="brain-content" style="display:none;">
+<div class="container">
   <a href="index.html" class="back-link">← 返回荔枝游戏</a>
 
   <header>
@@ -285,38 +272,5 @@
   </footer>
 </div>
 
-<script>
-const PWD = 'Futl0818';
-const KEY = 'lychee_brain_unlocked';
-
-function unlock() {
-  document.getElementById('lock-screen').classList.add('hidden');
-  document.getElementById('brain-content').style.display = 'block';
-}
-
-function tryUnlock() {
-  const input = document.getElementById('pwd-input');
-  if (input.value === PWD) {
-    sessionStorage.setItem(KEY, '1');
-    unlock();
-  } else {
-    input.classList.add('shake');
-    input.value = '';
-    setTimeout(() => input.classList.remove('shake'), 500);
-  }
-}
-
-// Session-persistent unlock
-if (sessionStorage.getItem(KEY) === '1') {
-  unlock();
-} else {
-  setTimeout(() => document.getElementById('pwd-input').focus(), 300);
-}
-
-document.getElementById('pwd-btn').addEventListener('click', tryUnlock);
-document.getElementById('pwd-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') tryUnlock();
-});
-</script>
 </body>
 </html>
