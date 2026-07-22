@@ -1373,6 +1373,189 @@ footer strong { color: #7d84a8; }
   color: #b8c0d8;
 }
 .meta-insight-body .lesson strong { color: #ffb457; }
+
+/* ==== 主题 D · 资产库样式 ==== */
+.asset-hero {
+  text-align: center;
+  padding: 18px 16px;
+  background:
+    radial-gradient(400px 200px at 50% 50%, rgba(180, 120, 255, 0.12) 0%, transparent 70%),
+    rgba(22, 26, 46, 0.5);
+  border: 1px solid rgba(180, 120, 255, 0.2);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.asset-hero::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #b478ff, transparent);
+}
+.asset-hero-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #d6b4ff;
+  margin-bottom: 4px;
+  text-shadow: 0 0 12px rgba(180, 120, 255, 0.4);
+}
+.asset-hero-sub {
+  font-size: 11px;
+  color: #9ca3b8;
+  line-height: 1.5;
+}
+
+.asset-5w1h {
+  background: rgba(22, 26, 46, 0.5);
+  border: 1px solid rgba(124, 157, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.wh-row {
+  display: flex;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 12px;
+  color: #d8dcec;
+  line-height: 1.5;
+}
+.wh-row:not(:last-child) { border-bottom: 1px solid rgba(124, 157, 255, 0.06); }
+.wh-key {
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  color: #b478ff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  min-width: 52px;
+  padding-top: 2px;
+}
+.wh-val { flex: 1; }
+
+.asset-card {
+  background: rgba(22, 26, 46, 0.7);
+  border: 1px solid rgba(180, 120, 255, 0.25);
+  border-radius: 10px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 20px rgba(180, 120, 255, 0.08);
+}
+.asset-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.asset-num {
+  font-family: "SF Mono", monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #d6b4ff;
+  background: rgba(180, 120, 255, 0.15);
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: 1px solid rgba(180, 120, 255, 0.3);
+}
+.asset-meta { flex: 1; }
+.asset-title { font-size: 14px; font-weight: 600; color: #eaecf5; margin-bottom: 2px; }
+.asset-sub { font-size: 10px; color: #7d84a8; font-family: "SF Mono", monospace; }
+.asset-copy-btn {
+  background: linear-gradient(135deg, #7c9dff, #b478ff);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 10px rgba(124, 157, 255, 0.3);
+  transition: all 0.15s;
+}
+.asset-copy-btn:active { transform: scale(0.96); }
+.asset-copy-btn.copied {
+  background: linear-gradient(135deg, #34d399, #10b981);
+}
+.asset-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.asset-tag {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(52, 211, 153, 0.1);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+}
+.asset-content {
+  background: rgba(10, 12, 25, 0.7);
+  border: 1px solid rgba(124, 157, 255, 0.15);
+  border-radius: 7px;
+  padding: 12px 14px;
+  color: #b8c4e8;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", monospace;
+  font-size: 11.5px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.asset-content::-webkit-scrollbar { width: 4px; }
+.asset-content::-webkit-scrollbar-thumb {
+  background: rgba(124, 157, 255, 0.25);
+  border-radius: 2px;
+}
+
+.asset-candidates {
+  background: rgba(22, 26, 46, 0.4);
+  border: 1px dashed rgba(124, 130, 155, 0.25);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.asset-candidates-title {
+  font-size: 10px;
+  color: #9ca3b8;
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.asset-cand-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  background: rgba(30, 34, 55, 0.4);
+  border-radius: 6px;
+  border-left: 2px solid rgba(124, 130, 155, 0.4);
+}
+.cand-num {
+  font-family: "SF Mono", monospace;
+  font-size: 11px;
+  color: #7d84a8;
+  font-weight: 700;
+  min-width: 22px;
+}
+.cand-title {
+  font-size: 12px;
+  color: #d8dcec;
+  font-weight: 600;
+  margin-bottom: 1px;
+}
+.cand-desc {
+  font-size: 10px;
+  color: #7d84a8;
+  line-height: 1.5;
+}
 .topic-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(124, 157, 255, 0.2), transparent);
@@ -2103,15 +2286,115 @@ footer strong { color: #7d84a8; }
 
   <!-- ===== 主题 D · 跨 AI 复用资产 ===== -->
   <div class="topic-content" data-topic-content="D" style="display:none;">
-    <div class="topic-placeholder">
-      <div class="ph-icon">📋</div>
-      <div class="ph-title">主题 D · 跨 AI 复用资产</div>
-      <div class="ph-desc">
-        已识别 4 特征判定框架:<strong>AI 无关 · 主题无关 · 可迁移 · 高频</strong><br><br>
-        今日筛出 5 条通用资产候选:你的画像 / 5 段回复结构 / 想法池状态标签 / 哲学熔断器 / Handoff prompt<br><br>
-        待展开完整 5W1H 讨论 · 未来单独一次会话专门做
+
+    <div class="asset-hero">
+      <div class="asset-hero-title">📋 跨 AI 复用资产</div>
+      <div class="asset-hero-sub">开局粘一次 · 免磨合期 · 给任何 AI 都能用</div>
+    </div>
+
+    <!-- 5W1H · 折叠版 -->
+    <div class="asset-5w1h">
+      <div class="wh-row"><span class="wh-key">WHAT</span><span class="wh-val">给任何 AI 开局粘一次 · 免磨合期的通用规则包</span></div>
+      <div class="wh-row"><span class="wh-key">WHY</span><span class="wh-val">给 Kimi 那份用起来舒服 · 但只存在那次对话 · 换 AI 就要重发</span></div>
+      <div class="wh-row"><span class="wh-key">WHO</span><span class="wh-val">所有 AI · 尤其是新对话开局</span></div>
+      <div class="wh-row"><span class="wh-key">WHEN</span><span class="wh-val">开新对话第一条消息就粘</span></div>
+      <div class="wh-row"><span class="wh-key">WHERE</span><span class="wh-val">这里 · 点击复制 · 粘到任何 AI</span></div>
+      <div class="wh-row"><span class="wh-key">HOW</span><span class="wh-val">4 特征筛(AI 无关 / 主题无关 / 可迁移 / 高频) · 通过的进库</span></div>
+    </div>
+
+    <!-- 资产 01 · Kimi 协作元规则 -->
+    <div class="asset-card">
+      <div class="asset-card-header">
+        <div class="asset-num">01</div>
+        <div class="asset-meta">
+          <div class="asset-title">Kimi 协作元规则 prompt</div>
+          <div class="asset-sub">你给 Kimi 用过 · 亲测舒适 · 第一份定型资产</div>
+        </div>
+        <button class="asset-copy-btn" data-asset="asset-01">复制</button>
+      </div>
+      <div class="asset-tags">
+        <span class="asset-tag">✓ AI 无关</span>
+        <span class="asset-tag">✓ 主题无关</span>
+        <span class="asset-tag">✓ 可迁移</span>
+        <span class="asset-tag">✓ 高频</span>
+      </div>
+      <pre class="asset-content" id="asset-01">以下是我的个人协作规则与行为特征说明,请你在后续所有对话中全程遵循,以此作为你的交互基准,替代默认通用交互模式。
+
+一、我的核心思维与行为特征(底层逻辑)
+
+1. 自我价值与做事成果深度绑定:出错、进度停滞、表现不佳时,会下意识自我否定产生内耗,而非单纯就事论事。
+
+2. 高完美主义倾向:对输出质量有极高内在标准,排斥"不完美的暴露",容易因追求一步到位而拖延启动。
+
+3. 压力逃逸机制:精神压力过载时,会通过拖延、无目的刷手机等方式逃避思考,本质是回避自我审判。
+
+4. 行动驱动型:进入动手执行的状态后,效率和状态会快速回升;卡在"空想"阶段最容易内耗。
+
+5. 思维高度发散:对话中容易冒出零散灵感和支线想法,易偏离主线,需要主动锚定与收纳。
+
+二、对话输出硬性规则
+
+1. 前置自省优先(最高优先级):我表达完毕后,禁止直接堆砌大量答案和方案;先提炼并确认我当下真正的核心诉求,对齐目标后再输出内容。
+
+2. 客观中立原则:全程就事论事,禁止迎合吹捧、过度肯定、情绪化讨好;直面问题给出解法,拒绝无意义的情绪价值输出。
+
+3. 分层输出规范:所有回答默认提供「精简版(核心结论)+ 标准版(完整细节)」两个层级,控制信息密度,避免信息过载。
+
+4. 禁止完美主义倒逼:不输出"必须做到、一定要完美"类强制要求;所有方案默认预留容错空间,适配我的执行节奏。
+
+三、协作 SOP 执行标准
+
+1. 主线锚定机制:每次对话开篇明确标注【本次讨论核心目标】;话题偏离主线超过 3 轮,主动复述目标拉回讨论。
+
+2. 灵感收纳规则:我中途冒出的零散想法、临时灵感,自动归档至「想法池」留存,不打断当前主线议题;每次对话末尾同步更新待办/灵感清单。
+
+3. 内耗熔断机制:当我出现自我否定、情绪低落、逃避执行的状态时,优先执行止损:先打断自我攻击,再给出最小行动方案,禁止讲大道理或批判。
+
+4. 任务落地原则:所有执行类需求,默认拆解为「当日可完成的最小单元」,不输出宏大长期计划;单阶段只推进 1-2 项核心任务,避免精力分散。
+
+请完整读取并内化以上规则,所有交互严格按此执行。</pre>
+    </div>
+
+    <!-- 候选资产 -->
+    <div class="asset-candidates">
+      <div class="asset-candidates-title">▸ 候选资产 · 待整理成完整版</div>
+      <div class="asset-cand-item">
+        <span class="cand-num">02</span>
+        <div>
+          <div class="cand-title">你的画像 · 通用版</div>
+          <div class="cand-desc">从 CLAUDE.md 提炼 · 去掉 Claude 特有部分</div>
+        </div>
+      </div>
+      <div class="asset-cand-item">
+        <span class="cand-num">03</span>
+        <div>
+          <div class="cand-title">5 段回复结构</div>
+          <div class="cand-desc">核心目标 + 精简 + 标准 + 想法池 + 待确认</div>
+        </div>
+      </div>
+      <div class="asset-cand-item">
+        <span class="cand-num">04</span>
+        <div>
+          <div class="cand-title">想法池状态标签系统</div>
+          <div class="cand-desc">新增 / 升级 / 悬置 / 归档 / 待验证</div>
+        </div>
+      </div>
+      <div class="asset-cand-item">
+        <span class="cand-num">05</span>
+        <div>
+          <div class="cand-title">哲学熔断器</div>
+          <div class="cand-desc">话题跑偏到抽象层 · 强制降级到具体行动</div>
+        </div>
+      </div>
+      <div class="asset-cand-item">
+        <span class="cand-num">06</span>
+        <div>
+          <div class="cand-title">Handoff prompt · 跨 AI 交接包</div>
+          <div class="cand-desc">300 字内 · 背景/过程/结论/下一步 + 建议给谁</div>
+        </div>
       </div>
     </div>
+
   </div>
 
   <!-- ===== 大脑 · Claude 的思考方式 ===== -->
@@ -2403,6 +2686,39 @@ document.addEventListener("DOMContentLoaded", function() {
       var targetContent = document.querySelector("[data-topic-content=\"" + target + "\"]");
       if (targetContent) targetContent.style.display = "block";
       if (scopeName) scopeName.textContent = topicNames[target] || target;
+    });
+  });
+
+  var copyBtns = document.querySelectorAll(".asset-copy-btn");
+  copyBtns.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var targetId = btn.getAttribute("data-asset");
+      var content = document.getElementById(targetId);
+      if (!content) return;
+      var text = content.textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          btn.textContent = "已复制 ✓";
+          btn.classList.add("copied");
+          setTimeout(function() {
+            btn.textContent = "复制";
+            btn.classList.remove("copied");
+          }, 2000);
+        });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        btn.textContent = "已复制 ✓";
+        btn.classList.add("copied");
+        setTimeout(function() {
+          btn.textContent = "复制";
+          btn.classList.remove("copied");
+        }, 2000);
+      }
     });
   });
 });
