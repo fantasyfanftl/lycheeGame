@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>产品脑</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Songti SC', 'STSong', 'Songti TC', Georgia, serif;
+    background: linear-gradient(135deg, #2d5a4a 0%, #1e4a3b 100%);
+    min-height: 100vh;
+    padding: 20px 14px 40px;
+    color: #333;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .container { max-width: 560px; margin: 0 auto; }
+  .back-link {
+    display: inline-block; color: #fff; text-decoration: none;
+    font-size: 13px; margin-bottom: 8px; opacity: 0.7;
+    letter-spacing: 1px;
+  }
+  header {
+    text-align: center; color: #fff; margin-bottom: 22px;
+  }
+  header h1 { font-size: 26px; letter-spacing: 8px; margin-bottom: 4px; }
+  header p { font-size: 12px; opacity: 0.65; letter-spacing: 3px; font-style: italic; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+  .tab {
+    flex: 1; padding: 8px 6px; background: transparent;
+    color: rgba(255,255,255,0.65);
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 999px;
+    font-family: inherit; font-size: 12px; letter-spacing: 3px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .tab.active {
+    background: rgba(255,255,255,0.95); color: #1e4a3b;
+    border-color: transparent;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .story-page {
+    background: #f7efe0;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, rgba(70, 100, 70, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(70, 100, 70, 0.04) 0%, transparent 50%);
+    border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.4) inset;
+    padding: 32px 26px 28px;
+    min-height: 460px;
+    position: relative;
+  }
+  .story-page::before {
+    content: '';
+    position: absolute; top: 20px; bottom: 20px; left: 12px;
+    width: 1px; background: rgba(50, 90, 60, 0.15);
+  }
+
+  .story-header {
+    text-align: center;
+    font-size: 12px; letter-spacing: 4px;
+    color: #4a7a5a; margin-bottom: 22px;
+    font-style: italic;
+  }
+
+  .scenario {
+    font-size: 15px; line-height: 1.95;
+    color: #2d3d34; letter-spacing: 0.3px;
+    margin-bottom: 24px;
+    padding: 0 6px;
+    text-indent: 2em;
+  }
+  .scenario b {
+    color: #2a5a48;
+    font-weight: 700;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .opt {
+    padding: 14px 16px; background: rgba(74, 122, 90, 0.06);
+    border: 1.5px solid rgba(74, 122, 90, 0.2); border-radius: 10px;
+    font-family: inherit; font-size: 14px; line-height: 1.6;
+    color: #2d3d34; cursor: pointer; text-align: left;
+    transition: all 0.15s;
+    display: flex;
+    gap: 10px;
+  }
+  .opt:hover { background: rgba(74, 122, 90, 0.12); border-color: rgba(74, 122, 90, 0.4); }
+  .opt.picked {
+    background: rgba(74, 122, 90, 0.2);
+    border-color: #4a7a5a;
+  }
+  .opt.picked.correct { background: rgba(120, 180, 90, 0.25); border-color: #6ba055; }
+  .opt.picked.wrong { background: rgba(200, 130, 90, 0.18); border-color: #b57748; }
+  .opt.correct-answer { border-color: #6ba055; border-width: 2px; }
+  .opt.disabled { pointer-events: none; }
+  .opt-label {
+    font-weight: 700;
+    color: #4a7a5a;
+    flex-shrink: 0;
+  }
+
+  .reveal-section {
+    display: none;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px dashed rgba(74, 122, 90, 0.35);
+  }
+  .reveal-section.show { display: block; animation: fadeIn 0.4s; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  .reveal-label {
+    text-align: center;
+    font-size: 11px; letter-spacing: 6px;
+    color: #4a7a5a; margin-bottom: 18px;
+    font-style: italic;
+  }
+  .reveal-para {
+    font-size: 14px; line-height: 1.95;
+    color: #3a4a3f; letter-spacing: 0.3px;
+    margin-bottom: 14px;
+    text-indent: 2em;
+  }
+  .reveal-para b { color: #2a5a48; }
+
+  .principle-stamp {
+    text-align: center;
+    margin: 26px 0 8px;
+  }
+  .principle-stamp .frame {
+    display: inline-block;
+    border: 2px double #4a7a5a;
+    padding: 12px 26px;
+    letter-spacing: 8px;
+    font-size: 18px;
+    color: #2a5a48;
+    font-weight: 700;
+  }
+  .principle-stamp .en {
+    display: block; font-size: 10px;
+    letter-spacing: 2px; color: #6a8a7a;
+    margin-top: 4px; font-style: italic;
+    font-family: Georgia, serif;
+  }
+
+  .next-btn {
+    display: block; margin: 22px auto 0;
+    padding: 10px 28px; background: #2a5a48; color: #f7efe0;
+    border: none; border-radius: 3px;
+    font-family: inherit; font-size: 13px; letter-spacing: 4px;
+    cursor: pointer;
+  }
+  .next-btn:hover { background: #1a4a38; }
+
+  .end-page {
+    text-align: center; padding: 60px 20px;
+  }
+  .end-page .icon { font-size: 40px; margin-bottom: 16px; }
+  .end-page h3 { color: #2a5a48; letter-spacing: 4px; margin-bottom: 12px; font-size: 20px; }
+  .end-page p { color: #4a6a5a; font-size: 14px; line-height: 1.9; letter-spacing: 1px; margin-bottom: 14px; }
+  .end-page button {
+    margin: 8px 4px; padding: 8px 20px;
+    background: transparent; color: #2a5a48;
+    border: 1px solid #2a5a48; border-radius: 3px;
+    font-family: inherit; font-size: 13px; letter-spacing: 3px;
+    cursor: pointer;
+  }
+  .end-page button.primary { background: #2a5a48; color: #f7efe0; border-color: #2a5a48; }
+
+  .dex-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .dex-item {
+    background: #f7efe0; border-radius: 8px; padding: 16px 10px 14px;
+    text-align: center; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: transform 0.15s;
+    position: relative; min-height: 100px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .dex-item:hover { transform: translateY(-2px); }
+  .dex-item .emoji { font-size: 26px; margin-bottom: 8px; display: block; }
+  .dex-item .name { font-size: 13px; color: #2a5a48; letter-spacing: 2px; }
+  .dex-item.locked { background: rgba(247,239,224,0.35); }
+  .dex-item.locked .emoji, .dex-item.locked .name { visibility: hidden; }
+  .dex-item.locked::after {
+    content: '？'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: rgba(107,72,32,0.35);
+    font-family: Georgia;
+  }
+
+  .dex-modal {
+    position: fixed; inset: 0; background: rgba(20,40,30,0.85);
+    backdrop-filter: blur(6px); z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .dex-modal.show { display: flex; }
+  .dex-modal .story-page { max-width: 480px; width: 100%; min-height: auto; }
+  .dex-name-big {
+    text-align: center;
+    font-size: 22px; color: #2a5a48; letter-spacing: 6px;
+    margin-bottom: 4px;
+  }
+  .dex-en {
+    text-align: center;
+    font-size: 11px; color: #6a8a7a; letter-spacing: 3px;
+    margin-bottom: 20px; font-style: italic;
+    font-family: Georgia, serif;
+  }
+  .dex-def, .dex-ex, .dex-break {
+    font-size: 14px; line-height: 1.9; color: #3a4a3f;
+    margin-bottom: 14px; text-indent: 2em;
+  }
+  .dex-ex {
+    padding: 12px 14px; background: rgba(74, 122, 90, 0.08);
+    border-radius: 4px; text-indent: 0;
+  }
+  .dex-ex::before { content: '例 · '; color: #4a7a5a; letter-spacing: 2px; }
+  .dex-break {
+    padding: 12px 14px; background: rgba(200, 150, 90, 0.12);
+    border-radius: 4px; text-indent: 0;
+  }
+  .dex-break::before { content: '破解 · '; color: #a67240; letter-spacing: 2px; }
+  .dex-close {
+    display: block; margin: 18px auto 0; padding: 8px 24px;
+    background: transparent; color: #2a5a48;
+    border: 1px solid #2a5a48; border-radius: 3px;
+    font-family: inherit; font-size: 13px; letter-spacing: 3px;
+    cursor: pointer;
+  }
+
+  .foot-hint {
+    color: rgba(255,255,255,0.5); text-align: center;
+    font-size: 11px; margin-top: 16px; letter-spacing: 2px;
+  }
+  .foot-hint b { color: #a5d8a0; font-weight: 400; }
+  .foot-hint .reset {
+    color: rgba(255,255,255,0.4);
+    background: none; border: none;
+    font-family: inherit; font-size: 11px;
+    cursor: pointer; margin-left: 12px;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .story-page { padding: 26px 20px 24px; min-height: 420px; }
+    .scenario, .reveal-para { font-size: 13px; line-height: 1.85; }
+    .opt { font-size: 13px; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">← 返回荔枝游戏</a>
+  <header>
+    <h1>产 品 脑</h1>
+    <p>训练产品直觉 · 收集判断原则</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-panel="story">遇 一 事</button>
+    <button class="tab" data-panel="dex" id="dex-tab">图鉴 0/10</button>
+  </div>
+
+  <div class="panel active" id="panel-story">
+    <div class="story-page" id="story-page"></div>
+    <div class="foot-hint">
+      样本 · 前 <b id="story-count">5</b> 题 · 完整版陆续追加
+      <button class="reset" id="reset-btn">从头</button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-dex">
+    <div class="dex-grid" id="dex-grid"></div>
+    <div class="foot-hint">答对后自动解锁对应原则</div>
+  </div>
+</div>
+
+<div class="dex-modal" id="dex-modal">
+  <div class="story-page" id="dex-detail"></div>
+</div>
+
+<script>
+// ============ 10 条产品原则字典 ============
+const PRINCIPLES = {
+  need: {
+    name: '需求真伪', en: 'Real Need vs Feature Request', emoji: '🎯',
+    def: '用户说的"我想要 X" · 90% 时候不是真需求 · 是他们对某个隐藏问题的一种表达方式。真需求藏在"为什么想要 X"背后。',
+    example: '用户说"给我加个夜间模式" · 但真需求可能是"我睡前看太刺眼"。产品经理该问的是"你什么场景用" · 不是"夜间模式是深黑还是深灰"。',
+    breaker: '追问"为什么" 3 次 · 不满足于第一层答案。用户是场景专家 · 但不是解决方案专家。'
+  },
+  priority: {
+    name: '优先级', en: 'Prioritization', emoji: '📊',
+    def: '资源永远不够 · 什么都做 = 什么都做不好。判断优先级不是靠"哪个功能酷" · 是"哪个需求·用户价值×商业价值×可行性 最高"。',
+    example: '10 个用户建议里 · 只有 1-2 个值得做。剩下的记录在案 · 但拒绝比接受更需要勇气。',
+    breaker: 'ICE 打分法(Impact/Confidence/Ease)或 RICE(Reach/Impact/Confidence/Effort) · 强制量化 · 让直觉不再主宰。'
+  },
+  mvp: {
+    name: 'MVP', en: 'Minimum Viable Product', emoji: '🌱',
+    def: '最小可行产品 · 用最少工作量验证一个假设。核心是"最小" · 不是"完整" · 更不是"完美"。',
+    example: 'Airbnb 早期是一个上传照片 + 收房费的静态页 · 没有支付 · 没有评价 · 没有匹配算法 · 就是验证"陌生人愿不愿意住陌生人家"。这个假设成了 · 后面才做。',
+    breaker: '每个新方向问 · "如果我 1 周只做 1 页 HTML · 能不能测出这个想法值不值得做?" 大部分时候答案是可以。'
+  },
+  data: {
+    name: '数据 vs 直觉', en: 'Data vs Intuition', emoji: '📈',
+    def: '数据不会撒谎 · 但会误导。用户 A 说"我要" · 不代表 100 个用户会用。数据是"验证" · 直觉是"提出假设" · 二者互补 · 不是二选一。',
+    example: '产品经理靠直觉提"我觉得加个签到会提留存" · 直觉可能对可能错 · 但必须做 A/B 测试验证。**只信直觉的是设计师 · 只信数据的是分析师 · 产品经理两者都要**。',
+    breaker: '每个功能上线前问 · "怎么知道这个功能起作用了?" 说不出成功指标 · 就别做。'
+  },
+  segment: {
+    name: '用户分层', en: 'User Segmentation', emoji: '🎭',
+    def: '"我们的用户"是产品死亡的开始。用户不是一群人 · 是一堆完全不同的子群体 · 用同一个产品做完全不同的事。',
+    example: '微信里 · 老人用它打电话 · 年轻人用它工作 · 商家用它做生意 · 极客用它挂各种小程序。做功能前先问 · "这个是给哪层用户?"',
+    breaker: '任何决策 · 先分清 3 类用户 · 明确"这个决策服务哪一类·牺牲哪一类"。不做就等于全都得罪。'
+  },
+  competitor: {
+    name: '竞品陷阱', en: 'Competitor Trap', emoji: '🕳',
+    def: '"竞品有 · 我们也要有"是产品最大的坟场。竞品做那个是因为他们的用户 · 你的用户可能完全不同。',
+    example: '每个音乐 App 都学网易云做评论区 · 但只有网易云的用户结构支撑得起评论文化。Spotify 做了评论后来关闭 · 因为他们的用户就是要"听音乐" · 不是要"读故事"。',
+    breaker: '看到竞品新功能第一反应不该是"我们也做" · 是"他们为什么做·数据是什么·目标用户是谁·和我们的一样吗?"'
+  },
+  pilot: {
+    name: '试点小跑', en: 'Pilot & Iterate', emoji: '🏃',
+    def: '"要做就做大的"是产品灾难。先在小范围试(1% 用户 / 1 个城市 / 1 个渠道) · 看数据 · 调 · 再放大。',
+    example: '滴滴当年在北京试打车 · 稳了才去上海。抖音在几个二三线城市小规模测算法 · 稳了才推全国。腾讯做微信支付先在春节红包试 · 稳了才做商户码。',
+    breaker: '任何超过 1 周工作量的新方向 · 强制先做 1/10 规模的试点 · 拿到数据再决定是否放大。'
+  },
+  reverse: {
+    name: '反向验证', en: 'Reverse Test', emoji: '🔄',
+    def: '不做 X 会怎么样? 如果答案是"没什么" · 那 X 就是伪需求。真需求经不起"不做"的检验。',
+    example: '你觉得"应该加个引导教程" · 那问自己 · "不加会怎样?"如果答案是"新用户看不懂就走了" · 那教程是真需求。如果答案是"不影响" · 那就不做。',
+    breaker: '每个"应该加" 都反过来问 · "不加会死人吗?"死不了就先不加。'
+  },
+  scenario: {
+    name: '场景化', en: 'Contextual Thinking', emoji: '📍',
+    def: '功能不是孤立存在的 · 它出现在某个具体的时间/地点/心情。抽象讨论"这功能有没有用"是错的 · 应该问"在什么场景下·谁·为什么用它"。',
+    example: '"付款码"这个功能 · 场景是"排队时·左手拿东西右手掏手机·店员在催"。所以要"打开即扫" · 不能有引导页 · 不能弹广告 · 不能要求指纹解锁 —— 场景全变。',
+    breaker: '设计任何功能前 · 用一句话描述"什么场景/谁/为什么用它" · 描述不出来就是没想清楚。'
+  },
+  discard: {
+    name: '舍得', en: 'Kill Your Darlings', emoji: '🗑',
+    def: '产品经理的核心能力不是"决定做什么" · 是"决定不做什么"。每加一个功能 · 都在给产品做减法(注意力/学习成本/维护成本)。',
+    example: 'Instagram 曾经有滤镜、地图、Discover、Story、Reels、直播、购物···最能给 Meta 赚钱的是**广告** · 但用户越来越不敢打开 · 因为它已经太重了。做加法容易 · 做减法难。',
+    breaker: '每季度问一次 · "如果只留 3 个功能 · 我留哪 3 个?"其他能砍就砍。'
+  }
+};
+
+// ============ 情境题 · 首批 5 题 ============
+const SCENARIOS = [
+  {
+    header: '客 户 反 馈',
+    scenario: '客户 A 直接找你说 · <b>"你们能不能加个批量导出的按钮 · 我每次要点 20 次特别烦。"</b> 作为产品经理 · 你的第一反应是?',
+    options: [
+      { text: '这个需求合理 · 排进下个版本', tag: 'wrong1' },
+      { text: '问客户 · 他们平时在什么场景下要导出这么多次', tag: 'correct' },
+      { text: '看后台数据 · 有多少人有类似操作模式', tag: 'wrong2' },
+      { text: '让开发评估工作量 · 再决定要不要做', tag: 'wrong3' }
+    ],
+    correct: 1,
+    principle: 'need',
+    reveal: {
+      right: '这是需求真伪的经典情境。客户说"我想要 X"·他其实在告诉你"我遇到问题 Y" · 但 X 不一定是最好的解法。',
+      wrong: '别急着记录需求或看数据。**先追问场景** · 你会发现 · 他可能一直在导出后手动改字段 · 真需求是"批量修改" · 不是"批量导出"。做出批量导出你解决的是表象 · 真痛点还在。'
+    }
+  },
+  {
+    header: '功 能 优 先 级',
+    scenario: '本季度只能做 3 件事 · 现在有 5 个候选 · <b>A. 新增社交分享</b>· <b>B. 修一个影响 20% 用户的 bug</b> · <b>C. 上一个高级会员付费包</b> · <b>D. 优化冷启动速度</b> · <b>E. 竞品刚上的 AI 助手</b>· 你选哪 3 个?',
+    options: [
+      { text: 'A + C + E · 追新亮点·抢市场', tag: 'wrong1' },
+      { text: 'B + D + C · 修问题·打基础·上付费', tag: 'correct' },
+      { text: 'B + D + E · 修问题·打基础·跟上竞品', tag: 'wrong2' },
+      { text: '让老板拍', tag: 'wrong3' }
+    ],
+    correct: 1,
+    principle: 'priority',
+    reveal: {
+      right: '优先级是 **用户价值 × 商业价值 × 可行性**。B(20% 用户受影响的 bug) 用户价值极高 · D(冷启动) 长期留存杠杆 · C(付费包) 商业价值直接。',
+      wrong: 'E(跟竞品的 AI) 是竞品陷阱经典款 —— 他们做是因为他们的用户结构支撑 · 你的用户可能根本不在乎。A(社交分享) 需要有强分享动机的场景才做得起来。**新亮点永远诱人 · 但砍掉 20% 用户的痛点才是产品经理的核心工作**。'
+    }
+  },
+  {
+    header: '新 方 向 判 断',
+    scenario: '老板拍板 · <b>"我们要做个短视频功能 · 3 个月内上线 · 覆盖首页 30% 流量。"</b> 你作为产品经理 · 该怎么响应?',
+    options: [
+      { text: '开干 · 立即拆解到迭代 · 分配人力', tag: 'wrong1' },
+      { text: '反对 · 我们没有短视频基因 · 会失败', tag: 'wrong2' },
+      { text: '做一个最小版本(1 个页面 · 1 个功能 · 1 类用户) · 2 周测试真实用户反应', tag: 'correct' },
+      { text: '看看抖音 / 快手怎么做的 · 抄一个减配版', tag: 'wrong3' }
+    ],
+    correct: 2,
+    principle: 'mvp',
+    reveal: {
+      right: 'MVP 的正确姿势 · 不是"完整功能的迷你版"·是"最能验证核心假设的最小实验"。假设是"我们用户愿意在我们平台看短视频"·那就做 1 页 1 功能 · 2 周测数据。',
+      wrong: '直接开干(A) = 3 个月赌上一大堆人力·失败了没退路。直接反对(B) = 产品经理放弃了自己的角色·反对要靠数据不是靠主观判断。抄竞品(D) = 竞品陷阱·你用户不是他用户。**MVP 是给老板的"我不反对但让我先验证"**·比硬顶更专业**。'
+    }
+  },
+  {
+    header: '数 据 异 常',
+    scenario: '本周新用户次日留存率突然从 45% 掉到 32% · 团队慌了。你会先做什么?',
+    options: [
+      { text: '立刻组织复盘会 · 分析上周所有改动', tag: 'wrong1' },
+      { text: '先分层看数据 · 不同渠道/设备/城市 的留存分别怎么变化', tag: 'correct' },
+      { text: '发布一个恢复公告 · 承诺立即修复', tag: 'wrong2' },
+      { text: '增加投放 · 用新用户量掩盖', tag: 'wrong3' }
+    ],
+    correct: 1,
+    principle: 'segment',
+    reveal: {
+      right: '数据总量掉了 · **90% 的可能不是整体崩** · 而是某一类用户异常拖累。可能是新渠道进来的用户不精准 · 可能是新版本 App 崩了 · 可能是某个城市网络问题。**先分层·再归因**。',
+      wrong: '组织复盘会(A) 在没数据的时候是浪费。发公告(C) 你都没搞清出了什么事。增加投放(D) 是掩耳盗铃 —— 用新用户量掩盖留存问题·最终留存分母更大·数据更难看。**数据出问题的第一动作永远是"再切一层看"**·不是"想原因"**。'
+    }
+  },
+  {
+    header: '功 能 讨 论',
+    scenario: '设计师提议 · <b>"我们应该给用户加个引导教程 · 现在很多人不会用高级功能。"</b> 你怎么回应?',
+    options: [
+      { text: '好啊 · 你先出方案我评审', tag: 'wrong1' },
+      { text: '看数据 · 现在多少比例的用户在用高级功能?不用会怎样?', tag: 'correct' },
+      { text: '反对 · 引导教程用户都跳过 · 白做', tag: 'wrong2' },
+      { text: '让开发估工时 · 再讨论', tag: 'wrong3' }
+    ],
+    correct: 1,
+    principle: 'reverse',
+    reveal: {
+      right: '**反向验证** · 不做 X 会怎么样?如果 30% 用户用不到高级功能但也没抱怨没流失 · 那"引导教程"可能是伪需求。真产品经理的第一反应不是"要不要做" · 是"不做会死人吗"。',
+      wrong: '好啊(A) = 直接把资源投出去·不问动机。反对(C) = 靠主观判断·和"设计师觉得要做"一样的错误。让开发估工时(D) = 跳过了最关键的"这事该不该做"·直接跳到"怎么做"。**产品经理最贵的是"拒绝的能力"** · 每一个"要不要做" · 都要经得起反向验证**。'
+    }
+  }
+];
+
+// ============ 状态 · 存档 ============
+const SAVE_KEY = 'productMind_v1';
+let unlockedPrinciples = new Set();
+let currentScenarioIdx = 0;
+
+function loadSave() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    unlockedPrinciples = new Set(s.unlocked || []);
+    currentScenarioIdx = s.storyIdx || 0;
+  } catch (e) {}
+}
+function saveState() {
+  localStorage.setItem(SAVE_KEY, JSON.stringify({
+    unlocked: [...unlockedPrinciples],
+    storyIdx: currentScenarioIdx
+  }));
+}
+
+// ============ 渲染场景题 ============
+function renderScenario() {
+  const page = document.getElementById('story-page');
+  if (currentScenarioIdx >= SCENARIOS.length) {
+    page.innerHTML = `
+      <div class="end-page">
+        <div class="icon">🧠</div>
+        <h3>今 日 已 尽</h3>
+        <p>你已经答完了当前所有题目。<br>正式版持续追加中。</p>
+        <button class="primary" id="restart-btn">重 答</button>
+        <button id="see-dex">看 图 鉴</button>
+      </div>`;
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      currentScenarioIdx = 0;
+      saveState();
+      renderScenario();
+    });
+    document.getElementById('see-dex').addEventListener('click', () => {
+      document.querySelector('.tab[data-panel="dex"]').click();
+    });
+    return;
+  }
+
+  const s = SCENARIOS[currentScenarioIdx];
+  page.innerHTML = `
+    <div class="story-header">— ${s.header} —</div>
+    <div class="scenario">${s.scenario}</div>
+    <div class="options" id="options">
+      ${s.options.map((o, i) => {
+        const label = String.fromCharCode(65 + i);
+        return `<button class="opt" data-i="${i}">
+          <span class="opt-label">${label}.</span>
+          <span>${o.text}</span>
+        </button>`;
+      }).join('')}
+    </div>
+    <div class="reveal-section" id="reveal-section">
+      <div class="reveal-label">— 揭 晓 —</div>
+      <div id="reveal-content"></div>
+      <div class="principle-stamp" id="principle-stamp"></div>
+      <button class="next-btn" id="next-btn">下 一 题 →</button>
+    </div>
+  `;
+
+  page.querySelectorAll('.opt').forEach(btn => {
+    btn.addEventListener('click', () => pickOption(+btn.dataset.i));
+  });
+}
+
+function pickOption(idx) {
+  const s = SCENARIOS[currentScenarioIdx];
+  const options = document.querySelectorAll('.opt');
+  options.forEach((btn, i) => {
+    btn.classList.add('disabled');
+    if (i === s.correct) btn.classList.add('correct-answer');
+    if (i === idx) {
+      btn.classList.add('picked');
+      btn.classList.add(idx === s.correct ? 'correct' : 'wrong');
+    }
+  });
+
+  const isCorrect = idx === s.correct;
+  const p = PRINCIPLES[s.principle];
+
+  const reveal = document.getElementById('reveal-content');
+  reveal.innerHTML = `
+    <p class="reveal-para"><b>${isCorrect ? '✓ 答对了' : '✗ 换个角度想'}</b> · ${s.reveal.right}</p>
+    <p class="reveal-para">${s.reveal.wrong}</p>
+  `;
+
+  document.getElementById('principle-stamp').innerHTML = `
+    <div class="frame">${p.emoji} ${p.name}</div>
+    <div class="en">${p.en}</div>
+  `;
+
+  document.getElementById('reveal-section').classList.add('show');
+  unlockedPrinciples.add(s.principle);
+  updateDexTab();
+  saveState();
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    currentScenarioIdx++;
+    saveState();
+    renderScenario();
+  });
+}
+
+// ============ 图鉴 ============
+function renderDex() {
+  const grid = document.getElementById('dex-grid');
+  grid.innerHTML = Object.entries(PRINCIPLES).map(([id, p]) => {
+    const locked = !unlockedPrinciples.has(id);
+    return `<div class="dex-item ${locked ? 'locked' : ''}" data-id="${id}">
+      <span class="emoji">${p.emoji}</span>
+      <span class="name">${p.name}</span>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.dex-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (item.classList.contains('locked')) return;
+      showDexDetail(item.dataset.id);
+    });
+  });
+}
+
+function showDexDetail(id) {
+  const p = PRINCIPLES[id];
+  document.getElementById('dex-detail').innerHTML = `
+    <div class="dex-name-big">${p.emoji} ${p.name}</div>
+    <div class="dex-en">${p.en}</div>
+    <p class="dex-def">${p.def}</p>
+    <p class="dex-ex">${p.example}</p>
+    <p class="dex-break">${p.breaker}</p>
+    <button class="dex-close" id="dex-close">合 上</button>
+  `;
+  document.getElementById('dex-modal').classList.add('show');
+  document.getElementById('dex-close').onclick = () => {
+    document.getElementById('dex-modal').classList.remove('show');
+  };
+}
+
+function updateDexTab() {
+  document.getElementById('dex-tab').textContent = `图鉴 ${unlockedPrinciples.size}/${Object.keys(PRINCIPLES).length}`;
+  document.getElementById('story-count').textContent = SCENARIOS.length;
+}
+
+// ============ Tabs ============
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    if (tab.dataset.panel === 'dex') renderDex();
+  });
+});
+
+document.getElementById('dex-modal').addEventListener('click', e => {
+  if (e.target.id === 'dex-modal') e.target.classList.remove('show');
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!confirm('从头开始?当前进度会清空。')) return;
+  unlockedPrinciples = new Set();
+  currentScenarioIdx = 0;
+  saveState();
+  updateDexTab();
+  renderScenario();
+  renderDex();
+});
+
+// Boot
+loadSave();
+updateDexTab();
+renderScenario();
+renderDex();
+</script>
+</body>
+</html>
