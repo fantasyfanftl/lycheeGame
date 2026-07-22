@@ -3088,6 +3088,221 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
   });
+
+  // ==== 批注系统 ====
+  var STORAGE_KEY = "ipad-workstation-annotations-v1";
+  var popup = document.getElementById("selectionPopup");
+  var annotateBtn = document.getElementById("annotateBtn");
+  var panel = document.getElementById("annotationPanel");
+  var drawer = document.getElementById("annotationDrawer");
+  var drawerClose = document.getElementById("drawerClose");
+  var drawerList = document.getElementById("drawerList");
+  var drawerCount = document.getElementById("drawerCount");
+  var annotationCount = document.getElementById("annotationCount");
+  var exportBtn = document.getElementById("exportBtn");
+  var clearBtn = document.getElementById("clearBtn");
+
+  function loadAnnotations() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveAnnotations(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+  function updateCount() {
+    var list = loadAnnotations();
+    annotationCount.textContent = list.length;
+    if (list.length === 0) {
+      annotationCount.classList.add("zero");
+    } else {
+      annotationCount.classList.remove("zero");
+    }
+    drawerCount.textContent = "(" + list.length + ")";
+  }
+  function getScopeContext() {
+    var scope = document.getElementById("scope-name");
+    return scope ? scope.textContent : "";
+  }
+  function detectHostBlock(node) {
+    var el = node.nodeType === 1 ? node : node.parentElement;
+    while (el && el !== document.body) {
+      if (el.classList) {
+        if (el.classList.contains("card") || el.classList.contains("brain-section") ||
+            el.classList.contains("brain-review") || el.classList.contains("brain-insight") ||
+            el.classList.contains("meta-insight") || el.classList.contains("asset-card") ||
+            el.classList.contains("topic-placeholder")) {
+          var title = el.querySelector(".card-title, .brain-section-title, .brain-review-title, .asset-title, .meta-insight-title, .ph-title, .insight-half-label");
+          return title ? title.textContent.replace(/\s+/g, " ").trim().slice(0, 40) : "";
+        }
+      }
+      el = el.parentElement;
+    }
+    return "";
+  }
+
+  function hideSelectionPopup() {
+    popup.classList.remove("show");
+  }
+
+  document.addEventListener("mouseup", handleSelection);
+  document.addEventListener("touchend", function(e) {
+    setTimeout(handleSelection, 50);
+  });
+
+  function handleSelection() {
+    var sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) { hideSelectionPopup(); return; }
+    var text = sel.toString().trim();
+    if (text.length < 2) { hideSelectionPopup(); return; }
+    if (popup.contains(sel.anchorNode)) return;
+    if (drawer.contains(sel.anchorNode)) { hideSelectionPopup(); return; }
+    var range = sel.getRangeAt(0);
+    var rect = range.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) { hideSelectionPopup(); return; }
+    var top = rect.top - 42;
+    if (top < 10) top = rect.bottom + 8;
+    var left = rect.left + rect.width / 2 - 45;
+    if (left < 10) left = 10;
+    if (left + 90 > window.innerWidth) left = window.innerWidth - 100;
+    popup.style.top = top + "px";
+    popup.style.left = left + "px";
+    popup.classList.add("show");
+    popup._selectedText = text;
+    popup._selectedRange = range;
+    popup._blockContext = detectHostBlock(range.startContainer);
+  }
+
+  annotateBtn.addEventListener("click", function() {
+    var text = popup._selectedText;
+    if (!text) return;
+    var list = loadAnnotations();
+    var item = {
+      id: Date.now() + "-" + Math.floor(Math.random() * 1000000000),
+      quote: text,
+      comment: "",
+      scope: getScopeContext(),
+      block: popup._blockContext || "",
+      time: new Date().toISOString().slice(0, 16).replace("T", " ")
+    };
+    list.unshift(item);
+    saveAnnotations(list);
+    updateCount();
+    hideSelectionPopup();
+    window.getSelection().removeAllRanges();
+    drawer.classList.add("show");
+    renderList();
+    setTimeout(function() {
+      var input = drawerList.querySelector("textarea[data-id=\"" + item.id + "\"]");
+      if (input) input.focus();
+    }, 100);
+  });
+
+  panel.addEventListener("click", function() {
+    drawer.classList.add("show");
+    renderList();
+  });
+  drawerClose.addEventListener("click", function() {
+    drawer.classList.remove("show");
+  });
+
+  function renderList() {
+    var list = loadAnnotations();
+    if (list.length === 0) {
+      drawerList.innerHTML = "<div class=\"drawer-empty\"><div class=\"empty-icon\">💬</div>还没有批注<br>用手指或鼠标选中任意文字<br>即可添加引用+评论</div>";
+      return;
+    }
+    var html = "";
+    list.forEach(function(item) {
+      var scopeLine = item.scope + (item.block ? " › " + item.block : "");
+      html += "<div class=\"anno-item\" data-id=\"" + item.id + "\">";
+      html += "<div class=\"anno-scope\">" + escapeHtml(scopeLine) + " · " + item.time + "</div>";
+      html += "<div class=\"anno-quote\">" + escapeHtml(item.quote) + "</div>";
+      html += "<textarea class=\"anno-comment-input\" data-id=\"" + item.id + "\" placeholder=\"你的评论 / 疑问 / 想法...\">" + escapeHtml(item.comment) + "</textarea>";
+      html += "<div class=\"anno-actions\"><button class=\"anno-action-btn\" data-del=\"" + item.id + "\">删除</button></div>";
+      html += "</div>";
+    });
+    drawerList.innerHTML = html;
+
+    drawerList.querySelectorAll(".anno-comment-input").forEach(function(ta) {
+      ta.addEventListener("input", function() {
+        var id = ta.getAttribute("data-id");
+        var l = loadAnnotations();
+        var idx = -1;
+        for (var i = 0; i < l.length; i++) if (l[i].id === id) { idx = i; break; }
+        if (idx >= 0) { l[idx].comment = ta.value; saveAnnotations(l); }
+      });
+    });
+    drawerList.querySelectorAll("[data-del]").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var id = btn.getAttribute("data-del");
+        var l = loadAnnotations().filter(function(x) { return x.id !== id; });
+        saveAnnotations(l);
+        updateCount();
+        renderList();
+      });
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  exportBtn.addEventListener("click", function() {
+    var list = loadAnnotations();
+    if (list.length === 0) {
+      exportBtn.textContent = "还没有批注";
+      setTimeout(function() { exportBtn.textContent = "📋 导出全部 · 复制"; }, 1500);
+      return;
+    }
+    var lines = ["# ClaudeCode-Brain · 批注导出", "", "共 " + list.length + " 条 · " + new Date().toISOString().slice(0, 16).replace("T", " "), ""];
+    list.forEach(function(item, i) {
+      lines.push("---");
+      lines.push("");
+      lines.push("**#" + (i + 1) + "** · " + (item.scope || "") + (item.block ? " › " + item.block : "") + " · " + item.time);
+      lines.push("");
+      lines.push("> " + item.quote.replace(/\n/g, "\n> "));
+      lines.push("");
+      lines.push("**评论**:" + (item.comment || "(未填)"));
+      lines.push("");
+    });
+    var text = lines.join("\n");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        exportBtn.textContent = "已复制 ✓ 粘给 AI";
+        exportBtn.classList.add("copied");
+        setTimeout(function() {
+          exportBtn.textContent = "📋 导出全部 · 复制";
+          exportBtn.classList.remove("copied");
+        }, 2500);
+      });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      exportBtn.textContent = "已复制 ✓ 粘给 AI";
+      exportBtn.classList.add("copied");
+      setTimeout(function() {
+        exportBtn.textContent = "📋 导出全部 · 复制";
+        exportBtn.classList.remove("copied");
+      }, 2500);
+    }
+  });
+
+  clearBtn.addEventListener("click", function() {
+    if (loadAnnotations().length === 0) return;
+    if (confirm("清空所有批注?")) {
+      saveAnnotations([]);
+      updateCount();
+      renderList();
+    }
+  });
+
+  updateCount();
 });
 </script>
 
