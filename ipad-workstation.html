@@ -3473,7 +3473,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     </div>
 
     <div class="map-svg-wrap">
-      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+      <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
         <defs>
           <linearGradient id="brainGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.3"/>
@@ -3496,107 +3496,104 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
             <stop offset="100%" stop-color="#6ee7b7" stop-opacity="0.08"/>
           </linearGradient>
           <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c9dff" opacity="0.8"/>
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c9dff" opacity="0.9"/>
           </marker>
-          <marker id="arrowSoft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#b478ff" opacity="0.5"/>
+          <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#b478ff" opacity="0.85"/>
           </marker>
         </defs>
 
-        <!-- 连线(先画 · 在盒子后面) -->
-        <!-- 大脑 → 所有主题(虚线 · 指导关系) -->
-        <line x1="150" y1="115" x2="220" y2="220" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" marker-end="url(#arrowSoft)"/>
-        <line x1="150" y1="115" x2="500" y2="220" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.4" marker-end="url(#arrowSoft)"/>
-        <line x1="150" y1="115" x2="600" y2="440" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.3" marker-end="url(#arrowSoft)"/>
+        <!-- 连线(在盒子之前画 · 让盒子盖在上面) -->
 
-        <!-- 主题 01 → 主题 02(产出资产) -->
-        <line x1="360" y1="260" x2="440" y2="260" stroke="#7c9dff" stroke-width="2.5" opacity="0.85" marker-end="url(#arrow)"/>
-        <text x="400" y="248" fill="#a4b3ff" font-family="SF Mono, monospace" font-size="11" text-anchor="middle" opacity="0.9">产出资产</text>
+        <!-- 主题 01 → 主题 02 · 讨论产出资产 · 唯一实证箭头 -->
+        <line x1="360" y1="200" x2="440" y2="200" stroke="#7c9dff" stroke-width="3" opacity="0.9" marker-end="url(#arrow)"/>
+        <text x="400" y="188" fill="#a4b3ff" font-family="SF Mono, monospace" font-size="12" text-anchor="middle" font-weight="700">讨论产出资产</text>
+        <text x="400" y="220" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">已发生 · 5 条资产</text>
 
-        <!-- 主题 02 → 主题 03(未来用) -->
-        <line x1="500" y1="300" x2="600" y2="420" stroke="#b478ff" stroke-width="2" stroke-dasharray="6 4" opacity="0.6" marker-end="url(#arrowSoft)"/>
-        <text x="565" y="358" fill="#d6b4ff" font-family="SF Mono, monospace" font-size="10" opacity="0.7">未来供给</text>
+        <!-- 主题 02 里的资产 03 → 大脑 · 说明书帮别 AI 建大脑 -->
+        <path d="M 480 155 Q 350 100 200 105" stroke="#b478ff" stroke-width="2.5" fill="none" opacity="0.85" marker-end="url(#arrowPurple)"/>
+        <text x="340" y="80" fill="#d6b4ff" font-family="SF Mono, monospace" font-size="11" text-anchor="middle" font-weight="700">资产 03「大脑搭建说明书」</text>
+        <text x="340" y="96" fill="#d6b4ff" font-family="SF Mono, monospace" font-size="10" text-anchor="middle">帮别 AI 建它们的大脑</text>
 
-        <!-- 主题 01 → 主题 03(方法论直接支持) -->
-        <line x1="290" y1="300" x2="580" y2="425" stroke="#7c9dff" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4" marker-end="url(#arrowSoft)"/>
-
-        <!-- 全局想法池 → 分流到主题 -->
-        <line x1="150" y1="465" x2="240" y2="310" stroke="#6ee7b7" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5" marker-end="url(#arrowSoft)"/>
-        <line x1="180" y1="480" x2="440" y2="290" stroke="#6ee7b7" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4" marker-end="url(#arrowSoft)"/>
-        <line x1="180" y1="500" x2="560" y2="440" stroke="#6ee7b7" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.3" marker-end="url(#arrowSoft)"/>
-
-        <!-- 大脑盒子 -->
+        <!-- 大脑盒子 · 独立元层 · 不发命令 -->
         <g>
-          <rect x="60" y="50" width="180" height="65" rx="10" fill="url(#brainGrad)" stroke="#7dd3fc" stroke-width="1.5" opacity="0.9"/>
-          <text x="150" y="78" fill="#7dd3fc" font-size="16" font-weight="700" text-anchor="middle">🧠 大脑</text>
-          <text x="150" y="97" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="10" text-anchor="middle">元层 · 指导所有主题</text>
+          <rect x="60" y="80" width="180" height="70" rx="10" fill="url(#brainGrad)" stroke="#7dd3fc" stroke-width="1.8" opacity="0.95"/>
+          <text x="150" y="108" fill="#7dd3fc" font-size="16" font-weight="700" text-anchor="middle">🧠 大脑</text>
+          <text x="150" y="128" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">Claude 怎么想的</text>
+          <text x="150" y="142" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">给你看的元层描述</text>
         </g>
 
         <!-- 主题 01 -->
         <g>
-          <rect x="200" y="220" width="160" height="80" rx="10" fill="url(#topicGrad)" stroke="#7c9dff" stroke-width="2"/>
-          <text x="280" y="250" fill="#eaecf5" font-size="14" font-weight="700" text-anchor="middle">🏗 主题 01</text>
-          <text x="280" y="270" fill="#a4b3ff" font-size="11" text-anchor="middle">怎么搭建 AI 工作台</text>
-          <text x="280" y="288" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">LIVE · 当前讨论</text>
+          <rect x="200" y="170" width="160" height="85" rx="10" fill="url(#topicGrad)" stroke="#7c9dff" stroke-width="2"/>
+          <text x="280" y="200" fill="#eaecf5" font-size="14" font-weight="700" text-anchor="middle">🏗 主题 01</text>
+          <text x="280" y="221" fill="#a4b3ff" font-size="11" text-anchor="middle">怎么搭建 AI 工作台</text>
+          <text x="280" y="240" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">LIVE · 讨论进行中</text>
         </g>
 
         <!-- 主题 02 -->
         <g>
-          <rect x="440" y="220" width="160" height="80" rx="10" fill="url(#assetGrad)" stroke="#b478ff" stroke-width="2"/>
-          <text x="520" y="250" fill="#eaecf5" font-size="14" font-weight="700" text-anchor="middle">📋 主题 02</text>
-          <text x="520" y="270" fill="#d6b4ff" font-size="11" text-anchor="middle">跨 AI 复用资产</text>
-          <text x="520" y="288" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">IDEA · 已入库 5 条</text>
+          <rect x="440" y="170" width="160" height="85" rx="10" fill="url(#assetGrad)" stroke="#b478ff" stroke-width="2"/>
+          <text x="520" y="200" fill="#eaecf5" font-size="14" font-weight="700" text-anchor="middle">📋 主题 02</text>
+          <text x="520" y="221" fill="#d6b4ff" font-size="11" text-anchor="middle">跨 AI 复用资产</text>
+          <text x="520" y="240" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">已入库 5 条 · 含"说明书"</text>
         </g>
 
-        <!-- 主题 03 -->
+        <!-- 主题 03 · 独立 · 没连线 -->
         <g>
-          <rect x="500" y="420" width="200" height="80" rx="10" fill="url(#futureGrad)" stroke="#f0abfc" stroke-width="2" stroke-dasharray="4 3"/>
-          <text x="600" y="450" fill="#eaecf5" font-size="14" font-weight="700" text-anchor="middle">🎯 主题 03</text>
-          <text x="600" y="470" fill="#f0abfc" font-size="11" text-anchor="middle">AI 工具分工 · 未来</text>
-          <text x="600" y="488" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">IDEA · 首页入口</text>
+          <rect x="180" y="330" width="200" height="80" rx="10" fill="url(#futureGrad)" stroke="#f0abfc" stroke-width="1.8" stroke-dasharray="5 4" opacity="0.85"/>
+          <text x="280" y="360" fill="#eaecf5" font-size="14" font-weight="700" text-anchor="middle">🎯 主题 03</text>
+          <text x="280" y="379" fill="#f0abfc" font-size="11" text-anchor="middle">AI 工具分工 · 未来</text>
+          <text x="280" y="398" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">独立 · 未与他人连接</text>
         </g>
 
-        <!-- 全局想法池 -->
+        <!-- 全局想法池 · 独立 · 没画箭头(池目前是空的) -->
         <g>
-          <rect x="60" y="450" width="180" height="70" rx="10" fill="url(#poolGrad)" stroke="#6ee7b7" stroke-width="1.5" stroke-dasharray="4 4"/>
-          <text x="150" y="480" fill="#6ee7b7" font-size="14" font-weight="700" text-anchor="middle">★ 全局想法池</text>
-          <text x="150" y="500" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="10" text-anchor="middle">分流器 · 未归类</text>
+          <rect x="440" y="330" width="200" height="80" rx="10" fill="url(#poolGrad)" stroke="#6ee7b7" stroke-width="1.8" stroke-dasharray="5 4" opacity="0.85"/>
+          <text x="540" y="360" fill="#6ee7b7" font-size="14" font-weight="700" text-anchor="middle">★ 全局想法池</text>
+          <text x="540" y="379" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="10" text-anchor="middle">未归类想法的缓冲</text>
+          <text x="540" y="398" fill="#7d84a8" font-family="SF Mono, monospace" font-size="9" text-anchor="middle">目前为空 · 未连接</text>
         </g>
 
         <!-- 图例 -->
-        <g transform="translate(60, 555)">
-          <line x1="0" y1="0" x2="20" y2="0" stroke="#7c9dff" stroke-width="2.5" marker-end="url(#arrow)"/>
-          <text x="25" y="4" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="9">实线 · 已发生</text>
+        <g transform="translate(60, 470)">
+          <line x1="0" y1="0" x2="24" y2="0" stroke="#7c9dff" stroke-width="3" marker-end="url(#arrow)"/>
+          <text x="30" y="4" fill="#a4b3ff" font-family="SF Mono, monospace" font-size="10" font-weight="700">实证箭头 · 你说过的</text>
+        </g>
+        <g transform="translate(280, 470)">
+          <path d="M 0 0 Q 12 -8 24 0" stroke="#b478ff" stroke-width="2.5" fill="none" marker-end="url(#arrowPurple)"/>
+          <text x="30" y="4" fill="#d6b4ff" font-family="SF Mono, monospace" font-size="10" font-weight="700">反向关系 · 我遗漏后补上</text>
+        </g>
 
-          <line x1="130" y1="0" x2="150" y2="0" stroke="#b478ff" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrowSoft)"/>
-          <text x="155" y="4" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="9">虚线 · 未来供给</text>
-
-          <line x1="270" y1="0" x2="290" y2="0" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 4"/>
-          <text x="295" y="4" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="9">冷青 · 大脑指导</text>
-
-          <line x1="400" y1="0" x2="420" y2="0" stroke="#6ee7b7" stroke-width="1.5" stroke-dasharray="3 3"/>
-          <text x="425" y="4" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="9">绿虚 · 想法分流</text>
+        <!-- 说明 · 没连线的盒子 -->
+        <g transform="translate(60, 510)">
+          <text x="0" y="0" fill="#9ca3b8" font-family="SF Mono, monospace" font-size="10">没连线的盒子 = 我不确定它和别人的关系 · 不瞎连</text>
         </g>
       </svg>
     </div>
 
     <!-- 说明 -->
     <div class="map-explain">
-      <div class="map-explain-title">▸ 图上说了什么</div>
+      <div class="map-explain-title">▸ 我诚实的理解 · 好坏都讲</div>
       <div class="map-explain-item">
-        <strong>大脑</strong> · 顶层 · 用冷青虚线指向所有主题 —— 意思是"我的思考方式贯穿所有讨论"
+        <strong>只画了 2 条箭头</strong> · 因为只有这 2 条是有证据的:<br>
+        · 主题 01 → 主题 02(你原话说过"讨论产出资产" · 5 条资产是实证)<br>
+        · 主题 02 → 大脑(资产 03 是"大脑搭建说明书" · 反向指向大脑 · 我上一版遗漏了)
       </div>
       <div class="map-explain-item">
-        <strong>主题 01 → 主题 02</strong>(粗蓝实线)· 主题 01 产出的东西沉淀成跨 AI 资产 —— 已发生 · 5 条资产是证据
+        <strong>删掉了 3 条我瞎推的箭头</strong>:<br>
+        · 大脑 → 所有主题(我说"指导" · 你从没这么说 · 大脑只是元层描述 · 不发命令)<br>
+        · 主题 02 → 主题 03("未来供给" · 我脑补 · 无证据)<br>
+        · 主题 01 → 主题 03("方法论指导" · 也是我脑补)
       </div>
       <div class="map-explain-item">
-        <strong>主题 02 → 主题 03</strong>(紫虚线)· 未来资产会喂给 AI 分工 —— 尚未发生
+        <strong>主题 03 和全局想法池 · 目前是"孤岛"</strong>:<br>
+        · 主题 03 · 未来的首页入口 · 现在还没和任何东西真正连上<br>
+        · 全局想法池 · 池是空的 · 具体归类还没发生 · 不假装它有关系
       </div>
       <div class="map-explain-item">
-        <strong>主题 01 → 主题 03</strong>(细虚线)· 主题 01 的方法论(讨论怎么搭)也会指导主题 03
-      </div>
-      <div class="map-explain-item">
-        <strong>全局想法池</strong>(绿虚线)· 未归类的想法从这里分流到各主题
+        <strong>关键收获</strong>:上一版 5 条箭头看起来"信息丰富" · 但其中 3 条是我脑补 · 这就是我在讨好漂移<br>
+        <span style="color: #ff8c9c;">图上信息少了 · 但真实性上来了</span>
       </div>
     </div>
 
