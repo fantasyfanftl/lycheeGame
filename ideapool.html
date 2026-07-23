@@ -892,6 +892,29 @@ function loadIdeas() {
 
   // 如果只剩 SOP · 塞占位
   if (ideas.length === 1) {
+    // 梦游守夜人 · 完整版起稿
+    const sleepwalker = {
+      id: uid(),
+      title: '梦游守夜人',
+      createdAt: '2026-07-23',
+      brainstorm: '梦游者动作可以极慢 · 让"提前"有充分反应时间 —— 也塑造静谧氛围\n\n障碍分类:\n  · 能移动(椅子/垃圾桶) → 拖走\n  · 能改变(开着的门/亮着的灯) → 关闭/开启\n  · 无法处理(楼梯/墙) → 只能引导绕行\n\n视觉:剪影 + 一点点色彩(一盏灯·一件衣服) · 参考 Limbo / Inside\n\n声音是灵魂 —— 只有脚步声 + 呼吸 · 撞到东西是心跳骤然的一下(不是响声 · 是身体反应)\n\n结局考虑:"他早上醒来 · 看到桌子被推到角落 · 想了想 · 笑了一下" —— 玩家的守护他永远不知道\n\n危险点:如果 3 分钟循环下"搬障碍"太单调怎么办?可以考虑:不同梦游者的"癖好"(A 喜欢直走 · B 会转弯 · C 有仪式感必碰某物)增加变量'
+    };
+    SOP_STEPS.forEach(s => { sleepwalker[s.key] = {}; });
+    // Step 1 · 起念锁定
+    sleepwalker.s1 = {
+      concept: '一个人在梦中前进 · 你不能叫醒他 · 只能在他前方悄悄搬走危险',
+      refs: '《旅かえる》被动式养成节奏 · 《纪念碑谷》静谧氛围 · 老式《Lemmings》"帮不受控角色到终点"的心智',
+      gameplay: '路径预判 → 障碍处置 → 静默守护(不能唤醒)',
+      firstScreen: '一条窄走廊 · 昏黄夜灯 · 白衣人物闭眼往前走 · 你用手指点前方桌角把它推开'
+    };
+    // Step 2 · 边界钉死
+    sleepwalker.s2 = {
+      minLoop: '观察梦游者行进方向 → 提前 3-5 秒识别障碍 → 点击/拖动移开 → 梦游者安全通过 → 进入下一段路',
+      dontDo: '不做多梦游者(一次只保护一个)\n不做时间倒流\n不做剧情分支\n不做玩家角色(你是"看不见的守护者"·无形无实体)\n不做失败惩罚(撞到就是"醒了"·重来这一夜)',
+      iterPool: 'v1.1 多个夜晚·不同房型(老房/医院/公寓)\nv1.2 梦游者性格差异(快慢/转向习惯/特殊癖好)\nv1.3 双人梦游者(家人同时梦游·优先级判断)',
+      hooks: '基础钩子:静谧美 + "他不知道你在保护他"的温柔感\n核心钩子:预判成功那一刻的松弃感\n续加钩子:不同夜晚·不同的"他为什么梦游"(碎片化剧情)'
+    };
+    ideas.push(sleepwalker);
     ideas.push(makePlaceholder('构图裁切', 'v1.0 已上线 · https://fantasyfanftl.github.io/lycheeGame/crop.html'));
     ideas.push(makePlaceholder('产品脑', 'v1.0 已上线 · https://fantasyfanftl.github.io/lycheeGame/product-mind.html'));
   }
