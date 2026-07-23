@@ -99,23 +99,19 @@
     display: flex; gap: 6px; margin-bottom: 12px;
     justify-content: center;
     flex-wrap: wrap;
-  }
-  .ratio-btn {
-    padding: 6px 12px;
-    background: transparent;
-    border: 1px solid #444;
-    color: #999;
-    border-radius: 999px;
-    font-family: inherit;
+    align-items: center;
+    color: #888;
     font-size: 11px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 2px;
   }
-  .ratio-btn.active {
-    background: #fff;
-    color: #000;
-    border-color: #fff;
+  .ratio-bar .ratio-display {
+    padding: 6px 14px;
+    background: rgba(255,216,155,0.12);
+    border: 1px solid rgba(255,216,155,0.4);
+    color: #ffd89b;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 2px;
   }
 
   .action-bar {
@@ -237,11 +233,9 @@
   <div class="canvas-wrap" id="canvas-wrap"></div>
 
   <div class="ratio-bar" id="ratio-bar">
-    <button class="ratio-btn" data-ratio="free">自由</button>
-    <button class="ratio-btn active" data-ratio="1:1">1:1</button>
-    <button class="ratio-btn" data-ratio="3:4">3:4</button>
-    <button class="ratio-btn" data-ratio="4:3">4:3</button>
-    <button class="ratio-btn" data-ratio="16:9">16:9</button>
+    <span>本关比例</span>
+    <span class="ratio-display" id="ratio-display">1:1</span>
+    <span>只调位置和大小</span>
   </div>
 
   <div class="action-bar">
@@ -477,9 +471,7 @@ function renderLevel() {
 
   // 默认比例设为参考裁切比例
   currentRatio = level.ratio;
-  document.querySelectorAll('.ratio-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.ratio === currentRatio);
-  });
+  document.getElementById('ratio-display').textContent = currentRatio;
 
   // 初始化 cropRect · 居中 · 60% 大小
   requestAnimationFrame(() => {
@@ -622,16 +614,6 @@ function attachCropInteraction() {
   box.addEventListener('touchstart', onDown, { passive: false });
 }
 
-// ============ 比例切换 ============
-document.querySelectorAll('.ratio-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentRatio = btn.dataset.ratio;
-    initCrop();
-  });
-});
-
 // ============ 重置 ============
 document.getElementById('reset-btn').addEventListener('click', () => {
   initCrop();
@@ -726,24 +708,26 @@ function calcIoU(a, b) {
 function renderCompare(containerId, svgHtml, crop) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  const cw = container.clientWidth;
+  // 让容器按裁切比例显示
   const ratio = crop.w / crop.h;
   container.style.setProperty('--ratio', ratio.toFixed(3));
-  const ch = cw / ratio;
 
-  // SVG 原图 800x600 · 裁切区域 (crop.x*800, crop.y*600, crop.w*800, crop.h*600)
-  // 我们把整张 SVG 放大 · 让裁切区域填满容器
-  const scale = cw / (crop.w * 800);
-  const displayW = 800 * scale;
-  const displayH = 600 * scale;
-  const offsetX = -crop.x * 800 * scale;
-  const offsetY = -crop.y * 600 * scale;
+  requestAnimationFrame(() => {
+    const cw = container.clientWidth;
+    // SVG 原图 800x600 · 裁切区域 (crop.x*800, crop.y*600, crop.w*800, crop.h*600)
+    // 让裁切区域填满容器
+    const scale = cw / (crop.w * 800);
+    const displayW = 800 * scale;
+    const displayH = 600 * scale;
+    const offsetX = -crop.x * 800 * scale;
+    const offsetY = -crop.y * 600 * scale;
 
-  container.innerHTML = `
-    <div style="position:absolute; width:${displayW}px; height:${displayH}px; left:${offsetX}px; top:${offsetY}px;">
-      ${svgHtml}
-    </div>
-  `;
+    container.innerHTML = `
+      <div style="position:absolute; width:${displayW}px; height:${displayH}px; left:${offsetX}px; top:${offsetY}px;">
+        ${svgHtml}
+      </div>
+    `;
+  });
 }
 
 function renderEnd() {
@@ -758,7 +742,6 @@ function renderEnd() {
   document.querySelector('.ratio-bar').style.display = 'none';
   document.querySelector('.action-bar').style.display = 'none';
   document.querySelector('.info').style.display = 'none';
-
   const result = document.getElementById('result');
   result.classList.add('show');
   result.innerHTML = `

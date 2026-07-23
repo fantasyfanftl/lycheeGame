@@ -2080,6 +2080,17 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
+      <div class="topic-card" data-topic="F">
+        <div class="topic-badge topic-badge-idea">IDEA</div>
+        <div class="topic-header">
+          <div class="topic-icon">🎯</div>
+          <div>
+            <div class="topic-name">主题 03 · AI 工具分工</div>
+            <div class="topic-sub">未来放荔枝首页 · 场景选 AI</div>
+          </div>
+        </div>
+      </div>
+
       <div class="topic-divider"></div>
 
       <div class="topic-card topic-global" data-topic="global">
@@ -2946,8 +2957,14 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <!-- 5. AI 使用手册 -->
     <div class="brain-section">
       <div class="brain-section-title"><span class="num">05</span>AI 使用手册 · Memory</div>
-      <div style="font-size: 11px; color: #7d84a8; margin-bottom: 10px; padding: 6px 10px; background: rgba(180, 120, 255, 0.06); border-radius: 6px; border-left: 2px solid rgba(180, 120, 255, 0.3); line-height: 1.6;">
-        每次会话 Claude 自动读这份 · 相当于给它的操作说明书 · 让它知道"人怎么用它"</div>
+      <div style="font-size: 11px; color: #7d84a8; margin-bottom: 10px; padding: 10px 12px; background: rgba(180, 120, 255, 0.06); border-radius: 6px; border-left: 2px solid rgba(180, 120, 255, 0.3); line-height: 1.7;">
+        <strong style="color: #d6b4ff;">为什么需要这份东西:</strong><br>
+        · AI 容易失忆 · 需要外部说明书兜底<br>
+        · AI 之间有壁垒 · 需要共享的规则集打通<br>
+        · 每样东西都是产品 · 需要「给人 + 给 AI」两份说明书<br>
+        <br>
+        <span style="color: #7d84a8;">每次会话 Claude 自动读这份 · 就像收到一个新产品时先读说明书 · 知道自己在接管什么、该怎么做</span>
+      </div>
 
       <div class="brain-mem-item">
         <span class="mem-tag">feedback</span>
@@ -3097,6 +3114,33 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
   </div>
 
+  <!-- ===== 主题 03 · AI 工具分工 ===== -->
+  <div class="topic-content" data-topic-content="F" style="display:none;">
+    <div class="topic-placeholder">
+      <div class="ph-icon">🎯</div>
+      <div class="ph-title">主题 03 · AI 工具分工</div>
+      <div class="ph-desc">
+        <strong>目标</strong>:未来放荔枝首页 · 场景选 AI<br><br>
+
+        <strong>已有基础</strong>(从 CLAUDE.md 记忆):<br>
+        · GitHub Claude · 结构 / SOP / 抽象规则<br>
+        · aily · 精准操作 / 具体执行<br>
+        · 豆包 · 深度讨论 / 语音发散<br>
+        · 荔枝 · 半退休 · 只做早报<br>
+        · Kimi · 情感深挖 / 心镜方向<br><br>
+
+        <strong>未来要做</strong>:<br>
+        · 补充"什么场景用哪个" · 场景清单<br>
+        · 加"新加入的 AI"位置<br>
+        · 变成荔枝首页的入口地图<br><br>
+
+        <span style="font-size: 10px; color: #6b7295;">
+        待单独会话展开 · 现在只占位
+        </span>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== 全局想法池 ===== -->
   <div class="topic-content" data-topic-content="global" style="display:none;">
     <div class="topic-placeholder">
@@ -3182,6 +3226,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var topicNames = {
     "E": "主题 01 · 怎么搭建 AI 工作台",
     "D": "主题 02 · 跨 AI 复用资产",
+    "F": "主题 03 · AI 工具分工",
     "brain": "🧠 ClaudeCode-Brain · 我的大脑",
     "global": "全局想法池 · 未归类"
   };
