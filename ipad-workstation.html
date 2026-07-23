@@ -4449,7 +4449,7 @@ document.addEventListener("DOMContentLoaded", function() {
     btn.addEventListener("click", function() {
       var targetId = btn.getAttribute("data-asset");
       var content;
-      if (targetId === "asset-01-current") {
+      if (targetId.endsWith("-current")) {
         var activePanel = btn.closest(".asset-card").querySelector(".version-panel.active");
         content = activePanel;
       } else {
