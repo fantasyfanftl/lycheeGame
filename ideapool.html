@@ -399,7 +399,7 @@
   }
   .save-hint.saved { color: #ffd89b; }
 
-  /* SOP 文档模式 */
+  /* SOP 文档模式 · S 型蛇行流程图 */
   .sop-doc {
     color: #fff;
   }
@@ -418,26 +418,37 @@
     background: rgba(255,216,155,0.08);
     border-left: 3px solid #ffd89b;
     border-radius: 4px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     white-space: pre-line;
     letter-spacing: 0.3px;
   }
+  .sop-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px 40px;
+    position: relative;
+  }
+  .sop-flow-cell {
+    position: relative;
+  }
   .sop-step-doc {
-    margin-bottom: 16px;
     background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 12px;
-    padding: 16px 18px;
+    padding: 14px 16px;
+    height: 100%;
+    position: relative;
+    z-index: 2;
   }
   .sop-step-doc .sd-head {
     display: flex;
     align-items: baseline;
-    gap: 10px;
-    margin-bottom: 6px;
+    gap: 8px;
+    margin-bottom: 4px;
     flex-wrap: wrap;
   }
   .sop-step-doc .sd-num {
-    font-size: 11px;
+    font-size: 10px;
     color: #ffd89b;
     letter-spacing: 2px;
     font-family: "SF Mono", monospace;
@@ -447,71 +458,102 @@
     border-radius: 999px;
   }
   .sop-step-doc .sd-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #fff;
     letter-spacing: 3px;
   }
   .sop-step-doc .sd-why {
-    font-size: 11px;
-    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
     letter-spacing: 1px;
+    display: block;
+    margin-top: 2px;
   }
   .sop-step-doc .sd-goal {
-    font-size: 12px;
-    color: rgba(255,255,255,0.7);
-    margin-bottom: 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
+    margin: 8px 0 10px;
     padding-bottom: 8px;
     border-bottom: 1px dashed rgba(255,255,255,0.15);
     letter-spacing: 0.3px;
+    line-height: 1.5;
   }
   .sop-step-doc .sd-dos-label {
-    font-size: 11px;
+    font-size: 10px;
     color: rgba(255,216,155,0.7);
     letter-spacing: 2px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .sop-step-doc .sd-dos {
     list-style: none;
     padding: 0;
-    margin: 0 0 10px;
+    margin: 0 0 8px;
   }
   .sop-step-doc .sd-dos li {
-    font-size: 13px;
-    line-height: 1.75;
-    color: rgba(255,255,255,0.85);
-    padding: 4px 0 4px 20px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.82);
+    padding: 3px 0 3px 14px;
     position: relative;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
   }
   .sop-step-doc .sd-dos li::before {
     content: '·';
     position: absolute;
-    left: 6px;
+    left: 4px;
     color: #ffd89b;
     font-weight: bold;
   }
+  .sop-step-doc .sd-dos li b {
+    color: rgba(255,255,255,0.95);
+  }
   .sop-step-doc .sd-verify {
-    font-size: 12px;
-    color: rgba(255,255,255,0.6);
-    padding-top: 10px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    padding-top: 8px;
     border-top: 1px dashed rgba(255,255,255,0.12);
-    margin-top: 10px;
+    margin-top: 8px;
   }
   .sop-step-doc .sd-verify::before {
-    content: '📋 验收 · ';
+    content: '📋 ';
     color: #a5d88a;
-    font-weight: 600;
   }
   .sop-step-doc .sd-warn {
-    font-size: 11px;
+    font-size: 10px;
     color: #ff9a76;
-    margin-top: 8px;
-    letter-spacing: 0.5px;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
   }
   .sop-step-doc .sd-warn::before { content: '⚠ '; }
+
+  /* S 型箭头连接 */
+  .sop-flow-arrow {
+    position: absolute;
+    color: #a5d88a;
+    font-size: 24px;
+    z-index: 1;
+    line-height: 1;
+    text-shadow: 0 0 6px rgba(165,216,138,0.6);
+    pointer-events: none;
+  }
+  /* 水平箭头 · 在两个 cell 之间 */
+  .sop-flow-arrow.h {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .sop-flow-arrow.h.right { right: -30px; }
+  .sop-flow-arrow.h.left { left: -30px; transform: translateY(-50%) rotate(180deg); }
+  /* 垂直下折箭头 · 在末端往下走 */
+  .sop-flow-arrow.down {
+    right: 50%;
+    bottom: -34px;
+    transform: translateX(50%);
+    font-size: 28px;
+  }
+
   .sop-doc-rules {
-    margin-top: 20px;
+    margin-top: 28px;
     padding: 14px 18px;
     background: rgba(255,100,100,0.06);
     border: 1px solid rgba(255,100,100,0.2);
@@ -542,6 +584,18 @@
     left: 4px;
     color: #ff9a76;
     font-weight: bold;
+  }
+
+  @media (max-width: 900px) {
+    .sop-flow {
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 30px;
+    }
+    .sop-flow-arrow.h.right, .sop-flow-arrow.h.left { display: none; }
+    .sop-flow-arrow.down { display: none; }
+  }
+  @media (max-width: 560px) {
+    .sop-flow { grid-template-columns: 1fr; gap: 12px; }
   }
 
   /* Modal · 导出 */
@@ -890,6 +944,22 @@ function renderDetail() {
 }
 
 function renderDocMode(main, idea) {
+  // Step 顺序 · 上排 1-2-3-4 · 下排从右到左 5-6-7 (S 型蛇行)
+  // 用 grid 4 列 · 上排放 1234 · 下排放 (empty)765
+  const cells = [
+    { step: SOP_STEPS[0], row: 1, col: 1, arrow: 'right' },
+    { step: SOP_STEPS[1], row: 1, col: 2, arrow: 'right' },
+    { step: SOP_STEPS[2], row: 1, col: 3, arrow: 'right' },
+    { step: SOP_STEPS[3], row: 1, col: 4, arrow: 'down' },
+    { step: SOP_STEPS[6], row: 2, col: 1, arrow: null },
+    { step: SOP_STEPS[5], row: 2, col: 2, arrow: 'left' },
+    { step: SOP_STEPS[4], row: 2, col: 3, arrow: 'left' }
+  ];
+  // 但 grid-column 需要按视觉位置放:
+  // row 1: col 1-4 · Step 1-4
+  // row 2: col 3-1 · Step 5-6-7 (右到左)
+  // Step 5 在 row 2 col 4(对应 Step 4 下方) ← 让 Step 4 直接下箭头指到 Step 5
+
   main.innerHTML = `
     <div class="detail-header">
       <div class="detail-title-input" style="pointer-events:none; color:#ffd89b;">${escapeHtml(idea.title)}</div>
@@ -899,22 +969,16 @@ function renderDocMode(main, idea) {
       <div class="sop-doc-subtitle">${escapeHtml(idea.subtitle || '')}</div>
       <div class="sop-doc-intro">${escapeHtml(idea.intro || '')}</div>
 
-      ${SOP_STEPS.map(s => `
-        <div class="sop-step-doc">
-          <div class="sd-head">
-            <span class="sd-num">${s.step}</span>
-            <span class="sd-name">${s.name}</span>
-            <span class="sd-why">${s.why}</span>
-          </div>
-          <div class="sd-goal">🎯 ${escapeHtml(s.goal)}</div>
-          <div class="sd-dos-label">必做</div>
-          <ul class="sd-dos">
-            ${s.fields.map(f => `<li><b>${f.label}</b> · ${f.hint}</li>`).join('')}
-          </ul>
-          ${s.warn ? `<div class="sd-warn">${escapeHtml(s.warn)}</div>` : ''}
-          <div class="sd-verify">${s.name}验收清单</div>
-        </div>
-      `).join('')}
+      <div class="sop-flow">
+        ${renderFlowCell(SOP_STEPS[0], { rightArrow: true })}
+        ${renderFlowCell(SOP_STEPS[1], { rightArrow: true })}
+        ${renderFlowCell(SOP_STEPS[2], { rightArrow: true })}
+        ${renderFlowCell(SOP_STEPS[3], { downArrow: true })}
+        ${renderFlowCell(SOP_STEPS[6], {}, 'row2-col1')}
+        ${renderFlowCell(SOP_STEPS[5], { leftArrowFromRight: true }, 'row2-col2')}
+        ${renderFlowCell(SOP_STEPS[4], { leftArrowFromRight: true }, 'row2-col3')}
+        <div class="sop-flow-cell" style="grid-column: 4; grid-row: 2; opacity: 0; pointer-events: none;"></div>
+      </div>
 
       <div class="sop-doc-rules">
         <div class="rules-title">3 条不做</div>
@@ -924,6 +988,32 @@ function renderDocMode(main, idea) {
           <li>不预设用户 — 我玩得爽就是成功</li>
         </ul>
       </div>
+    </div>
+  `;
+}
+
+function renderFlowCell(s, arrows, positionClass) {
+  const arrowHtml = [];
+  if (arrows.rightArrow) arrowHtml.push('<div class="sop-flow-arrow h right">▶</div>');
+  if (arrows.leftArrowFromRight) arrowHtml.push('<div class="sop-flow-arrow h right">◀</div>');
+  if (arrows.downArrow) arrowHtml.push('<div class="sop-flow-arrow down">▼</div>');
+  return `
+    <div class="sop-flow-cell">
+      <div class="sop-step-doc">
+        <div class="sd-head">
+          <span class="sd-num">${s.step}</span>
+          <span class="sd-name">${s.name}</span>
+        </div>
+        <div class="sd-why">${s.why}</div>
+        <div class="sd-goal">🎯 ${escapeHtml(s.goal)}</div>
+        <div class="sd-dos-label">必做</div>
+        <ul class="sd-dos">
+          ${s.fields.map(f => `<li><b>${f.label}</b> · ${f.hint}</li>`).join('')}
+        </ul>
+        ${s.warn ? `<div class="sd-warn">${escapeHtml(s.warn)}</div>` : ''}
+        <div class="sd-verify">${s.name}验收清单</div>
+      </div>
+      ${arrowHtml.join('')}
     </div>
   `;
 }
