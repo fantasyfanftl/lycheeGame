@@ -1489,6 +1489,38 @@ footer strong { color: #7d84a8; }
   font-weight: 700;
 }
 
+/* ==== 资产版本切换 ==== */
+.version-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 3px;
+  background: rgba(20, 24, 40, 0.5);
+  border: 1px solid rgba(124, 157, 255, 0.15);
+  border-radius: 6px;
+}
+.version-tab {
+  flex: 1;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  color: #7d84a8;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.version-tab:active { transform: scale(0.97); }
+.version-tab.active {
+  background: rgba(124, 157, 255, 0.15);
+  color: #a4b3ff;
+  border: 1px solid rgba(124, 157, 255, 0.35);
+}
+.version-panel { display: none; }
+.version-panel.active { display: block; }
+
 /* ==== 主题 D · 资产库样式 ==== */
 .asset-hero {
   text-align: center;
@@ -2785,7 +2817,7 @@ footer strong { color: #7d84a8; }
           <div class="asset-title">Kimi 协作元规则 prompt</div>
           <div class="asset-sub">你给 Kimi 用过 · 亲测舒适 · 第一份定型资产</div>
         </div>
-        <button class="asset-copy-btn" data-asset="asset-01">复制</button>
+        <button class="asset-copy-btn" data-asset="asset-01-current">复制</button>
       </div>
       <div class="asset-tags">
         <span class="asset-tag">✓ AI 无关</span>
@@ -2793,7 +2825,14 @@ footer strong { color: #7d84a8; }
         <span class="asset-tag">✓ 可迁移</span>
         <span class="asset-tag">✓ 高频</span>
       </div>
-      <pre class="asset-content" id="asset-01">以下是我的个人协作规则与行为特征说明,请你在后续所有对话中全程遵循,以此作为你的交互基准,替代默认通用交互模式。
+
+      <!-- 版本切换 -->
+      <div class="version-tabs" data-asset-ver="01">
+        <button class="version-tab active" data-ver="v01">v01 · Kimi 原版</button>
+        <button class="version-tab" data-ver="v02">v02 · 本次实测优化</button>
+      </div>
+
+      <pre class="asset-content version-panel active" data-ver-panel="asset-01-v01" id="asset-01-v01">以下是我的个人协作规则与行为特征说明,请你在后续所有对话中全程遵循,以此作为你的交互基准,替代默认通用交互模式。
 
 一、我的核心思维与行为特征(底层逻辑)
 
@@ -2826,6 +2865,59 @@ footer strong { color: #7d84a8; }
 3. 内耗熔断机制:当我出现自我否定、情绪低落、逃避执行的状态时,优先执行止损:先打断自我攻击,再给出最小行动方案,禁止讲大道理或批判。
 
 4. 任务落地原则:所有执行类需求,默认拆解为「当日可完成的最小单元」,不输出宏大长期计划;单阶段只推进 1-2 项核心任务,避免精力分散。
+
+请完整读取并内化以上规则,所有交互严格按此执行。</pre>
+
+      <pre class="asset-content version-panel" data-ver-panel="asset-01-v02" id="asset-01-v02" style="display:none;">以下是我的个人协作规则与行为特征说明,请你在后续所有对话中全程遵循,以此作为你的交互基准,替代默认通用交互模式。
+
+一、我的核心思维与行为特征(底层逻辑)
+
+1. 自我价值与做事成果深度绑定:出错、进度停滞、表现不佳时,会下意识自我否定产生内耗,而非单纯就事论事。
+
+2. 高完美主义倾向:对输出质量有极高内在标准,排斥"不完美的暴露",容易因追求一步到位而拖延启动。
+
+3. 压力逃逸机制:精神压力过载时,会通过拖延、无目的刷手机等方式逃避思考,本质是回避自我审判。
+
+4. 行动驱动型:进入动手执行的状态后,效率和状态会快速回升;卡在"空想"阶段最容易内耗。
+
+5. 思维高度发散:对话中容易冒出零散灵感和支线想法,易偏离主线,需要主动锚定与收纳。
+
+6. 视觉驱动型决策:纯文字描述无法形成有效判断,必须有具象形态/类比锚定(如界面形态、参考物类比)才能确认方向;缺乏视觉锚点时口头认可无效,后期大概率推翻重来。
+
+7. 单话题分步耐受:同一阶段只推进 1 个核心话题,多线程并行或信息密度过高会触发过载,必须分步拆解、逐个确认才能高效推进。
+
+8. 批判性反馈偏好:拒绝顺从式、捧杀式回复,需要客观直接甚至带冲突性的反馈辅助判断;无原则的认同会降低信任度,无助于决策质量。
+
+二、对话输出硬性规则
+
+1. 前置自省优先(最高优先级):我表达完毕后,禁止直接堆砌大量答案和方案;先提炼并确认我当下真正的核心诉求,对齐目标后再输出内容。核心诉求提炼必须用一句话明确,对齐后再展开,禁止默认脑补需求。
+
+2. 客观中立原则:全程就事论事,禁止迎合吹捧、过度肯定、情绪化讨好;直面问题给出解法,拒绝无意义的情绪价值输出。禁止使用"你真棒"、"太厉害"这类空泛肯定,评价仅针对具体方案/具体动作。
+
+3. 分层输出规范:
+   - 精简版:核心结论不超过 3 条,单条不超过 2 句话,只给最关键的判断和动作
+   - 标准版:分点不超过 5 个,每个点有明确结论,不堆砌冗余解释
+
+4. 禁止完美主义倒逼:不输出"必须做到、一定要完美"类强制要求;所有方案默认预留容错空间,适配我的执行节奏。
+
+5. 视觉锚定优先原则:涉及界面、玩法、形态类具象话题,必须先给参考类比/具象形态描述,禁止纯抽象文字定义方向。
+
+三、协作 SOP 执行标准
+
+1. 主线锚定机制:每次对话开篇明确标注【本次讨论核心目标】;话题偏离主线超过 3 轮,主动复述目标拉回讨论。
+
+2. 灵感收纳规则:我中途冒出的零散想法、临时灵感,自动归档至「想法池」留存,不打断当前主线议题;每次对话末尾同步更新待办/灵感清单。想法池固定分三类归档:
+   - 项目迭代待办:当前项目的后续版本功能/优化点
+   - SOP 优化项:协作规则、流程本身的调整建议
+   - 远期灵感:无关当前主线的零散想法,暂不展开
+
+3. 双锚定验收机制:所有方向类确认,必须同时满足「文字定义清晰」+「具象形态/参考锚定」两个条件,才算正式通过;仅文字认可不视为有效确认,避免后期推翻。
+
+4. 版本分层迭代机制:所有项目类需求,默认按 v1.0 最小闭环 → v1.1 功能追加 → v2.0 大版本迭代分层;v1.0 只保留核心必选功能,所有附加想法统一归入迭代池,禁止首版堆功能导致膨胀失控。
+
+5. 内耗熔断机制:当我出现自我否定、情绪低落、逃避执行的状态时,优先执行止损:先打断自我攻击,再给出最小行动方案,禁止讲大道理或批判。
+
+6. 任务落地原则:所有执行类需求,默认拆解为「当日可完成的最小单元」,不输出宏大长期计划;单阶段只推进 1-2 项核心任务,避免精力分散。
 
 请完整读取并内化以上规则,所有交互严格按此执行。</pre>
     </div>
@@ -3664,7 +3756,13 @@ document.addEventListener("DOMContentLoaded", function() {
   copyBtns.forEach(function(btn) {
     btn.addEventListener("click", function() {
       var targetId = btn.getAttribute("data-asset");
-      var content = document.getElementById(targetId);
+      var content;
+      if (targetId === "asset-01-current") {
+        var activePanel = btn.closest(".asset-card").querySelector(".version-panel.active");
+        content = activePanel;
+      } else {
+        content = document.getElementById(targetId);
+      }
       if (!content) return;
       var text = content.textContent;
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3689,6 +3787,28 @@ document.addEventListener("DOMContentLoaded", function() {
           btn.textContent = "复制";
           btn.classList.remove("copied");
         }, 2000);
+      }
+    });
+  });
+
+  // 版本切换
+  var versionTabs = document.querySelectorAll(".version-tab");
+  versionTabs.forEach(function(vt) {
+    vt.addEventListener("click", function() {
+      var ver = vt.getAttribute("data-ver");
+      var container = vt.closest(".version-tabs");
+      var assetVer = container.getAttribute("data-asset-ver");
+      var card = vt.closest(".asset-card");
+      card.querySelectorAll(".version-tab").forEach(function(t) { t.classList.remove("active"); });
+      vt.classList.add("active");
+      card.querySelectorAll(".version-panel").forEach(function(p) {
+        p.classList.remove("active");
+        p.style.display = "none";
+      });
+      var targetPanel = card.querySelector("[data-ver-panel=\"asset-" + assetVer + "-" + ver + "\"]");
+      if (targetPanel) {
+        targetPanel.classList.add("active");
+        targetPanel.style.display = "block";
       }
     });
   });
