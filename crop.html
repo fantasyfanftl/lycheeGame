@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>构图裁切 · v1.0 裸玩法</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #1a1a1a;
+    min-height: 100vh;
+    color: #ddd;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    padding: 12px;
+  }
+  .app { max-width: 640px; margin: 0 auto; }
+
+  .top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .back {
+    color: rgba(255,255,255,0.55); text-decoration: none;
+    font-size: 12px; letter-spacing: 1px;
+  }
+  .brand {
+    font-size: 13px; letter-spacing: 3px; color: #fff;
+  }
+  .brand .ver {
+    font-size: 10px; color: #888; margin-left: 6px;
+  }
+
+  .canvas-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #000;
+    border: 1px solid #333;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    margin-bottom: 12px;
+  }
+  .canvas-wrap img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    display: block;
+  }
+  .canvas-wrap .dim {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.55);
+    pointer-events: none;
+  }
+  .crop-box {
+    position: absolute;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+    cursor: move;
+    touch-action: none;
+  }
+  .crop-box .handle {
+    position: absolute;
+    width: 18px; height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .crop-box .h-tl { top: -9px; left: -9px; cursor: nwse-resize; }
+  .crop-box .h-tr { top: -9px; right: -9px; cursor: nesw-resize; }
+  .crop-box .h-bl { bottom: -9px; left: -9px; cursor: nesw-resize; }
+  .crop-box .h-br { bottom: -9px; right: -9px; cursor: nwse-resize; }
+  /* 三分线辅助 */
+  .crop-box .rule {
+    position: absolute;
+    background: rgba(255,255,255,0.4);
+    pointer-events: none;
+  }
+  .crop-box .rule.v1 { left: 33.33%; top: 0; bottom: 0; width: 1px; }
+  .crop-box .rule.v2 { left: 66.66%; top: 0; bottom: 0; width: 1px; }
+  .crop-box .rule.h1 { top: 33.33%; left: 0; right: 0; height: 1px; }
+  .crop-box .rule.h2 { top: 66.66%; left: 0; right: 0; height: 1px; }
+
+  .info {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: #888;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  .info .prog { color: #ffd89b; }
+
+  .ratio-bar {
+    display: flex; gap: 6px; margin-bottom: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .ratio-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #444;
+    color: #999;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ratio-btn.active {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
+
+  .action-bar {
+    display: flex; gap: 8px; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .btn {
+    padding: 10px 20px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 3px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn.secondary {
+    background: transparent;
+    color: #999;
+    border: 1px solid #444;
+  }
+
+  .result {
+    display: none;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .result.show { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+  .score-line {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .score-num {
+    font-size: 44px;
+    font-weight: 700;
+    color: #ffd89b;
+    letter-spacing: -1px;
+  }
+  .score-label { font-size: 12px; color: #888; letter-spacing: 2px; }
+  .score-badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+  .score-badge.high { background: rgba(120,180,90,0.25); color: #a5d88a; }
+  .score-badge.mid { background: rgba(200,150,90,0.2); color: #d4a878; }
+  .score-badge.low { background: rgba(200,100,90,0.2); color: #d47878; }
+
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .compare-item { text-align: center; }
+  .compare-img {
+    width: 100%;
+    aspect-ratio: var(--ratio, 4/3);
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .compare-img img {
+    position: absolute;
+    display: block;
+    max-width: none;
+  }
+  .compare-label { font-size: 11px; color: #888; letter-spacing: 1px; }
+  .compare-label b { color: #ffd89b; margin-left: 4px; }
+
+  .analysis {
+    font-size: 13px;
+    line-height: 1.85;
+    color: #ccc;
+    padding-top: 14px;
+    border-top: 1px solid #333;
+    letter-spacing: 0.3px;
+  }
+  .analysis b { color: #ffd89b; }
+
+  .end-page {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+  }
+  .end-page h3 { color: #ffd89b; font-size: 20px; margin-bottom: 12px; letter-spacing: 3px; }
+  .end-page p { line-height: 1.7; margin-bottom: 8px; }
+  .end-page .stat { color: #fff; font-size: 32px; margin: 12px 0; letter-spacing: -1px; }
+
+  @media (max-width: 480px) {
+    .canvas-wrap { aspect-ratio: 1; }
+    .score-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <a href="index.html" class="back">← 返回</a>
+    <div class="brand">构图裁切<span class="ver">v1.0</span></div>
+    <div style="width:40px;"></div>
+  </div>
+
+  <div class="info">
+    <span>第 <span class="prog" id="cur">1</span> / <span id="total">5</span> 张</span>
+    <span id="acc-label">累计得分 <b style="color:#ffd89b" id="acc">0</b></span>
+  </div>
+
+  <div class="canvas-wrap" id="canvas-wrap"></div>
+
+  <div class="ratio-bar" id="ratio-bar">
+    <button class="ratio-btn" data-ratio="free">自由</button>
+    <button class="ratio-btn active" data-ratio="1:1">1:1</button>
+    <button class="ratio-btn" data-ratio="3:4">3:4</button>
+    <button class="ratio-btn" data-ratio="4:3">4:3</button>
+    <button class="ratio-btn" data-ratio="16:9">16:9</button>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn secondary" id="reset-btn">重置</button>
+    <button class="btn" id="submit-btn">提 交</button>
+  </div>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+// v1.0 裸玩法版 · 5 张 SVG 生成图 · 每图带预设"最佳裁切"
+// SVG 内联 · 可控 · 无外部依赖
+// 每张图的 refCrop 是相对原图的 [x, y, w, h] 归一化(0-1)
+const LEVELS = [
+  {
+    title: '海边孤舟',
+    ratio: '1:1',
+    refCrop: [0.32, 0.35, 0.36, 0.36],  // 舟落在三分点右下
+    analysis: '这张图的主体是<b>小舟</b>。原图 4:3 · 天空/海面/沙滩三段等分 · 显得平。裁成 <b>1:1</b> · 把舟放到 <b>右三分点</b>(视觉重心) · 让左上大片海面留白 —— <b>三分法</b>+<b>负空间</b>让画面呼吸。',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f4c893"/><stop offset="1" stop-color="#e88b6f"/>
+        </linearGradient>
+        <linearGradient id="sea1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#4a5a7a"/><stop offset="1" stop-color="#2a3a5a"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="360" fill="url(#sky1)"/>
+      <circle cx="580" cy="200" r="45" fill="#ffe5b8" opacity="0.9"/>
+      <rect y="360" width="800" height="150" fill="url(#sea1)"/>
+      <rect y="510" width="800" height="90" fill="#c9b48a"/>
+      <!-- 小舟 · 位于右下三分点区域 -->
+      <g transform="translate(500,395)">
+        <path d="M -40 10 L 40 10 L 30 25 L -30 25 Z" fill="#2a2a2a"/>
+        <line x1="0" y1="10" x2="0" y2="-25" stroke="#2a2a2a" stroke-width="2"/>
+        <path d="M 0 -25 L 20 5 L 0 5 Z" fill="#5a4030"/>
+      </g>
+      <!-- 波纹 -->
+      <path d="M 0 450 Q 100 445 200 450 T 400 450 T 600 450 T 800 450" stroke="#3a4a6a" stroke-width="1" fill="none" opacity="0.5"/>
+      <path d="M 0 480 Q 100 475 200 480 T 400 480 T 600 480 T 800 480" stroke="#3a4a6a" stroke-width="1" fill="none" opacity="0.4"/>
+    </svg>`
+  },
+  {
+    title: '独立山峰',
+    ratio: '3:4',
+    refCrop: [0.30, 0.10, 0.40, 0.80],
+    analysis: '主体是<b>孤峰</b>。原图很宽 · 主峰淹没在群山里。裁成竖幅 <b>3:4</b> · 只保留中间主峰 · 山顶留白 · 底部留云 —— <b>居中构图</b>适合有仪式感的主体 · 但要保证上下都有"空气"。',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#7a9dc4"/><stop offset="1" stop-color="#c8dae8"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="600" fill="url(#sky2)"/>
+      <!-- 次峰群 · 左 -->
+      <path d="M 0 500 L 80 380 L 160 460 L 240 400 L 320 480 L 320 600 L 0 600 Z" fill="#5a7095"/>
+      <!-- 主峰 · 中 -->
+      <path d="M 320 500 L 400 200 L 500 480 L 500 600 L 320 600 Z" fill="#3a4a6a"/>
+      <path d="M 400 200 L 430 260 L 380 260 Z" fill="#f0f0f0"/>
+      <!-- 次峰群 · 右 -->
+      <path d="M 500 480 L 580 400 L 660 470 L 720 420 L 800 490 L 800 600 L 500 600 Z" fill="#5a7095"/>
+      <!-- 云 -->
+      <ellipse cx="200" cy="530" rx="120" ry="20" fill="#e0e5ec" opacity="0.6"/>
+      <ellipse cx="600" cy="540" rx="150" ry="18" fill="#e0e5ec" opacity="0.6"/>
+    </svg>`
+  },
+  {
+    title: '窗前咖啡',
+    ratio: '4:3',
+    refCrop: [0.15, 0.20, 0.50, 0.60],
+    analysis: '主体是<b>咖啡杯</b>。原图信息太杂(桌子/窗/植物) · 抢主体。裁成 <b>4:3</b> · 让杯子占据画面 <b>左三分点</b> · 右侧留窗光和虚化植物 —— <b>主体+呼吸+方向感</b>三合一。',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="wall3" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#a09080"/><stop offset="1" stop-color="#f5e5d0"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="380" fill="url(#wall3)"/>
+      <rect y="380" width="800" height="220" fill="#8a7060"/>
+      <!-- 窗 · 右侧 -->
+      <rect x="500" y="50" width="260" height="300" fill="#fff5db" opacity="0.85"/>
+      <rect x="500" y="50" width="260" height="300" fill="none" stroke="#5a4030" stroke-width="4"/>
+      <line x1="630" y1="50" x2="630" y2="350" stroke="#5a4030" stroke-width="3"/>
+      <!-- 植物 · 窗前 · 虚化感 -->
+      <g opacity="0.7">
+        <circle cx="620" cy="280" r="45" fill="#5a7050"/>
+        <circle cx="640" cy="250" r="35" fill="#6a8060"/>
+        <circle cx="600" cy="260" r="30" fill="#5a7050"/>
+      </g>
+      <!-- 咖啡杯 · 左三分点 · 桌子上 -->
+      <g transform="translate(280,410)">
+        <ellipse cx="0" cy="70" rx="55" ry="10" fill="#3a2818" opacity="0.5"/>
+        <path d="M -50 -10 Q -50 60 -30 60 L 30 60 Q 50 60 50 -10 Z" fill="#f0e8d8"/>
+        <ellipse cx="0" cy="-10" rx="50" ry="8" fill="#2a1808"/>
+        <ellipse cx="0" cy="-10" rx="45" ry="6" fill="#5a3820"/>
+        <path d="M 50 15 Q 75 15 75 35 Q 75 55 50 55" fill="none" stroke="#f0e8d8" stroke-width="5"/>
+      </g>
+    </svg>`
+  },
+  {
+    title: '奔跑的少年',
+    ratio: '16:9',
+    refCrop: [0.05, 0.25, 0.55, 0.42],
+    analysis: '主体是<b>奔跑的人</b>。原图正方形导致人物"塞满" · 没有奔跑方向感。裁成 <b>16:9</b> 且让人物在 <b>左三分点</b> · 前方留出大空间 —— <b>运动向前留白</b>是拍任何"动"的主体的铁律。',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="grass4" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#a4c088"/><stop offset="1" stop-color="#6a8850"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="330" fill="#c8d8e8"/>
+      <rect y="330" width="800" height="270" fill="url(#grass4)"/>
+      <!-- 树 · 远 -->
+      <circle cx="120" cy="290" r="35" fill="#4a6040"/>
+      <rect x="118" y="290" width="4" height="40" fill="#3a2818"/>
+      <circle cx="720" cy="285" r="42" fill="#3a5030"/>
+      <rect x="718" y="285" width="4" height="45" fill="#3a2818"/>
+      <!-- 人物 · 左三分点 -->
+      <g transform="translate(220,340)">
+        <!-- 头 -->
+        <circle cx="0" cy="0" r="14" fill="#e5c8a0"/>
+        <!-- 身体 -->
+        <path d="M -6 12 L 6 12 L 8 55 L -8 55 Z" fill="#e05a3a"/>
+        <!-- 腿 · 奔跑动作 -->
+        <path d="M -8 55 L -20 100 L -14 100 L -4 55 Z" fill="#2a2a4a"/>
+        <path d="M 8 55 L 20 90 L 26 90 L 12 55 Z" fill="#2a2a4a"/>
+        <!-- 手臂 · 摆动 -->
+        <path d="M -6 20 L -22 45 L -18 48 L -2 25 Z" fill="#e5c8a0"/>
+        <path d="M 6 20 L 22 15 L 25 20 L 8 28 Z" fill="#e5c8a0"/>
+      </g>
+      <!-- 小动作线 · 强调运动 -->
+      <line x1="190" y1="380" x2="170" y2="382" stroke="#666" stroke-width="1.5" opacity="0.5"/>
+      <line x1="195" y1="395" x2="175" y2="397" stroke="#666" stroke-width="1.5" opacity="0.5"/>
+    </svg>`
+  },
+  {
+    title: '樱花枝',
+    ratio: '3:4',
+    refCrop: [0.28, 0.15, 0.44, 0.65],
+    analysis: '主体是<b>樱花枝头</b>。原图横向 · 但花枝本身是"向下垂"的形态 · 竖幅更契合。裁 <b>3:4</b> 让花枝占据右上 → 左下的<b>对角线</b> · 底部留 30% 天空 —— <b>形态与构图匹配</b>比套用哪个公式更重要。',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#d4b8d0"/><stop offset="1" stop-color="#f5e0e5"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="600" fill="url(#sky5)"/>
+      <!-- 枝干 · 右上到左下的对角线 -->
+      <path d="M 750 100 Q 500 250 300 400 Q 200 500 100 550" stroke="#4a3020" stroke-width="6" fill="none"/>
+      <path d="M 600 200 Q 500 300 450 350" stroke="#4a3020" stroke-width="3" fill="none"/>
+      <path d="M 400 350 Q 350 400 320 450" stroke="#4a3020" stroke-width="2" fill="none"/>
+      <!-- 樱花 -->
+      <g fill="#f8d0d8">
+        <circle cx="720" cy="120" r="8"/>
+        <circle cx="700" cy="140" r="7"/>
+        <circle cx="640" cy="170" r="9"/>
+        <circle cx="620" cy="190" r="6"/>
+        <circle cx="580" cy="220" r="8"/>
+        <circle cx="520" cy="270" r="10"/>
+        <circle cx="490" cy="290" r="7"/>
+        <circle cx="450" cy="330" r="9"/>
+        <circle cx="420" cy="360" r="8"/>
+        <circle cx="380" cy="380" r="7"/>
+        <circle cx="350" cy="400" r="10"/>
+        <circle cx="320" cy="420" r="8"/>
+        <circle cx="280" cy="440" r="7"/>
+        <circle cx="240" cy="470" r="9"/>
+        <circle cx="190" cy="500" r="8"/>
+        <circle cx="140" cy="525" r="7"/>
+      </g>
+      <!-- 花心 -->
+      <g fill="#c05868" opacity="0.6">
+        <circle cx="720" cy="120" r="2"/>
+        <circle cx="640" cy="170" r="2"/>
+        <circle cx="520" cy="270" r="3"/>
+        <circle cx="450" cy="330" r="2"/>
+        <circle cx="350" cy="400" r="3"/>
+        <circle cx="240" cy="470" r="2"/>
+      </g>
+      <!-- 一朵花瓣飘落 -->
+      <circle cx="150" cy="200" r="5" fill="#f8d0d8" opacity="0.7"/>
+      <circle cx="200" cy="280" r="4" fill="#f8d0d8" opacity="0.6"/>
+    </svg>`
+  }
+];
+
+// ============ 状态 ============
+const SAVE_KEY = 'crop_v1_progress';
+let currentIdx = 0;
+let accScore = 0;
+let cropRect = null;    // {x,y,w,h} in canvas pixel
+let canvasRect = null;
+let currentRatio = '1:1';
+
+function loadSave() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    currentIdx = s.idx || 0;
+    accScore = s.acc || 0;
+  } catch (e) {}
+}
+function saveState() {
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ idx: currentIdx, acc: accScore }));
+}
+
+// ============ 渲染当前关 ============
+function renderLevel() {
+  if (currentIdx >= LEVELS.length) {
+    renderEnd();
+    return;
+  }
+  const level = LEVELS[currentIdx];
+  document.getElementById('cur').textContent = currentIdx + 1;
+  document.getElementById('total').textContent = LEVELS.length;
+  document.getElementById('acc').textContent = accScore;
+
+  const wrap = document.getElementById('canvas-wrap');
+  wrap.innerHTML = `
+    ${level.svg}
+    <div class="crop-box" id="crop-box">
+      <div class="rule v1"></div>
+      <div class="rule v2"></div>
+      <div class="rule h1"></div>
+      <div class="rule h2"></div>
+      <div class="handle h-tl"></div>
+      <div class="handle h-tr"></div>
+      <div class="handle h-bl"></div>
+      <div class="handle h-br"></div>
+    </div>
+  `;
+
+  // 默认比例设为参考裁切比例
+  currentRatio = level.ratio;
+  document.querySelectorAll('.ratio-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.ratio === currentRatio);
+  });
+
+  // 初始化 cropRect · 居中 · 60% 大小
+  requestAnimationFrame(() => {
+    canvasRect = wrap.getBoundingClientRect();
+    initCrop();
+    attachCropInteraction();
+  });
+
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('result').innerHTML = '';
+}
+
+function initCrop() {
+  const W = canvasRect.width, H = canvasRect.height;
+  let w, h;
+  if (currentRatio === 'free') {
+    w = W * 0.6; h = H * 0.6;
+  } else {
+    const [rw, rh] = currentRatio.split(':').map(Number);
+    // 使框尽量大且不超过 70% 短边
+    const targetH = H * 0.7;
+    const targetW = W * 0.7;
+    if (targetH * rw / rh <= targetW) { h = targetH; w = h * rw / rh; }
+    else { w = targetW; h = w * rh / rw; }
+  }
+  cropRect = {
+    x: (W - w) / 2,
+    y: (H - h) / 2,
+    w, h
+  };
+  updateCropDisplay();
+}
+
+function updateCropDisplay() {
+  const box = document.getElementById('crop-box');
+  if (!box) return;
+  box.style.left = cropRect.x + 'px';
+  box.style.top = cropRect.y + 'px';
+  box.style.width = cropRect.w + 'px';
+  box.style.height = cropRect.h + 'px';
+}
+
+function clampRect() {
+  const W = canvasRect.width, H = canvasRect.height;
+  cropRect.w = Math.max(50, Math.min(cropRect.w, W));
+  cropRect.h = Math.max(50, Math.min(cropRect.h, H));
+  cropRect.x = Math.max(0, Math.min(cropRect.x, W - cropRect.w));
+  cropRect.y = Math.max(0, Math.min(cropRect.y, H - cropRect.h));
+}
+
+// ============ 交互 · 拖动 + 缩放 ============
+function attachCropInteraction() {
+  const box = document.getElementById('crop-box');
+  if (!box) return;
+
+  let mode = null;   // 'move' | 'tl' | 'tr' | 'bl' | 'br'
+  let startX, startY, startRect;
+
+  const onDown = (e) => {
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const target = e.target;
+
+    if (target.classList.contains('handle')) {
+      if (target.classList.contains('h-tl')) mode = 'tl';
+      else if (target.classList.contains('h-tr')) mode = 'tr';
+      else if (target.classList.contains('h-bl')) mode = 'bl';
+      else if (target.classList.contains('h-br')) mode = 'br';
+    } else {
+      mode = 'move';
+    }
+    startX = point.clientX;
+    startY = point.clientY;
+    startRect = { ...cropRect };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onUp);
+  };
+
+  const onMove = (e) => {
+    if (!mode) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const dx = point.clientX - startX;
+    const dy = point.clientY - startY;
+
+    const r = { ...startRect };
+
+    if (mode === 'move') {
+      r.x = startRect.x + dx;
+      r.y = startRect.y + dy;
+    } else {
+      // 缩放
+      let newLeft = r.x, newTop = r.y, newRight = r.x + r.w, newBottom = r.y + r.h;
+      if (mode === 'tl') { newLeft += dx; newTop += dy; }
+      else if (mode === 'tr') { newRight += dx; newTop += dy; }
+      else if (mode === 'bl') { newLeft += dx; newBottom += dy; }
+      else if (mode === 'br') { newRight += dx; newBottom += dy; }
+
+      // 如果不是自由比例 · 强制维持比例
+      if (currentRatio !== 'free') {
+        const [rw, rh] = currentRatio.split(':').map(Number);
+        const ratio = rw / rh;
+        let newW = newRight - newLeft;
+        let newH = newBottom - newTop;
+        // 按主导轴调整
+        if (Math.abs(dx) > Math.abs(dy)) {
+          newH = newW / ratio;
+          if (mode.startsWith('t')) newTop = newBottom - newH;
+          else newBottom = newTop + newH;
+        } else {
+          newW = newH * ratio;
+          if (mode.endsWith('l')) newLeft = newRight - newW;
+          else newRight = newLeft + newW;
+        }
+      }
+
+      r.x = newLeft; r.y = newTop;
+      r.w = newRight - newLeft; r.h = newBottom - newTop;
+
+      if (r.w < 50) r.w = 50;
+      if (r.h < 50) r.h = 50;
+    }
+
+    cropRect = r;
+    clampRect();
+    updateCropDisplay();
+  };
+
+  const onUp = () => {
+    mode = null;
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onUp);
+  };
+
+  box.addEventListener('mousedown', onDown);
+  box.addEventListener('touchstart', onDown, { passive: false });
+}
+
+// ============ 比例切换 ============
+document.querySelectorAll('.ratio-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRatio = btn.dataset.ratio;
+    initCrop();
+  });
+});
+
+// ============ 重置 ============
+document.getElementById('reset-btn').addEventListener('click', () => {
+  initCrop();
+});
+
+// ============ 提交 · 打分 ============
+document.getElementById('submit-btn').addEventListener('click', () => {
+  submit();
+});
+
+function submit() {
+  if (!cropRect || !canvasRect) return;
+  const level = LEVELS[currentIdx];
+  const W = canvasRect.width, H = canvasRect.height;
+
+  // 归一化玩家裁切
+  const player = {
+    x: cropRect.x / W,
+    y: cropRect.y / H,
+    w: cropRect.w / W,
+    h: cropRect.h / H
+  };
+  const ref = level.refCrop;
+
+  // 打分 · IoU + 中心距离 + 面积差 综合
+  const iou = calcIoU(player, {x: ref[0], y: ref[1], w: ref[2], h: ref[3]});
+  const centerDist = Math.hypot(
+    (player.x + player.w/2) - (ref[0] + ref[2]/2),
+    (player.y + player.h/2) - (ref[1] + ref[3]/2)
+  );
+  const areaDiff = Math.abs(player.w * player.h - ref[2] * ref[3]);
+
+  let score = Math.round(iou * 60 + (1 - Math.min(centerDist * 2, 1)) * 30 + (1 - Math.min(areaDiff * 4, 1)) * 10);
+  score = Math.max(0, Math.min(100, score));
+
+  accScore += score;
+  saveState();
+
+  const badge = score >= 75 ? '<span class="score-badge high">优秀</span>' :
+                score >= 50 ? '<span class="score-badge mid">还行</span>' :
+                '<span class="score-badge low">再想想</span>';
+
+  const result = document.getElementById('result');
+  result.innerHTML = `
+    <div class="score-line">
+      <div class="score-num">${score}</div>
+      <div>
+        <div class="score-label">本题得分</div>
+        ${badge}
+      </div>
+    </div>
+    <div class="compare">
+      <div class="compare-item">
+        <div class="compare-img" id="cmp-mine"></div>
+        <div class="compare-label">你的 <b>${score} 分</b></div>
+      </div>
+      <div class="compare-item">
+        <div class="compare-img" id="cmp-ref"></div>
+        <div class="compare-label">参考裁切</div>
+      </div>
+    </div>
+    <div class="analysis">${level.analysis}</div>
+    <div class="action-bar" style="margin-top:16px; margin-bottom:0;">
+      <button class="btn" id="next-btn">${currentIdx + 1 >= LEVELS.length ? '看结果' : '下一张 →'}</button>
+    </div>
+  `;
+  result.classList.add('show');
+
+  // 渲染对比缩略图
+  renderCompare('cmp-mine', level.svg, player);
+  renderCompare('cmp-ref', level.svg, {x:ref[0], y:ref[1], w:ref[2], h:ref[3]});
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    currentIdx++;
+    saveState();
+    renderLevel();
+    window.scrollTo(0, 0);
+  });
+}
+
+function calcIoU(a, b) {
+  const x1 = Math.max(a.x, b.x);
+  const y1 = Math.max(a.y, b.y);
+  const x2 = Math.min(a.x + a.w, b.x + b.w);
+  const y2 = Math.min(a.y + a.h, b.y + b.h);
+  if (x2 <= x1 || y2 <= y1) return 0;
+  const inter = (x2 - x1) * (y2 - y1);
+  const union = a.w * a.h + b.w * b.h - inter;
+  return inter / union;
+}
+
+function renderCompare(containerId, svgHtml, crop) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const cw = container.clientWidth;
+  const ratio = crop.w / crop.h;
+  container.style.setProperty('--ratio', ratio.toFixed(3));
+  const ch = cw / ratio;
+
+  // SVG 原图 800x600 · 裁切区域 (crop.x*800, crop.y*600, crop.w*800, crop.h*600)
+  // 我们把整张 SVG 放大 · 让裁切区域填满容器
+  const scale = cw / (crop.w * 800);
+  const displayW = 800 * scale;
+  const displayH = 600 * scale;
+  const offsetX = -crop.x * 800 * scale;
+  const offsetY = -crop.y * 600 * scale;
+
+  container.innerHTML = `
+    <div style="position:absolute; width:${displayW}px; height:${displayH}px; left:${offsetX}px; top:${offsetY}px;">
+      ${svgHtml}
+    </div>
+  `;
+}
+
+function renderEnd() {
+  const level = accScore >= 375 ? { name: '眼力惊人', desc: '5 张都在最佳区间 · 你的构图直觉相当好' } :
+                accScore >= 250 ? { name: '有感觉了', desc: '大部分裁切都合理 · 继续磨' } :
+                accScore >= 125 ? { name: '入门中', desc: '知道要"框主体"但还没抓到"呼吸感" · 多试' } :
+                { name: '刚起步', desc: '构图不是"框中间就好" · 试试三分点·对角线·负空间' };
+
+  document.getElementById('canvas-wrap').innerHTML = '';
+  document.getElementById('result').innerHTML = '';
+  document.querySelector('.canvas-wrap').style.display = 'none';
+  document.querySelector('.ratio-bar').style.display = 'none';
+  document.querySelector('.action-bar').style.display = 'none';
+  document.querySelector('.info').style.display = 'none';
+
+  const result = document.getElementById('result');
+  result.classList.add('show');
+  result.innerHTML = `
+    <div class="end-page">
+      <h3>${level.name}</h3>
+      <p>${level.desc}</p>
+      <div class="stat">${accScore} <span style="font-size:16px; color:#888;">/ 500</span></div>
+      <div class="action-bar" style="margin-top:20px; margin-bottom:0;">
+        <button class="btn secondary" id="restart-btn">再来一轮</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('restart-btn').addEventListener('click', () => {
+    currentIdx = 0;
+    accScore = 0;
+    saveState();
+    document.querySelector('.canvas-wrap').style.display = '';
+    document.querySelector('.ratio-bar').style.display = '';
+    document.querySelector('.action-bar').style.display = '';
+    document.querySelector('.info').style.display = '';
+    renderLevel();
+  });
+}
+
+// Boot
+loadSave();
+renderLevel();
+
+// 窗口尺寸变化重新初始化(避免旋转屏)
+window.addEventListener('resize', () => {
+  const wrap = document.getElementById('canvas-wrap');
+  if (wrap) {
+    canvasRect = wrap.getBoundingClientRect();
+    if (cropRect) {
+      clampRect();
+      updateCropDisplay();
+    }
+  }
+});
+</script>
+</body>
+</html>
