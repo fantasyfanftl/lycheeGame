@@ -1124,63 +1124,38 @@ footer strong { color: #7d84a8; }
 .brain-panel { display: none; }
 .brain-panel.active { display: block; animation: fadeIn 0.2s; }
 
-/* ==== Pin 警示条 ==== */
+/* ==== Pin 警示条 · 一行紧凑 ==== */
 .pin-note {
   background:
-    linear-gradient(135deg, rgba(255, 140, 156, 0.1) 0%, rgba(255, 176, 87, 0.06) 100%);
-  border: 1px solid rgba(255, 140, 156, 0.3);
+    linear-gradient(90deg, rgba(255, 140, 156, 0.1) 0%, rgba(255, 176, 87, 0.04) 100%);
+  border: 1px solid rgba(255, 140, 156, 0.25);
   border-left: 3px solid #ff8c9c;
-  border-radius: 10px;
-  padding: 14px 16px;
+  border-radius: 8px;
+  padding: 8px 12px;
   margin-bottom: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.pin-note::before {
-  content: "📌";
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-size: 16px;
-  opacity: 0.4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .pin-note-tag {
-  display: inline-block;
   font-size: 9px;
-  padding: 1px 8px;
+  padding: 1px 7px;
   border-radius: 3px;
   background: rgba(255, 140, 156, 0.15);
   color: #ff8c9c;
   border: 1px solid rgba(255, 140, 156, 0.4);
   font-family: "SF Mono", monospace;
   font-weight: 700;
-  letter-spacing: 1.5px;
-  margin-bottom: 8px;
-}
-.pin-note-title {
-  font-size: 11px;
-  color: #fecdd3;
-  font-family: "SF Mono", monospace;
-  letter-spacing: 1.2px;
-  margin-bottom: 8px;
-  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
 }
 .pin-note-body {
-  font-size: 15px;
+  font-size: 12px;
   color: #fecdd3;
-  line-height: 1.55;
-  margin-bottom: 10px;
-}
-.pin-note-body strong {
-  color: #ffb4c0;
-  font-weight: 700;
-}
-.pin-note-sub {
-  font-size: 11px;
-  color: #9ca3b8;
-  line-height: 1.6;
-  padding-top: 8px;
-  border-top: 1px dashed rgba(255, 140, 156, 0.2);
+  line-height: 1.5;
+  flex: 1;
+  min-width: 200px;
 }
 
 /* ==== 最新复盘板块 ==== */
@@ -2695,14 +2670,11 @@ footer strong { color: #7d84a8; }
       <div class="asset-hero-sub">开局粘一次 · 免磨合期 · 给任何 AI 都能用</div>
     </div>
 
-    <!-- 5W1H · 折叠版 -->
+    <!-- 用大白话说 · 不再堆 5W1H -->
     <div class="asset-5w1h">
-      <div class="wh-row"><span class="wh-key">WHAT</span><span class="wh-val">给任何 AI 开局粘一次 · 免磨合期的通用规则包</span></div>
-      <div class="wh-row"><span class="wh-key">WHY</span><span class="wh-val">给 Kimi 那份用起来舒服 · 但只存在那次对话 · 换 AI 就要重发</span></div>
-      <div class="wh-row"><span class="wh-key">WHO</span><span class="wh-val">所有 AI · 尤其是新对话开局</span></div>
-      <div class="wh-row"><span class="wh-key">WHEN</span><span class="wh-val">开新对话第一条消息就粘</span></div>
-      <div class="wh-row"><span class="wh-key">WHERE</span><span class="wh-val">这里 · 点击复制 · 粘到任何 AI</span></div>
-      <div class="wh-row"><span class="wh-key">HOW</span><span class="wh-val">4 特征筛(AI 无关 / 主题无关 / 可迁移 / 高频) · 通过的进库</span></div>
+      <div class="wh-row"><span class="wh-key">是什么</span><span class="wh-val">给 AI 开局第一条粘的规则包 · 免磨合期</span></div>
+      <div class="wh-row"><span class="wh-key">怎么用</span><span class="wh-val">开新对话 · 点复制 · 粘过去 · 完</span></div>
+      <div class="wh-row"><span class="wh-key">怎么进这里</span><span class="wh-val">4 个 yes/no:和 AI 无关?和话题无关?粘一下就能用?常用?· 全 yes 才能进</span></div>
     </div>
 
     <!-- 资产 01 · Kimi 协作元规则 -->
@@ -2840,16 +2812,10 @@ footer strong { color: #7d84a8; }
     <!-- 元层 tab -->
     <div class="brain-panel active" data-brain-panel="meta">
 
-    <!-- Pin · 用户校准警报 -->
+    <!-- Pin · 用户校准警报(一行) -->
     <div class="pin-note">
-      <div class="pin-note-tag">PIN</div>
-      <div class="pin-note-title">给自己看的一句话</div>
-      <div class="pin-note-body">
-        「<strong>任何 AI + 任何长对话 · 都会往讨好漂移</strong>」
-      </div>
-      <div class="pin-note-sub">
-        无法对抗 · 承认现实 · 我(天蓝)自己当警报器 —— 感觉 AI 说话太漂亮时 · 回来看这一句
-      </div>
+      <span class="pin-note-tag">📌 PIN</span>
+      <span class="pin-note-body">任何 AI + 任何长对话 · 都会往讨好漂移 —— 感觉 AI 说话太漂亮时 · 回来看这句</span>
     </div>
 
     <!-- 1. 思考方式 -->
@@ -2913,12 +2879,12 @@ footer strong { color: #7d84a8; }
 
     <!-- 4. 决策路径 -->
     <div class="brain-section">
-      <div class="brain-section-title"><span class="num">04</span>决策路径</div>
-      <div class="brain-path">遇模糊需求 <span class="arrow">→</span> 抛 v0 <span class="arrow">→</span> 你纠正 <span class="arrow">→</span> 出 v1 <span class="arrow">→</span> 循环到定型</div>
-      <div class="brain-path">冒新想法 <span class="arrow">→</span> 4 特征筛(AI 无关?主题无关?可迁移?高频?) <span class="arrow">→</span> 是 = 通用资产 · 否 = 主题内容</div>
-      <div class="brain-path">跨 AI 交接 <span class="arrow">→</span> Handoff prompt <span class="arrow">→</span> 300 字内 <span class="arrow">→</span> 兜底飞书 IM 给自己</div>
-      <div class="brain-path">用户情绪敏感话题 <span class="arrow">→</span> 中性客观版 <span class="arrow">→</span> 提示暂缓 5 分钟再发</div>
-      <div class="brain-path">brain.html 相关 <span class="arrow">→</span> 我不主动碰 <span class="arrow">→</span> 你转达对方 AI</div>
+      <div class="brain-section-title"><span class="num">04</span>常用的思考路径</div>
+      <div class="brain-path">你说需求模糊 <span class="arrow">→</span> 我先给个粗版 <span class="arrow">→</span> 你说哪不对 <span class="arrow">→</span> 我改 <span class="arrow">→</span> 反复几轮定下来</div>
+      <div class="brain-path">冒出新想法 <span class="arrow">→</span> 问 4 个问题看通不通用(和 AI 无关?和话题无关?粘一下就能用?常用?) <span class="arrow">→</span> 通过的进资产库</div>
+      <div class="brain-path">换 AI 接手 <span class="arrow">→</span> 让上一个 AI 打包对话(300 字内) <span class="arrow">→</span> 粘给下一个 AI <span class="arrow">→</span> 如果分不清给谁 · 先发飞书 IM「给自己」</div>
+      <div class="brain-path">你情绪相关的话题 <span class="arrow">→</span> 我先写"就事论事版" <span class="arrow">→</span> 提醒你 5 分钟后再发</div>
+      <div class="brain-path">涉及 brain.html <span class="arrow">→</span> 我不动 <span class="arrow">→</span> 你转告对方 AI 改</div>
     </div>
 
     <!-- 5. 记忆网络 -->
@@ -2976,24 +2942,24 @@ footer strong { color: #7d84a8; }
 
     <!-- 6. 连接方式 -->
     <div class="brain-section">
-      <div class="brain-section-title"><span class="num">06</span>连接方式 · 想法怎么串起来</div>
+      <div class="brain-section-title"><span class="num">06</span>不同的想法 · 怎么串起来</div>
       <div class="brain-connection">
-        <span class="link">[镜子] × [5 段结构]</span> —— 5 段是镜子的可执行形态 · 每次把你的想法反射回来 · 让你看见轨迹
+        <span class="link">镜子 × 5 段回复</span> —— 每次都用 5 段回复 · 让你看清自己一步步想到了什么
       </div>
       <div class="brain-connection">
-        <span class="link">[视觉化] × [荔枝分发]</span> —— 你要视觉呈现 · 荔枝 URL 通吃所有设备 · 视觉产物无缝跨设备
+        <span class="link">视觉化 × 荔枝网页</span> —— 你喜欢看图看结构 · 荔枝一个网址所有设备都能开 · 视觉化的东西传得顺
       </div>
       <div class="brain-connection">
-        <span class="link">[想法池] × [跨 AI 复用资产]</span> —— 4 特征筛出的通用资产 · 就是想法池里"化学反应"最活跃的那批
+        <span class="link">想法池 × 通用资产库</span> —— 想法池里高频用得上、跨话题都好使的 · 就是能进资产库的
       </div>
       <div class="brain-connection">
-        <span class="link">[未踩坑不复核] × [完美主义克制]</span> —— 都指向"不预设 · 不空转" · 用到才动
+        <span class="link">没用过不复核 × 别追求完美</span> —— 都在讲一件事:不预想 · 用到才管
       </div>
       <div class="brain-connection">
-        <span class="link">[你的画像] × [镜子]</span> —— 画像告诉我你怎么思考 · 镜子告诉我怎么呈现给你
+        <span class="link">你的画像 × 镜子</span> —— 我先懂你(画像)· 再用你的话把你反射回来(镜子)
       </div>
       <div style="font-size: 10px; color: #6b7295; margin-top: 10px; padding-left: 4px; font-family: 'SF Mono', monospace;">
-        连接会随讨论增加 · 每发现新连接 · 我会在这里更新
+        新发现的关联 · 会随讨论加进来
       </div>
     </div>
 
