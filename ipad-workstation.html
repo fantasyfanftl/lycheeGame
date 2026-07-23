@@ -3736,6 +3736,9 @@ document.addEventListener("DOMContentLoaded", function() {
       card.classList.add("active");
       topicContents.forEach(function(tc) { tc.style.display = "none"; });
       var targetContent = document.querySelector("[data-topic-content=\"" + target + "\"]");
+      if (target === "map") {
+        alert("target=" + target + "\ntargetContent=" + (targetContent ? "FOUND" : "NULL") + "\ntopicContents count=" + topicContents.length);
+      }
       if (targetContent) targetContent.style.display = "block";
       if (scopeName) scopeName.textContent = topicNames[target] || target;
     });
