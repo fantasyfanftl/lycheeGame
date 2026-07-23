@@ -10,7 +10,7 @@
     { "name": "Nano Banana", "url": "https://nanobanana.art/zh", "cat": "ai" },
     { "name": "DeepSeek", "url": "https://www.deepseek.com/", "cat": "ai" },
     { "name": "Civitai", "url": "https://civitai.com/", "cat": "ai" },
-    { "name": "幕布 · 大纲笔记", "url": "https://mubu.com/login?next=/app", "cat": "work" },
+    { "name": "幕布 · 大纲笔记", "url": "https://mubu.com/app", "cat": "work" },
     { "name": "Coding · 外包制品库", "url": "https://jidi3.coding.net/login?redirect=https%3A%2F%2Fjidi3.coding.net%2Fp%2Foutsourcing%2Fartifacts%3Fhash%3D8d4dd8949af543159c1b5ac71ff1ff72", "cat": "work" },
     { "name": "Tbox · 素材页 560", "url": "https://www.tboxn.com/560.html", "cat": "inspiration" },
     { "name": "Pinterest · 丝绸绑带", "url": "https://www.pinterest.com/search/pins/?q=%E4%B8%9D%E7%BB%B8%E7%BB%91%E5%B8%A6&rs=typed", "cat": "inspiration" },
