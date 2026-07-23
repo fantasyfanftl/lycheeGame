@@ -19,7 +19,7 @@
 
   .app {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 300px 1fr;
     min-height: 100vh;
   }
 
@@ -33,65 +33,6 @@
     height: 100vh;
     overflow-y: auto;
     display: flex; flex-direction: column;
-  }
-
-  /* SOP 板块 */
-  .sop-card {
-    background: rgba(255,216,155,0.08);
-    border: 1px solid rgba(255,216,155,0.25);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-  }
-  .sop-title {
-    color: #ffd89b;
-    font-size: 11px;
-    letter-spacing: 3px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .sop-steps {
-    display: flex; flex-direction: column;
-    gap: 8px;
-  }
-  .sop-step {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    font-size: 12px;
-    line-height: 1.5;
-    color: rgba(255,255,255,0.85);
-  }
-  .sop-step .sop-num {
-    font-size: 14px;
-    line-height: 1.2;
-    flex-shrink: 0;
-    width: 20px;
-    text-align: center;
-  }
-  .sop-step .sop-body {
-    flex: 1;
-  }
-  .sop-step .sop-name {
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 1px;
-  }
-  .sop-step .sop-desc {
-    color: rgba(255,255,255,0.55);
-    font-size: 11px;
-    margin-top: 1px;
-    letter-spacing: 0.3px;
-  }
-  .sop-tail {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    padding-top: 10px;
-    margin-top: 10px;
-    border-top: 1px dashed rgba(255,255,255,0.15);
-    line-height: 1.6;
-    letter-spacing: 0.5px;
   }
   .back-link {
     display: inline-block;
@@ -187,15 +128,16 @@
     -webkit-box-orient: vertical;
     word-break: break-word;
   }
-  .idea-item .idea-status {
+  .idea-item .progress-mini {
     flex-shrink: 0;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
+    font-size: 10px;
+    color: rgba(255,216,155,0.7);
+    font-family: "SF Mono", monospace;
+    letter-spacing: 0;
+    background: rgba(255,216,155,0.1);
+    padding: 1px 6px;
+    border-radius: 3px;
   }
-  .idea-item.filled .idea-status { background: #ffd89b; }
-  .idea-item.done .idea-status { background: #7bd88f; }
-
   .idea-item.pinned {
     background: rgba(255,216,155,0.08);
     border-color: rgba(255,216,155,0.3);
@@ -290,69 +232,113 @@
   .btn:hover { background: rgba(255,255,255,0.2); }
   .btn.danger:hover { background: rgba(255,80,80,0.35); color: #fff; }
 
-  .fields {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-  .field {
+  /* 7 步 SOP 卡片 */
+  .step-card {
     background: rgba(255,255,255,0.06);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
-    padding: 14px 16px;
+    margin-bottom: 14px;
+    overflow: hidden;
     transition: all 0.2s;
   }
-  .field:focus-within {
-    background: rgba(255,255,255,0.12);
+  .step-card:focus-within {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,216,155,0.3);
+  }
+  .step-card.filled {
     border-color: rgba(255,216,155,0.4);
   }
-  .field-label {
+  .step-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 12px 16px 8px;
+    color: rgba(255,255,255,0.85);
+  }
+  .step-num {
+    font-size: 10px;
+    color: #ffd89b;
+    letter-spacing: 2px;
+    font-family: "SF Mono", monospace;
+    font-weight: 700;
+    background: rgba(255,216,155,0.15);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .step-name {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .step-why {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    margin-left: auto;
+  }
+  .step-goal {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    padding: 0 16px 10px;
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .step-fields {
+    padding: 4px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .step-field-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin-bottom: 8px;
   }
-  .field-label .en {
+  .step-field-label .hint {
     font-size: 10px;
-    color: #ffd89b;
-    letter-spacing: 3px;
-    font-weight: 700;
-    font-family: "SF Mono", monospace;
-  }
-  .field-label .cn {
-    font-size: 12px;
-    color: rgba(255,255,255,0.7);
-    letter-spacing: 2px;
-  }
-  .field-label .hint {
-    font-size: 10px;
-    color: rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.5px;
     margin-left: auto;
   }
-  .field textarea {
+  .step-field textarea, .step-field input {
     width: 100%;
-    background: transparent;
-    border: none;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.08);
     color: #fff;
+    border-radius: 6px;
+    padding: 8px 12px;
     font-family: inherit;
     font-size: 13px;
     line-height: 1.7;
     outline: none;
     resize: none;
-    min-height: 60px;
+    min-height: 40px;
     letter-spacing: 0.3px;
   }
-  .field textarea::placeholder { color: rgba(255,255,255,0.25); }
-
-  .save-hint {
-    text-align: center;
-    color: rgba(255,255,255,0.4);
-    font-size: 10px;
-    letter-spacing: 2px;
-    margin-top: 20px;
+  .step-field textarea::placeholder,
+  .step-field input::placeholder {
+    color: rgba(255,255,255,0.25);
   }
-  .save-hint.saved { color: #ffd89b; }
+  .step-field textarea:focus,
+  .step-field input:focus {
+    border-color: rgba(255,216,155,0.4);
+    background: rgba(0,0,0,0.25);
+  }
+  .step-warn {
+    font-size: 11px;
+    color: #ff9a76;
+    padding: 6px 16px 12px;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+  }
+  .step-warn::before { content: '⚠ '; }
 
   /* 发散区 */
   .brainstorm {
@@ -403,6 +389,160 @@
     letter-spacing: 0.3px;
   }
   .brainstorm textarea::placeholder { color: rgba(255,255,255,0.25); }
+
+  .save-hint {
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-top: 20px;
+  }
+  .save-hint.saved { color: #ffd89b; }
+
+  /* SOP 文档模式 */
+  .sop-doc {
+    color: #fff;
+  }
+  .sop-doc-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+  .sop-doc-intro {
+    font-size: 13px;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.85);
+    padding: 12px 16px;
+    background: rgba(255,216,155,0.08);
+    border-left: 3px solid #ffd89b;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    white-space: pre-line;
+    letter-spacing: 0.3px;
+  }
+  .sop-step-doc {
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .sop-step-doc .sd-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .sop-step-doc .sd-num {
+    font-size: 11px;
+    color: #ffd89b;
+    letter-spacing: 2px;
+    font-family: "SF Mono", monospace;
+    font-weight: 700;
+    background: rgba(255,216,155,0.15);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .sop-step-doc .sd-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 3px;
+  }
+  .sop-step-doc .sd-why {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+  }
+  .sop-step-doc .sd-goal {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(255,255,255,0.15);
+    letter-spacing: 0.3px;
+  }
+  .sop-step-doc .sd-dos-label {
+    font-size: 11px;
+    color: rgba(255,216,155,0.7);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .sop-step-doc .sd-dos {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px;
+  }
+  .sop-step-doc .sd-dos li {
+    font-size: 13px;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.85);
+    padding: 4px 0 4px 20px;
+    position: relative;
+    letter-spacing: 0.3px;
+  }
+  .sop-step-doc .sd-dos li::before {
+    content: '·';
+    position: absolute;
+    left: 6px;
+    color: #ffd89b;
+    font-weight: bold;
+  }
+  .sop-step-doc .sd-verify {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.12);
+    margin-top: 10px;
+  }
+  .sop-step-doc .sd-verify::before {
+    content: '📋 验收 · ';
+    color: #a5d88a;
+    font-weight: 600;
+  }
+  .sop-step-doc .sd-warn {
+    font-size: 11px;
+    color: #ff9a76;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+  .sop-step-doc .sd-warn::before { content: '⚠ '; }
+  .sop-doc-rules {
+    margin-top: 20px;
+    padding: 14px 18px;
+    background: rgba(255,100,100,0.06);
+    border: 1px solid rgba(255,100,100,0.2);
+    border-radius: 12px;
+  }
+  .sop-doc-rules .rules-title {
+    font-size: 12px;
+    color: #ff9a76;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .sop-doc-rules ul {
+    list-style: none;
+    padding: 0;
+  }
+  .sop-doc-rules li {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    padding: 4px 0 4px 22px;
+    position: relative;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+  }
+  .sop-doc-rules li::before {
+    content: '✗';
+    position: absolute;
+    left: 4px;
+    color: #ff9a76;
+    font-weight: bold;
+  }
 
   /* Modal · 导出 */
   .modal {
@@ -467,8 +607,8 @@
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .main { padding: 20px 16px 40px; }
-    .fields { grid-template-columns: 1fr; gap: 10px; }
     .detail-title-input { font-size: 20px; }
+    .sop-step-doc .sd-name { font-size: 14px; letter-spacing: 2px; }
   }
 </style>
 </head>
@@ -496,7 +636,7 @@
   </aside>
 
   <main class="main" id="main">
-    <div class="empty-state" id="empty">左边加一个想法 · 或点击列表选一个开始填 5W1H</div>
+    <div class="empty-state">左边加一个想法 · 或点击列表选一个开始按 7 步 SOP 走</div>
   </main>
 </div>
 
@@ -515,17 +655,96 @@
 
 <script>
 const STORAGE_KEY = 'lychee_ideapool_v1';
-const DATA_VERSION = 3;  // v3 · SOP 改为文档模式(docMode) · 不显示 6 字段
-const FIELDS = [
-  { key: 'what',  en: 'WHAT',  cn: '做什么',    hint: '一句话说清楚' },
-  { key: 'why',   en: 'WHY',   cn: '为什么',    hint: '解决什么问题 / 满足什么欲' },
-  { key: 'who',   en: 'WHO',   cn: '给谁玩',    hint: '目标玩家 / 使用场景' },
-  { key: 'when',  en: 'WHEN',  cn: '什么时候玩',  hint: '什么心情 / 什么时机' },
-  { key: 'where', en: 'WHERE', cn: '在哪玩',    hint: '手机 / 电脑 / 单人 / 联机' },
-  { key: 'how',   en: 'HOW',   cn: '怎么做',    hint: '玩法核心 · 关键机制' }
+const DATA_VERSION = 3;  // v3 · 彻底切换 7 步 SOP · 删掉 5W1H
+
+// 7 步 SOP 结构定义
+const SOP_STEPS = [
+  {
+    step: 'Step 1',
+    key: 's1',
+    name: '起念锁定',
+    why: '定方向·下空想',
+    goal: '终结文字空想 · 必须补出完整画面或简迅',
+    fields: [
+      { k: 'concept',    label: '核心概念',   hint: '一句话·精练·标示语' },
+      { k: 'refs',       label: '参考坐标',   hint: '跨品类亦可·不用硬找同款' },
+      { k: 'gameplay',   label: '核心玩法定义', hint: '唯一核心·不散射' },
+      { k: 'firstScreen',label: '首屏视觉',   hint: '最重要·能补绘画面' }
+    ],
+    warn: '不描绘细节效果 · 不描绘附加功能'
+  },
+  {
+    step: 'Step 2',
+    key: 's2',
+    name: '边界钉死',
+    why: '防溢流·防超载',
+    goal: '解决最大痛点 —— 功能乱加·项目失控·反复推翻',
+    fields: [
+      { k: 'minLoop',   label: '最小玩法循环', hint: '最简易活动链·缺一不可' },
+      { k: 'dontDo',    label: 'v1.0 绝对不做', hint: '硬边界·防止溢流' },
+      { k: 'iterPool',  label: '迭代池', hint: 'v1.1 / v1.2 待做功能' },
+      { k: 'hooks',     label: '钩子体系', hint: '基础+核心+续加钩子' }
+    ]
+  },
+  {
+    step: 'Step 3',
+    key: 's3',
+    name: '裸玩法验证',
+    why: '防美化包装玩法差',
+    goal: '零美化 · 默认UI · 极简功能 · 试 3 轮以上',
+    fields: [
+      { k: 'verifyNote', label: '试玩记录', hint: '玩了几轮·什么感觉·卡在哪' },
+      { k: 'conclusion', label: '下阶段结论', hint: '可继续 / 需要微调 / 终止项目' }
+    ]
+  },
+  {
+    step: 'Step 4',
+    key: 's4',
+    name: '视觉定样',
+    why: '治视觉反复推翻',
+    goal: '2 版差异化小样 · 锁定一版 · 出绘稿级样本',
+    fields: [
+      { k: 'style',   label: '视觉风格大方向', hint: '一句话说清·可截图参考' },
+      { k: 'spec',    label: '视觉规范', hint: '颜色·字体·按钮·间距等' }
+    ],
+    warn: '小样阶段可随便改 · 绘稿后只允许细节微调'
+  },
+  {
+    step: 'Step 5',
+    key: 's5',
+    name: '完整开发',
+    why: '纯执行·不发散',
+    goal: '严格按玩法+视觉规范批量转小 · 全难路走通',
+    fields: [
+      { k: 'devNote', label: '开发进度/踩坑', hint: '记录 bug·手感调整·手指区域优化等' }
+    ]
+  },
+  {
+    step: 'Step 6',
+    key: 's6',
+    name: '上线发布',
+    why: '强制收尾·根治完美主义',
+    goal: '不追求完美 · 追求稳定·闭环·可交付',
+    fields: [
+      { k: 'url',    label: '公网 URL', hint: 'https://fantasyfanftl.github.io/lycheeGame/xxx.html' },
+      { k: 'status', label: '上线状态', hint: '未部署 / 已部署 / v1.0 冻结' }
+    ]
+  },
+  {
+    step: 'Step 7',
+    key: 's7',
+    name: '复盘归档',
+    why: '沉淀经验成永久能力',
+    goal: '记录返工点 · 沉淀可复用模板 · 反哺 SOP',
+    fields: [
+      { k: 'reflection', label: '本次踩坑/纠结', hint: '记录所有让你返工的点' },
+      { k: 'reusable',   label: '可复用沉淀', hint: '组件·规则·模板·反哺 SOP' },
+      { k: 'nextMove',   label: '迭代方向', hint: '砍掉 / 维持 / 升级 v1.1' }
+    ]
+  }
 ];
 
-// 权威 SOP · 文档模式 · 不用 5W1H
+// 权威 SOP · 文档模式
 const CANONICAL_SOP = {
   id: 'sop_canonical',
   title: '做游戏 SOP',
@@ -533,107 +752,6 @@ const CANONICAL_SOP = {
   docMode: true,
   subtitle: '个人专属 · 7 步闭环游戏开发 SOP · v2.0',
   intro: '核心底层原则:发散方向→先验证玩法→定视觉→强制收尾→沉淀经验·最终无损返工\n适配人群:视觉驱动·容易改方案·容易无限打磨·容易项目烂尾·容易推倒重来的创作者',
-  doc: [
-    {
-      step: 'Step 1',
-      name: '起念锁定',
-      why: '定方向·下空想',
-      goal: '终结文字空想 · 必须补出完整画面或简迅',
-      dos: [
-        '一句话核心概念(精练·标示语)',
-        '参考坐标(跨品类亦可·不用硬找同款)',
-        '核心玩法定义(唯一核心·不散射)',
-        '首屏视觉形成锁定(最重要·必须能补绘画面)'
-      ],
-      verify: '起念锁定信息清单',
-      warn: '不描绘细节效果·不描绘附加功能'
-    },
-    {
-      step: 'Step 2',
-      name: '边界钉死',
-      why: '防溢流·防超载·防越做越乱',
-      goal: '解决最大痛点 —— 功能乱加·项目失控·反复推翻',
-      dos: [
-        '锁定"发散最小核心玩法循环"(最简易活动链·缺一不可)',
-        '制定"v1.0 绝对不做清单"(硬边界)',
-        '分区 v1.0必做 / v1.1迭代 / v1.2迭代 功能池',
-        '设定游戏成功钩子体系(基础钩子+核心钩子+续加钩子)'
-      ],
-      verify: '版本边界清单 + 功能迭代池清单 + 游戏钩子体系清单'
-    },
-    {
-      step: 'Step 3',
-      name: '裸玩法验证',
-      why: '防美化包装玩法差',
-      goal: '先验证玩法好不好玩 · 再包装 · 最终大批过工',
-      dos: [
-        '制作"零美化·默认UI·极简功能版本"',
-        '纯功能闭环试玩 3 轮以上',
-        '隔离画面干扰·只判断玩法本身有没有乐趣',
-        '给出下阶段结论:可继续 / 需要微调 / 终止项目'
-      ],
-      verify: '裸玩法验收清单'
-    },
-    {
-      step: 'Step 4',
-      name: '视觉定样',
-      why: '治你视觉反复推翻',
-      goal: '把"视觉反复推翻"杀在小样阶段 · 统一在开发前风格',
-      dos: [
-        '出 2 版差异化视觉小样(快速试错·不精修)',
-        '锁定唯一持续视觉大方向',
-        '制作 1 页绘稿级核心界面样本',
-        '钉死视觉规范:颜色·字体·按钮·间距等'
-      ],
-      verify: '视觉风格定样清单 + 视觉规范清单',
-      warn: '小样阶段可随便改 · 绘稿后只允许细节微调'
-    },
-    {
-      step: 'Step 5',
-      name: '完整开发',
-      why: '纯执行·不发散',
-      goal: '只能小的·不加数·不加新玩法 · 防止开发中途言逸',
-      dos: [
-        '严格按已定玩法 + 视觉规范批量转小',
-        '打磨操作手感·跟手度·点击反馈',
-        '手机端手指区域优化·防误触',
-        '全难路走通闭环 · 无 bug · 无卡点'
-      ],
-      verify: '开发转小验收清单'
-    },
-    {
-      step: 'Step 6',
-      name: '上线发布',
-      why: '强制收尾·根治完美主义的尾',
-      goal: '不追求完美 · 追求"稳定·闭环·可交付"',
-      dos: [
-        '完整部署 · 可正常进入游玩',
-        '补齐封面·简介·基础说明',
-        '全难路重新测试',
-        '正式收尾定稿:v1.0 声明冻结(但迭代池随时打开 v1.1)'
-      ],
-      verify: '上线验收清单'
-    },
-    {
-      step: 'Step 7',
-      name: '复盘归档',
-      why: '沉淀本次经验成永久能力',
-      goal: '不再重复踩坑 · 越做越顺',
-      dos: [
-        '记录本次所有返工点·纠结点·踩坑点',
-        '沉淀可复用模板·规则·组件',
-        '判断迭代方向:剪切 / 维新 / 升级 v1.1',
-        '反哺优化自己的 SOP 流程'
-      ],
-      verify: '项目复盘清单'
-    }
-  ],
-  bottomRules: [
-    '不追完美 — 每一步"可用"就上',
-    '不并行铺 — 一个游戏一条线',
-    '不预设用户 — 我玩得爽就是成功'
-  ],
-  brainstorm: '',
   createdAt: '2026-07-22'
 };
 
@@ -655,49 +773,59 @@ function loadIdeas() {
     ideas = [];
   }
 
-  // 权威 SOP · 永远存在且置顶
-  const sopIdx = ideas.findIndex(i => i.id === 'sop_canonical' || i.title === '做游戏 SOP');
-  if (version < DATA_VERSION || sopIdx < 0) {
-    // 升级 · 移除任何旧的 SOP 条目 · 塞入新版 · 置顶
-    ideas = ideas.filter(i => i.id !== 'sop_canonical' && i.title !== '做游戏 SOP');
-    ideas.unshift({ ...CANONICAL_SOP });
+  // 升级到 v3:剥离 5W1H · 迁移旧数据到 brainstorm
+  if (version < 3) {
+    ideas.forEach(idea => {
+      if (idea.id === 'sop_canonical' || idea.title === '做游戏 SOP') return;
+      // 把旧的 what/why/who/when/where/how 合并进 brainstorm 顶部
+      const parts = [];
+      if (idea.what) parts.push('WHAT · 做什么: ' + idea.what);
+      if (idea.why) parts.push('WHY · 为什么: ' + idea.why);
+      if (idea.who) parts.push('WHO · 给谁: ' + idea.who);
+      if (idea.when) parts.push('WHEN · 时机: ' + idea.when);
+      if (idea.where) parts.push('WHERE · 载体: ' + idea.where);
+      if (idea.how) parts.push('HOW · 怎么做: ' + idea.how);
+      if (parts.length) {
+        const legacyText = '【旧 5W1H · 未按 7 步整理】\n' + parts.join('\n') + '\n\n' + '─────\n\n';
+        idea.brainstorm = legacyText + (idea.brainstorm || '');
+      }
+      // 清掉旧字段
+      delete idea.what;
+      delete idea.why;
+      delete idea.who;
+      delete idea.when;
+      delete idea.where;
+      delete idea.how;
+      // 初始化 7 步字段
+      SOP_STEPS.forEach(s => {
+        if (!idea[s.key]) idea[s.key] = {};
+      });
+    });
     localStorage.setItem(STORAGE_KEY + '_v', String(DATA_VERSION));
-  } else {
-    // 已经有 SOP · 确保置顶(不动内容 · 用户可能自己改过)
-    const sop = ideas.splice(sopIdx, 1)[0];
-    sop.pinned = true;
-    ideas.unshift(sop);
   }
 
-  // 如果完全没有其他条目 · 塞几个占位例子
+  // 权威 SOP · 永远存在且置顶
+  const sopIdx = ideas.findIndex(i => i.id === 'sop_canonical' || i.title === '做游戏 SOP');
+  if (sopIdx >= 0) ideas.splice(sopIdx, 1);
+  ideas.unshift({ ...CANONICAL_SOP });
+
+  // 如果只剩 SOP · 塞占位
   if (ideas.length === 1) {
-    ideas.push(
-      {
-        id: uid(),
-        title: '构图裁切',
-        what: '一个训练构图审美的轻科普小游戏。给你一张原图 · 拖动矩形裁切框到你觉得"最佳构图"的位置 · 提交后得分 + 系统对比 + 讲解为什么这样裁好',
-        why: '天蓝想训练自己的画面判断力 · 但看理论记不住。市面上没有"直接练构图直觉"的东西',
-        who: '天蓝自己 · 摄影/设计入门者',
-        when: '碎片时间 · 通勤 · 出去拍照前想复习构图逻辑时',
-        where: '手机竖屏优先 · 触屏拖框最直观',
-        how: 'v1.0 核心循环 · 拖动/缩放裁切框 → 提交 → 得分 + 裁切解析 + 参考对比',
-        brainstorm: '',
-        createdAt: '2026-07-23'
-      },
-      {
-        id: uid(),
-        title: '产品脑',
-        what: '产品思维训练游戏 · 每关一个情境 · 4 选 1 · 揭晓最产品思维选项 + 3 段讲解',
-        why: '天蓝做游戏做多了 · 但缺产品经理式的判断力',
-        who: '天蓝自己 · 想学产品思维但看不进书的人',
-        when: '通勤 · 睡前',
-        where: '手机竖屏为主',
-        how: '15 个情境题 · 每题独立点评 4 选项 · 累积解锁 10 条产品原则图鉴',
-        brainstorm: '',
-        createdAt: '2026-07-23'
-      }
-    );
+    ideas.push(makePlaceholder('构图裁切', 'v1.0 已上线 · https://fantasyfanftl.github.io/lycheeGame/crop.html'));
+    ideas.push(makePlaceholder('产品脑', 'v1.0 已上线 · https://fantasyfanftl.github.io/lycheeGame/product-mind.html'));
   }
+  save();
+}
+
+function makePlaceholder(title, note) {
+  const idea = {
+    id: uid(),
+    title,
+    createdAt: new Date().toISOString().split('T')[0],
+    brainstorm: note || ''
+  };
+  SOP_STEPS.forEach(s => { idea[s.key] = {}; });
+  return idea;
 }
 
 function save() {
@@ -708,27 +836,32 @@ function uid() {
   return 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
-function ideaFillLevel(idea) {
-  const filled = FIELDS.filter(f => (idea[f.key] || '').trim()).length;
-  if (filled === 0 && !(idea.title || '').trim()) return 'empty';
-  if (filled >= 5) return 'done';
-  if (filled >= 1) return 'filled';
-  return 'empty';
+// 完成的 Step 数
+function completedSteps(idea) {
+  if (idea.docMode) return -1;
+  let done = 0;
+  SOP_STEPS.forEach(s => {
+    const stepData = idea[s.key] || {};
+    const anyFilled = s.fields.some(f => (stepData[f.k] || '').trim());
+    if (anyFilled) done++;
+  });
+  return done;
 }
 
 function renderSidebar() {
   const listEl = document.getElementById('idea-list');
   listEl.innerHTML = ideas.map(idea => {
-    const status = ideaFillLevel(idea);
     const title = (idea.title || '').trim() || '（未命名）';
     const active = idea.id === currentId ? ' active' : '';
     const pinned = idea.pinned ? ' pinned' : '';
     const pinIcon = idea.pinned ? '<span class="pin-icon">📌</span>' : '';
-    const cls = 'idea-item' + active + pinned + ' ' + status;
+    const cls = 'idea-item' + active + pinned;
+    const done = completedSteps(idea);
+    const progress = idea.docMode ? '' : `<span class="progress-mini">${done}/7</span>`;
     return `<button class="${cls}" data-id="${idea.id}">
       ${pinIcon}
-      <span class="idea-status"></span>
       <span class="idea-title">${escapeHtml(title)}</span>
+      ${progress}
     </button>`;
   }).join('');
   listEl.querySelectorAll('.idea-item').forEach(btn => {
@@ -744,10 +877,58 @@ function renderDetail() {
   const main = document.getElementById('main');
   const idea = ideas.find(i => i.id === currentId);
   if (!idea) {
-    main.innerHTML = `<div class="empty-state" id="empty">左边加一个想法 · 或点击列表选一个开始填 5W1H</div>`;
+    main.innerHTML = '<div class="empty-state">左边加一个想法 · 或点击列表选一个开始按 7 步 SOP 走</div>';
     return;
   }
 
+  if (idea.docMode) {
+    renderDocMode(main, idea);
+    return;
+  }
+
+  renderStepMode(main, idea);
+}
+
+function renderDocMode(main, idea) {
+  main.innerHTML = `
+    <div class="detail-header">
+      <div class="detail-title-input" style="pointer-events:none; color:#ffd89b;">${escapeHtml(idea.title)}</div>
+    </div>
+
+    <div class="sop-doc">
+      <div class="sop-doc-subtitle">${escapeHtml(idea.subtitle || '')}</div>
+      <div class="sop-doc-intro">${escapeHtml(idea.intro || '')}</div>
+
+      ${SOP_STEPS.map(s => `
+        <div class="sop-step-doc">
+          <div class="sd-head">
+            <span class="sd-num">${s.step}</span>
+            <span class="sd-name">${s.name}</span>
+            <span class="sd-why">${s.why}</span>
+          </div>
+          <div class="sd-goal">🎯 ${escapeHtml(s.goal)}</div>
+          <div class="sd-dos-label">必做</div>
+          <ul class="sd-dos">
+            ${s.fields.map(f => `<li><b>${f.label}</b> · ${f.hint}</li>`).join('')}
+          </ul>
+          ${s.warn ? `<div class="sd-warn">${escapeHtml(s.warn)}</div>` : ''}
+          <div class="sd-verify">${s.name}验收清单</div>
+        </div>
+      `).join('')}
+
+      <div class="sop-doc-rules">
+        <div class="rules-title">3 条不做</div>
+        <ul>
+          <li>不追完美 — 每一步"可用"就上</li>
+          <li>不并行铺 — 一个游戏一条线</li>
+          <li>不预设用户 — 我玩得爽就是成功</li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+function renderStepMode(main, idea) {
   main.innerHTML = `
     <div class="detail-header">
       <input class="detail-title-input" id="title-input" value="${escapeAttr(idea.title || '')}" placeholder="给这个想法起个名字...">
@@ -755,18 +936,30 @@ function renderDetail() {
         <button class="btn danger" id="del-btn">删 除</button>
       </div>
     </div>
-    <div class="fields">
-      ${FIELDS.map(f => `
-        <div class="field">
-          <div class="field-label">
-            <span class="en">${f.en}</span>
-            <span class="cn">${f.cn}</span>
-            <span class="hint">${f.hint}</span>
+
+    ${SOP_STEPS.map(s => {
+      const stepData = idea[s.key] || {};
+      const anyFilled = s.fields.some(f => (stepData[f.k] || '').trim());
+      return `
+        <div class="step-card ${anyFilled ? 'filled' : ''}">
+          <div class="step-head">
+            <span class="step-num">${s.step}</span>
+            <span class="step-name">${s.name}</span>
+            <span class="step-why">${s.why}</span>
           </div>
-          <textarea data-key="${f.key}" placeholder="${f.hint}">${escapeHtml(idea[f.key] || '')}</textarea>
+          <div class="step-goal">🎯 ${escapeHtml(s.goal)}</div>
+          <div class="step-fields">
+            ${s.fields.map(f => `
+              <div class="step-field">
+                <div class="step-field-label">${f.label}<span class="hint">${f.hint}</span></div>
+                <textarea data-step="${s.key}" data-field="${f.k}" placeholder="${f.hint}">${escapeHtml(stepData[f.k] || '')}</textarea>
+              </div>
+            `).join('')}
+          </div>
+          ${s.warn ? `<div class="step-warn">${escapeHtml(s.warn)}</div>` : ''}
         </div>
-      `).join('')}
-    </div>
+      `;
+    }).join('')}
 
     <div class="brainstorm">
       <div class="brainstorm-label">
@@ -774,7 +967,7 @@ function renderDetail() {
         <span class="name">发 散 区</span>
         <span class="hint">随便写 · 想到就加 · 未来归纳</span>
       </div>
-      <textarea data-key="brainstorm" placeholder="讨论时冒出来的碎片直接粗暴塞这&#10;不用管结构 不用管顺序 想到就写&#10;GitHub Claude 说的、你自己想的、突然联想到的&#10;导出时也会带出去">${escapeHtml(idea.brainstorm || '')}</textarea>
+      <textarea data-key="brainstorm" placeholder="讨论时冒出来的碎片直接塞这&#10;不用管结构 不用管顺序 想到就写">${escapeHtml(idea.brainstorm || '')}</textarea>
     </div>
 
     <div class="save-hint" id="save-hint">自动保存 · 每次编辑即存</div>
@@ -785,8 +978,15 @@ function renderDetail() {
     autoResize(ta);
     ta.addEventListener('input', () => {
       autoResize(ta);
-      const key = ta.dataset.key;
-      idea[key] = ta.value;
+      const stepK = ta.dataset.step;
+      const fieldK = ta.dataset.field;
+      const bsK = ta.dataset.key;
+      if (stepK && fieldK) {
+        if (!idea[stepK]) idea[stepK] = {};
+        idea[stepK][fieldK] = ta.value;
+      } else if (bsK) {
+        idea[bsK] = ta.value;
+      }
       queueSave();
     });
   });
@@ -799,10 +999,7 @@ function renderDetail() {
   });
 
   document.getElementById('del-btn').addEventListener('click', () => {
-    if (idea.pinned) {
-      alert('这条是置顶权威内容 · 不能删。');
-      return;
-    }
+    if (idea.pinned) { alert('这条是置顶权威内容 · 不能删。'); return; }
     if (!confirm('删除这个想法？不可撤销。')) return;
     ideas = ideas.filter(i => i.id !== idea.id);
     currentId = ideas[0]?.id || null;
@@ -814,7 +1011,7 @@ function renderDetail() {
 
 function autoResize(ta) {
   ta.style.height = 'auto';
-  ta.style.height = Math.max(60, ta.scrollHeight) + 'px';
+  ta.style.height = Math.max(40, ta.scrollHeight) + 'px';
 }
 
 function queueSave() {
@@ -843,9 +1040,7 @@ function escapeHtml(s) {
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   })[c]);
 }
-function escapeAttr(s) {
-  return escapeHtml(s);
-}
+function escapeAttr(s) { return escapeHtml(s); }
 
 // ============ 添加 ============
 function addIdea(title) {
@@ -853,11 +1048,12 @@ function addIdea(title) {
   const newIdea = {
     id: uid(),
     title: t,
-    what: '', why: '', who: '', when: '', where: '', how: '',
-    brainstorm: '',
-    createdAt: new Date().toISOString().split('T')[0]
+    createdAt: new Date().toISOString().split('T')[0],
+    brainstorm: ''
   };
-  // 找到最后一个 pinned 之后插入 · 保证 pinned 永远在最上
+  SOP_STEPS.forEach(s => { newIdea[s.key] = {}; });
+
+  // 找到最后一个 pinned 后插入
   let insertAt = 0;
   for (let i = 0; i < ideas.length; i++) {
     if (ideas[i].pinned) insertAt = i + 1;
@@ -888,18 +1084,25 @@ document.getElementById('add-input').addEventListener('keydown', e => {
 
 // ============ 导出 ============
 function buildExport() {
-  return ideas.map((idea, i) => {
+  return ideas.filter(i => !i.docMode).map((idea, i) => {
     const title = (idea.title || '（未命名）').trim();
     const lines = [`【想法 ${i+1}】${title}`, `创建: ${idea.createdAt || ''}`];
-    FIELDS.forEach(f => {
-      const val = (idea[f.key] || '').trim();
-      if (val) lines.push(`${f.en} · ${f.cn}: ${val}`);
+    SOP_STEPS.forEach(s => {
+      const stepData = idea[s.key] || {};
+      const filled = s.fields.filter(f => (stepData[f.k] || '').trim());
+      if (filled.length) {
+        lines.push(`\n[${s.step}] ${s.name}`);
+        filled.forEach(f => {
+          lines.push(`  · ${f.label}: ${stepData[f.k].trim()}`);
+        });
+      }
     });
     const bs = (idea.brainstorm || '').trim();
     if (bs) lines.push(`\n💭 发散区:\n${bs}`);
     return lines.join('\n');
   }).join('\n\n───\n\n');
 }
+
 function openExport() {
   document.getElementById('export-text').value = buildExport();
   document.getElementById('export-modal').classList.add('show');
