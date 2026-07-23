@@ -1638,6 +1638,86 @@ footer strong { color: #7d84a8; }
   .flow-anno { font-size: 9px; }
 }
 
+/* ==== 左栏流程图视觉分区(定型元信息 · 不可交互) ==== */
+.sidebar-flow {
+  background: linear-gradient(180deg, rgba(45, 45, 45, 0.5) 0%, rgba(35, 35, 35, 0.4) 100%);
+  border: 1px solid rgba(124, 157, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 10px 12px;
+  margin: 8px 0 12px;
+}
+.sidebar-flow-title {
+  font-size: 9px;
+  color: #a4b3ff;
+  font-family: "SF Mono", monospace;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(124, 157, 255, 0.15);
+}
+.sidebar-flow-stage,
+.sidebar-flow-loop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.sidebar-flow-connect {
+  font-size: 9px;
+  color: #7d84a8;
+  text-align: center;
+  padding: 2px 0;
+  font-family: "SF Mono", monospace;
+}
+.sf-node {
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.sf-inspiration { color: #ffb457; border-color: rgba(255, 176, 87, 0.35); background: rgba(255, 176, 87, 0.1); }
+.sf-idea { color: #a4b3ff; border-color: rgba(124, 157, 255, 0.35); background: rgba(124, 157, 255, 0.1); }
+.sf-todo { color: #d6b4ff; border-color: rgba(180, 120, 255, 0.35); background: rgba(180, 120, 255, 0.1); }
+.sf-use { color: #7dd3fc; border-color: rgba(125, 211, 252, 0.35); background: rgba(125, 211, 252, 0.1); }
+.sf-heart { color: #f0abfc; border-color: rgba(240, 171, 252, 0.35); background: rgba(240, 171, 252, 0.1); }
+.sf-discuss { color: #a4b3ff; border-color: rgba(124, 157, 255, 0.35); background: rgba(124, 157, 255, 0.1); }
+.sf-precipitate { color: #d6b4ff; border-color: rgba(180, 120, 255, 0.35); background: rgba(180, 120, 255, 0.1); }
+.sf-verify { color: #ffb457; border-color: rgba(255, 176, 87, 0.35); background: rgba(255, 176, 87, 0.1); }
+.sf-arrow {
+  color: #7c9dff;
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  opacity: 0.7;
+}
+.sf-arrow-down {
+  color: #7c9dff;
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  opacity: 0.7;
+  margin-right: 3px;
+}
+.sf-done {
+  color: #6ee7b7;
+  font-weight: 700;
+  font-family: "SF Mono", monospace;
+}
+.sidebar-flow-note {
+  font-size: 9px;
+  color: #7d84a8;
+  line-height: 1.7;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(124, 157, 255, 0.1);
+  font-family: "SF Mono", monospace;
+  text-align: center;
+}
+
 /* ==== 主题 D · 资产库样式 ==== */
 .asset-hero {
   text-align: center;
