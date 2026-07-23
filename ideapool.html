@@ -232,13 +232,30 @@
   .btn:hover { background: rgba(255,255,255,0.2); }
   .btn.danger:hover { background: rgba(255,80,80,0.35); color: #fff; }
 
+  /* 双栏布局 · 左 SOP 流程 · 右 发散区 */
+  .step-mode-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .step-mode-left {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .step-mode-right {
+    position: sticky;
+    top: 20px;
+  }
+
   /* 7 步 SOP 卡片 */
   .step-card {
     background: rgba(255,255,255,0.06);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
-    margin-bottom: 14px;
     overflow: hidden;
     transition: all 0.2s;
   }
@@ -340,15 +357,18 @@
   }
   .step-warn::before { content: '⚠ '; }
 
-  /* 发散区 */
+  /* 发散区 · 右栏专用 · 通高 */
   .brainstorm {
-    margin-top: 20px;
     background: rgba(255,255,255,0.06);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     padding: 16px 18px;
     transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 100px);
+    max-height: calc(100vh - 100px);
   }
   .brainstorm:focus-within {
     background: rgba(255,255,255,0.12);
@@ -359,6 +379,7 @@
     align-items: baseline;
     gap: 10px;
     margin-bottom: 10px;
+    flex-shrink: 0;
   }
   .brainstorm-label .emoji {
     font-size: 15px;
@@ -376,6 +397,7 @@
     letter-spacing: 1px;
   }
   .brainstorm textarea {
+    flex: 1;
     width: 100%;
     background: transparent;
     border: none;
@@ -385,8 +407,8 @@
     line-height: 1.75;
     outline: none;
     resize: none;
-    min-height: 120px;
     letter-spacing: 0.3px;
+    min-height: 0;
   }
   .brainstorm textarea::placeholder { color: rgba(255,255,255,0.25); }
 
@@ -651,6 +673,11 @@
   }
 
   /* Mobile */
+  @media (max-width: 960px) {
+    .step-mode-layout { grid-template-columns: 1fr; }
+    .step-mode-right { position: static; }
+    .brainstorm { height: auto; min-height: 240px; }
+  }
   @media (max-width: 720px) {
     .app { grid-template-columns: 1fr; }
     .sidebar {
@@ -1027,59 +1054,67 @@ function renderStepMode(main, idea) {
       </div>
     </div>
 
-    ${SOP_STEPS.map(s => {
-      const stepData = idea[s.key] || {};
-      const anyFilled = s.fields.some(f => (stepData[f.k] || '').trim());
-      return `
-        <div class="step-card ${anyFilled ? 'filled' : ''}">
-          <div class="step-head">
-            <span class="step-num">${s.step}</span>
-            <span class="step-name">${s.name}</span>
-            <span class="step-why">${s.why}</span>
-          </div>
-          <div class="step-goal">🎯 ${escapeHtml(s.goal)}</div>
-          <div class="step-fields">
-            ${s.fields.map(f => `
-              <div class="step-field">
-                <div class="step-field-label">${f.label}<span class="hint">${f.hint}</span></div>
-                <textarea data-step="${s.key}" data-field="${f.k}" placeholder="${f.hint}">${escapeHtml(stepData[f.k] || '')}</textarea>
+    <div class="step-mode-layout">
+      <div class="step-mode-left">
+        ${SOP_STEPS.map(s => {
+          const stepData = idea[s.key] || {};
+          const anyFilled = s.fields.some(f => (stepData[f.k] || '').trim());
+          return `
+            <div class="step-card ${anyFilled ? 'filled' : ''}">
+              <div class="step-head">
+                <span class="step-num">${s.step}</span>
+                <span class="step-name">${s.name}</span>
+                <span class="step-why">${s.why}</span>
               </div>
-            `).join('')}
-          </div>
-          ${s.warn ? `<div class="step-warn">${escapeHtml(s.warn)}</div>` : ''}
-        </div>
-      `;
-    }).join('')}
-
-    <div class="brainstorm">
-      <div class="brainstorm-label">
-        <span class="emoji">💭</span>
-        <span class="name">发 散 区</span>
-        <span class="hint">随便写 · 想到就加 · 未来归纳</span>
+              <div class="step-goal">🎯 ${escapeHtml(s.goal)}</div>
+              <div class="step-fields">
+                ${s.fields.map(f => `
+                  <div class="step-field">
+                    <div class="step-field-label">${f.label}<span class="hint">${f.hint}</span></div>
+                    <textarea data-step="${s.key}" data-field="${f.k}" placeholder="${f.hint}">${escapeHtml(stepData[f.k] || '')}</textarea>
+                  </div>
+                `).join('')}
+              </div>
+              ${s.warn ? `<div class="step-warn">${escapeHtml(s.warn)}</div>` : ''}
+            </div>
+          `;
+        }).join('')}
+        <div class="save-hint" id="save-hint">自动保存 · 每次编辑即存</div>
       </div>
-      <textarea data-key="brainstorm" placeholder="讨论时冒出来的碎片直接塞这&#10;不用管结构 不用管顺序 想到就写">${escapeHtml(idea.brainstorm || '')}</textarea>
-    </div>
 
-    <div class="save-hint" id="save-hint">自动保存 · 每次编辑即存</div>
+      <div class="step-mode-right">
+        <div class="brainstorm">
+          <div class="brainstorm-label">
+            <span class="emoji">💭</span>
+            <span class="name">发 散 区</span>
+            <span class="hint">随便写 · 想到就加 · 未来归纳</span>
+          </div>
+          <textarea data-key="brainstorm" placeholder="讨论时冒出来的碎片直接塞这&#10;不用管结构 不用管顺序 想到就写">${escapeHtml(idea.brainstorm || '')}</textarea>
+        </div>
+      </div>
+    </div>
   `;
 
-  // 自动高度
-  main.querySelectorAll('textarea').forEach(ta => {
+  // 自动高度(仅 SOP 卡片的 textarea)
+  main.querySelectorAll('.step-field textarea').forEach(ta => {
     autoResize(ta);
     ta.addEventListener('input', () => {
       autoResize(ta);
       const stepK = ta.dataset.step;
       const fieldK = ta.dataset.field;
-      const bsK = ta.dataset.key;
-      if (stepK && fieldK) {
-        if (!idea[stepK]) idea[stepK] = {};
-        idea[stepK][fieldK] = ta.value;
-      } else if (bsK) {
-        idea[bsK] = ta.value;
-      }
+      if (!idea[stepK]) idea[stepK] = {};
+      idea[stepK][fieldK] = ta.value;
       queueSave();
     });
   });
+  // 发散区不自动高度 · flex 撑满
+  const bsTa = main.querySelector('.brainstorm textarea');
+  if (bsTa) {
+    bsTa.addEventListener('input', () => {
+      idea.brainstorm = bsTa.value;
+      queueSave();
+    });
+  }
 
   const titleInput = document.getElementById('title-input');
   titleInput.addEventListener('input', () => {
