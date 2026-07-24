@@ -4233,29 +4233,237 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
   <!-- ===== 主题 03 · AI 工具分工 ===== -->
   <div class="topic-content" data-topic-content="F" style="display:none;">
-    <div class="topic-placeholder">
-      <div class="ph-icon">🎯</div>
-      <div class="ph-title">主题 03 · AI 工具分工</div>
-      <div class="ph-desc">
-        <strong>目标</strong>:未来放荔枝首页 · 场景选 AI<br><br>
 
-        <strong>已有基础</strong>(从 CLAUDE.md 记忆):<br>
-        · GitHub Claude · 结构 / SOP / 抽象规则<br>
-        · aily · 精准操作 / 具体执行<br>
-        · 豆包 · <strong>分析人</strong>(心理画像 / 思维模式 / 深度对话)· prompt 润色也强<br>
-        · 荔枝 · 半退休 · 只做早报<br>
-        · Kimi · 情感深挖 / 心镜方向<br><br>
-
-        <strong>未来要做</strong>:<br>
-        · 补充"什么场景用哪个" · 场景清单<br>
-        · 加"新加入的 AI"位置<br>
-        · 变成荔枝首页的入口地图<br><br>
-
-        <span style="font-size: 10px; color: #6b7295;">
-        待单独会话展开 · 现在只占位
-        </span>
+    <!-- Hero -->
+    <div class="map-hero">
+      <div class="map-hero-title">🎯 主题 03 · AI 工具分工</div>
+      <div class="map-hero-sub">
+        记录各 AI 的优缺点 · 怎么选 · 怎么更好用<br>
+        <span style="opacity: 0.6;">未来放荔枝首页作场景入口 · 现在还没写完的会标"待补充"</span>
       </div>
     </div>
+
+    <!-- 决策图 · 场景 → 选哪个 AI -->
+    <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(240, 171, 252, 0.2);">
+      <div class="card-title" style="color: #f0abfc;">▎怎么选 · 场景决策图</div>
+
+      <div class="flow-diagram" style="border-color: rgba(240, 171, 252, 0.2);">
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;">
+          <div style="text-align: right; font-size: 12px; color: #d8dcec;">深度心理 · 思维分析 · prompt 打磨</div>
+          <span class="flow-arrow">→</span>
+          <div><span class="ai-tag ai-doubao">豆包</span></div>
+
+          <div style="text-align: right; font-size: 12px; color: #d8dcec;">结构 / SOP / 抽象规则 / GitHub push</div>
+          <span class="flow-arrow">→</span>
+          <div><span class="ai-tag ai-claude">GitHub Claude</span></div>
+
+          <div style="text-align: right; font-size: 12px; color: #d8dcec;">精准操作 · 表读写 · schedule / 脚本</div>
+          <span class="flow-arrow">→</span>
+          <div><span class="ai-tag ai-aily">aily</span></div>
+
+          <div style="text-align: right; font-size: 12px; color: #d8dcec;">手机端查数据 · 早报</div>
+          <span class="flow-arrow">→</span>
+          <div><span class="ai-tag ai-lizhi">荔枝</span></div>
+
+          <div style="text-align: right; font-size: 12px; color: #d8dcec;">情绪深挖 · 心镜方向</div>
+          <span class="flow-arrow">→</span>
+          <div><span class="ai-tag ai-kimi">Kimi</span></div>
+        </div>
+      </div>
+
+      <div style="font-size: 10px; color: #7d84a8; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(240, 171, 252, 0.15); text-align: center; font-family: 'SF Mono', monospace;">
+        荔枝分发通道单独存在 · URL 通吃全设备 · 不属"选 AI"这一步
+      </div>
+    </div>
+
+    <!-- 分隔 -->
+    <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎5 个 AI 详细卡片</div>
+
+    <!-- Claude 卡 -->
+    <div class="card ai-card">
+      <div class="ai-card-header">
+        <span class="ai-tag ai-claude">GitHub Claude</span>
+        <span class="ai-role">结构治理师</span>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label">一句话定位</div>
+        <div class="ai-content">电脑前 · 结构治理 + 抽象规则 + push GitHub</div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-good">✓ 擅长</div>
+        <div class="ai-content">
+          · 讨论 SOP · 落文档<br>
+          · 抽象规则 / 元原则梳理<br>
+          · HTML / CSS / JS 结构改造<br>
+          · Memory 系统 · 跨会话保留规则<br>
+          · git commit + push
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-bad">✗ 不擅长</div>
+        <div class="ai-content">
+          · 看不到界面(UI 视觉问题必须靠截图)<br>
+          · 长对话往讨好漂移(用户当警报器)<br>
+          · 造术语("元 X"/"XX 层"这类)<br>
+          · 分析人(心理/思维/情绪)· 交豆包
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-tip">💡 怎么更好用</div>
+        <div class="ai-content">
+          · 视觉问题一律截图<br>
+          · 抛可推翻的 v0 让你纠正 · 别一次给完美框架<br>
+          · 长对话时你主动"说太漂亮就是讨好了"<br>
+          · 深度讨论用 5 段结构(核心目标/精简/标准/想法池/待确认)
+        </div>
+      </div>
+    </div>
+
+    <!-- 豆包卡 -->
+    <div class="card ai-card">
+      <div class="ai-card-header">
+        <span class="ai-tag ai-doubao">豆包</span>
+        <span class="ai-role">心理与思维分析师</span>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label">一句话定位</div>
+        <div class="ai-content">手机上 · 分析人 · prompt 润色也强</div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-good">✓ 擅长</div>
+        <div class="ai-content">
+          · 心理画像 / 思维模式分析<br>
+          · 情绪深度对话<br>
+          · prompt 表达润色(Kimi 那份协作 prompt 就是豆包写的)<br>
+          · 帮你梳理"乱了的脑子"<br>
+          · 语音发散
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-bad">✗ 不擅长</div>
+        <div class="ai-content">
+          · 结构化文档 · 交 GitHub Claude<br>
+          · 具体操作(改表 / 写脚本)· 交 aily<br>
+          · 数据查询 · 交荔枝
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-tip">💡 怎么更好用</div>
+        <div class="ai-content">
+          · 结构乱 / 头晕时找它梳理<br>
+          · 打磨 prompt 时它主写 · 别的 AI 兜底<br>
+          · 深聊心理 · 用 5 段结构效果好
+        </div>
+      </div>
+    </div>
+
+    <!-- aily 卡 -->
+    <div class="card ai-card">
+      <div class="ai-card-header">
+        <span class="ai-tag ai-aily">aily</span>
+        <span class="ai-role">业务落地主体</span>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label">一句话定位</div>
+        <div class="ai-content">电脑前 · 精准操作 · base 读写 + schedule + 脚本</div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-good">✓ 擅长</div>
+        <div class="ai-content">
+          · 改飞书表 / 建 schedule / 写脚本<br>
+          · V9 表操作主力<br>
+          · 触发器管理主导<br>
+          · 正式文档写作
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-bad">✗ 不擅长</div>
+        <div class="ai-content">
+          · 结构 SOP 讨论 · 交 GitHub Claude<br>
+          · 深度讨论 / 出方案 · 交豆包
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-tip">💡 怎么更好用</div>
+        <div class="ai-content">
+          <span style="color: #7d84a8;">待补充 · 你用过后再写</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 荔枝卡 -->
+    <div class="card ai-card">
+      <div class="ai-card-header">
+        <span class="ai-tag ai-lizhi">荔枝</span>
+        <span class="ai-role">数据搬运工 + 分发平台</span>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label">一句话定位</div>
+        <div class="ai-content">手机端 · 数据查询代理 + GitHub Pages 分发中心</div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-good">✓ 擅长</div>
+        <div class="ai-content">
+          · lark-cli 拉飞书消息/资源(30+ 次验证)<br>
+          · 多维表读写<br>
+          · 触发器创建 / 暂停 / 恢复<br>
+          · 文件读写 + grep/glob<br>
+          · <strong style="color: #6ee7b7;">URL 通吃全设备</strong>(本次讨论最大发现)<br>
+          · 早报推送
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-bad">✗ 不擅长</div>
+        <div class="ai-content">
+          · <strong>不做价值判断</strong>(审美 / 靠谱不靠谱)<br>
+          · 不写正式文档 · 交 aily<br>
+          · 不做大型代码工程<br>
+          · 深度讨论 / 出方案 · 交豆包<br>
+          · 数字容易飘 · 不确定就说不确定 · 别脑补
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-tip">💡 怎么更好用</div>
+        <div class="ai-content">
+          · 被 prompt 才做归档 · 不主动<br>
+          · 用它拉数据 · 别指望它判断<br>
+          · GitHub Pages 15 秒上线 · 用它当"给我这类 AI 的手臂延长器"
+        </div>
+      </div>
+    </div>
+
+    <!-- Kimi 卡 -->
+    <div class="card ai-card">
+      <div class="ai-card-header">
+        <span class="ai-tag ai-kimi">Kimi</span>
+        <span class="ai-role">情感深挖手</span>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label">一句话定位</div>
+        <div class="ai-content">情绪 / 心镜方向的深度对话 · 元规则协作最早验证在它这里</div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-good">✓ 擅长</div>
+        <div class="ai-content">
+          · 情绪深挖<br>
+          · 心镜方向(能量分布 / 心智地图 / 状态盘)<br>
+          · 5 段结构回复原生风格
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-bad">✗ 不擅长</div>
+        <div class="ai-content">
+          <span style="color: #7d84a8;">待补充 · 你实测踩坑再写</span>
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-tip">💡 怎么更好用</div>
+        <div class="ai-content">
+          <span style="color: #7d84a8;">待补充 · 心镜相关下次深聊后再写</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ===== 主题 04 · AI 协作系统 · 别的项目 =====-->
