@@ -1531,6 +1531,63 @@ footer strong { color: #7d84a8; }
 .version-panel { display: none; }
 .version-panel.active { display: block; }
 
+/* ==== AI 工具分工卡片 ==== */
+.ai-card {
+  border: 1px solid rgba(240, 171, 252, 0.15);
+}
+.ai-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(240, 171, 252, 0.15);
+}
+.ai-role {
+  font-size: 11px;
+  color: #9ca3b8;
+  font-family: "SF Mono", monospace;
+}
+.ai-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid;
+  font-family: "SF Mono", monospace;
+}
+.ai-claude { color: #a4b3ff; background: rgba(124, 157, 255, 0.12); border-color: rgba(124, 157, 255, 0.4); }
+.ai-doubao { color: #f0abfc; background: rgba(240, 171, 252, 0.12); border-color: rgba(240, 171, 252, 0.4); }
+.ai-aily { color: #6ee7b7; background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.4); }
+.ai-lizhi { color: #ffb457; background: rgba(255, 176, 87, 0.12); border-color: rgba(255, 176, 87, 0.4); }
+.ai-kimi { color: #d6b4ff; background: rgba(180, 120, 255, 0.12); border-color: rgba(180, 120, 255, 0.4); }
+
+.ai-section {
+  margin-bottom: 10px;
+}
+.ai-section:last-child { margin-bottom: 0; }
+.ai-label {
+  font-size: 10px;
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  color: #a4b3ff;
+}
+.ai-label.ai-good { color: #6ee7b7; }
+.ai-label.ai-bad { color: #ff8c9c; }
+.ai-label.ai-tip { color: #ffb457; }
+.ai-content {
+  font-size: 12px;
+  color: #d8dcec;
+  line-height: 1.7;
+  padding: 8px 10px;
+  background: rgba(45, 45, 45, 0.4);
+  border-radius: 6px;
+  border-left: 2px solid rgba(124, 157, 255, 0.2);
+}
+
 /* ==== 流程图组件(通用) ==== */
 .flow-diagram {
   background: rgba(45, 45, 45, 0.5);
