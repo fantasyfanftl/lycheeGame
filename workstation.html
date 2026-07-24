@@ -17,18 +17,16 @@
     -webkit-user-select: none;
   }
 
-  /* Layout */
   .app {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 220px 1fr;
     min-height: 100vh;
   }
 
-  /* Sidebar */
   .sidebar {
     background: rgba(0,0,0,0.25);
     backdrop-filter: blur(10px);
-    padding: 24px 14px;
+    padding: 24px 12px;
     border-right: 1px solid rgba(255,255,255,0.08);
     position: sticky; top: 0;
     height: 100vh;
@@ -43,7 +41,7 @@
     align-items: center;
     gap: 8px;
   }
-  .brand .brand-icon { font-size: 22px; }
+  .brand img { width: 26px; height: 26px; border-radius: 6px; }
   .back-link {
     display: block;
     color: rgba(255,255,255,0.5);
@@ -56,12 +54,13 @@
   .back-link:hover { color: rgba(255,255,255,0.9); }
 
   .cat-list { display: flex; flex-direction: column; gap: 2px; }
+
   .cat-btn {
     background: transparent;
     border: none;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.75);
     text-align: left;
-    padding: 10px 12px;
+    padding: 9px 8px;
     border-radius: 8px;
     font-family: inherit;
     font-size: 13px;
@@ -69,8 +68,9 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: all 0.15s;
+    gap: 6px;
+    width: 100%;
+    transition: background 0.15s;
     -webkit-tap-highlight-color: transparent;
   }
   .cat-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
@@ -79,15 +79,107 @@
     color: #fff;
     font-weight: 600;
   }
-  .cat-btn .emoji { font-size: 16px; }
+  .cat-btn .tri {
+    width: 16px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    transition: transform 0.15s;
+    flex: none;
+    display: inline-block;
+    text-align: center;
+    padding: 2px;
+    border-radius: 4px;
+  }
+  .cat-btn .tri:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .cat-btn .tri.open { transform: rotate(90deg); }
+  .cat-btn .tri.hidden { visibility: hidden; }
+  .cat-btn .emoji { font-size: 15px; flex: none; }
+  .cat-btn .cat-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .cat-btn .count {
-    margin-left: auto;
     font-size: 11px;
     color: rgba(255,255,255,0.4);
     letter-spacing: 0;
+    flex: none;
   }
 
-  /* Main */
+  .children {
+    margin-left: 22px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s;
+  }
+  .children.open { max-height: 800px; }
+  .child-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 7px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+  }
+  .child-row:hover { background: rgba(255,255,255,0.04); color: #fff; }
+  .child-row.active {
+    background: rgba(255,216,155,0.18);
+    color: #ffd89b;
+    font-weight: 600;
+  }
+  .child-row .child-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .child-row .sub-del {
+    width: 16px; height: 16px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: rgba(255,255,255,0.6);
+    border-radius: 50%;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    flex: none;
+  }
+  .child-row:hover .sub-del { display: flex; }
+  .child-row .sub-del:hover { background: rgba(255,100,100,0.4); color: #fff; }
+
+  .add-child {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    cursor: pointer;
+    border-radius: 7px;
+    letter-spacing: 1px;
+  }
+  .add-child:hover { color: #ffd89b; background: rgba(255,255,255,0.04); }
+
+  .inline-input {
+    width: calc(100% - 4px);
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,216,155,0.5);
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    outline: none;
+    margin: 2px 0;
+  }
+  .inline-input:focus { border-color: #ffd89b; }
+
   .main {
     padding: 24px 28px 60px;
     min-width: 0;
@@ -131,7 +223,14 @@
   .btn.primary { background: #ffd89b; color: #4a3d6b; border-color: transparent; font-weight: 600; }
   .btn.primary:hover { background: #fff; }
 
-  /* Section title */
+  .crumb {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    min-height: 14px;
+  }
+
   .section-title {
     font-size: 11px;
     letter-spacing: 4px;
@@ -142,7 +241,6 @@
   }
   .section-title:first-child { margin-top: 0; }
 
-  /* Cards grid */
   .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -205,7 +303,6 @@
   .link-card:hover .del-btn { display: flex; }
   .link-card .del-btn:hover { background: rgba(255,100,100,0.4); color: #fff; }
 
-  /* Local zone */
   .local-tag {
     display: inline-block;
     background: rgba(255,216,155,0.2);
@@ -228,7 +325,6 @@
     border-radius: 12px;
   }
 
-  /* Modal */
   .modal {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.7);
@@ -290,12 +386,11 @@
     margin-top: 20px;
   }
 
-  /* Mobile */
   @media (max-width: 720px) {
     .app { grid-template-columns: 1fr; }
     .sidebar {
-      position: fixed; top: 0; left: -240px;
-      width: 220px;
+      position: fixed; top: 0; left: -260px;
+      width: 240px;
       height: 100vh;
       z-index: 90;
       transition: left 0.3s;
@@ -320,6 +415,7 @@
     .link-card { padding: 12px 14px; min-height: 68px; }
     .link-card .card-name { font-size: 12px; }
     .link-card .del-btn { display: flex; }
+    .child-row .sub-del { display: flex; }
   }
   @media (min-width: 721px) {
     .menu-btn { display: none; }
@@ -332,7 +428,7 @@
 
 <div class="app">
   <aside class="sidebar" id="sidebar">
-    <div class="brand"><img src="workstation-logo.png" alt="LycheeTab" style="width:26px;height:26px;border-radius:6px;">LycheeTab</div>
+    <div class="brand"><img src="workstation-logo.png" alt="LycheeTab">LycheeTab</div>
     <a href="brain.html" class="back-link">← 返回荔枝Brain</a>
     <div class="cat-list" id="cat-list"></div>
   </aside>
@@ -344,11 +440,11 @@
       <button class="btn" id="export-btn">导 出</button>
     </div>
 
+    <div class="crumb" id="crumb"></div>
     <div id="content"></div>
   </main>
 </div>
 
-<!-- Add modal -->
 <div class="modal" id="add-modal">
   <div class="modal-box">
     <div class="modal-title">📌 暂存到本地</div>
@@ -364,6 +460,10 @@
       <label>分类</label>
       <select id="add-cat"></select>
     </div>
+    <div class="field">
+      <label>子分类（可选）</label>
+      <select id="add-subcat"></select>
+    </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeAdd()">取消</button>
       <button class="btn primary" onclick="doAdd()">存 起 来</button>
@@ -371,7 +471,6 @@
   </div>
 </div>
 
-<!-- Export modal -->
 <div class="modal" id="export-modal">
   <div class="modal-box">
     <div class="modal-title">📤 导出本设备暂存的链接</div>
@@ -390,11 +489,15 @@
 
 <script>
 const LOCAL_KEY = 'lychee_workstation_local';
+const SUBCATS_KEY = 'lychee_workstation_subcats';
+const UI_KEY = 'lychee_workstation_ui';
 let AUTHORITY = { categories: [], links: [] };
 let LOCAL = [];
+let SUBCATS = {};
+let openCats = new Set();
 let currentCat = 'all';
+let currentSubcat = null;
 
-// ============ 加载权威数据 ============
 async function loadAuthority() {
   try {
     const res = await fetch('workstation-data.json?t=' + Date.now());
@@ -405,48 +508,225 @@ async function loadAuthority() {
   }
 }
 function loadLocal() {
-  try {
-    LOCAL = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
-  } catch (e) { LOCAL = []; }
+  try { LOCAL = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }
+  catch (e) { LOCAL = []; }
 }
 function saveLocal() {
   localStorage.setItem(LOCAL_KEY, JSON.stringify(LOCAL));
 }
+function loadUI() {
+  try {
+    SUBCATS = JSON.parse(localStorage.getItem(SUBCATS_KEY) || '{}');
+    const ui = JSON.parse(localStorage.getItem(UI_KEY) || '{}');
+    openCats = new Set(ui.openCats || []);
+  } catch (e) {
+    SUBCATS = {}; openCats = new Set();
+  }
+}
+function saveSubcats() {
+  localStorage.setItem(SUBCATS_KEY, JSON.stringify(SUBCATS));
+}
+function saveUI() {
+  localStorage.setItem(UI_KEY, JSON.stringify({ openCats: [...openCats] }));
+}
 
-// ============ 渲染 ============
 function extractHost(url) {
   try { return new URL(url).host.replace(/^www\./, ''); }
   catch (e) { return url.slice(0, 30); }
+}
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+function countCards(catId) {
+  return AUTHORITY.links.filter(l => l.cat === catId).length +
+         LOCAL.filter(l => l.cat === catId).length;
+}
+function subcatName(catId, subId) {
+  const s = (SUBCATS[catId] || []).find(x => x.id === subId);
+  return s ? s.name : '';
 }
 
 function renderSidebar() {
   const list = document.getElementById('cat-list');
   const total = AUTHORITY.links.length + LOCAL.length;
+
   let html = `<button class="cat-btn ${currentCat==='all'?'active':''}" data-cat="all">
-    <span class="emoji">📚</span>全部<span class="count">${total}</span>
+    <span class="tri hidden">▶</span>
+    <span class="emoji">📚</span><span class="cat-label">全部</span><span class="count">${total}</span>
   </button>`;
+
   AUTHORITY.categories.forEach(c => {
-    const n = AUTHORITY.links.filter(l => l.cat === c.id).length +
-              LOCAL.filter(l => l.cat === c.id).length;
-    html += `<button class="cat-btn ${currentCat===c.id?'active':''}" data-cat="${c.id}">
-      <span class="emoji">${c.emoji}</span>${c.name}<span class="count">${n}</span>
-    </button>`;
+    const n = countCards(c.id);
+    const isOpen = openCats.has(c.id);
+    const subs = SUBCATS[c.id] || [];
+    const isCatActive = currentCat === c.id && !currentSubcat;
+
+    html += `<div class="cat-group">
+      <div class="cat-btn ${isCatActive?'active':''}" data-cat="${c.id}">
+        <span class="tri ${isOpen?'open':''}" data-toggle="${c.id}">▶</span>
+        <span class="emoji">${c.emoji}</span><span class="cat-label">${escapeHtml(c.name)}</span><span class="count">${n}</span>
+      </div>
+      <div class="children ${isOpen?'open':''}">`;
+    subs.forEach(sc => {
+      const active = currentCat === c.id && currentSubcat === sc.id;
+      html += `<div class="child-row ${active?'active':''}" data-cat="${c.id}" data-sub="${sc.id}">
+        <span class="child-label">${escapeHtml(sc.name)}</span>
+        <button class="sub-del" data-cat="${c.id}" data-sub="${sc.id}" title="删除子分类">×</button>
+      </div>`;
+    });
+    html += `<div class="add-child" data-add="${c.id}">＋ 新增子分类</div>
+      </div>
+    </div>`;
   });
+
   html += `<button class="cat-btn ${currentCat==='local'?'active':''}" data-cat="local">
-    <span class="emoji">📌</span>本地暂存<span class="count">${LOCAL.length}</span>
+    <span class="tri hidden">▶</span>
+    <span class="emoji">📌</span><span class="cat-label">本地暂存</span><span class="count">${LOCAL.length}</span>
   </button>`;
+
   list.innerHTML = html;
-  list.querySelectorAll('.cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+  bindSidebar();
+}
+
+function bindSidebar() {
+  document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      if (e.target.dataset && e.target.dataset.toggle) return;
       currentCat = btn.dataset.cat;
+      currentSubcat = null;
       renderSidebar();
       renderContent();
       document.getElementById('sidebar').classList.remove('open');
     });
   });
+
+  document.querySelectorAll('.tri[data-toggle]').forEach(tri => {
+    tri.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = tri.dataset.toggle;
+      if (openCats.has(id)) openCats.delete(id);
+      else openCats.add(id);
+      saveUI();
+      renderSidebar();
+    });
+  });
+
+  document.querySelectorAll('.child-row').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.classList.contains('sub-del')) return;
+      currentCat = row.dataset.cat;
+      currentSubcat = row.dataset.sub;
+      renderSidebar();
+      renderContent();
+      document.getElementById('sidebar').classList.remove('open');
+    });
+    row.addEventListener('dblclick', e => {
+      e.stopPropagation();
+      startRenameSubcat(row);
+    });
+  });
+
+  document.querySelectorAll('.sub-del').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const catId = btn.dataset.cat;
+      const subId = btn.dataset.sub;
+      const name = subcatName(catId, subId);
+      if (!confirm(`删除子分类「${name}」?卡片会保留 · 只是归属清空。`)) return;
+      SUBCATS[catId] = (SUBCATS[catId] || []).filter(s => s.id !== subId);
+      LOCAL.forEach(l => { if (l.subcat === subId) l.subcat = null; });
+      saveSubcats();
+      saveLocal();
+      if (currentSubcat === subId) currentSubcat = null;
+      renderSidebar();
+      renderContent();
+    });
+  });
+
+  document.querySelectorAll('.add-child').forEach(a => {
+    a.addEventListener('click', e => {
+      e.stopPropagation();
+      startAddSubcat(a);
+    });
+  });
+}
+
+function startAddSubcat(anchor) {
+  const catId = anchor.dataset.add;
+  const input = document.createElement('input');
+  input.className = 'inline-input';
+  input.placeholder = '子分类名字 · 回车确定';
+  anchor.replaceWith(input);
+  input.focus();
+  let done = false;
+  const commit = () => {
+    if (done) return;
+    done = true;
+    const name = input.value.trim();
+    if (name) {
+      if (!SUBCATS[catId]) SUBCATS[catId] = [];
+      const id = 'sub_' + Math.random().toString(36).slice(2, 10);
+      SUBCATS[catId].push({ id, name });
+      openCats.add(catId);
+      saveSubcats();
+      saveUI();
+    }
+    renderSidebar();
+  };
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    else if (e.key === 'Escape') { done = true; renderSidebar(); }
+  });
+  input.addEventListener('blur', commit);
+}
+
+function startRenameSubcat(row) {
+  const catId = row.dataset.cat;
+  const subId = row.dataset.sub;
+  const sub = (SUBCATS[catId] || []).find(s => s.id === subId);
+  if (!sub) return;
+  const label = row.querySelector('.child-label');
+  const input = document.createElement('input');
+  input.className = 'inline-input';
+  input.value = sub.name;
+  label.replaceWith(input);
+  input.focus();
+  input.select();
+  let done = false;
+  const commit = () => {
+    if (done) return;
+    done = true;
+    const name = input.value.trim();
+    if (name && name !== sub.name) {
+      sub.name = name;
+      saveSubcats();
+    }
+    renderSidebar();
+  };
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    else if (e.key === 'Escape') { done = true; renderSidebar(); }
+  });
+  input.addEventListener('blur', commit);
+}
+
+function renderCrumb() {
+  const el = document.getElementById('crumb');
+  if (currentCat === 'all') { el.textContent = '全部'; return; }
+  if (currentCat === 'local') { el.textContent = '本地暂存'; return; }
+  const c = AUTHORITY.categories.find(x => x.id === currentCat);
+  const catText = c ? `${c.emoji} ${c.name}` : currentCat;
+  if (currentSubcat) {
+    el.textContent = `${catText}  ›  ${subcatName(currentCat, currentSubcat)}`;
+  } else {
+    el.textContent = catText;
+  }
 }
 
 function renderContent() {
+  renderCrumb();
   const content = document.getElementById('content');
   const q = document.getElementById('search').value.trim().toLowerCase();
 
@@ -458,6 +738,10 @@ function renderContent() {
   } else if (currentCat !== 'all') {
     authList = authList.filter(l => l.cat === currentCat);
     localList = localList.filter(l => l.cat === currentCat);
+    if (currentSubcat) {
+      authList = [];
+      localList = localList.filter(l => l.subcat === currentSubcat);
+    }
   }
 
   if (q) {
@@ -474,23 +758,22 @@ function renderContent() {
   if (authList.length) {
     html += `<div class="section-title">权 威</div>`;
     html += `<div class="cards-grid">`;
-    authList.forEach(l => {
-      html += cardHTML(l, false);
-    });
+    authList.forEach(l => { html += cardHTML(l, false); });
     html += `</div>`;
   }
 
   if (localList.length) {
     html += `<div class="section-title">本地暂存（本设备）</div>`;
     html += `<div class="cards-grid">`;
-    localList.forEach((l, i) => {
-      html += cardHTML(l, true, i);
-    });
+    localList.forEach((l, i) => { html += cardHTML(l, true, i); });
     html += `</div>`;
   }
 
   if (!authList.length && !localList.length) {
-    html = `<div class="empty-hint">${q ? '没找到匹配项' : '这个分类还没有内容'}</div>`;
+    const hint = q ? '没找到匹配项'
+                  : (currentSubcat ? '这个子分类下还没卡片 · 点「+ 暂存」时能选归到这里'
+                                   : '这个分类还没有内容');
+    html = `<div class="empty-hint">${hint}</div>`;
   }
 
   content.innerHTML = html;
@@ -520,23 +803,27 @@ function cardHTML(link, isLocal, idx) {
   </a>`;
 }
 
-function escapeHtml(s) {
-  return String(s || '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  })[c]);
+function updateSubcatSelect() {
+  const catId = document.getElementById('add-cat').value;
+  const subSel = document.getElementById('add-subcat');
+  const subs = SUBCATS[catId] || [];
+  subSel.innerHTML = '<option value="">— 不归子分类 —</option>' +
+    subs.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`).join('');
+  if (currentCat === catId && currentSubcat) subSel.value = currentSubcat;
 }
 
-// ============ 暂存 ============
 function openAdd(prefillUrl) {
   document.getElementById('add-url').value = prefillUrl || '';
   document.getElementById('add-name').value = '';
   const catSel = document.getElementById('add-cat');
   catSel.innerHTML = AUTHORITY.categories.map(c =>
     `<option value="${c.id}">${c.emoji} ${c.name}</option>`
-  ).join('') + '<option value="__uncategorized__">未分类</option>';
+  ).join('');
   if (currentCat !== 'all' && currentCat !== 'local') {
     catSel.value = currentCat;
   }
+  catSel.onchange = updateSubcatSelect;
+  updateSubcatSelect();
   document.getElementById('add-modal').classList.add('show');
   setTimeout(() => document.getElementById('add-url').focus(), 100);
 }
@@ -547,15 +834,15 @@ function doAdd() {
   const url = document.getElementById('add-url').value.trim();
   const name = document.getElementById('add-name').value.trim();
   const cat = document.getElementById('add-cat').value;
+  const subcat = document.getElementById('add-subcat').value || null;
   if (!url) { alert('URL 不能空'); return; }
-  LOCAL.push({ url, name, cat, addedAt: new Date().toISOString().split('T')[0] });
+  LOCAL.push({ url, name, cat, subcat, addedAt: new Date().toISOString().split('T')[0] });
   saveLocal();
   closeAdd();
   renderSidebar();
   renderContent();
 }
 
-// ============ 导出 ============
 function openExport() {
   const text = LOCAL.length ?
     JSON.stringify(LOCAL, null, 2) :
@@ -584,7 +871,6 @@ function clearLocal() {
   renderContent();
 }
 
-// ============ Event ============
 document.getElementById('add-btn').addEventListener('click', () => {
   const q = document.getElementById('search').value.trim();
   const looksLikeUrl = /^https?:\/\//.test(q);
@@ -602,17 +888,16 @@ document.getElementById('menu-btn').addEventListener('click', () => {
   document.getElementById('sidebar').classList.toggle('open');
 });
 
-// close modal on backdrop
 ['add-modal', 'export-modal'].forEach(id => {
   document.getElementById(id).addEventListener('click', e => {
     if (e.target.id === id) e.target.classList.remove('show');
   });
 });
 
-// ============ Boot ============
 (async function() {
   await loadAuthority();
   loadLocal();
+  loadUI();
   renderSidebar();
   renderContent();
 })();
