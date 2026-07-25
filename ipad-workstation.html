@@ -2672,6 +2672,43 @@ footer strong { color: #7d84a8; }
 .lc-branch-arrow { color: #b478ff; margin: 0 4px; }
 
 /* ==== 主题 D · 资产库样式 ==== */
+
+/* ==== 主题 01 (E) hero · 蓝色发光标题条 ==== */
+.topic-hero-E {
+  text-align: left;
+  padding: 10px 14px;
+  background:
+    radial-gradient(300px 80px at 50% 0%, rgba(124, 157, 255, 0.15) 0%, transparent 70%),
+    rgba(30, 30, 30, 0.6);
+  border: 1px solid rgba(124, 157, 255, 0.25);
+  border-left: 3px solid #7c9dff;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 16px rgba(124, 157, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.topic-hero-E::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124, 157, 255, 0.7), transparent);
+}
+.topic-hero-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a4b3ff;
+  margin-bottom: 2px;
+  text-shadow: 0 0 10px rgba(124, 157, 255, 0.4);
+  letter-spacing: 0.3px;
+}
+.topic-hero-sub {
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+  line-height: 1.4;
+}
 .asset-hero {
   text-align: left;
   padding: 10px 14px;
@@ -3647,6 +3684,11 @@ footer strong { color: #7d84a8; }
 
   <!-- ===== 主题 E 内容(现有 tab 结构) ===== -->
   <div class="topic-content" data-topic-content="E">
+
+  <div class="topic-hero-E">
+    <div class="topic-hero-title">🏗 主题 01 · 怎么搭建 AI 工作台</div>
+    <div class="topic-hero-sub">当前正在讨论 · 该做什么 · 需要什么内容</div>
+  </div>
 
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="review">迭代日志</button>
