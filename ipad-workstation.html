@@ -3099,7 +3099,7 @@ footer strong { color: #7d84a8; }
         <div class="topic-header">
           <div class="topic-icon">💡</div>
           <div>
-            <div class="topic-name">天蓝的大脑</div>
+            <div class="topic-name">天蓝脑</div>
             <div class="topic-sub">想法池 · 关系全景 · 经验案例</div>
           </div>
         </div>
@@ -4677,7 +4677,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
   <div class="topic-content" data-topic-content="brain" style="display:none;">
 
     <div class="brain-hero">
-      <div class="title">🧠 ClaudeCode-Brain</div>
+      <div class="title">🧠 Claude 脑</div>
       <div class="subtitle">用你能理解的方式 · 看我大脑里的东西</div>
     </div>
 
@@ -5182,7 +5182,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
   <div class="topic-content" data-topic-content="tianlan" style="display:none;">
 
     <div class="brain-hero brain-hero-tianlan">
-      <div class="title">💡 天蓝的大脑</div>
+      <div class="title">💡 天蓝脑</div>
       <div class="subtitle">大脑外显 · 想法池 · 关系全景 · 经验案例</div>
     </div>
 
@@ -5795,8 +5795,8 @@ document.addEventListener("DOMContentLoaded", function() {
     "D": "主题 02 · 跨 AI 复用资产",
     "F": "主题 03 · AI 工具分工",
     "G": "主题 04 · 成功案例 · 15 天回望(待迁天蓝大脑)",
-    "brain": "🧠 Claude 的大脑",
-    "tianlan": "💡 天蓝的大脑",
+    "brain": "🧠 Claude 脑",
+    "tianlan": "💡 天蓝脑",
     "global": "全局想法池 · 未归类"
   };
   var topicCards = document.querySelectorAll(".topic-card");
@@ -5892,7 +5892,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
   var copyBtns = document.querySelectorAll(".asset-copy-btn");
   copyBtns.forEach(function(btn) {
-    btn.addEventListener("click", function() {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
       var targetId = btn.getAttribute("data-asset");
       var content;
       if (targetId.endsWith("-current")) {
@@ -5927,6 +5928,24 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 2000);
       }
     });
+  });
+
+  // 资产卡默认折叠 + 头部点击展开
+  var assetCards = document.querySelectorAll(".asset-card");
+  assetCards.forEach(function(card) {
+    card.classList.add("collapsed");
+    var header = card.querySelector(".asset-card-header");
+    if (header) {
+      header.addEventListener("click", function(e) {
+        if (e.target.closest(".asset-copy-btn")) return;
+        card.classList.toggle("collapsed");
+      });
+    }
+  });
+
+  // 版本切换按钮阻止冒泡(避免误折叠)
+  document.querySelectorAll(".version-tab").forEach(function(t) {
+    t.addEventListener("click", function(e) { e.stopPropagation(); });
   });
 
   // 版本切换
