@@ -1020,6 +1020,84 @@ footer strong { color: #7d84a8; }
   box-shadow: 0 0 6px rgba(52, 211, 153, 0.25);
 }
 
+/* ==== 左栏卡片 · 按主题分色(brain=青, tianlan=绿, E=蓝, D=紫, F=粉) ==== */
+.topic-card[data-topic="brain"] {
+  background:
+    radial-gradient(220px 100px at 50% 50%, rgba(125, 211, 252, 0.12) 0%, transparent 70%),
+    rgba(35, 35, 35, 0.5);
+  border-color: rgba(125, 211, 252, 0.2);
+}
+.topic-card[data-topic="brain"]::before {
+  background: linear-gradient(90deg, transparent, #7dd3fc, transparent);
+}
+.topic-card[data-topic="brain"] .topic-name { text-shadow: 0 0 10px rgba(125, 211, 252, 0.3); }
+.topic-card[data-topic="brain"].active {
+  border-color: rgba(125, 211, 252, 0.5);
+  box-shadow: 0 0 20px rgba(125, 211, 252, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.topic-card[data-topic="brain"] .topic-icon { filter: drop-shadow(0 0 8px rgba(125, 211, 252, 0.4)); }
+
+.topic-card[data-topic="tianlan"] {
+  background:
+    radial-gradient(220px 100px at 50% 50%, rgba(52, 211, 153, 0.12) 0%, transparent 70%),
+    rgba(35, 35, 35, 0.5);
+  border-color: rgba(52, 211, 153, 0.2);
+}
+.topic-card[data-topic="tianlan"]::before {
+  background: linear-gradient(90deg, transparent, #6ee7b7, transparent);
+}
+.topic-card[data-topic="tianlan"] .topic-name { color: #eaecf5; text-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
+.topic-card[data-topic="tianlan"]:not(.active) .topic-name { color: #b0b8cc; }
+.topic-card[data-topic="tianlan"].active {
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.topic-card[data-topic="tianlan"] .topic-icon { filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4)); }
+
+.topic-card[data-topic="E"] {
+  background:
+    radial-gradient(220px 100px at 50% 50%, rgba(124, 157, 255, 0.14) 0%, transparent 70%),
+    rgba(35, 35, 35, 0.5);
+  border-color: rgba(124, 157, 255, 0.22);
+}
+.topic-card[data-topic="E"]::before {
+  background: linear-gradient(90deg, transparent, #7c9dff, transparent);
+}
+.topic-card[data-topic="E"] .topic-name { text-shadow: 0 0 10px rgba(124, 157, 255, 0.3); }
+.topic-card[data-topic="E"] .topic-icon { filter: drop-shadow(0 0 8px rgba(124, 157, 255, 0.4)); }
+
+.topic-card[data-topic="D"] {
+  background:
+    radial-gradient(220px 100px at 50% 50%, rgba(180, 120, 255, 0.13) 0%, transparent 70%),
+    rgba(35, 35, 35, 0.5);
+  border-color: rgba(180, 120, 255, 0.22);
+}
+.topic-card[data-topic="D"]::before {
+  background: linear-gradient(90deg, transparent, #b478ff, transparent);
+}
+.topic-card[data-topic="D"] .topic-name { text-shadow: 0 0 10px rgba(180, 120, 255, 0.3); }
+.topic-card[data-topic="D"].active {
+  border-color: rgba(180, 120, 255, 0.5);
+  box-shadow: 0 0 20px rgba(180, 120, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.topic-card[data-topic="D"] .topic-icon { filter: drop-shadow(0 0 8px rgba(180, 120, 255, 0.4)); }
+
+.topic-card[data-topic="F"] {
+  background:
+    radial-gradient(220px 100px at 50% 50%, rgba(240, 171, 252, 0.12) 0%, transparent 70%),
+    rgba(35, 35, 35, 0.5);
+  border-color: rgba(240, 171, 252, 0.2);
+}
+.topic-card[data-topic="F"]::before {
+  background: linear-gradient(90deg, transparent, #f0abfc, transparent);
+}
+.topic-card[data-topic="F"] .topic-name { text-shadow: 0 0 10px rgba(240, 171, 252, 0.3); }
+.topic-card[data-topic="F"].active {
+  border-color: rgba(240, 171, 252, 0.5);
+  box-shadow: 0 0 20px rgba(240, 171, 252, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.topic-card[data-topic="F"] .topic-icon { filter: drop-shadow(0 0 8px rgba(240, 171, 252, 0.4)); }
+
 /* ==== 层标签 ==== */
 .layer-label {
   font-size: 9px;
