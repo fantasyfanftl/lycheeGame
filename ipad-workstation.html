@@ -2200,29 +2200,59 @@ footer strong { color: #7d84a8; }
   font-family: "SF Mono", monospace;
   line-height: 1.4;
 }
-.asset-hero-export {
-  position: absolute;
-  right: 10px;
-  bottom: 8px;
-  padding: 5px 10px;
-  font-size: 11px;
+.asset-review-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin: 10px 0 14px;
+  background: rgba(35, 35, 35, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(180, 120, 255, 0.25);
+  border-left: 3px solid #b478ff;
+  border-radius: 8px;
+}
+.review-bar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.review-bar-title {
+  font-size: 12px;
   font-weight: 600;
-  border: 1px solid rgba(180, 120, 255, 0.4);
-  border-radius: 6px;
-  background: rgba(180, 120, 255, 0.12);
   color: #d6b4ff;
+}
+.review-bar-desc {
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+  line-height: 1.4;
+}
+.review-bar-btn {
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #b478ff, #7c9dff);
+  color: white;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 2px 10px rgba(180, 120, 255, 0.3);
   font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-.asset-hero-export:hover {
-  background: rgba(180, 120, 255, 0.22);
-  border-color: rgba(180, 120, 255, 0.6);
+.review-bar-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(180, 120, 255, 0.45);
 }
-.asset-hero-export.copied {
+.review-bar-btn.copied {
   background: linear-gradient(135deg, #34d399, #10b981);
-  color: white;
-  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(52, 211, 153, 0.35);
 }
 
 .asset-5w1h {
@@ -3843,6 +3873,15 @@ footer strong { color: #7d84a8; }
       <div class="stash-status" id="assetStashStatus"></div>
       <span class="stash-prompt-toggle" id="assetPromptToggle">▸ 展开落卡 prompt(给 Claude Code)</span>
       <div class="stash-prompt-pre" id="assetPromptPre" style="display:none;"></div>
+    </div>
+
+    <!-- 📦 资产库审核 · 一键导出全部给豆包复盘 -->
+    <div class="asset-review-bar">
+      <div class="review-bar-info">
+        <span class="review-bar-title">🔍 资产库审核</span>
+        <span class="review-bar-desc">导出全部 prompt · 粘给豆包复盘 · 查重/查缺/优化建议</span>
+      </div>
+      <button class="review-bar-btn" id="assetAllExport">📦 导出全部</button>
     </div>
 
     <!-- 资产 01 · Kimi 协作元规则 -->
@@ -5478,7 +5517,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <footer>
   <strong>GitHub Claude</strong> · v0.1 · 2026-07-25<br>
-  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 主题 02 hero 加「📦 导出全部」按钮 · 一键复制所有资产给豆包审核复盘</span>
+  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 修「📦 导出全部」按钮位置 · hero 是全局隐藏的 · 挪到 stash 下独立卡</span>
 </footer>
 
 <!-- ==== 批注浮层 ==== -->
