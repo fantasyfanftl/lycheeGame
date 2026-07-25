@@ -4805,6 +4805,14 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
+  var mapFab = document.getElementById("mapFab");
+  var mapDrawer = document.getElementById("mapDrawer");
+  var mapDrawerClose = document.getElementById("mapDrawerClose");
+  if (mapFab && mapDrawer) {
+    mapFab.addEventListener("click", function() { mapDrawer.classList.add("show"); });
+    mapDrawerClose.addEventListener("click", function() { mapDrawer.classList.remove("show"); });
+  }
+
   var tianlanTabs = document.querySelectorAll(".tianlan-tabs .tab-btn");
   var tianlanPanels = document.querySelectorAll(".tianlan-panel");
   tianlanTabs.forEach(function(bt) {
