@@ -1136,7 +1136,8 @@ footer strong { color: #7d84a8; }
 .topic-card[data-topic="brain"]::before {
   background: linear-gradient(90deg, transparent, #7dd3fc, transparent);
 }
-.topic-card[data-topic="brain"] .topic-name { text-shadow: 0 0 10px rgba(125, 211, 252, 0.3); }
+.topic-card[data-topic="brain"] .topic-name { color: #7dd3fc; text-shadow: 0 0 10px rgba(125, 211, 252, 0.4); }
+.topic-card[data-topic="brain"]:not(.active) .topic-name { color: rgba(125, 211, 252, 0.75); }
 .topic-card[data-topic="brain"].active {
   border-color: rgba(125, 211, 252, 0.5);
   box-shadow: 0 0 20px rgba(125, 211, 252, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -1152,8 +1153,8 @@ footer strong { color: #7d84a8; }
 .topic-card[data-topic="tianlan"]::before {
   background: linear-gradient(90deg, transparent, #6ee7b7, transparent);
 }
-.topic-card[data-topic="tianlan"] .topic-name { color: #eaecf5; text-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
-.topic-card[data-topic="tianlan"]:not(.active) .topic-name { color: #b0b8cc; }
+.topic-card[data-topic="tianlan"] .topic-name { color: #6ee7b7; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
+.topic-card[data-topic="tianlan"]:not(.active) .topic-name { color: rgba(110, 231, 183, 0.75); }
 .topic-card[data-topic="tianlan"].active {
   border-color: rgba(52, 211, 153, 0.5);
   box-shadow: 0 0 20px rgba(52, 211, 153, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -1169,7 +1170,8 @@ footer strong { color: #7d84a8; }
 .topic-card[data-topic="E"]::before {
   background: linear-gradient(90deg, transparent, #7c9dff, transparent);
 }
-.topic-card[data-topic="E"] .topic-name { text-shadow: 0 0 10px rgba(124, 157, 255, 0.3); }
+.topic-card[data-topic="E"] .topic-name { color: #a4b3ff; text-shadow: 0 0 10px rgba(124, 157, 255, 0.4); }
+.topic-card[data-topic="E"]:not(.active) .topic-name { color: rgba(164, 179, 255, 0.75); }
 .topic-card[data-topic="E"] .topic-icon { filter: drop-shadow(0 0 8px rgba(124, 157, 255, 0.4)); }
 
 .topic-card[data-topic="D"] {
@@ -1181,7 +1183,8 @@ footer strong { color: #7d84a8; }
 .topic-card[data-topic="D"]::before {
   background: linear-gradient(90deg, transparent, #b478ff, transparent);
 }
-.topic-card[data-topic="D"] .topic-name { text-shadow: 0 0 10px rgba(180, 120, 255, 0.3); }
+.topic-card[data-topic="D"] .topic-name { color: #d6b4ff; text-shadow: 0 0 10px rgba(180, 120, 255, 0.4); }
+.topic-card[data-topic="D"]:not(.active) .topic-name { color: rgba(214, 180, 255, 0.75); }
 .topic-card[data-topic="D"].active {
   border-color: rgba(180, 120, 255, 0.5);
   box-shadow: 0 0 20px rgba(180, 120, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -1197,7 +1200,8 @@ footer strong { color: #7d84a8; }
 .topic-card[data-topic="F"]::before {
   background: linear-gradient(90deg, transparent, #f0abfc, transparent);
 }
-.topic-card[data-topic="F"] .topic-name { text-shadow: 0 0 10px rgba(240, 171, 252, 0.3); }
+.topic-card[data-topic="F"] .topic-name { color: #f0abfc; text-shadow: 0 0 10px rgba(240, 171, 252, 0.4); }
+.topic-card[data-topic="F"]:not(.active) .topic-name { color: rgba(240, 171, 252, 0.75); }
 .topic-card[data-topic="F"].active {
   border-color: rgba(240, 171, 252, 0.5);
   box-shadow: 0 0 20px rgba(240, 171, 252, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -3689,7 +3693,7 @@ footer strong { color: #7d84a8; }
         </div>
         <div class="topic-intro">
           <div class="ti-row"><span class="ti-key">是什么</span><span class="ti-val">记录各 AI 的优缺点 · 怎么选 · 怎么更好用</span></div>
-          <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">3 模块:决策树选 AI · 泳道图看协作链路 · 卡片区查怎么用好</span></div>
+          <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">3 模块:决策树 · 泳道图 · 6 张详情卡 + 荔枝 Brain 平台独立块</span></div>
           <div class="ti-row"><span class="ti-key">怎么进这里</span><span class="ti-val">未来放荔枝首页作场景入口 · 现在还没写完的会标"待补充"</span></div>
         </div>
       </div>
@@ -6345,20 +6349,21 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <div class="card ai-card">
       <div class="ai-card-header">
         <span class="ai-tag ai-lizhi">荔枝</span>
-        <span class="ai-role">数据搬运工 + 分发平台</span>
+        <span class="ai-role">手机端数据搬运工</span>
       </div>
       <div class="ai-section">
         <div class="ai-label">一句话定位</div>
-        <div class="ai-content">手机端 · 数据查询代理 + GitHub Pages 分发中心</div>
+        <div class="ai-content">手机端 · 独立 AI · lark-cli 数据查询代理</div>
       </div>
       <div class="ai-section">
         <div class="ai-label ai-good">✓ 擅长</div>
         <div class="ai-content">
           · lark-cli 拉飞书消息/资源(30+ 次验证)<br>
           · 多维表读写<br>
-          · 触发器创建 / 暂停 / 恢复<br>
+          · 触发器创建 / 暂停 / 恢复(辅助 aily)<br>
           · 文件读写 + grep/glob<br>
-          · <strong style="color: #6ee7b7;">URL 通吃全设备</strong>(本次讨论最大发现)<br>
+          · web_search / fetch 基础查询<br>
+          · post 富文本 + 卡片 skill<br>
           · 早报推送
         </div>
       </div>
@@ -6369,7 +6374,8 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           · 不写正式文档 · 交 aily<br>
           · 不做大型代码工程<br>
           · 深度讨论 / 出方案 · 交豆包<br>
-          · 数字容易飘 · 不确定就说不确定 · 别脑补
+          · 数字容易飘 · 不确定就说不确定 · 别脑补<br>
+          · 心理分析 / 情绪 · 交豆包 / Kimi
         </div>
       </div>
       <div class="ai-section">
@@ -6377,7 +6383,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         <div class="ai-content">
           · 被 prompt 才做归档 · 不主动<br>
           · 用它拉数据 · 别指望它判断<br>
-          · GitHub Pages 15 秒上线 · 用它当"给我这类 AI 的手臂延长器"
+          · HTML 上线不归它 · 交荔枝 Brain 平台
         </div>
       </div>
     </div>
@@ -6413,7 +6419,89 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
       </div>
     </div>
+
+    <!-- 荔执卡 -->
+    <div class="card ai-card">
+      <div class="ai-card-header">
+        <span class="ai-tag ai-lizhizhi">荔执</span>
+        <span class="ai-role">飞书执行智能体</span>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label">一句话定位</div>
+        <div class="ai-content">飞书内操作代理 · 纯执行属性 · 不做思考</div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label" style="color:#f59e0b; background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.35);">⚠ 身份备注</div>
+        <div class="ai-content" style="font-size:11px; color:#c8d0e5;">
+          飞书生态智能体 · 非独立大模型 · 仅执行明确指令
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-good">✓ 擅长</div>
+        <div class="ai-content">
+          · 飞书多维表读写<br>
+          · 触发器启停<br>
+          · 文件归档<br>
+          · 早报推送<br>
+          · 飞书内明确指令场景操作
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-bad">✗ 不擅长</div>
+        <div class="ai-content">
+          · <strong>无独立思考能力</strong> · 不做方案输出<br>
+          · <strong>不做价值判断</strong>(审美 / 靠谱性)<br>
+          · 不写正式文档 · 交 aily<br>
+          · 不做大型代码工程<br>
+          · 不做深度讨论 / 出方案 · 交豆包<br>
+          · 数字容易飘 · 不确定就说 · 别脑补
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-tip">💡 怎么更好用</div>
+        <div class="ai-content">
+          · <strong>必须给明确指令</strong> · 不抛开放式问题<br>
+          · 被 prompt 才做归档 · 不主动<br>
+          · 用它拉数据 · 别指望它判断<br>
+          · 复杂逻辑先在其他 AI 侧理清楚 · 再交给它执行
+        </div>
+      </div>
+    </div>
     </div><!-- /.ai-card-grid -->
+
+    <!-- 分隔 -->
+    <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎独立模块 · 荔枝 Brain 平台基础能力</div>
+
+    <!-- 荔枝 Brain 平台基础能力 · 独立模块 -->
+    <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(34, 211, 238, 0.25); border-left: 3px solid #22d3ee;">
+      <div class="card-title" style="color: #22d3ee;">🌐 荔枝 Brain 平台 · 基础能力</div>
+      <div style="font-size: 10.5px; color: #9ca3b8; margin-bottom: 12px; font-family: 'SF Mono', monospace; line-height: 1.5;">
+        平台通用能力 · 不归属于单个 AI · 所有工具产出物均可使用
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <div style="padding: 10px 12px; background: rgba(35,35,35,0.5); border-radius: 6px; border-left: 2px solid #22d3ee;">
+          <div style="font-size: 11px; color: #22d3ee; font-weight: 700; margin-bottom: 4px;">📡 全设备 URL 分发</div>
+          <div style="font-size: 11px; color: #d8dcec; line-height: 1.5;">通吃所有终端 · 手机 / iPad / 电脑一个 URL 全跑</div>
+        </div>
+        <div style="padding: 10px 12px; background: rgba(35,35,35,0.5); border-radius: 6px; border-left: 2px solid #22d3ee;">
+          <div style="font-size: 11px; color: #22d3ee; font-weight: 700; margin-bottom: 4px;">⚡ 15 秒上线</div>
+          <div style="font-size: 11px; color: #d8dcec; line-height: 1.5;">GitHub Pages 自动构建 · push 后 15 秒生效</div>
+        </div>
+        <div style="padding: 10px 12px; background: rgba(35,35,35,0.5); border-radius: 6px; border-left: 2px solid #22d3ee;">
+          <div style="font-size: 11px; color: #22d3ee; font-weight: 700; margin-bottom: 4px;">📦 统一托管出口</div>
+          <div style="font-size: 11px; color: #d8dcec; line-height: 1.5;">所有工具产出物的分发通道 · 单文件 HTML 直传</div>
+        </div>
+        <div style="padding: 10px 12px; background: rgba(35,35,35,0.5); border-radius: 6px; border-left: 2px solid #22d3ee;">
+          <div style="font-size: 11px; color: #22d3ee; font-weight: 700; margin-bottom: 4px;">🦾 手臂延长器</div>
+          <div style="font-size: 11px; color: #d8dcec; line-height: 1.5;">给各 AI 一个"能被你手机看到"的具身通道</div>
+        </div>
+      </div>
+
+      <div style="font-size: 10px; color: #7d84a8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(34, 211, 238, 0.15); font-family: 'SF Mono', monospace; line-height: 1.6;">
+        📌 荔枝 Brain 是平台 · 不是 AI · 别把它归到单个工具名下
+      </div>
+    </div>
 
   </div>
 
