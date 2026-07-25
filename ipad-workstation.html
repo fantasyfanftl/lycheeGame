@@ -4172,6 +4172,39 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 [粘贴 JSON]</pre>
     </div>
 
+    <!-- 资产 10 · UI 布局微调 · 仅样式层 prompt -->
+    <div class="asset-card">
+      <div class="asset-card-header">
+        <div class="asset-num">10</div>
+        <div class="asset-meta">
+          <div class="asset-title">UI 布局微调 · 仅样式层 prompt</div>
+          <div class="asset-sub">白板标注图 + 文字锚定 · 硬红线仅改样式 · 防 AI 顺手改内容</div>
+        </div>
+        <button class="asset-copy-btn" data-asset="asset-10">复制</button>
+      </div>
+      <div class="asset-tags">
+        <span class="asset-tag">✓ AI 无关</span>
+        <span class="asset-tag">✓ 主题无关</span>
+        <span class="asset-tag">✓ 可迁移</span>
+        <span class="asset-tag">✓ 高频</span>
+      </div>
+      <pre class="asset-content" id="asset-10">这样写的核心是把改动范围严格锁死在样式层,明确禁止碰内容和业务逻辑,完全规避你担心的"把原有内容改乱"的风险。标注图 + 文字双重确认,不会出现理解偏差。
+
+【布局微调需求 · 仅样式层】
+参考标注图,对 [目标 HTML 文件名] 做 [N] 处改动:
+
+1. [具体改动 1 · 描述位置 + 想要的效果]
+2. [具体改动 2 · 描述位置 + 想要的效果]
+3. [具体改动 N · 描述位置 + 想要的效果]
+
+【硬性红线】
+- 仅做样式层改动,优先用 CSS 实现,尽量不新增 JS。
+- 禁止改动任何现有内容 DOM 结构、数据渲染逻辑、业务交互。
+- 不能打乱现有页面的内容、布局、功能。
+
+做完同步效果即可。</pre>
+    </div>
+
     <!-- 候选资产 4 条已迁想法储备(21-24) · 待整理成完整版时再回搬 -->
 
   </div>
@@ -4418,7 +4451,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         <!-- 1. 改了什么 -->
         <div class="review-block">
           <div class="review-block-label">改了什么</div>
-          <div class="review-track"><span class="step">01</span>主题 02 · 资产从 6 条 <span class="arrow">→</span> 9 条(加决策同步生成器 / 批注复盘生成器 / 入库指令)</div>
+          <div class="review-track"><span class="step">01</span>主题 02 · 资产从 6 条 <span class="arrow">→</span> 10 条(加决策同步生成器 / 批注复盘生成器 / 入库指令 / UI 布局微调)</div>
           <div class="review-track"><span class="step">02</span>加主题 03 · AI 工具分工(占位 · 未来放荔枝首页)</div>
           <div class="review-track"><span class="step">03</span>删主题 02 A 和 C · 合并整合 · 3 主题清爽</div>
           <div class="review-track"><span class="step">04</span>关系全景独立成主题 · SVG 手画 · 2 条实证箭头</div>
@@ -4749,6 +4782,18 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
                 <span class="pool-link">批注 #7 · 2026-07-25</span>
               </div>
               <div class="pool-status"><span class="tag tag-pending">待定清单</span>大脑外显/沉淀/想法池/元层/关系全景/哲学熔断器等 · 一句话释义</div>
+            </div>
+          </div>
+
+          <div class="pool-item item-observing" data-status="pending">
+            <div class="pool-num">E</div>
+            <div class="pool-content">
+              <div class="pool-title">暂存前加类型判断 · 页面帮判类别</div>
+              <div class="pool-meta">
+                <span class="pool-source src-both">共同</span>
+                <span class="pool-link">2026-07-25 · 边用边发现</span>
+              </div>
+              <div class="pool-status"><span class="tag tag-pending">待打磨</span>粘完 prompt 后页面帮忙判类别(资产 / 任务 / 其他)· 避免 Claude 落卡时判断错 · 也让暂存不再混装两种东西</div>
             </div>
           </div>
         </div>
@@ -5180,7 +5225,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <footer>
   <strong>GitHub Claude</strong> · v0.1 · 2026-07-25<br>
-  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 主题 02 新增 3 张资产卡(决策同步生成器/批注复盘生成器/入库指令)· 资产 6→9 条</span>
+  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 主题 02 新增资产 10「UI 布局微调 · 仅样式层」+ 想法池 E「暂存前加类型判断」· 资产 9→10 条</span>
 </footer>
 
 <!-- ==== 批注浮层 ==== -->
