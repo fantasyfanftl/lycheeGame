@@ -2029,6 +2029,129 @@ footer strong { color: #7d84a8; }
 .ai-lizhi { color: #ffb457; background: rgba(255, 176, 87, 0.12); border-color: rgba(255, 176, 87, 0.4); }
 .ai-kimi { color: #d6b4ff; background: rgba(180, 120, 255, 0.12); border-color: rgba(180, 120, 255, 0.4); }
 
+/* ==== 主题 03 · 决策树 ==== */
+.ai-tree {
+  padding: 12px 8px 4px;
+  font-family: "SF Mono", monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  color: #d8dcec;
+}
+.ai-tree-root {
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: rgba(180, 120, 255, 0.1);
+  border: 1px solid rgba(180, 120, 255, 0.3);
+  border-radius: 6px;
+  color: #d6b4ff;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.ai-tree-branch {
+  margin-bottom: 10px;
+}
+.ai-tree-l1 {
+  color: #a4b3ff;
+  font-weight: 700;
+  padding: 4px 0;
+}
+.ai-tree-l2 {
+  padding-left: 16px;
+  color: #9ca3b8;
+}
+.ai-tree-leaf {
+  padding: 3px 0;
+  font-size: 11.5px;
+}
+
+/* ==== 主题 03 · 泳道图 ==== */
+.swimlane {
+  display: grid;
+  gap: 4px;
+  padding: 8px 6px;
+  font-family: "SF Mono", monospace;
+}
+.swimlane-header {
+  display: grid;
+  grid-template-columns: 90px repeat(5, 1fr);
+  gap: 4px;
+  font-size: 9.5px;
+  color: #a4b3ff;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(124, 157, 255, 0.15);
+  margin-bottom: 4px;
+}
+.swimlane-header .swimlane-stage {
+  text-align: center;
+  padding: 4px 2px;
+}
+.swimlane-header .swimlane-actor {
+  padding: 4px 2px;
+  color: #7d84a8;
+}
+.swimlane-row {
+  display: grid;
+  grid-template-columns: 90px repeat(5, 1fr);
+  gap: 4px;
+  align-items: center;
+  min-height: 40px;
+}
+.swimlane-actor {
+  display: flex;
+  align-items: center;
+  padding: 4px 2px;
+}
+.swimlane-actor .ai-tag {
+  font-size: 10px;
+  padding: 3px 8px;
+}
+.swimlane-cell {
+  min-height: 32px;
+  padding: 6px 6px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  color: #d8dcec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.35;
+  border: 1px dashed rgba(124, 157, 255, 0.08);
+  background: rgba(35, 35, 35, 0.3);
+}
+.swimlane-cell.swimlane-active {
+  background: rgba(124, 157, 255, 0.12);
+  border: 1px solid rgba(124, 157, 255, 0.35);
+  color: #a4b3ff;
+  font-weight: 600;
+}
+.swimlane-cell.swimlane-active[data-stage="1"] { background: rgba(255, 180, 87, 0.1); border-color: rgba(255, 180, 87, 0.3); color: #ffb457; }
+.swimlane-cell.swimlane-active[data-stage="2"] { background: rgba(240, 171, 252, 0.1); border-color: rgba(240, 171, 252, 0.3); color: #f0abfc; }
+.swimlane-cell.swimlane-active[data-stage="3"] { background: rgba(124, 157, 255, 0.12); border-color: rgba(124, 157, 255, 0.35); color: #a4b3ff; }
+.swimlane-cell.swimlane-active[data-stage="4"] { background: rgba(52, 211, 153, 0.1); border-color: rgba(52, 211, 153, 0.3); color: #6ee7b7; }
+.swimlane-cell.swimlane-active[data-stage="5"] { background: rgba(255, 176, 87, 0.1); border-color: rgba(255, 176, 87, 0.3); color: #ffb457; }
+.swimlane-kimi-row {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(180, 120, 255, 0.2);
+}
+.swimlane-cell.swimlane-parallel {
+  background: rgba(180, 120, 255, 0.08);
+  border: 1px dashed rgba(180, 120, 255, 0.3);
+  color: #d6b4ff;
+  font-style: italic;
+}
+@media (max-width: 700px) {
+  .swimlane-header, .swimlane-row {
+    grid-template-columns: 70px repeat(5, 1fr);
+    font-size: 9px;
+  }
+  .swimlane-cell { font-size: 9.5px; padding: 4px 3px; }
+  .swimlane-header .swimlane-stage { font-size: 8.5px; }
+}
+
 .ai-section {
   margin-bottom: 10px;
 }
@@ -5639,59 +5762,145 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <!-- Tab 3 · 经验案例(装 15 天回望 + 未来所有成功案例) -->
     <div class="tianlan-panel" data-tianlan-panel="cases" style="display:none;">
 
-      <!-- 完整生命周期 · 真流程图(节点 + 连线) -->
+      <!-- 完整生命周期 · SVG 流程图 -->
       <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15); padding: 10px 12px;">
         <div class="card-title" style="color: #d6b4ff; margin-bottom: 6px;">▎完整生命周期</div>
 
-        <div class="lc-flow">
-          <div class="lc-node">
-            <span class="lc-node-num">1</span>
-            <span class="lc-node-action">产生零散灵感(多端 · 碎片化)</span>
-          </div>
-          <div class="lc-flow-arrow"><span>↓</span></div>
+        <div style="background: rgba(35,35,35,0.4); border-radius: 8px; padding: 8px 4px;">
+        <svg viewBox="0 0 620 780" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; display: block;">
+          <defs>
+            <linearGradient id="lcStart" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7c9dff" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#b478ff" stop-opacity="0.85"/>
+            </linearGradient>
+            <linearGradient id="lcEnd" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#10b981" stop-opacity="0.85"/>
+            </linearGradient>
+            <linearGradient id="lcNode" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3a3a3a" stop-opacity="1"/>
+              <stop offset="100%" stop-color="#2a2a2a" stop-opacity="1"/>
+            </linearGradient>
+            <linearGradient id="lcNodeTab" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(180,120,255,0.18)" stop-opacity="1"/>
+              <stop offset="100%" stop-color="rgba(124,157,255,0.12)" stop-opacity="1"/>
+            </linearGradient>
+            <marker id="lcArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c9dff"/>
+            </marker>
+            <marker id="lcArrowLoop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#f0abfc"/>
+            </marker>
+          </defs>
 
-          <div class="lc-node">
-            <span class="lc-node-num">2</span>
-            <span class="lc-node-action">定期汇总灵感 · 批量录入</span>
-            <span class="lc-node-store"><span class="lc-tab lc-tab-pool">想法储备</span></span>
-          </div>
-          <div class="lc-flow-arrow-with-note">AI 分类/打标/串关系</div>
+          <!-- 主流连线(竖直) -->
+          <line x1="230" y1="60" x2="230" y2="110" stroke="#7c9dff" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
+          <line x1="230" y1="170" x2="230" y2="200" stroke="#7c9dff" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
+          <line x1="230" y1="260" x2="230" y2="290" stroke="#7c9dff" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
+          <line x1="230" y1="350" x2="230" y2="380" stroke="#7c9dff" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
+          <line x1="230" y1="440" x2="230" y2="470" stroke="#7c9dff" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
+          <line x1="230" y1="530" x2="230" y2="560" stroke="#7c9dff" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
+          <line x1="230" y1="620" x2="230" y2="650" stroke="#7c9dff" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
+          <line x1="230" y1="710" x2="230" y2="738" stroke="#34d399" stroke-width="2" opacity="0.7" marker-end="url(#lcArrow)"/>
 
-          <div class="lc-node">
-            <span class="lc-node-num">3</span>
-            <span class="lc-node-action">和 AI 讨论筛选 · 碰撞修正</span>
-          </div>
-          <div class="lc-flow-arrow-with-note">结论附想法/待办上 · 无独立 Tab</div>
+          <!-- Tab 分支连线(横向 · 到右侧 tab 标签) -->
+          <line x1="360" y1="230" x2="440" y2="230" stroke="#ffb457" stroke-width="1.5" opacity="0.6" marker-end="url(#lcArrow)" stroke-dasharray="3 2"/>
+          <line x1="360" y1="410" x2="440" y2="410" stroke="#b478ff" stroke-width="1.5" opacity="0.6" marker-end="url(#lcArrow)" stroke-dasharray="3 2"/>
+          <line x1="360" y1="590" x2="440" y2="590" stroke="#7dd3fc" stroke-width="1.5" opacity="0.6" marker-end="url(#lcArrow)" stroke-dasharray="3 2"/>
+          <line x1="360" y1="680" x2="440" y2="680" stroke="#6ee7b7" stroke-width="1.5" opacity="0.6" marker-end="url(#lcArrow)" stroke-dasharray="3 2"/>
 
-          <div class="lc-node">
-            <span class="lc-node-num">4</span>
-            <span class="lc-node-action">确认落地 · 拆解可执行任务</span>
-            <span class="lc-node-store"><span class="lc-tab lc-tab-todo">待办清单</span></span>
-          </div>
-          <div class="lc-flow-arrow-with-note">AI 拆解/排优/更新状态</div>
+          <!-- 回流弧线 · 从底部分支回到 tab 节点(表示可循环) -->
+          <path d="M 490 720 Q 585 720 585 230 Q 585 200 500 200" fill="none" stroke="#f0abfc" stroke-width="1.5" opacity="0.55" stroke-dasharray="4 3" marker-end="url(#lcArrowLoop)"/>
+          <path d="M 490 720 Q 570 720 570 410 Q 570 385 500 385" fill="none" stroke="#f0abfc" stroke-width="1.5" opacity="0.55" stroke-dasharray="4 3" marker-end="url(#lcArrowLoop)"/>
+          <text x="600" y="470" fill="#f0abfc" font-family="SF Mono, monospace" font-size="9" text-anchor="middle" transform="rotate(-90 600 470)">↺ 回流循环</text>
 
-          <div class="lc-node">
-            <span class="lc-node-num">5</span>
-            <span class="lc-node-action">执行任务 · 日常使用 · 写批注反馈</span>
-          </div>
-          <div class="lc-flow-arrow-with-note">批注内嵌内容旁 · 无独立 Tab</div>
+          <!-- 开始 -->
+          <g>
+            <rect x="180" y="15" width="100" height="45" rx="22" fill="url(#lcStart)" opacity="0.95"/>
+            <text x="230" y="42" fill="white" font-size="13" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">START</text>
+          </g>
 
-          <div class="lc-node">
-            <span class="lc-node-num">6</span>
-            <span class="lc-node-action">每轮迭代复盘 · 改动/决策/认知拐点</span>
-            <span class="lc-node-store"><span class="lc-tab lc-tab-log">迭代日志</span></span>
-          </div>
-          <div class="lc-flow-arrow-with-note">你写批注 · AI 结构化</div>
+          <!-- Step 1 -->
+          <g>
+            <rect x="70" y="110" width="320" height="60" rx="8" fill="url(#lcNode)" stroke="#7c9dff" stroke-width="1.5"/>
+            <circle cx="95" cy="140" r="12" fill="#7c9dff" opacity="0.9"/>
+            <text x="95" y="144" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">1</text>
+            <text x="120" y="135" fill="#eaecf5" font-size="12" font-weight="600">产生零散灵感</text>
+            <text x="120" y="155" fill="#9ca3b8" font-size="10">多端 · 碎片化 · 未录入不可见</text>
+          </g>
 
-          <div class="lc-node">
-            <span class="lc-node-num">7</span>
-            <span class="lc-node-action">多轮打磨 · 产出定型产物</span>
-            <span class="lc-node-store"><span class="lc-tab lc-tab-final">定版成品</span></span>
-          </div>
+          <!-- Step 2 · 想法储备 -->
+          <g>
+            <rect x="70" y="200" width="290" height="60" rx="8" fill="url(#lcNodeTab)" stroke="#ffb457" stroke-width="1.5"/>
+            <circle cx="95" cy="230" r="12" fill="#ffb457" opacity="0.9"/>
+            <text x="95" y="234" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">2</text>
+            <text x="120" y="225" fill="#eaecf5" font-size="12" font-weight="600">定期汇总灵感 · 批量录入</text>
+            <text x="120" y="245" fill="#9ca3b8" font-size="10">AI 分类 / 打标 / 串关系</text>
+          </g>
+          <rect x="440" y="212" width="120" height="36" rx="5" fill="rgba(255,176,87,0.15)" stroke="#ffb457" stroke-width="1.2"/>
+          <text x="500" y="234" fill="#ffb457" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">想法储备</text>
+
+          <!-- Step 3 -->
+          <g>
+            <rect x="70" y="290" width="320" height="60" rx="8" fill="url(#lcNode)" stroke="#7c9dff" stroke-width="1.5"/>
+            <circle cx="95" cy="320" r="12" fill="#7c9dff" opacity="0.9"/>
+            <text x="95" y="324" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">3</text>
+            <text x="120" y="315" fill="#eaecf5" font-size="12" font-weight="600">和 AI 讨论筛选 · 碰撞修正</text>
+            <text x="120" y="335" fill="#9ca3b8" font-size="10">结论附想法/待办上 · 无独立 Tab</text>
+          </g>
+
+          <!-- Step 4 · 待办清单 -->
+          <g>
+            <rect x="70" y="380" width="290" height="60" rx="8" fill="url(#lcNodeTab)" stroke="#b478ff" stroke-width="1.5"/>
+            <circle cx="95" cy="410" r="12" fill="#b478ff" opacity="0.9"/>
+            <text x="95" y="414" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">4</text>
+            <text x="120" y="405" fill="#eaecf5" font-size="12" font-weight="600">确认落地 · 拆解可执行任务</text>
+            <text x="120" y="425" fill="#9ca3b8" font-size="10">AI 拆解 / 排优 / 更新状态</text>
+          </g>
+          <rect x="440" y="392" width="120" height="36" rx="5" fill="rgba(180,120,255,0.15)" stroke="#b478ff" stroke-width="1.2"/>
+          <text x="500" y="414" fill="#d6b4ff" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">待办清单</text>
+
+          <!-- Step 5 -->
+          <g>
+            <rect x="70" y="470" width="320" height="60" rx="8" fill="url(#lcNode)" stroke="#7c9dff" stroke-width="1.5"/>
+            <circle cx="95" cy="500" r="12" fill="#7c9dff" opacity="0.9"/>
+            <text x="95" y="504" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">5</text>
+            <text x="120" y="495" fill="#eaecf5" font-size="12" font-weight="600">执行任务 · 日常使用 · 写批注</text>
+            <text x="120" y="515" fill="#9ca3b8" font-size="10">批注内嵌内容旁 · 无独立 Tab</text>
+          </g>
+
+          <!-- Step 6 · 迭代日志 -->
+          <g>
+            <rect x="70" y="560" width="290" height="60" rx="8" fill="url(#lcNodeTab)" stroke="#7dd3fc" stroke-width="1.5"/>
+            <circle cx="95" cy="590" r="12" fill="#7dd3fc" opacity="0.9"/>
+            <text x="95" y="594" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">6</text>
+            <text x="120" y="585" fill="#eaecf5" font-size="12" font-weight="600">每轮迭代复盘</text>
+            <text x="120" y="605" fill="#9ca3b8" font-size="10">你写批注 · AI 结构化</text>
+          </g>
+          <rect x="440" y="572" width="120" height="36" rx="5" fill="rgba(125,211,252,0.15)" stroke="#7dd3fc" stroke-width="1.2"/>
+          <text x="500" y="594" fill="#7dd3fc" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">迭代日志</text>
+
+          <!-- Step 7 · 定版成品 -->
+          <g>
+            <rect x="70" y="650" width="290" height="60" rx="8" fill="url(#lcNodeTab)" stroke="#6ee7b7" stroke-width="1.5"/>
+            <circle cx="95" cy="680" r="12" fill="#6ee7b7" opacity="0.9"/>
+            <text x="95" y="684" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">7</text>
+            <text x="120" y="675" fill="#eaecf5" font-size="12" font-weight="600">多轮打磨 · 产出定型产物</text>
+            <text x="120" y="695" fill="#9ca3b8" font-size="10">持续迭代活版本 · 直接复用</text>
+          </g>
+          <rect x="440" y="662" width="120" height="36" rx="5" fill="rgba(52,211,153,0.15)" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="500" y="684" fill="#6ee7b7" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">定版成品</text>
+
+          <!-- 结束 · 归档 -->
+          <g>
+            <rect x="180" y="738" width="100" height="34" rx="17" fill="url(#lcEnd)" opacity="0.95"/>
+            <text x="230" y="760" fill="white" font-size="12" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">END · 归档</text>
+          </g>
+        </svg>
         </div>
 
         <div class="lc-branch-box">
-          <div class="lc-branch-head">▎最终决策分流</div>
+          <div class="lc-branch-head">▎最终决策分流 · 3 条回流</div>
           <div class="lc-branch-row">
             <span class="lc-branch-icon">↺</span>产生新想法 → 回流<span class="lc-tab lc-tab-pool">想法储备</span>
           </div>
