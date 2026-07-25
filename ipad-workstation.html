@@ -2185,6 +2185,16 @@ footer strong { color: #7d84a8; }
   padding-top: 8px;
   border-top: 1px dashed rgba(180, 120, 255, 0.2);
 }
+.swimlane-group-label {
+  padding: 8px 4px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #a4b3ff;
+  letter-spacing: 0.5px;
+  border-bottom: 1px dashed rgba(124, 157, 255, 0.12);
+  margin-top: 4px;
+}
+.swimlane-group-label:first-of-type { margin-top: 0; }
 .swimlane-cell.swimlane-parallel {
   background: rgba(180, 120, 255, 0.08);
   border: 1px dashed rgba(180, 120, 255, 0.3);
@@ -5874,11 +5884,12 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <!-- Tab 3 · 经验案例(装 15 天回望 + 未来所有成功案例) -->
     <div class="tianlan-panel" data-tianlan-panel="cases" style="display:none;">
 
-      <!-- 完整生命周期 · 横向 SVG 流程图 -->
+      <!-- 完整生命周期 · 横向 SVG 流程图 + 右侧分流卡 -->
       <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15); padding: 10px 12px;">
         <div class="card-title" style="color: #d6b4ff; margin-bottom: 6px;">▎完整生命周期</div>
 
-        <div style="background: rgba(35,35,35,0.4); border-radius: 8px; padding: 10px 4px; overflow-x: auto;">
+        <div class="lc-layout">
+        <div class="lc-svg-wrap" style="background: rgba(35,35,35,0.4); border-radius: 8px; padding: 10px 4px; overflow-x: auto;">
         <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" style="width: 100%; min-width: 720px; height: auto; display: block;">
           <defs>
             <linearGradient id="lcStartH" x1="0" y1="0" x2="1" y2="0">
@@ -6114,9 +6125,9 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
     <!-- 泳道图 · 任务从想法到落地怎么流转 -->
     <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(124, 157, 255, 0.2);">
-      <div class="card-title" style="color: #a4b3ff;">▎模块 2 · 多 AI 协作泳道图</div>
+      <div class="card-title" style="color: #a4b3ff;">▎模块 2 · 多工具协作泳道图</div>
       <div style="font-size: 10.5px; color: #9ca3b8; margin-bottom: 12px; font-family: 'SF Mono', monospace; line-height: 1.5;">
-        任务从想法到落地怎么流转 · 各 AI 交接节点 · Y 型分叉(不是直线)
+        任务从想法到落地怎么流转 · 思考产出层(4 AI)+ 执行分发层(荔枝/荔执/Brain)· Kimi 独立并行
       </div>
 
       <div class="swimlane">
@@ -6129,6 +6140,9 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           <div class="swimlane-stage">④ 落地</div>
           <div class="swimlane-stage">⑤ 分发</div>
         </div>
+
+        <!-- 分组标签:思考与产出层 -->
+        <div class="swimlane-group-label">▎ 思考与产出层</div>
 
         <!-- 天蓝抛 · 起点 -->
         <div class="swimlane-row">
@@ -6166,18 +6180,8 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           <div class="swimlane-cell"></div>
           <div class="swimlane-cell"></div>
           <div class="swimlane-cell"></div>
-          <div class="swimlane-cell swimlane-active" data-stage="4">⚙ 操作飞书表 · 脚本</div>
+          <div class="swimlane-cell swimlane-active" data-stage="4">⚙ 写脚本 · 正式文档</div>
           <div class="swimlane-cell"></div>
-        </div>
-
-        <!-- 荔枝 -->
-        <div class="swimlane-row">
-          <div class="swimlane-actor"><span class="ai-tag ai-lizhi">荔枝</span></div>
-          <div class="swimlane-cell"></div>
-          <div class="swimlane-cell"></div>
-          <div class="swimlane-cell"></div>
-          <div class="swimlane-cell"></div>
-          <div class="swimlane-cell swimlane-active" data-stage="5">📱 HTML 分发 · 早报</div>
         </div>
 
         <!-- Kimi · 独立并行 -->
@@ -6185,15 +6189,49 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           <div class="swimlane-actor"><span class="ai-tag ai-kimi">Kimi</span></div>
           <div class="swimlane-cell swimlane-parallel" style="grid-column: 2 / span 5;">🌙 独立并行 · 情绪深挖 · 心镜方向 · 不接入主链路</div>
         </div>
+
+        <!-- 分组标签:执行与分发层 -->
+        <div class="swimlane-group-label" style="color:#f59e0b;">▎ 执行与分发层</div>
+
+        <!-- 荔枝 -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-lizhi">荔枝</span></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell swimlane-active" data-stage="4">📊 多维表 · 触发器</div>
+          <div class="swimlane-cell swimlane-active" data-stage="5">📱 早报推送</div>
+        </div>
+
+        <!-- 荔执 -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-lizhizhi">荔执</span></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell swimlane-active" data-stage="4">⚡ 飞书内明确指令执行</div>
+          <div class="swimlane-cell"></div>
+        </div>
+
+        <!-- 荔枝 Brain 平台 -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-brain">荔枝 Brain</span></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell swimlane-active" data-stage="5">🌐 HTML 发布 · URL 全设备</div>
+        </div>
       </div>
 
       <div style="font-size: 10px; color: #7d84a8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(124, 157, 255, 0.15); font-family: 'SF Mono', monospace; line-height: 1.6;">
-        📌 主链路 Y 型:天蓝抛 → 豆包(分析)→ GitHub Claude(结构/沉淀)→&nbsp; aily(操作飞书)&nbsp;⇄&nbsp;荔枝(HTML 分发)· aily/荔枝 各管各的
+        📌 主链路:天蓝抛 → 豆包(分析)→ GitHub Claude(结构)→ aily(脚本/文档)→ 荔枝/荔执(执行)→ 荔枝 Brain(分发)<br>
+        📌 Kimi 独立并行 · 不接入主链路 · 所有 AI 产出均可对接 Brain 平台
       </div>
     </div>
 
     <!-- 分隔 -->
-    <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎模块 3 · 5 个 AI 详细卡片</div>
+    <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎模块 3 · 6 个工具详情卡片</div>
 
     <div class="ai-card-grid">
       <!-- Claude 卡 -->
