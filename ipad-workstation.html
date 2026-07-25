@@ -5665,6 +5665,14 @@ document.addEventListener("DOMContentLoaded", function() {
     mapDrawerClose.addEventListener("click", function() { mapDrawer.classList.remove("show"); });
   }
 
+  var glossaryFab = document.getElementById("glossaryFab");
+  var glossaryDrawer = document.getElementById("glossaryDrawer");
+  var glossaryDrawerClose = document.getElementById("glossaryDrawerClose");
+  if (glossaryFab && glossaryDrawer) {
+    glossaryFab.addEventListener("click", function() { glossaryDrawer.classList.add("show"); });
+    glossaryDrawerClose.addEventListener("click", function() { glossaryDrawer.classList.remove("show"); });
+  }
+
   var tianlanTabs = document.querySelectorAll(".tianlan-tabs .tab-btn");
   var tianlanPanels = document.querySelectorAll(".tianlan-panel");
   tianlanTabs.forEach(function(bt) {
