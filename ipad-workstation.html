@@ -1015,6 +1015,16 @@ footer strong { color: #7d84a8; }
   border: 1px solid rgba(180, 120, 255, 0.25);
   border-radius: 8px;
 }
+.asset-audit-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.asset-audit-row .asset-audit {
+  flex: 1;
+  margin-top: 0;
+  min-width: 0;
+}
 .asset-audit-header {
   display: flex;
   align-items: center;
@@ -2264,6 +2274,98 @@ footer strong { color: #7d84a8; }
   font-size: 9px;
 }
 
+/* ==== 生命周期流程图 v2 · 动作 → 留存物两栏对应 ==== */
+.lifecycle-grid {
+  display: grid;
+  grid-template-columns: 1fr 16px 1fr;
+  gap: 5px 6px;
+  align-items: stretch;
+  padding: 4px 2px;
+}
+.lc-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 5px 8px;
+  background: rgba(35, 35, 35, 0.5);
+  border-radius: 5px;
+  border-left: 2px solid rgba(124, 157, 255, 0.3);
+  font-size: 11px;
+  color: #d8dcec;
+  line-height: 1.45;
+}
+.lc-num {
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a4b3ff;
+  min-width: 14px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.lc-arrow {
+  color: #7c9dff;
+  font-size: 12px;
+  opacity: 0.5;
+  text-align: center;
+  font-family: "SF Mono", monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lc-store {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: rgba(45, 45, 45, 0.4);
+  border-radius: 5px;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+.lc-store-none {
+  color: #6b7295;
+  font-style: italic;
+  font-size: 10px;
+}
+.lc-tab {
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: "SF Mono", monospace;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+.lc-tab-pool { color: #ffb457; border-color: rgba(255, 176, 87, 0.4); background: rgba(255, 176, 87, 0.1); }
+.lc-tab-todo { color: #d6b4ff; border-color: rgba(180, 120, 255, 0.4); background: rgba(180, 120, 255, 0.1); }
+.lc-tab-log { color: #7dd3fc; border-color: rgba(125, 211, 252, 0.4); background: rgba(125, 211, 252, 0.1); }
+.lc-tab-final { color: #6ee7b7; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.1); }
+.lc-role {
+  font-size: 9.5px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+}
+.lc-branch {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(180, 120, 255, 0.06);
+  border-radius: 6px;
+  border-left: 2px solid rgba(180, 120, 255, 0.35);
+  font-size: 10.5px;
+  color: #d8dcec;
+  line-height: 1.7;
+}
+.lc-branch-title {
+  font-size: 9.5px;
+  color: #d6b4ff;
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.lc-branch-arrow { color: #b478ff; margin: 0 4px; }
+
 /* ==== 主题 D · 资产库样式 ==== */
 .asset-hero {
   text-align: left;
@@ -3180,22 +3282,24 @@ footer strong { color: #7d84a8; }
           <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">开新对话 · 点复制 · 粘过去 · 完</span></div>
           <div class="ti-row"><span class="ti-key">怎么进这里</span><span class="ti-val">4 个 yes/no:和 AI 无关?和话题无关?粘一下就能用?常用?· 全 yes 才能进</span></div>
 
-          <div class="asset-audit" onclick="event.stopPropagation();">
-            <div class="asset-audit-header">
-              <span class="asset-audit-title">🔍 资产库审核</span>
+          <div class="asset-audit-row">
+            <div class="asset-audit" onclick="event.stopPropagation();">
+              <div class="asset-audit-header">
+                <span class="asset-audit-title">🔍 资产库审核</span>
+              </div>
+              <div class="asset-audit-desc">导出全部 prompt · 粘给豆包复盘 · 查重/查冗/优化建议</div>
+              <button class="asset-audit-btn" id="assetAuditBtn">📤 导出全部</button>
+              <div class="asset-audit-status" id="assetAuditStatus"></div>
             </div>
-            <div class="asset-audit-desc">导出全部 prompt · 粘给豆包复盘 · 查重/查冗/优化建议</div>
-            <button class="asset-audit-btn" id="assetAuditBtn">📤 导出全部</button>
-            <div class="asset-audit-status" id="assetAuditStatus"></div>
-          </div>
 
-          <div class="asset-audit" onclick="event.stopPropagation();">
-            <div class="asset-audit-header">
-              <span class="asset-audit-title">📋 候选池审核</span>
+            <div class="asset-audit" onclick="event.stopPropagation();">
+              <div class="asset-audit-header">
+                <span class="asset-audit-title">📋 候选池审核</span>
+              </div>
+              <div class="asset-audit-desc">导出暂存 + 待办 · 粘给豆包判断 · 有无重复/必要性/建议归类</div>
+              <button class="asset-audit-btn" id="assetDraftBtn">📋 导出候选</button>
+              <div class="asset-audit-status" id="assetDraftStatus"></div>
             </div>
-            <div class="asset-audit-desc">导出暂存 + 待办 · 粘给豆包判断 · 有无重复/必要性/建议归类</div>
-            <button class="asset-audit-btn" id="assetDraftBtn">📋 导出候选</button>
-            <div class="asset-audit-status" id="assetDraftStatus"></div>
           </div>
         </div>
       </div>
@@ -5389,32 +5493,51 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <!-- Tab 3 · 经验案例(装 15 天回望 + 未来所有成功案例) -->
     <div class="tianlan-panel" data-tianlan-panel="cases" style="display:none;">
 
-      <!-- 完整生命周期流程图 · 从左栏搬来 · 卡片式呈现 -->
+      <!-- 完整生命周期 · 动作 → 留存物两栏对应 -->
       <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15); padding: 10px 12px;">
-        <div class="card-title" style="color: #d6b4ff; margin-bottom: 4px;">▎完整生命周期 · 定型</div>
-        <div class="sidebar-flow compact">
-          <div class="flow-row">
-            <span class="sf-node sf-inspiration">灵感</span>
-            <span class="sf-arrow-inline">→</span>
-            <span class="sf-node sf-idea">想法</span>
-            <span class="sf-arrow-inline">→</span>
-            <span class="sf-node sf-todo">待办</span>
-            <span class="sf-arrow-inline">→ 用了 →</span>
-            <span class="sf-node sf-use">用</span>
-            <span class="sf-arrow-inline">→</span>
-            <span class="sf-node sf-heart">写心得</span>
-            <span class="sf-arrow-inline">→</span>
-            <span class="sf-node sf-discuss">讨论</span>
-            <span class="sf-arrow-inline">→</span>
-            <span class="sf-node sf-precipitate">AI 沉淀</span>
-            <span class="sf-arrow-inline">→</span>
-            <span class="sf-node sf-verify">回验</span>
-            <span class="sf-arrow-inline">→</span>
-            <span class="sf-done">✓ 干完了</span>
-          </div>
-          <div class="sidebar-flow-note" style="color: #ff8c9c;">
-            ↺ 回验没过 → 回<span class="sf-node sf-discuss" style="padding: 1px 5px; font-size: 9px;">讨论</span> 再循环(讨论 → 沉淀 → 回验)
-          </div>
+        <div class="card-title" style="color: #d6b4ff; margin-bottom: 4px;">▎完整生命周期 · 动作 → 留存物</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; font-size: 9.5px; color: #7d84a8; font-family: 'SF Mono', monospace; letter-spacing: 0.5px; margin: 4px 4px 6px;">
+          <div>▸ 动作(过程)</div>
+          <div>▸ 留存物(Tab 对应)</div>
+        </div>
+
+        <div class="lifecycle-grid">
+
+          <div class="lc-step"><span class="lc-num">1</span><span>产生零散灵感(多端 · 碎片化)</span></div>
+          <div class="lc-arrow">→</div>
+          <div class="lc-store"><span class="lc-store-none">无 · 未录入不可见</span></div>
+
+          <div class="lc-step"><span class="lc-num">2</span><span>定期汇总零散灵感 · 批量录入</span></div>
+          <div class="lc-arrow">→</div>
+          <div class="lc-store"><span class="lc-tab lc-tab-pool">想法储备</span><span class="lc-role">AI 分类 / 打标 / 串关系</span></div>
+
+          <div class="lc-step"><span class="lc-num">3</span><span>针对特定想法 · 与 AI 讨论筛选、碰撞修正</span></div>
+          <div class="lc-arrow">→</div>
+          <div class="lc-store"><span class="lc-store-none">无独立 Tab · 结论附想法/待办上</span></div>
+
+          <div class="lc-step"><span class="lc-num">4</span><span>确认落地 · 拆解为可执行任务</span></div>
+          <div class="lc-arrow">→</div>
+          <div class="lc-store"><span class="lc-tab lc-tab-todo">待办清单</span><span class="lc-role">AI 拆解 / 排优 / 更新状态</span></div>
+
+          <div class="lc-step"><span class="lc-num">5</span><span>执行任务 · 日常使用 · 写批注反馈</span></div>
+          <div class="lc-arrow">→</div>
+          <div class="lc-store"><span class="lc-store-none">无独立 Tab · 批注内嵌内容旁</span></div>
+
+          <div class="lc-step"><span class="lc-num">6</span><span>每轮迭代复盘 · 梳理改动/决策/认知拐点</span></div>
+          <div class="lc-arrow">→</div>
+          <div class="lc-store"><span class="lc-tab lc-tab-log">迭代日志</span><span class="lc-role">你写批注 / AI 结构化</span></div>
+
+          <div class="lc-step"><span class="lc-num">7</span><span>多轮打磨 · 产出可用定型产物</span></div>
+          <div class="lc-arrow">→</div>
+          <div class="lc-store"><span class="lc-tab lc-tab-final">定版成品</span><span class="lc-role">持续迭代活版本 · 直接复用</span></div>
+
+        </div>
+
+        <div class="lc-branch">
+          <div class="lc-branch-title">▎最终决策分流</div>
+          产生新想法 <span class="lc-branch-arrow">↺</span> 回流<span class="lc-tab lc-tab-pool" style="margin: 0 2px;">想法储备</span><br>
+          拆出新任务 <span class="lc-branch-arrow">↺</span> 回流<span class="lc-tab lc-tab-todo" style="margin: 0 2px;">待办清单</span><br>
+          内容彻底稳定 <span class="lc-branch-arrow">✓</span> 归档 · 闭环结束
         </div>
       </div>
 
@@ -5733,7 +5856,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <footer>
   <strong>GitHub Claude</strong> · v0.1 · 2026-07-25<br>
-  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 主题 02 左栏加「📋 候选池审核」按钮 · 一键导出暂存+待办给豆包判断有无重复/必要性</span>
+  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 资产库/候选池审核两个块改横排 · flex:1 均分</span>
 </footer>
 
 <!-- ==== 批注浮层 ==== -->
