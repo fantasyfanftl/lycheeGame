@@ -2524,6 +2524,11 @@ footer strong { color: #7d84a8; }
   font-family: "SF Mono", monospace;
   font-weight: 700;
 }
+.asset-tag-warn {
+  background: rgba(255, 180, 87, 0.1);
+  color: #ffb457;
+  border-color: rgba(255, 180, 87, 0.35);
+}
 .asset-content {
   background: rgba(10, 12, 25, 0.7);
   border: 1px solid rgba(124, 157, 255, 0.15);
@@ -4200,13 +4205,13 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 复盘只关心"什么值得留下" · 不做讨好、不做加戏。开始。</pre>
     </div>
 
-    <!-- 资产 05 · UI 模板 -->
+    <!-- 资产 05 · 荔枝平台 UI 规范模板(原 ClaudeCode 工作台 UI 模板) -->
     <div class="asset-card">
       <div class="asset-card-header">
         <div class="asset-num">05</div>
         <div class="asset-meta">
-          <div class="asset-title">ClaudeCode 工作台 · UI 模板</div>
-          <div class="asset-sub">未来做新 HTML 直接套 · 视觉化思维专用</div>
+          <div class="asset-title">荔枝平台 UI 规范模板</div>
+          <div class="asset-sub">所有荔枝 HTML 项目视觉基准 · 前端类资产默认遵循 · 视觉化思维专用</div>
         </div>
         <button class="asset-copy-btn" data-asset="asset-05">复制</button>
       </div>
@@ -4568,7 +4573,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
       <div class="asset-tags">
         <span class="asset-tag">✓ AI 无关</span>
         <span class="asset-tag">✓ 主题无关</span>
-        <span class="asset-tag">✓ 可迁移</span>
+        <span class="asset-tag asset-tag-warn">⚠ 专属工作流</span>
         <span class="asset-tag">✓ 高频</span>
       </div>
       <pre class="asset-content" id="asset-09">天蓝从主题 02 "新增暂存"导出了新 prompt · 请:
@@ -6190,7 +6195,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 /* ============ 主题 02 · 一键导出全部资产 · 给豆包审核复盘 ============ */
 (function() {
-  var btn = document.getElementById("assetAllExport");
+  var btn = document.getElementById("assetAuditBtn");
+  var status = document.getElementById("assetAuditStatus");
   if (!btn) return;
 
   var DOUBAO_REVIEW_HEADER = "以下是我现在主题 02「跨 AI 复用资产」库里所有 prompt 资产 · 请帮我审核复盘:\n\n" +
@@ -6201,11 +6207,12 @@ document.addEventListener("DOMContentLoaded", function() {
     "只做审核 · 不要重写。发现问题按「资产编号 · 问题描述 · 优化建议」格式列。\n\n" +
     "━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
 
-  btn.addEventListener("click", function() {
+  btn.addEventListener("click", function(e) {
+    e.stopPropagation();
     var topic = document.querySelector('[data-topic-content="D"]');
-    if (!topic) { alert("找不到主题 02 内容区"); return; }
+    if (!topic) { if (status) status.textContent = "· 找不到主题 02 内容区"; return; }
     var cards = topic.querySelectorAll(".asset-card");
-    if (!cards.length) { alert("没找到资产卡"); return; }
+    if (!cards.length) { if (status) status.textContent = "· 没找到资产卡"; return; }
 
     var now = new Date();
     var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
@@ -6236,7 +6243,6 @@ document.addEventListener("DOMContentLoaded", function() {
       lines.push("**标签**:" + tags.join(" · "));
       lines.push("");
 
-      // 多版本 · 收集所有 pre.asset-content(含 version-panel)
       var pres = card.querySelectorAll("pre.asset-content");
       if (pres.length <= 1) {
         lines.push("**内容**:");
@@ -6245,7 +6251,6 @@ document.addEventListener("DOMContentLoaded", function() {
         lines.push((pres[0] || {}).textContent || "");
         lines.push("```");
       } else {
-        // 多版本 · 从对应的 version-tab 拿版本名
         var tabs = card.querySelectorAll(".version-tab");
         pres.forEach(function(pre, i) {
           var verLabel = tabs[i] ? tabs[i].textContent.trim() : ("版本 " + (i+1));
@@ -6269,17 +6274,18 @@ document.addEventListener("DOMContentLoaded", function() {
     document.body.appendChild(ta);
     ta.select();
     var ok = false;
-    try { ok = document.execCommand("copy"); } catch(e) {}
+    try { ok = document.execCommand("copy"); } catch(err) {}
     document.body.removeChild(ta);
     if (ok) {
       btn.textContent = "✓ 已复制 · 粘给豆包";
       btn.classList.add("copied");
+      if (status) status.textContent = "已导出 " + cards.length + " 张资产 · " + stamp;
       setTimeout(function() {
-        btn.textContent = "📦 导出全部";
+        btn.textContent = "📤 导出全部";
         btn.classList.remove("copied");
       }, 3000);
     } else {
-      alert("复制失败 · 浏览器不支持 · 请手动");
+      if (status) status.textContent = "· 复制失败 · 浏览器不支持";
     }
   });
 })();
