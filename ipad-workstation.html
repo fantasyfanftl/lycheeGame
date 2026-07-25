@@ -2231,6 +2231,39 @@ footer strong { color: #7d84a8; }
   text-align: center;
 }
 
+/* ==== 生命周期流程图 · compact 单行版(经验案例 tab 用) ==== */
+.sidebar-flow.compact {
+  padding: 8px 10px;
+  margin: 4px 0 0;
+}
+.sidebar-flow.compact .sidebar-flow-stage,
+.sidebar-flow.compact .sidebar-flow-loop {
+  display: inline-flex;
+  gap: 3px;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+.sidebar-flow.compact .sf-arrow-inline {
+  color: #7c9dff;
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  opacity: 0.55;
+  margin: 0 4px;
+  vertical-align: middle;
+}
+.sidebar-flow.compact .flow-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px 3px;
+}
+.sidebar-flow.compact .sidebar-flow-note {
+  margin-top: 4px;
+  padding-top: 4px;
+  font-size: 9px;
+}
+
 /* ==== 主题 D · 资产库样式 ==== */
 .asset-hero {
   text-align: left;
@@ -5352,33 +5385,28 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <div class="tianlan-panel" data-tianlan-panel="cases" style="display:none;">
 
       <!-- 完整生命周期流程图 · 从左栏搬来 · 卡片式呈现 -->
-      <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15);">
-        <div class="card-title" style="color: #d6b4ff;">▎完整生命周期 · 定型</div>
-        <div class="sidebar-flow" style="margin-top: 6px;">
-          <div class="sidebar-flow-stage">
+      <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15); padding: 10px 12px;">
+        <div class="card-title" style="color: #d6b4ff; margin-bottom: 4px;">▎完整生命周期 · 定型</div>
+        <div class="sidebar-flow compact">
+          <div class="flow-row">
             <span class="sf-node sf-inspiration">灵感</span>
-            <span class="sf-arrow">→</span>
+            <span class="sf-arrow-inline">→</span>
             <span class="sf-node sf-idea">想法</span>
-            <span class="sf-arrow">→</span>
+            <span class="sf-arrow-inline">→</span>
             <span class="sf-node sf-todo">待办</span>
-          </div>
-          <div class="sidebar-flow-connect">↓ 开始用了</div>
-          <div class="sidebar-flow-loop">
+            <span class="sf-arrow-inline">→ 用了 →</span>
             <span class="sf-node sf-use">用</span>
-            <span class="sf-arrow">→</span>
+            <span class="sf-arrow-inline">→</span>
             <span class="sf-node sf-heart">写心得</span>
-            <span class="sf-arrow">→</span>
+            <span class="sf-arrow-inline">→</span>
             <span class="sf-node sf-discuss">讨论</span>
-          </div>
-          <div class="sidebar-flow-loop">
-            <span class="sf-arrow-down">↓</span>
+            <span class="sf-arrow-inline">→</span>
             <span class="sf-node sf-precipitate">AI 沉淀</span>
-            <span class="sf-arrow">→</span>
+            <span class="sf-arrow-inline">→</span>
             <span class="sf-node sf-verify">回验</span>
           </div>
           <div class="sidebar-flow-note">
-            回验通过 <span class="sf-arrow">→</span> <span class="sf-done">✓ 干完了</span><br>
-            回验没过 <span class="sf-arrow">→</span> 回讨论
+            通过 <span class="sf-arrow">→</span> <span class="sf-done">✓ 干完了</span> · 没过 <span class="sf-arrow">→</span> 回讨论
           </div>
         </div>
       </div>
