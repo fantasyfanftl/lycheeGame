@@ -949,9 +949,10 @@ footer strong { color: #7d84a8; }
   border-radius: 0;
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 26px;
   flex-shrink: 0;
   filter: drop-shadow(0 0 8px rgba(124, 157, 255, 0.35));
+  margin-bottom: 2px;
 }
 .topic-name {
   font-size: 15px;
@@ -968,17 +969,56 @@ footer strong { color: #7d84a8; }
   font-family: "SF Mono", monospace;
   line-height: 1.5;
 }
+
+/* ==== 卡片展开区(active 时显示介绍) ==== */
+.topic-intro {
+  display: none;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(124, 157, 255, 0.15);
+  text-align: left;
+  animation: fadeIn 0.25s;
+}
+.topic-card.active .topic-intro { display: block; }
+.ti-row {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 11px;
+  color: #d8dcec;
+  line-height: 1.5;
+}
+.ti-row:not(:last-child) { border-bottom: 1px solid rgba(124, 157, 255, 0.06); }
+.ti-key {
+  font-family: "SF Mono", monospace;
+  font-size: 9.5px;
+  color: #b478ff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  min-width: 52px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+.ti-val { flex: 1; }
+.topic-card[data-topic="brain"] .ti-key { color: #7dd3fc; }
+.topic-card[data-topic="tianlan"] .ti-key { color: #6ee7b7; }
+.topic-card[data-topic="E"] .ti-key { color: #7c9dff; }
+.topic-card[data-topic="D"] .ti-key { color: #b478ff; }
+.topic-card[data-topic="F"] .ti-key { color: #f0abfc; }
 .topic-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px;
+  right: 8px;
   font-size: 8px;
-  padding: 1px 6px;
+  padding: 2px 7px;
   border-radius: 3px;
   font-family: "SF Mono", monospace;
   font-weight: 700;
   letter-spacing: 1px;
   border: 1px solid;
+  z-index: 2;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 .topic-badge-live {
   color: #6ee7b7;
