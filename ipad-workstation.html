@@ -5770,41 +5770,120 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
       </div>
     </div>
 
-    <!-- 决策图 · 场景 → 选哪个 AI -->
+    <!-- 决策树 · 起点问题 → 2 层判断 → 选哪个 AI -->
     <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(240, 171, 252, 0.2);">
-      <div class="card-title" style="color: #f0abfc;">▎怎么选 · 场景决策图</div>
+      <div class="card-title" style="color: #f0abfc;">▎模块 1 · 快速选型决策树</div>
+      <div style="font-size: 10.5px; color: #9ca3b8; margin-bottom: 12px; font-family: 'SF Mono', monospace; line-height: 1.5;">
+        起点问题 → 2 层判断 → 匹配 AI · 零思考成本
+      </div>
 
-      <div class="flow-diagram" style="border-color: rgba(240, 171, 252, 0.2);">
-        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;">
-          <div style="text-align: right; font-size: 12px; color: #d8dcec;">深度心理 · 思维分析 · prompt 打磨</div>
-          <span class="flow-arrow">→</span>
-          <div><span class="ai-tag ai-doubao">豆包</span></div>
+      <div class="ai-tree">
+        <div class="ai-tree-root">🎯 我现在要做什么?</div>
 
-          <div style="text-align: right; font-size: 12px; color: #d8dcec;">结构 / SOP / 抽象规则 / GitHub push</div>
-          <span class="flow-arrow">→</span>
-          <div><span class="ai-tag ai-claude">GitHub Claude</span></div>
+        <div class="ai-tree-branch">
+          <div class="ai-tree-l1">┏━ 分析人 / 梳理情绪 / 打磨思路</div>
+          <div class="ai-tree-l2">
+            <div class="ai-tree-leaf">├─ 心理思维 · prompt 润色 · 理清混乱思路 →&nbsp;<span class="ai-tag ai-doubao">豆包</span></div>
+            <div class="ai-tree-leaf">└─ 情绪深挖 · 心镜方向深度对话 →&nbsp;<span class="ai-tag ai-kimi">Kimi</span></div>
+          </div>
+        </div>
 
-          <div style="text-align: right; font-size: 12px; color: #d8dcec;">精准操作 · 表读写 · schedule / 脚本</div>
-          <span class="flow-arrow">→</span>
-          <div><span class="ai-tag ai-aily">aily</span></div>
-
-          <div style="text-align: right; font-size: 12px; color: #d8dcec;">手机端查数据 · 早报</div>
-          <span class="flow-arrow">→</span>
-          <div><span class="ai-tag ai-lizhi">荔枝</span></div>
-
-          <div style="text-align: right; font-size: 12px; color: #d8dcec;">情绪深挖 · 心镜方向</div>
-          <span class="flow-arrow">→</span>
-          <div><span class="ai-tag ai-kimi">Kimi</span></div>
+        <div class="ai-tree-branch">
+          <div class="ai-tree-l1">┗━ 做项目 / 落地具体事务</div>
+          <div class="ai-tree-l2">
+            <div class="ai-tree-leaf">├─ 搭 SOP · 抽象规则 · 改代码结构 · Push GitHub →&nbsp;<span class="ai-tag ai-claude">GitHub Claude</span></div>
+            <div class="ai-tree-leaf">└─ 改飞书表 · 写脚本 · 配触发器 · 精准操作 →&nbsp;<span class="ai-tag ai-aily">aily</span></div>
+          </div>
         </div>
       </div>
 
-      <div style="font-size: 10px; color: #7d84a8; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(240, 171, 252, 0.15); text-align: center; font-family: 'SF Mono', monospace;">
-        荔枝分发通道单独存在 · URL 通吃全设备 · 不属"选 AI"这一步
+      <div style="font-size: 10px; color: #7d84a8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(240, 171, 252, 0.15); font-family: 'SF Mono', monospace; line-height: 1.5;">
+        📌 <span class="ai-tag ai-lizhi">荔枝</span> URL 全设备分发是独立基础设施 · 不属"选 AI 干活"环节 · 见泳道图/详情卡
+      </div>
+    </div>
+
+    <!-- 泳道图 · 任务从想法到落地怎么流转 -->
+    <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(124, 157, 255, 0.2);">
+      <div class="card-title" style="color: #a4b3ff;">▎模块 2 · 多 AI 协作泳道图</div>
+      <div style="font-size: 10.5px; color: #9ca3b8; margin-bottom: 12px; font-family: 'SF Mono', monospace; line-height: 1.5;">
+        任务从想法到落地怎么流转 · 各 AI 交接节点 · Y 型分叉(不是直线)
+      </div>
+
+      <div class="swimlane">
+        <!-- 阶段头 -->
+        <div class="swimlane-header">
+          <div class="swimlane-actor">泳道 \ 阶段</div>
+          <div class="swimlane-stage">① 发散</div>
+          <div class="swimlane-stage">② 拆解</div>
+          <div class="swimlane-stage">③ 定型</div>
+          <div class="swimlane-stage">④ 落地</div>
+          <div class="swimlane-stage">⑤ 分发</div>
+        </div>
+
+        <!-- 天蓝抛 · 起点 -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag" style="color:#ffb457;background:rgba(255,180,87,0.12);border-color:rgba(255,180,87,0.4);">天蓝</span></div>
+          <div class="swimlane-cell swimlane-active" data-stage="1">💡 抛想法</div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+        </div>
+
+        <!-- 豆包 -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-doubao">豆包</span></div>
+          <div class="swimlane-cell swimlane-active" data-stage="1">🧠 分析</div>
+          <div class="swimlane-cell swimlane-active" data-stage="2">✂ prompt 润色</div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+        </div>
+
+        <!-- GitHub Claude -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-claude">GitHub Claude</span></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell swimlane-active" data-stage="2">🏗 结构拆</div>
+          <div class="swimlane-cell swimlane-active" data-stage="3">📐 SOP 定型 · push</div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+        </div>
+
+        <!-- aily -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-aily">aily</span></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell swimlane-active" data-stage="4">⚙ 操作飞书表 · 脚本</div>
+          <div class="swimlane-cell"></div>
+        </div>
+
+        <!-- 荔枝 -->
+        <div class="swimlane-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-lizhi">荔枝</span></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell"></div>
+          <div class="swimlane-cell swimlane-active" data-stage="5">📱 HTML 分发 · 早报</div>
+        </div>
+
+        <!-- Kimi · 独立并行 -->
+        <div class="swimlane-row swimlane-kimi-row">
+          <div class="swimlane-actor"><span class="ai-tag ai-kimi">Kimi</span></div>
+          <div class="swimlane-cell swimlane-parallel" style="grid-column: 2 / span 5;">🌙 独立并行 · 情绪深挖 · 心镜方向 · 不接入主链路</div>
+        </div>
+      </div>
+
+      <div style="font-size: 10px; color: #7d84a8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(124, 157, 255, 0.15); font-family: 'SF Mono', monospace; line-height: 1.6;">
+        📌 主链路 Y 型:天蓝抛 → 豆包(分析)→ GitHub Claude(结构/沉淀)→&nbsp; aily(操作飞书)&nbsp;⇄&nbsp;荔枝(HTML 分发)· aily/荔枝 各管各的
       </div>
     </div>
 
     <!-- 分隔 -->
-    <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎5 个 AI 详细卡片</div>
+    <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎模块 3 · 5 个 AI 详细卡片</div>
 
     <!-- Claude 卡 -->
     <div class="card ai-card">
