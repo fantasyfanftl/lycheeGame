@@ -2481,6 +2481,27 @@ footer strong { color: #7d84a8; }
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.asset-card-header::after {
+  content: "▾";
+  color: #7d84a8;
+  font-size: 10px;
+  margin-left: 4px;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+.asset-card.collapsed .asset-card-header::after {
+  content: "▸";
+}
+.asset-card.collapsed .asset-card-header { margin-bottom: 0; }
+.asset-card.collapsed .asset-tags,
+.asset-card.collapsed .version-tabs,
+.asset-card.collapsed .asset-content,
+.asset-card.collapsed pre.asset-content,
+.asset-card.collapsed .fallback-note {
+  display: none !important;
 }
 .asset-num {
   font-family: "SF Mono", monospace;
