@@ -114,11 +114,22 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border-radius: 10px;
   margin-bottom: 12px;
+  position: -webkit-sticky;
   position: sticky;
   top: 130px;
-  z-index: 50;
+  z-index: 55;
   border: 1px solid rgba(124, 157, 255, 0.15);
   overflow: hidden;
+  will-change: top;
+}
+/* 吸顶激活状态 · sticky "粘住"时视觉分层(浏览器不支持时优雅降级) */
+.tab-bar::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124, 157, 255, 0.25), transparent);
+  pointer-events: none;
 }
 .tab-btn {
   flex: 1;
