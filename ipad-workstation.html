@@ -116,7 +116,7 @@ body {
   margin-bottom: 10px;
   position: -webkit-sticky;
   position: sticky;
-  top: 110px;
+  top: 82px;
   z-index: 55;
   border: 1px solid rgba(124, 157, 255, 0.15);
   overflow: hidden;
@@ -2575,7 +2575,10 @@ footer strong { color: #7d84a8; }
 }
 
 /* ==== 右栏主题头 ==== */
-.topic-scope-bar {
+.topic-scope-bar { display: none !important; }
+.brain-hero,
+.asset-hero { display: none !important; }
+.topic-scope-bar-legacy {
   background: rgba(35, 35, 35, 0.85);
   backdrop-filter: blur(14px) saturate(1.2);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
@@ -2723,7 +2726,7 @@ footer strong { color: #7d84a8; }
     min-width: 0;
   }
   .topic-scope-bar { top: 70px; }
-  .tab-bar { top: 108px; }
+  .tab-bar { top: 80px; }
   .hero { padding: 4px 16px 8px; top: 30px; }
 }
 /* 大屏 · 让内容更松弛 */
