@@ -2670,24 +2670,35 @@ footer strong { color: #7d84a8; }
 /* ==== 主题 D · 资产库样式 ==== */
 .asset-hero {
   text-align: left;
-  padding: 10px 12px;
-  background: rgba(35, 35, 35, 0.5);
+  padding: 10px 14px;
+  background:
+    radial-gradient(300px 80px at 50% 0%, rgba(180, 120, 255, 0.15) 0%, transparent 70%),
+    rgba(30, 30, 30, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(180, 120, 255, 0.2);
+  border: 1px solid rgba(180, 120, 255, 0.25);
   border-left: 3px solid #b478ff;
   border-radius: 8px;
   margin-bottom: 10px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 0 16px rgba(180, 120, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.asset-hero::before { display: none; }
+.asset-hero::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(180, 120, 255, 0.7), transparent);
+}
 .asset-hero-title {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: #d6b4ff;
-  margin-bottom: 1px;
-  text-shadow: none;
+  margin-bottom: 2px;
+  text-shadow: 0 0 10px rgba(180, 120, 255, 0.4);
+  letter-spacing: 0.3px;
 }
 .asset-hero-sub {
   font-size: 10px;
