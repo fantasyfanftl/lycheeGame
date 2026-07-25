@@ -1998,6 +1998,20 @@ footer strong { color: #7d84a8; }
 .version-panel.active { display: block; }
 
 /* ==== AI 工具分工卡片 ==== */
+.ai-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.ai-card-grid > .ai-card {
+  margin: 0;
+}
+@media (max-width: 700px) {
+  .ai-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .ai-card {
   border: 1px solid rgba(240, 171, 252, 0.15);
 }
@@ -5903,15 +5917,11 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           </div>
         </div>
       </div>
-          <defs>
-            <linearGradient id="lcStart" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#7c9dff" stop-opacity="0.9"/>
-              <stop offset="100%" stop-color="#b478ff" stop-opacity="0.85"/>
-            </linearGradient>
-            <linearGradient id="lcEnd" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#34d399" stop-opacity="0.9"/>
-              <stop offset="100%" stop-color="#10b981" stop-opacity="0.85"/>
-            </linearGradient>
+
+      <div class="card">
+        <div class="card-title">经验案例 · 成功案例集</div>
+        <div class="pool-intro">我(天蓝)和 AI 合作的成功案例 · 每个案例:背景 / 过程 / 产出 / 能带走的经验 · 未来所有类似「15 天回望」的项目沉淀都进这里</div>
+      </div>
             <linearGradient id="lcNode" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#3a3a3a" stop-opacity="1"/>
               <stop offset="100%" stop-color="#2a2a2a" stop-opacity="1"/>
@@ -6229,7 +6239,8 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <!-- 分隔 -->
     <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎模块 3 · 5 个 AI 详细卡片</div>
 
-    <!-- Claude 卡 -->
+    <div class="ai-card-grid">
+      <!-- Claude 卡 -->
     <div class="card ai-card">
       <div class="ai-card-header">
         <span class="ai-tag ai-claude">GitHub Claude</span>
@@ -6413,6 +6424,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
       </div>
     </div>
+    </div><!-- /.ai-card-grid -->
 
   </div>
 
