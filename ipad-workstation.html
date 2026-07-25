@@ -1405,23 +1405,23 @@ footer strong { color: #7d84a8; }
   .map-fab { width: 46px; height: 46px; bottom: 72px; left: 16px; font-size: 18px; }
 }
 
-/* ==== 词对应表浮层 · 右侧滑入 ==== */
+/* ==== 词对应表浮层 · 左侧滑入 ==== */
 .glossary-drawer {
   position: fixed;
   top: 0;
-  right: -60vw;
+  left: -60vw;
   width: 55vw;
   max-width: 720px;
   height: 100vh;
   background: linear-gradient(180deg, #1e1e1e 0%, #232323 100%);
-  border-left: 1px solid rgba(180, 120, 255, 0.25);
+  border-right: 1px solid rgba(180, 120, 255, 0.25);
   z-index: 1002;
-  transition: right 0.3s;
+  transition: left 0.3s;
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
 }
-.glossary-drawer.show { right: 0; }
+.glossary-drawer.show { left: 0; }
 .glossary-drawer-header {
   padding: 14px 18px;
   border-bottom: 1px solid rgba(180, 120, 255, 0.2);
@@ -1502,7 +1502,7 @@ footer strong { color: #7d84a8; }
 }
 
 @media (max-width: 900px) {
-  .glossary-drawer { width: 100vw; right: -100vw; }
+  .glossary-drawer { width: 100vw; left: -100vw; }
 }
 
 /* ==== 词对应表浮球 · 左下角 · 在关系全景浮球上方 ==== */
