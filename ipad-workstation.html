@@ -6339,12 +6339,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  promptToggle.addEventListener("click", function() {
-    var open = promptPre.style.display !== "none";
-    promptPre.style.display = open ? "none" : "block";
-    promptToggle.textContent = open ? "▸ 展开落卡 prompt(给 Claude Code)" : "▾ 收起落卡 prompt";
-    if (!open) promptPre.textContent = CLAUDE_PROMPT;
-  });
+  if (promptToggle && promptPre) {
+    promptToggle.addEventListener("click", function() {
+      var open = promptPre.style.display !== "none";
+      promptPre.style.display = open ? "none" : "block";
+      promptToggle.textContent = open ? "▸ 展开落卡 prompt(给 Claude Code)" : "▾ 收起落卡 prompt";
+      if (!open) promptPre.textContent = CLAUDE_PROMPT;
+    });
+  }
 })();
 
 /* ============ 主题 02 · 一键导出全部资产 · 给豆包审核复盘 ============ */
