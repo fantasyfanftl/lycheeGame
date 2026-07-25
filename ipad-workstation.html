@@ -1405,6 +1405,138 @@ footer strong { color: #7d84a8; }
   .map-fab { width: 46px; height: 46px; bottom: 72px; left: 16px; font-size: 18px; }
 }
 
+/* ==== 词对应表浮层 · 右侧滑入 ==== */
+.glossary-drawer {
+  position: fixed;
+  top: 0;
+  right: -60vw;
+  width: 55vw;
+  max-width: 720px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1e1e1e 0%, #232323 100%);
+  border-left: 1px solid rgba(180, 120, 255, 0.25);
+  z-index: 1002;
+  transition: right 0.3s;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+}
+.glossary-drawer.show { right: 0; }
+.glossary-drawer-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(180, 120, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(180, 120, 255, 0.05);
+}
+.glossary-drawer-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #d6b4ff;
+  flex: 1;
+  font-family: "SF Mono", monospace;
+  letter-spacing: 0.5px;
+}
+.glossary-drawer-close {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d8dcec;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.glossary-drawer-close:active { background: rgba(255, 255, 255, 0.1); }
+.glossary-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+}
+.glossary-drawer-body::-webkit-scrollbar { width: 4px; }
+.glossary-drawer-body::-webkit-scrollbar-thumb {
+  background: rgba(180, 120, 255, 0.3);
+  border-radius: 2px;
+}
+.glossary-intro {
+  font-size: 11px;
+  color: #9ca3b8;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: rgba(45, 45, 45, 0.4);
+  border-radius: 6px;
+  line-height: 1.6;
+  border-left: 2px solid rgba(180, 120, 255, 0.4);
+}
+.glossary-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 14px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.glossary-term {
+  color: #d6b4ff;
+  font-weight: 700;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(180, 120, 255, 0.1);
+}
+.glossary-def {
+  color: #d8dcec;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(124, 157, 255, 0.06);
+}
+.glossary-tip {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: rgba(180, 120, 255, 0.08);
+  border-radius: 6px;
+  border-left: 2px solid #b478ff;
+  font-size: 11px;
+  color: #d6b4ff;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .glossary-drawer { width: 100vw; right: -100vw; }
+}
+
+/* ==== 词对应表浮球 · 左下角 · 在关系全景浮球上方 ==== */
+.glossary-fab {
+  position: fixed;
+  bottom: 144px;
+  left: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(180, 120, 255, 0.15);
+  color: #d6b4ff;
+  border: 1px solid rgba(180, 120, 255, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s;
+  font-size: 22px;
+}
+.glossary-fab:hover {
+  background: rgba(180, 120, 255, 0.25);
+  border-color: rgba(180, 120, 255, 0.6);
+}
+.glossary-fab:active { transform: scale(0.95); }
+
+@media (max-width: 500px) {
+  .glossary-fab { width: 46px; height: 46px; bottom: 126px; left: 16px; font-size: 18px; }
+}
+
 /* ==== Pin 警示条 · 一行紧凑 ==== */
 .pin-note {
   background:
