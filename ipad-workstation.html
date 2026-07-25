@@ -5639,51 +5639,68 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <!-- Tab 3 · 经验案例(装 15 天回望 + 未来所有成功案例) -->
     <div class="tianlan-panel" data-tianlan-panel="cases" style="display:none;">
 
-      <!-- 完整生命周期 · 动作 → 留存物两栏对应 -->
+      <!-- 完整生命周期 · 真流程图(节点 + 连线) -->
       <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15); padding: 10px 12px;">
-        <div class="card-title" style="color: #d6b4ff; margin-bottom: 4px;">▎完整生命周期 · 动作 → 留存物</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; font-size: 9.5px; color: #7d84a8; font-family: 'SF Mono', monospace; letter-spacing: 0.5px; margin: 4px 4px 6px;">
-          <div>▸ 动作(过程)</div>
-          <div>▸ 留存物(Tab 对应)</div>
+        <div class="card-title" style="color: #d6b4ff; margin-bottom: 6px;">▎完整生命周期</div>
+
+        <div class="lc-flow">
+          <div class="lc-node">
+            <span class="lc-node-num">1</span>
+            <span class="lc-node-action">产生零散灵感(多端 · 碎片化)</span>
+          </div>
+          <div class="lc-flow-arrow"><span>↓</span></div>
+
+          <div class="lc-node">
+            <span class="lc-node-num">2</span>
+            <span class="lc-node-action">定期汇总灵感 · 批量录入</span>
+            <span class="lc-node-store"><span class="lc-tab lc-tab-pool">想法储备</span></span>
+          </div>
+          <div class="lc-flow-arrow-with-note">AI 分类/打标/串关系</div>
+
+          <div class="lc-node">
+            <span class="lc-node-num">3</span>
+            <span class="lc-node-action">和 AI 讨论筛选 · 碰撞修正</span>
+          </div>
+          <div class="lc-flow-arrow-with-note">结论附想法/待办上 · 无独立 Tab</div>
+
+          <div class="lc-node">
+            <span class="lc-node-num">4</span>
+            <span class="lc-node-action">确认落地 · 拆解可执行任务</span>
+            <span class="lc-node-store"><span class="lc-tab lc-tab-todo">待办清单</span></span>
+          </div>
+          <div class="lc-flow-arrow-with-note">AI 拆解/排优/更新状态</div>
+
+          <div class="lc-node">
+            <span class="lc-node-num">5</span>
+            <span class="lc-node-action">执行任务 · 日常使用 · 写批注反馈</span>
+          </div>
+          <div class="lc-flow-arrow-with-note">批注内嵌内容旁 · 无独立 Tab</div>
+
+          <div class="lc-node">
+            <span class="lc-node-num">6</span>
+            <span class="lc-node-action">每轮迭代复盘 · 改动/决策/认知拐点</span>
+            <span class="lc-node-store"><span class="lc-tab lc-tab-log">迭代日志</span></span>
+          </div>
+          <div class="lc-flow-arrow-with-note">你写批注 · AI 结构化</div>
+
+          <div class="lc-node">
+            <span class="lc-node-num">7</span>
+            <span class="lc-node-action">多轮打磨 · 产出定型产物</span>
+            <span class="lc-node-store"><span class="lc-tab lc-tab-final">定版成品</span></span>
+          </div>
         </div>
 
-        <div class="lifecycle-grid">
-
-          <div class="lc-step"><span class="lc-num">1</span><span>产生零散灵感(多端 · 碎片化)</span></div>
-          <div class="lc-arrow">→</div>
-          <div class="lc-store"><span class="lc-store-none">无 · 未录入不可见</span></div>
-
-          <div class="lc-step"><span class="lc-num">2</span><span>定期汇总零散灵感 · 批量录入</span></div>
-          <div class="lc-arrow">→</div>
-          <div class="lc-store"><span class="lc-tab lc-tab-pool">想法储备</span><span class="lc-role">AI 分类 / 打标 / 串关系</span></div>
-
-          <div class="lc-step"><span class="lc-num">3</span><span>针对特定想法 · 与 AI 讨论筛选、碰撞修正</span></div>
-          <div class="lc-arrow">→</div>
-          <div class="lc-store"><span class="lc-store-none">无独立 Tab · 结论附想法/待办上</span></div>
-
-          <div class="lc-step"><span class="lc-num">4</span><span>确认落地 · 拆解为可执行任务</span></div>
-          <div class="lc-arrow">→</div>
-          <div class="lc-store"><span class="lc-tab lc-tab-todo">待办清单</span><span class="lc-role">AI 拆解 / 排优 / 更新状态</span></div>
-
-          <div class="lc-step"><span class="lc-num">5</span><span>执行任务 · 日常使用 · 写批注反馈</span></div>
-          <div class="lc-arrow">→</div>
-          <div class="lc-store"><span class="lc-store-none">无独立 Tab · 批注内嵌内容旁</span></div>
-
-          <div class="lc-step"><span class="lc-num">6</span><span>每轮迭代复盘 · 梳理改动/决策/认知拐点</span></div>
-          <div class="lc-arrow">→</div>
-          <div class="lc-store"><span class="lc-tab lc-tab-log">迭代日志</span><span class="lc-role">你写批注 / AI 结构化</span></div>
-
-          <div class="lc-step"><span class="lc-num">7</span><span>多轮打磨 · 产出可用定型产物</span></div>
-          <div class="lc-arrow">→</div>
-          <div class="lc-store"><span class="lc-tab lc-tab-final">定版成品</span><span class="lc-role">持续迭代活版本 · 直接复用</span></div>
-
-        </div>
-
-        <div class="lc-branch">
-          <div class="lc-branch-title">▎最终决策分流</div>
-          产生新想法 <span class="lc-branch-arrow">↺</span> 回流<span class="lc-tab lc-tab-pool" style="margin: 0 2px;">想法储备</span><br>
-          拆出新任务 <span class="lc-branch-arrow">↺</span> 回流<span class="lc-tab lc-tab-todo" style="margin: 0 2px;">待办清单</span><br>
-          内容彻底稳定 <span class="lc-branch-arrow">✓</span> 归档 · 闭环结束
+        <div class="lc-branch-box">
+          <div class="lc-branch-head">▎最终决策分流</div>
+          <div class="lc-branch-row">
+            <span class="lc-branch-icon">↺</span>产生新想法 → 回流<span class="lc-tab lc-tab-pool">想法储备</span>
+          </div>
+          <div class="lc-branch-row">
+            <span class="lc-branch-icon">↺</span>拆出新任务 → 回流<span class="lc-tab lc-tab-todo">待办清单</span>
+          </div>
+          <div class="lc-branch-row">
+            <span class="lc-branch-icon lc-branch-icon-ok">✓</span>内容彻底稳定 → 归档 · 闭环结束
+          </div>
         </div>
       </div>
 
