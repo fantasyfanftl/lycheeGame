@@ -1331,27 +1331,38 @@ footer strong { color: #7d84a8; }
 .brain-connection .link { color: #6ee7b7; font-family: "SF Mono", monospace; font-size: 10px; }
 .brain-hero {
   text-align: left;
-  padding: 10px 12px;
-  background: rgba(35, 35, 35, 0.5);
+  padding: 10px 14px;
+  background:
+    radial-gradient(300px 80px at 50% 0%, rgba(125, 211, 252, 0.15) 0%, transparent 70%),
+    rgba(30, 30, 30, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(125, 211, 252, 0.2);
+  border: 1px solid rgba(125, 211, 252, 0.25);
   border-left: 3px solid #7dd3fc;
   border-radius: 8px;
   margin-bottom: 10px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 0 16px rgba(125, 211, 252, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.brain-hero::before { display: none; }
+.brain-hero::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.7), transparent);
+}
 .brain-hero .title {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: #7dd3fc;
-  margin-bottom: 1px;
-  text-shadow: none;
+  margin-bottom: 2px;
+  text-shadow: 0 0 10px rgba(125, 211, 252, 0.4);
   display: flex;
   align-items: center;
   gap: 6px;
+  letter-spacing: 0.3px;
 }
 .brain-hero .subtitle {
   font-size: 10px;
@@ -1362,10 +1373,17 @@ footer strong { color: #7d84a8; }
 .brain-hero .subtitle span { font-family: inherit; }
 .brain-hero .subtitle br { display: none; }
 .brain-hero-tianlan {
-  border-color: rgba(52, 211, 153, 0.2);
+  background:
+    radial-gradient(300px 80px at 50% 0%, rgba(52, 211, 153, 0.15) 0%, transparent 70%),
+    rgba(30, 30, 30, 0.6);
+  border-color: rgba(52, 211, 153, 0.25);
   border-left-color: #6ee7b7;
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.brain-hero-tianlan .title { color: #6ee7b7; }
+.brain-hero-tianlan::before {
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.7), transparent);
+}
+.brain-hero-tianlan .title { color: #6ee7b7; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
 .brain-tabs { margin-bottom: 14px; }
 .brain-panel { display: none; }
 .brain-panel.active { display: block; animation: fadeIn 0.2s; }
