@@ -2274,7 +2274,153 @@ footer strong { color: #7d84a8; }
   font-size: 9px;
 }
 
-/* ==== 生命周期流程图 v2 · 动作 → 留存物两栏对应 ==== */
+/* ==== 生命周期流程图 v3 · 真流程图(节点+箭头连线+回流弧线) ==== */
+.lc-flow {
+  padding: 8px 4px;
+  position: relative;
+}
+.lc-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: rgba(35, 35, 35, 0.7);
+  border: 1px solid rgba(124, 157, 255, 0.25);
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.2s;
+}
+.lc-node-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c9dff, #b478ff);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: "SF Mono", monospace;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(124, 157, 255, 0.35);
+}
+.lc-node-action {
+  font-size: 11.5px;
+  color: #eaecf5;
+  line-height: 1.4;
+  flex: 1;
+}
+.lc-node-store {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.lc-node-store::before {
+  content: "→";
+  color: #7c9dff;
+  opacity: 0.55;
+  font-size: 11px;
+  font-family: "SF Mono", monospace;
+  margin-right: 2px;
+}
+.lc-node-store .lc-tab {
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: "SF Mono", monospace;
+  border: 1px solid;
+}
+.lc-flow-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+  color: #7c9dff;
+  font-size: 14px;
+  opacity: 0.55;
+  font-family: "SF Mono", monospace;
+  position: relative;
+}
+.lc-flow-arrow::before {
+  content: "";
+  position: absolute;
+  left: 26px;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(124, 157, 255, 0.4), rgba(180, 120, 255, 0.3));
+}
+.lc-flow-arrow span {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0;
+  line-height: 1;
+}
+.lc-flow-arrow-with-note {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  color: #6b7295;
+  font-size: 9.5px;
+  font-family: "SF Mono", monospace;
+  padding-left: 46px;
+  position: relative;
+}
+.lc-flow-arrow-with-note::before {
+  content: "";
+  position: absolute;
+  left: 26px;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: rgba(124, 157, 255, 0.4);
+}
+.lc-branch-box {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(180, 120, 255, 0.08), rgba(124, 157, 255, 0.05));
+  border: 1px dashed rgba(180, 120, 255, 0.35);
+  border-radius: 8px;
+}
+.lc-branch-head {
+  font-size: 10px;
+  color: #d6b4ff;
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.lc-branch-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 10.5px;
+  color: #d8dcec;
+  line-height: 1.5;
+}
+.lc-branch-icon {
+  color: #b478ff;
+  font-size: 12px;
+  min-width: 14px;
+  text-align: center;
+}
+.lc-branch-icon-ok { color: #6ee7b7; }
+.lc-branch-row .lc-tab {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 9.5px;
+  font-weight: 700;
+  font-family: "SF Mono", monospace;
+  border: 1px solid;
+}
 .lifecycle-grid {
   display: grid;
   grid-template-columns: 1fr 16px 1fr;
