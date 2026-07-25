@@ -4604,6 +4604,47 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
     <!-- 候选资产 4 条已迁想法储备(21-24) · 待整理成完整版时再回搬 -->
 
+    </div><!-- /.asset-panel ready -->
+
+    <!-- Tab 2 · 新增和待办 prompt(和豆包出完粘这里 · 导出给 Claude Code 落卡) -->
+    <div class="asset-panel" data-asset-panel="draft" style="display:none;">
+
+      <div class="asset-stash">
+        <div class="stash-header">
+          <span class="stash-title"><span class="stash-icon">📥</span>新增 prompt 暂存(和豆包出的粘这)</span>
+          <span class="stash-hint">localStorage · 保存后不丢</span>
+        </div>
+        <textarea class="stash-textarea" id="assetStashInput" placeholder="和豆包出完 prompt · 粘这里 · 一键导出给 Claude Code · 例:&#10;&#10;名称:大脑搭建说明书&#10;标签:AI 无关/主题无关/可迁移/高频&#10;正文:&#10;[prompt 内容]"></textarea>
+        <div class="stash-actions">
+          <button class="stash-btn stash-btn-save" id="assetStashSave">💾 保存</button>
+          <button class="stash-btn stash-btn-export" id="assetStashExport">📤 一键导出</button>
+          <button class="stash-btn stash-btn-clear" id="assetStashClear">🗑 清空</button>
+        </div>
+        <div class="stash-status" id="assetStashStatus"></div>
+        <span class="stash-prompt-toggle" id="assetPromptToggle">▸ 展开落卡 prompt(给 Claude Code)</span>
+        <div class="stash-prompt-pre" id="assetPromptPre" style="display:none;"></div>
+      </div>
+
+      <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15);">
+        <div class="card-title" style="color: #d6b4ff;">▎ 待办 · 3 条待你和豆包出</div>
+        <ul style="list-style: none; padding: 0; font-size: 12px; color: #d8dcec; line-height: 1.7;">
+          <li style="padding: 8px 10px; background: rgba(35,35,35,0.5); border-radius: 6px; margin-bottom: 6px; border-left: 2px solid #b478ff;">
+            <strong style="color: #d6b4ff;">A · 大脑搭建说明书 prompt</strong>
+            <span style="font-size: 10.5px; color: #9ca3b8; display: block; margin-top: 2px;">帮别 AI 建它们的大脑 · 参考资产 03 结构 · 你和豆包出</span>
+          </li>
+          <li style="padding: 8px 10px; background: rgba(35,35,35,0.5); border-radius: 6px; margin-bottom: 6px; border-left: 2px solid #b478ff;">
+            <strong style="color: #d6b4ff;">B · 复盘中立指令 prompt</strong>
+            <span style="font-size: 10.5px; color: #9ca3b8; display: block; margin-top: 2px;">让 AI 复盘不吹捧 · 硬中立</span>
+          </li>
+          <li style="padding: 8px 10px; background: rgba(35,35,35,0.5); border-radius: 6px; border-left: 2px solid #b478ff;">
+            <strong style="color: #d6b4ff;">C · UI 模板 prompt</strong>
+            <span style="font-size: 10.5px; color: #9ca3b8; display: block; margin-top: 2px;">本工作台的视觉规范抽象成 prompt · 未来别的页复用</span>
+          </li>
+        </ul>
+      </div>
+
+    </div><!-- /.asset-panel draft -->
+
   </div>
 
   <!-- ===== 大脑 · Claude 的思考方式 ===== -->
@@ -5577,7 +5618,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <footer>
   <strong>GitHub Claude</strong> · v0.1 · 2026-07-25<br>
-  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 修「📦 导出全部」按钮位置 · hero 是全局隐藏的 · 挪到 stash 下独立卡</span>
+  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 豆包首审 · 落 5 件:01/05 改名 · 09 换专属工作流标签 · 06 继承声明 · 想法池 A 提优先级 + F 新增</span>
 </footer>
 
 <!-- ==== 批注浮层 ==== -->
