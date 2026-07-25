@@ -2200,6 +2200,30 @@ footer strong { color: #7d84a8; }
   font-family: "SF Mono", monospace;
   line-height: 1.4;
 }
+.asset-hero-export {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(180, 120, 255, 0.4);
+  border-radius: 6px;
+  background: rgba(180, 120, 255, 0.12);
+  color: #d6b4ff;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.asset-hero-export:hover {
+  background: rgba(180, 120, 255, 0.22);
+  border-color: rgba(180, 120, 255, 0.6);
+}
+.asset-hero-export.copied {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  color: white;
+  border-color: transparent;
+}
 
 .asset-5w1h {
   background: rgba(35, 35, 35, 0.5);
@@ -3800,6 +3824,7 @@ footer strong { color: #7d84a8; }
     <div class="asset-hero">
       <div class="asset-hero-title">📋 跨 AI 复用资产</div>
       <div class="asset-hero-sub">开局粘一次 · 免磨合期 · 给任何 AI 都能用</div>
+      <button class="asset-hero-export" id="assetAllExport" title="导出所有资产 · 给豆包审核复盘">📦 导出全部</button>
     </div>
 
     <!-- 3 行大白话介绍已迁到左栏卡片展开区(active 时显示) -->
@@ -5089,64 +5114,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
       </div>
 
-      <!-- 词对应表 · v0 · 天蓝反馈迭代 -->
-      <div class="card">
-        <div class="card-title">📖 词对应表 · v0 初稿(我造词多 · 你看懂哪些 · 迭代)</div>
-        <div style="font-size: 11px; color: #9ca3b8; margin-bottom: 10px; padding: 6px 10px; background: rgba(45,45,45,0.4); border-radius: 4px; line-height: 1.6;">
-          批注 #7 落地 · 我这两天造的词一句话释义 · 看不懂/不认同的批注给我改
-        </div>
-
-        <div style="display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 12px; line-height: 1.7;">
-          <div style="color: #d6b4ff; font-weight: 700;">大脑外显系统</div>
-          <div style="color: #d8dcec;">这个工作台的定位 · 把你脑子里混乱的想法变成看得见/可追溯/可梳理的实体</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">沉淀</div>
-          <div style="color: #d8dcec;">想法/讨论产出真的用了、验证有效 · 变成"能带走用别处"的东西 · 沉淀就要删原线</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">想法池 / 想法储备</div>
-          <div style="color: #d8dcec;">脑子里挂着的没变成品的东西 · 池子大是常态 · 目标是"串成串 → 变成品"</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">元层</div>
-          <div style="color: #d8dcec;">规则、原则、思考方式这些"元"的东西 · 不是具体操作 · 是操作背后的抽象</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">关系全景</div>
-          <div style="color: #d8dcec;">主题之间/想法之间怎么连的一张图 · 未来会和想法储备合并成一张画布</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">先散后收</div>
-          <div style="color: #d8dcec;">你的天然工作方式 · 先乱试(散)· 做多了才知道怎么收敛 · 不是缺点是资产</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">边用边写</div>
-          <div style="color: #d8dcec;">5 层协作方法:用 → 写心得 → 讨论 → AI 沉淀 → 回验 · 是你最容易做出内容的方法</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">讨好漂移</div>
-          <div style="color: #d8dcec;">任何 AI + 任何长对话 · 都会往夸你/顺你/说好话的方向漂 · 结构性问题 · 你当警报器</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">5 段结构</div>
-          <div style="color: #d8dcec;">Kimi 风格回复:核心目标 + 精简版 + 标准版 + 想法池 + 待确认 · 你亲测舒适</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">哲学熔断器</div>
-          <div style="color: #d8dcec;">话题跑偏到抽象层("这个到底是什么"这种)· 强制降级到"下一步具体做什么"</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">Handoff</div>
-          <div style="color: #d8dcec;">跨 AI 交接 · 让下一个 AI 快速接手当前话题 · 有专门的 prompt(资产 02)</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">各端自完备</div>
-          <div style="color: #d8dcec;">AI 之间没法真同步 · 接受重复 · 每 AI 自己一份入场包 · 不追求"一处维护"</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">4 特征筛选</div>
-          <div style="color: #d8dcec;">进主题 02 资产库的关卡:和 AI 无关?和话题无关?粘一下就能用?常用?全 yes 才进</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">批注</div>
-          <div style="color: #d8dcec;">你在页面上划词写反馈 · 存 localStorage · 导出给我改 · 类似 Word 的评注</div>
-
-          <div style="color: #d6b4ff; font-weight: 700;">15 天回望</div>
-          <div style="color: #d8dcec;">新项目至少给自己 15 天再复盘 · 别每天焦虑 · 前 1-2 月乱是必要的</div>
-        </div>
-
-        <div style="margin-top: 12px; padding: 8px 12px; background: rgba(180,120,255,0.08); border-radius: 4px; border-left: 2px solid #b478ff; font-size: 10.5px; color: #d6b4ff; line-height: 1.6;">
-          <strong>你怎么用</strong>:看到哪个词看不懂 · 划词批注写"这词我理解成 XX" · 我下次改这里的释义 · 或者反馈"这词太别扭 · 换个说法"
-        </div>
-      </div>
+      <!-- 词对应表已移到左下📖 浮球 · 点开浮层查看 -->
     </div>
 
     <!-- Tab 2 · 关系全景(完整版在左下🕸 浮球 · 跨主题唤起) -->
@@ -5511,7 +5479,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <footer>
   <strong>GitHub Claude</strong> · v0.1 · 2026-07-25<br>
-  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 主题 02 新增资产 10「UI 布局微调 · 仅样式层」+ 想法池 E「暂存前加类型判断」· 资产 9→10 条</span>
+  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 主题 02 hero 加「📦 导出全部」按钮 · 一键复制所有资产给豆包审核复盘</span>
 </footer>
 
 <!-- ==== 批注浮层 ==== -->
@@ -5527,6 +5495,73 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 <!-- 关系全景浮球 · 右下角 · 随时唤出 -->
 <div class="map-fab" id="mapFab" title="打开关系全景">
   🕸
+</div>
+
+<!-- 词对应表浮球 · 左下角 · 在关系全景浮球上方 -->
+<div class="glossary-fab" id="glossaryFab" title="打开词对应表">
+  📖
+</div>
+
+<!-- 词对应表浮层 · 右侧滑入 -->
+<div class="glossary-drawer" id="glossaryDrawer">
+  <div class="glossary-drawer-header">
+    <div class="glossary-drawer-title">📖 词对应表 · v0</div>
+    <button class="glossary-drawer-close" id="glossaryDrawerClose">✕</button>
+  </div>
+  <div class="glossary-drawer-body">
+    <div class="glossary-intro">
+      批注 #7 落地 · 我这两天造的词一句话释义 · 看不懂/不认同的批注给我改
+    </div>
+    <div class="glossary-grid">
+      <div class="glossary-term">大脑外显系统</div>
+      <div class="glossary-def">这个工作台的定位 · 把你脑子里混乱的想法变成看得见/可追溯/可梳理的实体</div>
+
+      <div class="glossary-term">沉淀</div>
+      <div class="glossary-def">想法/讨论产出真的用了、验证有效 · 变成"能带走用别处"的东西 · 沉淀就要删原线</div>
+
+      <div class="glossary-term">想法池 / 想法储备</div>
+      <div class="glossary-def">脑子里挂着的没变成品的东西 · 池子大是常态 · 目标是"串成串 → 变成品"</div>
+
+      <div class="glossary-term">元层</div>
+      <div class="glossary-def">规则、原则、思考方式这些"元"的东西 · 不是具体操作 · 是操作背后的抽象</div>
+
+      <div class="glossary-term">关系全景</div>
+      <div class="glossary-def">主题之间/想法之间怎么连的一张图 · 未来会和想法储备合并成一张画布</div>
+
+      <div class="glossary-term">先散后收</div>
+      <div class="glossary-def">你的天然工作方式 · 先乱试(散)· 做多了才知道怎么收敛 · 不是缺点是资产</div>
+
+      <div class="glossary-term">边用边写</div>
+      <div class="glossary-def">5 层协作方法:用 → 写心得 → 讨论 → AI 沉淀 → 回验 · 是你最容易做出内容的方法</div>
+
+      <div class="glossary-term">讨好漂移</div>
+      <div class="glossary-def">任何 AI + 任何长对话 · 都会往夸你/顺你/说好话的方向漂 · 结构性问题 · 你当警报器</div>
+
+      <div class="glossary-term">5 段结构</div>
+      <div class="glossary-def">Kimi 风格回复:核心目标 + 精简版 + 标准版 + 想法池 + 待确认 · 你亲测舒适</div>
+
+      <div class="glossary-term">哲学熔断器</div>
+      <div class="glossary-def">话题跑偏到抽象层("这个到底是什么"这种)· 强制降级到"下一步具体做什么"</div>
+
+      <div class="glossary-term">Handoff</div>
+      <div class="glossary-def">跨 AI 交接 · 让下一个 AI 快速接手当前话题 · 有专门的 prompt(资产 02)</div>
+
+      <div class="glossary-term">各端自完备</div>
+      <div class="glossary-def">AI 之间没法真同步 · 接受重复 · 每 AI 自己一份入场包 · 不追求"一处维护"</div>
+
+      <div class="glossary-term">4 特征筛选</div>
+      <div class="glossary-def">进主题 02 资产库的关卡:和 AI 无关?和话题无关?粘一下就能用?常用?全 yes 才进</div>
+
+      <div class="glossary-term">批注</div>
+      <div class="glossary-def">你在页面上划词写反馈 · 存 localStorage · 导出给我改 · 类似 Word 的评注</div>
+
+      <div class="glossary-term">15 天回望</div>
+      <div class="glossary-def">新项目至少给自己 15 天再复盘 · 别每天焦虑 · 前 1-2 月乱是必要的</div>
+    </div>
+    <div class="glossary-tip">
+      <strong>你怎么用</strong>:看到哪个词看不懂 · 划词批注写"这词我理解成 XX" · 我下次改这里的释义 · 或者反馈"这词太别扭 · 换个说法"
+    </div>
+  </div>
 </div>
 
 <div class="annotation-drawer" id="annotationDrawer">
@@ -6041,6 +6076,102 @@ document.addEventListener("DOMContentLoaded", function() {
     promptPre.style.display = open ? "none" : "block";
     promptToggle.textContent = open ? "▸ 展开落卡 prompt(给 Claude Code)" : "▾ 收起落卡 prompt";
     if (!open) promptPre.textContent = CLAUDE_PROMPT;
+  });
+})();
+
+/* ============ 主题 02 · 一键导出全部资产 · 给豆包审核复盘 ============ */
+(function() {
+  var btn = document.getElementById("assetAllExport");
+  if (!btn) return;
+
+  var DOUBAO_REVIEW_HEADER = "以下是我现在主题 02「跨 AI 复用资产」库里所有 prompt 资产 · 请帮我审核复盘:\n\n" +
+    "1. 内容对不对 · 有没有明显问题 / 表述矛盾 / 逻辑漏洞\n" +
+    "2. 有无重复 · 哪些资产之间职能重叠 · 该合并还是该拆\n" +
+    "3. 怎么优化 · 每张卡单独说 · 具体改哪 · 别泛泛而谈\n" +
+    "4. 有没有缺失 · 我这套资产库还缺哪类 prompt · 建议补什么\n\n" +
+    "只做审核 · 不要重写。发现问题按「资产编号 · 问题描述 · 优化建议」格式列。\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+  btn.addEventListener("click", function() {
+    var topic = document.querySelector('[data-topic-content="D"]');
+    if (!topic) { alert("找不到主题 02 内容区"); return; }
+    var cards = topic.querySelectorAll(".asset-card");
+    if (!cards.length) { alert("没找到资产卡"); return; }
+
+    var now = new Date();
+    var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
+    var stamp = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-" + pad(now.getDate()) +
+                " " + pad(now.getHours()) + ":" + pad(now.getMinutes());
+
+    var lines = [];
+    lines.push(DOUBAO_REVIEW_HEADER);
+    lines.push("# 资产库快照 · " + stamp);
+    lines.push("");
+    lines.push("- 资产总数:" + cards.length + " 张");
+    lines.push("- 来源:主题 02 · 跨 AI 复用资产");
+    lines.push("");
+    lines.push("---");
+    lines.push("");
+
+    cards.forEach(function(card) {
+      var num = (card.querySelector(".asset-num") || {}).textContent || "?";
+      var title = (card.querySelector(".asset-title") || {}).textContent || "";
+      var sub = (card.querySelector(".asset-sub") || {}).textContent || "";
+      var tags = [];
+      card.querySelectorAll(".asset-tag").forEach(function(t) { tags.push(t.textContent.trim()); });
+
+      lines.push("## 资产 " + num + " · " + title);
+      lines.push("");
+      lines.push("**描述**:" + sub);
+      lines.push("");
+      lines.push("**标签**:" + tags.join(" · "));
+      lines.push("");
+
+      // 多版本 · 收集所有 pre.asset-content(含 version-panel)
+      var pres = card.querySelectorAll("pre.asset-content");
+      if (pres.length <= 1) {
+        lines.push("**内容**:");
+        lines.push("");
+        lines.push("```");
+        lines.push((pres[0] || {}).textContent || "");
+        lines.push("```");
+      } else {
+        // 多版本 · 从对应的 version-tab 拿版本名
+        var tabs = card.querySelectorAll(".version-tab");
+        pres.forEach(function(pre, i) {
+          var verLabel = tabs[i] ? tabs[i].textContent.trim() : ("版本 " + (i+1));
+          lines.push("**内容 · " + verLabel + "**:");
+          lines.push("");
+          lines.push("```");
+          lines.push(pre.textContent || "");
+          lines.push("```");
+          lines.push("");
+        });
+      }
+      lines.push("");
+      lines.push("---");
+      lines.push("");
+    });
+
+    var payload = lines.join("\n");
+    var ta = document.createElement("textarea");
+    ta.value = payload;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e) {}
+    document.body.removeChild(ta);
+    if (ok) {
+      btn.textContent = "✓ 已复制 · 粘给豆包";
+      btn.classList.add("copied");
+      setTimeout(function() {
+        btn.textContent = "📦 导出全部";
+        btn.classList.remove("copied");
+      }, 3000);
+    } else {
+      alert("复制失败 · 浏览器不支持 · 请手动");
+    }
   });
 })();
 </script>
