@@ -1163,6 +1163,68 @@ footer strong { color: #7d84a8; }
 .tianlan-panel { display: none; }
 .tianlan-panel.active { display: block; animation: fadeIn 0.2s; }
 
+/* ==== 关系全景浮层 · 右侧半屏 ==== */
+.map-drawer {
+  position: fixed;
+  top: 0;
+  right: -60vw;
+  width: 55vw;
+  max-width: 900px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1e1e1e 0%, #232323 100%);
+  border-left: 1px solid rgba(240, 171, 252, 0.25);
+  z-index: 1002;
+  transition: right 0.3s;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+}
+.map-drawer.show { right: 0; }
+.map-drawer-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(240, 171, 252, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(240, 171, 252, 0.05);
+}
+.map-drawer-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f0abfc;
+  flex: 1;
+  font-family: "SF Mono", monospace;
+  letter-spacing: 0.5px;
+}
+.map-drawer-close {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d8dcec;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.map-drawer-close:active { background: rgba(255, 255, 255, 0.1); }
+.map-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+}
+.map-drawer-body::-webkit-scrollbar { width: 4px; }
+.map-drawer-body::-webkit-scrollbar-thumb {
+  background: rgba(240, 171, 252, 0.3);
+  border-radius: 2px;
+}
+
+@media (max-width: 900px) {
+  .map-drawer { width: 100vw; right: -100vw; }
+}
+
 /* ==== Pin 警示条 · 一行紧凑 ==== */
 .pin-note {
   background:
