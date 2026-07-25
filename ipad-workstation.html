@@ -2697,68 +2697,143 @@ footer strong { color: #7d84a8; }
 }
 .lc-branch-arrow { color: #b478ff; margin: 0 4px; }
 
-/* ==== 幕布外链入口卡(天蓝脑 · 想法储备顶部) ==== */
-.mubu-entry {
+/* ==== 外部工具入口卡(天蓝脑 · 想法储备顶部) ==== */
+.ext-tools-title {
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  margin: 4px 4px 8px;
+}
+.ext-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.ext-tool {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  background:
-    radial-gradient(400px 100px at 0% 50%, rgba(52, 211, 153, 0.12) 0%, transparent 70%),
-    linear-gradient(135deg, rgba(45, 45, 45, 0.7), rgba(35, 35, 35, 0.6));
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  border-left: 3px solid #6ee7b7;
-  border-radius: 10px;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(45, 45, 45, 0.7), rgba(35, 35, 35, 0.6));
+  border: 1px solid rgba(124, 157, 255, 0.2);
+  border-left: 3px solid #7c9dff;
+  border-radius: 8px;
   text-decoration: none;
   color: inherit;
   transition: all 0.2s;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(52, 211, 153, 0.08);
   position: relative;
   overflow: hidden;
 }
-.mubu-entry::before {
+.ext-tool::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(110, 231, 183, 0.7), transparent);
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  opacity: 0.5;
 }
-.mubu-entry:hover {
-  border-color: rgba(52, 211, 153, 0.55);
-  box-shadow: 0 4px 20px rgba(52, 211, 153, 0.18);
-  transform: translateY(-1px);
-}
-.mubu-entry:active { transform: scale(0.99); }
-.mubu-entry-icon {
-  font-size: 24px;
+.ext-tool:hover { transform: translateY(-1px); }
+.ext-tool:active { transform: scale(0.98); }
+.ext-tool-icon {
+  font-size: 20px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.4));
+  filter: drop-shadow(0 0 6px currentColor);
 }
-.mubu-entry-body { flex: 1; }
-.mubu-entry-title {
-  font-size: 14px;
+.ext-tool-body { flex: 1; min-width: 0; }
+.ext-tool-title {
+  font-size: 13px;
   font-weight: 700;
-  color: #6ee7b7;
-  margin-bottom: 2px;
-  text-shadow: 0 0 8px rgba(52, 211, 153, 0.3);
+  margin-bottom: 1px;
+  text-shadow: 0 0 8px currentColor;
   letter-spacing: 0.3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.mubu-entry-sub {
-  font-size: 10.5px;
+.ext-tool-sub {
+  font-size: 10px;
   color: #9ca3b8;
   font-family: "SF Mono", monospace;
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.mubu-entry-arrow {
-  color: #6ee7b7;
-  font-size: 16px;
+.ext-tool-arrow {
+  font-size: 14px;
   font-weight: 700;
-  opacity: 0.7;
+  opacity: 0.6;
   flex-shrink: 0;
 }
-.mubu-entry:hover .mubu-entry-arrow { opacity: 1; }
+.ext-tool:hover .ext-tool-arrow { opacity: 1; }
+
+/* 色变体 · 5 主题色 */
+.ext-tool-green {
+  border-color: rgba(52, 211, 153, 0.25);
+  border-left-color: #6ee7b7;
+  color: #6ee7b7;
+  box-shadow: 0 2px 12px rgba(52, 211, 153, 0.08);
+}
+.ext-tool-green:hover {
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: 0 4px 20px rgba(52, 211, 153, 0.18);
+}
+.ext-tool-green .ext-tool-title { color: #6ee7b7; }
+
+.ext-tool-orange {
+  border-color: rgba(255, 176, 87, 0.25);
+  border-left-color: #ffb457;
+  color: #ffb457;
+  box-shadow: 0 2px 12px rgba(255, 176, 87, 0.08);
+}
+.ext-tool-orange:hover {
+  border-color: rgba(255, 176, 87, 0.5);
+  box-shadow: 0 4px 20px rgba(255, 176, 87, 0.18);
+}
+.ext-tool-orange .ext-tool-title { color: #ffb457; }
+
+.ext-tool-blue {
+  border-color: rgba(124, 157, 255, 0.25);
+  border-left-color: #7c9dff;
+  color: #a4b3ff;
+  box-shadow: 0 2px 12px rgba(124, 157, 255, 0.08);
+}
+.ext-tool-blue:hover {
+  border-color: rgba(124, 157, 255, 0.5);
+  box-shadow: 0 4px 20px rgba(124, 157, 255, 0.18);
+}
+.ext-tool-blue .ext-tool-title { color: #a4b3ff; }
+
+.ext-tool-purple {
+  border-color: rgba(180, 120, 255, 0.25);
+  border-left-color: #b478ff;
+  color: #d6b4ff;
+  box-shadow: 0 2px 12px rgba(180, 120, 255, 0.08);
+}
+.ext-tool-purple:hover {
+  border-color: rgba(180, 120, 255, 0.5);
+  box-shadow: 0 4px 20px rgba(180, 120, 255, 0.18);
+}
+.ext-tool-purple .ext-tool-title { color: #d6b4ff; }
+
+.ext-tool-pink {
+  border-color: rgba(240, 171, 252, 0.25);
+  border-left-color: #f0abfc;
+  color: #f0abfc;
+  box-shadow: 0 2px 12px rgba(240, 171, 252, 0.08);
+}
+.ext-tool-pink:hover {
+  border-color: rgba(240, 171, 252, 0.5);
+  box-shadow: 0 4px 20px rgba(240, 171, 252, 0.18);
+}
+.ext-tool-pink .ext-tool-title { color: #f0abfc; }
+
+/* 保留旧 mubu-entry 兼容(避免残余引用) */
+.mubu-entry { display: none; }
 
 /* ==== 主题 D · 资产库样式 ==== */
 
