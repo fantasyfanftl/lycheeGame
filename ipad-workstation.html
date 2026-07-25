@@ -5280,6 +5280,111 @@ document.addEventListener("DOMContentLoaded", function() {
 
   updateCount();
 });
+
+/* ============ 主题 02 · 新增暂存 · localStorage + 一键导出 ============ */
+(function() {
+  var STASH_KEY = "asset-stash-v1";
+  var input = document.getElementById("assetStashInput");
+  var saveBtn = document.getElementById("assetStashSave");
+  var exportBtn = document.getElementById("assetStashExport");
+  var clearBtn = document.getElementById("assetStashClear");
+  var status = document.getElementById("assetStashStatus");
+  var promptToggle = document.getElementById("assetPromptToggle");
+  var promptPre = document.getElementById("assetPromptPre");
+  if (!input) return;
+
+  var CLAUDE_PROMPT = "天蓝从主题 02 「新增暂存」导出了新 prompt · 请:\n\n1. 读 C:\\Users\\tianlan\\lycheeGame\\ipad-workstation.html\n2. 找 data-topic-content=\"D\" 里 「资产 05 · UI 模板」 后面的位置(候选资产之前)\n3. 从下面 JSON 提取:name / desc / tags / body(以及 v01/v02 若有)\n4. 按现有 .asset-card 结构新增一张卡:\n   - .asset-num 用下一个编号(现在最大是 06 · 加就是 07 起)\n   - .asset-title 用 name\n   - .asset-sub 用 desc\n   - .asset-tags 里放 4 个 tag(格式 <span class=\"asset-tag\">✓ XX</span>)\n   - .asset-content 里放 body(记得转义 HTML 特殊字符)\n   - 如有 v01/v02 · 复用 asset-01 的 .version-tabs 结构\n   - 复制按钮 data-asset 指向新的 id\n5. 更新顶部计数:主题 02 顶部说明「资产 X 条已收 · Y 条待填」\n6. 更新大脑复盘 tab 的「资产从 2 条 → 5 条(2 条已收 · 3 条待你填)」文字为最新数\n7. 落卡完成 · 从 HTML 里删除该 stash 条目(避免下次重复落)\n   —— 直接编辑 index.html · 不用等我确认\n8. push · commit 信息:「主题 02 · 新增资产 · [name]」\n\n导出内容(JSON):\n[粘贴下面 JSON]";
+
+  function loadStash() {
+    try { return JSON.parse(localStorage.getItem(STASH_KEY) || "[]"); }
+    catch(e) { return []; }
+  }
+  function saveStash(list) { localStorage.setItem(STASH_KEY, JSON.stringify(list)); }
+
+  function refreshStatus() {
+    var list = loadStash();
+    if (list.length === 0) {
+      status.textContent = "";
+    } else {
+      status.textContent = "✓ 已存 " + list.length + " 条 · 未导出";
+    }
+  }
+
+  // 恢复上次未导出的草稿
+  var draft = localStorage.getItem(STASH_KEY + "-draft");
+  if (draft) input.value = draft;
+  input.addEventListener("input", function() {
+    localStorage.setItem(STASH_KEY + "-draft", input.value);
+  });
+  refreshStatus();
+
+  saveBtn.addEventListener("click", function() {
+    var text = input.value.trim();
+    if (!text) { status.textContent = "· 空的 · 先填内容"; return; }
+    var list = loadStash();
+    list.push({ ts: new Date().toISOString().slice(0,19).replace("T"," "), body: text });
+    saveStash(list);
+    localStorage.removeItem(STASH_KEY + "-draft");
+    input.value = "";
+    saveBtn.textContent = "✓ 已存";
+    saveBtn.classList.add("copied");
+    setTimeout(function() {
+      saveBtn.textContent = "💾 保存";
+      saveBtn.classList.remove("copied");
+    }, 1500);
+    refreshStatus();
+  });
+
+  exportBtn.addEventListener("click", function() {
+    // 若 textarea 有内容且未保存 · 先保存
+    var current = input.value.trim();
+    var list = loadStash();
+    if (current) {
+      list.push({ ts: new Date().toISOString().slice(0,19).replace("T"," "), body: current });
+      saveStash(list);
+      input.value = "";
+      localStorage.removeItem(STASH_KEY + "-draft");
+    }
+    if (list.length === 0) { status.textContent = "· 空的 · 先填内容"; return; }
+    var payload = CLAUDE_PROMPT + "\n\n" + JSON.stringify({ items: list }, null, 2);
+    var textarea = document.createElement("textarea");
+    textarea.value = payload;
+    textarea.style.position = "fixed"; textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e) {}
+    document.body.removeChild(textarea);
+    if (ok) {
+      exportBtn.textContent = "✓ 已复制 · 粘给 Claude Code";
+      exportBtn.classList.add("copied");
+      setTimeout(function() {
+        exportBtn.textContent = "📤 一键导出";
+        exportBtn.classList.remove("copied");
+      }, 3000);
+    } else {
+      status.textContent = "· 复制失败 · 请手动全选复制";
+    }
+    refreshStatus();
+  });
+
+  clearBtn.addEventListener("click", function() {
+    if (loadStash().length === 0 && !input.value.trim()) return;
+    if (confirm("清空当前输入 + 所有暂存?(导出后可清)")) {
+      saveStash([]);
+      input.value = "";
+      localStorage.removeItem(STASH_KEY + "-draft");
+      refreshStatus();
+    }
+  });
+
+  promptToggle.addEventListener("click", function() {
+    var open = promptPre.style.display !== "none";
+    promptPre.style.display = open ? "none" : "block";
+    promptToggle.textContent = open ? "▸ 展开落卡 prompt(给 Claude Code)" : "▾ 收起落卡 prompt";
+    if (!open) promptPre.textContent = CLAUDE_PROMPT;
+  });
+})();
 </script>
 
 </body>
