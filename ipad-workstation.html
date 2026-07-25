@@ -4739,6 +4739,26 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
+  var tianlanTabs = document.querySelectorAll(".tianlan-tabs .tab-btn");
+  var tianlanPanels = document.querySelectorAll(".tianlan-panel");
+  tianlanTabs.forEach(function(bt) {
+    bt.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var target = bt.getAttribute("data-tianlan-tab");
+      tianlanTabs.forEach(function(t) { t.classList.remove("active"); });
+      bt.classList.add("active");
+      tianlanPanels.forEach(function(p) {
+        p.style.display = "none";
+        p.classList.remove("active");
+      });
+      var targetPanel = document.querySelector("[data-tianlan-panel=\"" + target + "\"]");
+      if (targetPanel) {
+        targetPanel.style.display = "block";
+        targetPanel.classList.add("active");
+      }
+    });
+  });
+
   var copyBtns = document.querySelectorAll(".asset-copy-btn");
   copyBtns.forEach(function(btn) {
     btn.addEventListener("click", function() {
