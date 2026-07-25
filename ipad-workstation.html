@@ -4601,6 +4601,44 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 做完同步效果即可。</pre>
     </div>
 
+    <!-- 资产 11 · 新增落卡 prompt(粘 Tab2 导出 JSON 后 · 让新 Claude Code 落卡) -->
+    <div class="asset-card">
+      <div class="asset-card-header">
+        <div class="asset-num">11</div>
+        <div class="asset-meta">
+          <div class="asset-title">新增落卡 prompt(给 Claude Code)</div>
+          <div class="asset-sub">Tab2 一键导出的目标 prompt · 让新 Claude 会话把新资产自动落卡到主题 02</div>
+        </div>
+        <button class="asset-copy-btn" data-asset="asset-11">复制</button>
+      </div>
+      <div class="asset-tags">
+        <span class="asset-tag">✓ Claude Code 专用</span>
+        <span class="asset-tag">✓ 主题无关</span>
+        <span class="asset-tag">✓ 可迁移</span>
+        <span class="asset-tag">✓ 高频</span>
+      </div>
+      <pre class="asset-content" id="asset-11">天蓝从主题 02 「新增暂存」导出了新 prompt · 请:
+
+1. 读 C:\Users\tianlan\lycheeGame\ipad-workstation.html
+2. 找 data-topic-content="D" 里 「资产 05 · UI 模板」 后面的位置(候选资产之前)
+3. 从下面 JSON 提取:name / desc / tags / body(以及 v01/v02 若有)
+4. 按现有 .asset-card 结构新增一张卡:
+   - .asset-num 用下一个编号(现在最大是 11 · 加就是 12 起)
+   - .asset-title 用 name
+   - .asset-sub 用 desc
+   - .asset-tags 里放 4 个 tag(格式 <span class="asset-tag">✓ XX</span>)
+   - .asset-content 里放 body(记得转义 HTML 特殊字符)
+   - 如有 v01/v02 · 复用 asset-01 的 .version-tabs 结构
+   - 复制按钮 data-asset 指向新的 id
+5. 更新顶部计数:主题 02 顶部说明「资产 X 条已收 · Y 条待填」
+6. 落卡完成 · 从 HTML 里删除该 stash 条目(避免下次重复落)
+   —— 直接编辑文件 · 不用等我确认
+7. push · commit 信息:「主题 02 · 新增资产 · [name]」
+
+导出内容(JSON):
+[粘贴下面 JSON]</pre>
+    </div>
+
     <!-- 候选资产 4 条已迁想法储备(21-24) · 待整理成完整版时再回搬 -->
 
     </div><!-- /.asset-panel ready -->
