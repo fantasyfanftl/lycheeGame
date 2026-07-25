@@ -1006,6 +1006,60 @@ footer strong { color: #7d84a8; }
 .topic-card[data-topic="tianlan"] .ti-key { color: #6ee7b7; }
 .topic-card[data-topic="E"] .ti-key { color: #7c9dff; }
 .topic-card[data-topic="D"] .ti-key { color: #b478ff; }
+
+/* ==== 资产库审核块(主题 02 展开区底部) ==== */
+.asset-audit {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(180, 120, 255, 0.08);
+  border: 1px solid rgba(180, 120, 255, 0.25);
+  border-radius: 8px;
+}
+.asset-audit-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+.asset-audit-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d6b4ff;
+  letter-spacing: 0.3px;
+  flex: 1;
+}
+.asset-audit-desc {
+  font-size: 10px;
+  color: #9ca3b8;
+  font-family: "SF Mono", monospace;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.asset-audit-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(135deg, #7c9dff, #b478ff);
+  color: white;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 2px 10px rgba(124, 157, 255, 0.3);
+  transition: all 0.15s;
+}
+.asset-audit-btn:active { transform: scale(0.97); }
+.asset-audit-btn.copied { background: linear-gradient(135deg, #34d399, #10b981); }
+.asset-audit-status {
+  font-size: 9.5px;
+  color: #6ee7b7;
+  margin-top: 6px;
+  font-family: "SF Mono", monospace;
+  min-height: 12px;
+  text-align: center;
+}
 .topic-card[data-topic="F"] .ti-key { color: #f0abfc; }
 .topic-badge {
   position: absolute;
@@ -3090,6 +3144,15 @@ footer strong { color: #7d84a8; }
           <div class="ti-row"><span class="ti-key">是什么</span><span class="ti-val">给 AI 开局第一条粘的规则包 · 免磨合期 · 给任何 AI 都能用</span></div>
           <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">开新对话 · 点复制 · 粘过去 · 完</span></div>
           <div class="ti-row"><span class="ti-key">怎么进这里</span><span class="ti-val">4 个 yes/no:和 AI 无关?和话题无关?粘一下就能用?常用?· 全 yes 才能进</span></div>
+
+          <div class="asset-audit" onclick="event.stopPropagation();">
+            <div class="asset-audit-header">
+              <span class="asset-audit-title">🔍 资产库审核</span>
+            </div>
+            <div class="asset-audit-desc">导出全部 prompt · 粘给豆包复盘 · 查重/查冗/优化建议</div>
+            <button class="asset-audit-btn" id="assetAuditBtn">📤 导出全部</button>
+            <div class="asset-audit-status" id="assetAuditStatus"></div>
+          </div>
         </div>
       </div>
 
