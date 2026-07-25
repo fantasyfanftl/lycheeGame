@@ -1163,23 +1163,23 @@ footer strong { color: #7d84a8; }
 .tianlan-panel { display: none; }
 .tianlan-panel.active { display: block; animation: fadeIn 0.2s; }
 
-/* ==== 关系全景浮层 · 右侧半屏 ==== */
+/* ==== 关系全景浮层 · 左侧滑入 ==== */
 .map-drawer {
   position: fixed;
   top: 0;
-  right: -60vw;
+  left: -60vw;
   width: 55vw;
   max-width: 900px;
   height: 100vh;
   background: linear-gradient(180deg, #1e1e1e 0%, #232323 100%);
-  border-left: 1px solid rgba(240, 171, 252, 0.25);
+  border-right: 1px solid rgba(240, 171, 252, 0.25);
   z-index: 1002;
-  transition: right 0.3s;
+  transition: left 0.3s;
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
 }
-.map-drawer.show { right: 0; }
+.map-drawer.show { left: 0; }
 .map-drawer-header {
   padding: 14px 18px;
   border-bottom: 1px solid rgba(240, 171, 252, 0.2);
@@ -1222,14 +1222,14 @@ footer strong { color: #7d84a8; }
 }
 
 @media (max-width: 900px) {
-  .map-drawer { width: 100vw; right: -100vw; }
+  .map-drawer { width: 100vw; left: -100vw; }
 }
 
-/* ==== 关系全景浮球 · 右下角 ==== */
+/* ==== 关系全景浮球 · 左下角 · 在批注浮球上方 ==== */
 .map-fab {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 82px;
+  left: 20px;
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -1252,6 +1252,10 @@ footer strong { color: #7d84a8; }
   border-color: rgba(240, 171, 252, 0.6);
 }
 .map-fab:active { transform: scale(0.95); }
+
+@media (max-width: 500px) {
+  .map-fab { width: 46px; height: 46px; bottom: 72px; left: 16px; font-size: 18px; }
+}
 
 /* ==== Pin 警示条 · 一行紧凑 ==== */
 .pin-note {
