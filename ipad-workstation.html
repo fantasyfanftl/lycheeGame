@@ -1952,6 +1952,133 @@ footer strong { color: #7d84a8; }
 }
 .wh-val { flex: 1; }
 
+/* ==== 主题 02 · 新增暂存卡(和豆包出 prompt · 手动填这里) ==== */
+.asset-stash {
+  background: linear-gradient(135deg, rgba(180, 120, 255, 0.06), rgba(124, 157, 255, 0.04));
+  border: 1px dashed rgba(180, 120, 255, 0.35);
+  border-radius: 10px;
+  padding: 14px 14px;
+  margin-bottom: 14px;
+}
+.stash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.stash-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #d6b4ff;
+  letter-spacing: 0.5px;
+}
+.stash-title .stash-icon { margin-right: 6px; }
+.stash-hint {
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+}
+.stash-textarea {
+  width: 100%;
+  min-height: 110px;
+  background: rgba(10, 12, 25, 0.7);
+  border: 1px solid rgba(124, 157, 255, 0.2);
+  border-radius: 7px;
+  padding: 10px 12px;
+  color: #eaecf5;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+.stash-textarea:focus { border-color: rgba(180, 120, 255, 0.5); }
+.stash-textarea::placeholder { color: #5c6485; font-style: italic; font-size: 11px; }
+.stash-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.stash-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.stash-btn:active { transform: scale(0.97); }
+.stash-btn-save {
+  background: rgba(124, 157, 255, 0.15);
+  color: #a4b3ff;
+  border: 1px solid rgba(124, 157, 255, 0.3);
+}
+.stash-btn-export {
+  background: linear-gradient(135deg, #7c9dff, #b478ff);
+  color: white;
+  box-shadow: 0 2px 10px rgba(124, 157, 255, 0.3);
+}
+.stash-btn-clear {
+  background: rgba(255, 140, 156, 0.1);
+  color: #ff8c9c;
+  border: 1px solid rgba(255, 140, 156, 0.3);
+  flex: 0.5;
+  min-width: 60px;
+}
+.stash-btn.copied { background: linear-gradient(135deg, #34d399, #10b981); color: white; }
+.stash-status {
+  font-size: 10px;
+  color: #6ee7b7;
+  margin-top: 6px;
+  font-family: "SF Mono", monospace;
+  min-height: 14px;
+}
+.stash-prompt-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(35, 35, 35, 0.7);
+  border-left: 3px solid #b478ff;
+  border-radius: 6px;
+  font-size: 10.5px;
+  color: #b8c4e8;
+  font-family: "SF Mono", monospace;
+  line-height: 1.6;
+}
+.stash-prompt-box strong { color: #d6b4ff; font-family: inherit; }
+.stash-prompt-toggle {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 10px;
+  color: #a4b3ff;
+  cursor: pointer;
+  user-select: none;
+  padding: 3px 8px;
+  border: 1px solid rgba(124, 157, 255, 0.25);
+  border-radius: 4px;
+  font-family: "SF Mono", monospace;
+}
+.stash-prompt-toggle:active { transform: scale(0.97); }
+.stash-prompt-pre {
+  background: rgba(10, 12, 25, 0.85);
+  color: #d8dcec;
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-top: 8px;
+  font-size: 10.5px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 .asset-card {
   background: rgba(35, 35, 35, 0.7);
   border: 1px solid rgba(180, 120, 255, 0.25);
@@ -3336,6 +3463,23 @@ footer strong { color: #7d84a8; }
       <div class="wh-row"><span class="wh-key">是什么</span><span class="wh-val">给 AI 开局第一条粘的规则包 · 免磨合期</span></div>
       <div class="wh-row"><span class="wh-key">怎么用</span><span class="wh-val">开新对话 · 点复制 · 粘过去 · 完</span></div>
       <div class="wh-row"><span class="wh-key">怎么进这里</span><span class="wh-val">4 个 yes/no:和 AI 无关?和话题无关?粘一下就能用?常用?· 全 yes 才能进</span></div>
+    </div>
+
+    <!-- 📥 新增暂存(和豆包出 prompt · 手动粘这里 · 导出给 Claude Code 落卡) -->
+    <div class="asset-stash">
+      <div class="stash-header">
+        <span class="stash-title"><span class="stash-icon">📥</span>新增 prompt 暂存(和豆包出的粘这)</span>
+        <span class="stash-hint">localStorage · 3 条待你填</span>
+      </div>
+      <textarea class="stash-textarea" id="assetStashInput" placeholder="和豆包出完 prompt · 粘这里 · 一键导出给 Claude Code · 例:&#10;&#10;名称:大脑搭建说明书&#10;标签:AI 无关/主题无关/可迁移/高频&#10;正文:&#10;[prompt 内容]"></textarea>
+      <div class="stash-actions">
+        <button class="stash-btn stash-btn-save" id="assetStashSave">💾 保存</button>
+        <button class="stash-btn stash-btn-export" id="assetStashExport">📤 一键导出</button>
+        <button class="stash-btn stash-btn-clear" id="assetStashClear">🗑 清空</button>
+      </div>
+      <div class="stash-status" id="assetStashStatus"></div>
+      <span class="stash-prompt-toggle" id="assetPromptToggle">▸ 展开落卡 prompt(给 Claude Code)</span>
+      <div class="stash-prompt-pre" id="assetPromptPre" style="display:none;"></div>
     </div>
 
     <!-- 资产 01 · Kimi 协作元规则 -->
