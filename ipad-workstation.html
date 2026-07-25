@@ -3926,31 +3926,14 @@ footer strong { color: #7d84a8; }
 
     <!-- 3 行大白话介绍已迁到左栏卡片展开区(active 时显示) -->
 
-    <!-- 📥 新增暂存(和豆包出 prompt · 手动粘这里 · 导出给 Claude Code 落卡) -->
-    <div class="asset-stash">
-      <div class="stash-header">
-        <span class="stash-title"><span class="stash-icon">📥</span>新增 prompt 暂存(和豆包出的粘这)</span>
-        <span class="stash-hint">localStorage · 0 条待你填</span>
-      </div>
-      <textarea class="stash-textarea" id="assetStashInput" placeholder="和豆包出完 prompt · 粘这里 · 一键导出给 Claude Code · 例:&#10;&#10;名称:大脑搭建说明书&#10;标签:AI 无关/主题无关/可迁移/高频&#10;正文:&#10;[prompt 内容]"></textarea>
-      <div class="stash-actions">
-        <button class="stash-btn stash-btn-save" id="assetStashSave">💾 保存</button>
-        <button class="stash-btn stash-btn-export" id="assetStashExport">📤 一键导出</button>
-        <button class="stash-btn stash-btn-clear" id="assetStashClear">🗑 清空</button>
-      </div>
-      <div class="stash-status" id="assetStashStatus"></div>
-      <span class="stash-prompt-toggle" id="assetPromptToggle">▸ 展开落卡 prompt(给 Claude Code)</span>
-      <div class="stash-prompt-pre" id="assetPromptPre" style="display:none;"></div>
+    <!-- 主题 02 · 2 tab 结构 -->
+    <div class="tab-bar asset-tabs">
+      <button class="tab-btn active" data-asset-tab="ready">已成型 prompt</button>
+      <button class="tab-btn" data-asset-tab="draft">新增和待办 prompt</button>
     </div>
 
-    <!-- 📦 资产库审核 · 一键导出全部给豆包复盘 -->
-    <div class="asset-review-bar">
-      <div class="review-bar-info">
-        <span class="review-bar-title">🔍 资产库审核</span>
-        <span class="review-bar-desc">导出全部 prompt · 粘给豆包复盘 · 查重/查缺/优化建议</span>
-      </div>
-      <button class="review-bar-btn" id="assetAllExport">📦 导出全部</button>
-    </div>
+    <!-- Tab 1 · 已成型 prompt(资产 01-05) -->
+    <div class="asset-panel active" data-asset-panel="ready">
 
     <!-- 资产 01 · 个人协作元规则(原 Kimi 协作元规则 · 通用底层规则) -->
     <div class="asset-card">
