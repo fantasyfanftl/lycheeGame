@@ -2064,6 +2064,8 @@ footer strong { color: #7d84a8; }
 .ai-aily { color: #6ee7b7; background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.4); }
 .ai-lizhi { color: #ffb457; background: rgba(255, 176, 87, 0.12); border-color: rgba(255, 176, 87, 0.4); }
 .ai-kimi { color: #d6b4ff; background: rgba(180, 120, 255, 0.12); border-color: rgba(180, 120, 255, 0.4); }
+.ai-lizhizhi { color: #f59e0b; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); }
+.ai-brain { color: #22d3ee; background: rgba(34, 211, 238, 0.12); border-color: rgba(34, 211, 238, 0.4); }
 
 /* ==== 主题 03 · 决策树 ==== */
 .ai-tree {
@@ -2094,6 +2096,16 @@ footer strong { color: #7d84a8; }
 }
 .ai-tree-l2 {
   padding-left: 16px;
+  color: #9ca3b8;
+}
+.ai-tree-l1-sub {
+  color: #d6b4ff;
+  font-weight: 600;
+  padding: 3px 0;
+  font-size: 11.5px;
+}
+.ai-tree-l3 {
+  padding-left: 12px;
   color: #9ca3b8;
 }
 .ai-tree-leaf {
@@ -6058,35 +6070,45 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
       </div>
     </div>
 
-    <!-- 决策树 · 起点问题 → 2 层判断 → 选哪个 AI -->
+    <!-- 决策树 · 起点问题 → 2 层判断 → 选哪个 AI/平台 -->
     <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(240, 171, 252, 0.2);">
       <div class="card-title" style="color: #f0abfc;">▎模块 1 · 快速选型决策树</div>
       <div style="font-size: 10.5px; color: #9ca3b8; margin-bottom: 12px; font-family: 'SF Mono', monospace; line-height: 1.5;">
-        起点问题 → 2 层判断 → 匹配 AI · 零思考成本
+        起点问题 → 分层判断 → 匹配 AI/平台 · 零思考成本
       </div>
 
       <div class="ai-tree">
         <div class="ai-tree-root">🎯 我现在要做什么?</div>
 
         <div class="ai-tree-branch">
-          <div class="ai-tree-l1">┏━ 分析人 / 梳理情绪 / 打磨思路</div>
+          <div class="ai-tree-l1">┏━ 需要思考 / 输出方案 / 分析人 → 选通用 AI</div>
           <div class="ai-tree-l2">
-            <div class="ai-tree-leaf">├─ 心理思维 · prompt 润色 · 理清混乱思路 →&nbsp;<span class="ai-tag ai-doubao">豆包</span></div>
-            <div class="ai-tree-leaf">└─ 情绪深挖 · 心镜方向深度对话 →&nbsp;<span class="ai-tag ai-kimi">Kimi</span></div>
+            <div class="ai-tree-l1-sub">┣━ 分析人 / 梳理情绪 / 打磨思路</div>
+            <div class="ai-tree-l3">
+              <div class="ai-tree-leaf">┃&nbsp;├─ 心理思维 · prompt 润色 · 理清混乱思路 →&nbsp;<span class="ai-tag ai-doubao">豆包</span></div>
+              <div class="ai-tree-leaf">┃&nbsp;└─ 情绪深挖 · 心镜方向深度对话 →&nbsp;<span class="ai-tag ai-kimi">Kimi</span></div>
+            </div>
+            <div class="ai-tree-l1-sub">┗━ 做项目 / 落地结构 / 写代码</div>
+            <div class="ai-tree-l3">
+              <div class="ai-tree-leaf">&nbsp;&nbsp;├─ 搭 SOP · 抽象规则 · 改代码结构 · Push GitHub →&nbsp;<span class="ai-tag ai-claude">GitHub Claude</span></div>
+              <div class="ai-tree-leaf">&nbsp;&nbsp;└─ 写脚本 · 配触发器 · 正式文档写作 →&nbsp;<span class="ai-tag ai-aily">aily</span></div>
+            </div>
           </div>
         </div>
 
         <div class="ai-tree-branch">
-          <div class="ai-tree-l1">┗━ 做项目 / 落地具体事务</div>
+          <div class="ai-tree-l1">┗━ 纯执行 / 数据搬运 / 结果分发 → 选执行体</div>
           <div class="ai-tree-l2">
-            <div class="ai-tree-leaf">├─ 搭 SOP · 抽象规则 · 改代码结构 · Push GitHub →&nbsp;<span class="ai-tag ai-claude">GitHub Claude</span></div>
-            <div class="ai-tree-leaf">└─ 改飞书表 · 写脚本 · 配触发器 · 精准操作 →&nbsp;<span class="ai-tag ai-aily">aily</span></div>
+            <div class="ai-tree-leaf">&nbsp;&nbsp;├─ 手机端 lark-cli · 多维表读 · 触发器辅助 · 早报推送 →&nbsp;<span class="ai-tag ai-lizhi">荔枝</span></div>
+            <div class="ai-tree-leaf">&nbsp;&nbsp;├─ 飞书内明确指令操作 · 纯执行 →&nbsp;<span class="ai-tag ai-lizhizhi">荔执</span></div>
+            <div class="ai-tree-leaf">&nbsp;&nbsp;└─ HTML 页面发布 · 全设备 URL 访问 →&nbsp;<span class="ai-tag ai-brain">荔枝 Brain 平台</span></div>
           </div>
         </div>
       </div>
 
-      <div style="font-size: 10px; color: #7d84a8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(240, 171, 252, 0.15); font-family: 'SF Mono', monospace; line-height: 1.5;">
-        📌 <span class="ai-tag ai-lizhi">荔枝</span> URL 全设备分发是独立基础设施 · 不属"选 AI 干活"环节 · 见泳道图/详情卡
+      <div style="font-size: 10px; color: #7d84a8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(240, 171, 252, 0.15); font-family: 'SF Mono', monospace; line-height: 1.6;">
+        📌 荔执仅执行明确指令 · 不做思考和判断<br>
+        📌 荔枝 Brain 是平台基础能力 · 所有工具产出物均可分发
       </div>
     </div>
 
