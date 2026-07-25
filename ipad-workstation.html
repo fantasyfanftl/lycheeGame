@@ -1225,6 +1225,34 @@ footer strong { color: #7d84a8; }
   .map-drawer { width: 100vw; right: -100vw; }
 }
 
+/* ==== 关系全景浮球 · 右下角 ==== */
+.map-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(240, 171, 252, 0.15);
+  color: #f0abfc;
+  border: 1px solid rgba(240, 171, 252, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s;
+  font-size: 22px;
+}
+.map-fab:hover {
+  background: rgba(240, 171, 252, 0.25);
+  border-color: rgba(240, 171, 252, 0.6);
+}
+.map-fab:active { transform: scale(0.95); }
+
 /* ==== Pin 警示条 · 一行紧凑 ==== */
 .pin-note {
   background:
