@@ -1135,36 +1135,37 @@ footer strong { color: #7d84a8; }
 }
 .brain-connection .link { color: #6ee7b7; font-family: "SF Mono", monospace; font-size: 10px; }
 .brain-hero {
-  text-align: center;
-  padding: 20px 16px;
-  background:
-    radial-gradient(400px 200px at 50% 50%, rgba(125, 211, 252, 0.12) 0%, transparent 70%),
-    rgba(35, 35, 35, 0.5);
+  text-align: left;
+  padding: 10px 12px;
+  background: rgba(35, 35, 35, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(125, 211, 252, 0.2);
-  border-radius: 12px;
-  margin-bottom: 14px;
+  border-left: 3px solid #7dd3fc;
+  border-radius: 8px;
+  margin-bottom: 10px;
   position: relative;
   overflow: hidden;
 }
-.brain-hero::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #7dd3fc, transparent);
-}
+.brain-hero::before { display: none; }
 .brain-hero .title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: #7dd3fc;
-  margin-bottom: 4px;
-  text-shadow: 0 0 12px rgba(125, 211, 252, 0.4);
+  margin-bottom: 1px;
+  text-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .brain-hero .subtitle {
-  font-size: 11px;
-  color: #9ca3b8;
-  line-height: 1.6;
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+  line-height: 1.4;
 }
+.brain-hero .subtitle span { font-family: inherit; }
+.brain-hero .subtitle br { display: none; }
 .brain-tabs { margin-bottom: 14px; }
 .brain-panel { display: none; }
 .brain-panel.active { display: block; animation: fadeIn 0.2s; }
@@ -1905,35 +1906,31 @@ footer strong { color: #7d84a8; }
 
 /* ==== 主题 D · 资产库样式 ==== */
 .asset-hero {
-  text-align: center;
-  padding: 18px 16px;
-  background:
-    radial-gradient(400px 200px at 50% 50%, rgba(180, 120, 255, 0.12) 0%, transparent 70%),
-    rgba(35, 35, 35, 0.5);
+  text-align: left;
+  padding: 10px 12px;
+  background: rgba(35, 35, 35, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(180, 120, 255, 0.2);
-  border-radius: 12px;
-  margin-bottom: 12px;
+  border-left: 3px solid #b478ff;
+  border-radius: 8px;
+  margin-bottom: 10px;
   position: relative;
   overflow: hidden;
 }
-.asset-hero::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #b478ff, transparent);
-}
+.asset-hero::before { display: none; }
 .asset-hero-title {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: #d6b4ff;
-  margin-bottom: 4px;
-  text-shadow: 0 0 12px rgba(180, 120, 255, 0.4);
+  margin-bottom: 1px;
+  text-shadow: none;
 }
 .asset-hero-sub {
-  font-size: 11px;
-  color: #9ca3b8;
-  line-height: 1.5;
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+  line-height: 1.4;
 }
 
 .asset-5w1h {
