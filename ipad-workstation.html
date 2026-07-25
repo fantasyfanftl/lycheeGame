@@ -5409,9 +5409,11 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
             <span class="sf-node sf-precipitate">AI 沉淀</span>
             <span class="sf-arrow-inline">→</span>
             <span class="sf-node sf-verify">回验</span>
+            <span class="sf-arrow-inline">→</span>
+            <span class="sf-done">✓ 干完了</span>
           </div>
-          <div class="sidebar-flow-note">
-            通过 <span class="sf-arrow">→</span> <span class="sf-done">✓ 干完了</span> · 没过 <span class="sf-arrow">→</span> 回讨论
+          <div class="sidebar-flow-note" style="color: #ff8c9c;">
+            ↺ 回验没过 → 回<span class="sf-node sf-discuss" style="padding: 1px 5px; font-size: 9px;">讨论</span> 再循环(讨论 → 沉淀 → 回验)
           </div>
         </div>
       </div>
@@ -5731,7 +5733,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <footer>
   <strong>GitHub Claude</strong> · v0.1 · 2026-07-25<br>
-  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 豆包名词表 V1.1 建议 · 落 2 件:Handoff 加中文别名「对话交接」· 想法池 G 新增(三层架构名词候选 · 悬置)</span>
+  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-25 · 主题 02 左栏加「📋 候选池审核」按钮 · 一键导出暂存+待办给豆包判断有无重复/必要性</span>
 </footer>
 
 <!-- ==== 批注浮层 ==== -->
@@ -6469,6 +6471,114 @@ document.addEventListener("DOMContentLoaded", function() {
       if (status) status.textContent = "已导出 " + cards.length + " 张资产 · " + stamp;
       setTimeout(function() {
         btn.textContent = "📤 导出全部";
+        btn.classList.remove("copied");
+      }, 3000);
+    } else {
+      if (status) status.textContent = "· 复制失败 · 浏览器不支持";
+    }
+  });
+})();
+
+/* ============ 主题 02 · 一键导出候选(暂存+待办) · 给豆包判断 ============ */
+(function() {
+  var btn = document.getElementById("assetDraftBtn");
+  var status = document.getElementById("assetDraftStatus");
+  if (!btn) return;
+
+  var STASH_KEY = "asset-stash-v1";
+  var DOUBAO_DRAFT_HEADER = "以下是我主题 02「跨 AI 复用资产」候选池 · 包括暂存草稿和待办清单 · 请帮我判断:\n\n" +
+    "1. 有没有和已入库资产重复 · 如有 · 指出重复的资产编号\n" +
+    "2. 有没有必要 · 单独成资产还是并入已有资产\n" +
+    "3. 建议归类 · 如果值得做 · 归为哪类 prompt(元规则/转接/复盘/前端/自动化)\n" +
+    "4. 建议改哪 · 具体改哪几点\n\n" +
+    "只做判断 · 不要重写。按「候选编号 · 判断结论 · 建议」格式列。\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+  btn.addEventListener("click", function(e) {
+    e.stopPropagation();
+
+    var now = new Date();
+    var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
+    var stamp = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-" + pad(now.getDate()) +
+                " " + pad(now.getHours()) + ":" + pad(now.getMinutes());
+
+    var lines = [];
+    lines.push(DOUBAO_DRAFT_HEADER);
+    lines.push("# 候选池快照 · " + stamp);
+    lines.push("- 来源:主题 02 · 新增暂存 + 待办");
+    lines.push("");
+    lines.push("---");
+    lines.push("");
+
+    // 1. 暂存(localStorage 已保存 + 当前 textarea 未保存草稿)
+    var stashList = [];
+    try { stashList = JSON.parse(localStorage.getItem(STASH_KEY) || "[]"); } catch(err) {}
+    var draft = "";
+    var input = document.getElementById("assetStashInput");
+    if (input) draft = input.value.trim();
+
+    lines.push("## 一、暂存(和豆包出完粘的 prompt)");
+    lines.push("");
+    if (!stashList.length && !draft) {
+      lines.push("_(空)_");
+      lines.push("");
+    } else {
+      stashList.forEach(function(item, i) {
+        lines.push("### 暂存 " + (i+1) + " · " + (item.ts || "无时间戳"));
+        lines.push("");
+        lines.push("```");
+        lines.push(item.body || "");
+        lines.push("```");
+        lines.push("");
+      });
+      if (draft) {
+        lines.push("### 暂存 · 当前未保存草稿");
+        lines.push("");
+        lines.push("```");
+        lines.push(draft);
+        lines.push("```");
+        lines.push("");
+      }
+    }
+    lines.push("---");
+    lines.push("");
+
+    // 2. 待办(主题 02 Tab 2 下方待办卡)
+    lines.push("## 二、待办(接下来打算做的 prompt)");
+    lines.push("");
+    var draftPanel = document.querySelector('[data-asset-panel="draft"]');
+    var todoItems = draftPanel ? draftPanel.querySelectorAll(".card ul li") : [];
+    if (!todoItems.length) {
+      lines.push("_(空)_");
+      lines.push("");
+    } else {
+      todoItems.forEach(function(li) {
+        var strong = li.querySelector("strong");
+        var span = li.querySelector("span");
+        var title = strong ? strong.textContent.trim() : "";
+        var desc = span ? span.textContent.trim() : "";
+        lines.push("- **" + title + "** · " + desc);
+      });
+      lines.push("");
+    }
+    lines.push("---");
+
+    var payload = lines.join("\n");
+    var ta = document.createElement("textarea");
+    ta.value = payload;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(err) {}
+    document.body.removeChild(ta);
+    if (ok) {
+      btn.textContent = "✓ 已复制 · 粘给豆包";
+      btn.classList.add("copied");
+      var stashCount = stashList.length + (draft ? 1 : 0);
+      if (status) status.textContent = "已导出 " + stashCount + " 条暂存 + " + todoItems.length + " 条待办 · " + stamp;
+      setTimeout(function() {
+        btn.textContent = "📋 导出候选";
         btn.classList.remove("copied");
       }, 3000);
     } else {
