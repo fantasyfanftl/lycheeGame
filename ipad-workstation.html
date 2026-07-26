@@ -7281,6 +7281,14 @@ document.addEventListener("DOMContentLoaded", function() {
     glossaryDrawerClose.addEventListener("click", function() { glossaryDrawer.classList.remove("show"); });
   }
 
+  var toolsFab = document.getElementById("toolsFab");
+  var toolsDrawer = document.getElementById("toolsDrawer");
+  var toolsDrawerClose = document.getElementById("toolsDrawerClose");
+  if (toolsFab && toolsDrawer) {
+    toolsFab.addEventListener("click", function() { toolsDrawer.classList.add("show"); });
+    toolsDrawerClose.addEventListener("click", function() { toolsDrawer.classList.remove("show"); });
+  }
+
   var tianlanTabs = document.querySelectorAll(".tianlan-tabs .tab-btn");
   var tianlanPanels = document.querySelectorAll(".tianlan-panel");
   tianlanTabs.forEach(function(bt) {
