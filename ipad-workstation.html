@@ -7599,6 +7599,21 @@ document.addEventListener("DOMContentLoaded", function() {
     glossaryDrawerClose.addEventListener("click", function() { glossaryDrawer.classList.remove("show"); });
   }
 
+  // 想法池浮球 · 点击 → 切主题 01 → 想法储备 tab
+  var poolFab = document.getElementById("poolFab");
+  if (poolFab) {
+    poolFab.addEventListener("click", function() {
+      var target01Card = document.querySelector('.topic-card[data-topic="E"]');
+      if (target01Card && !target01Card.classList.contains("active")) target01Card.click();
+      setTimeout(function() {
+        var poolTab = document.querySelector('.tab-bar:not(.brain-tabs):not(.tianlan-tabs):not(.asset-tabs) .tab-btn[data-tab="pool"]');
+        if (poolTab) poolTab.click();
+        var el = document.querySelector('[data-panel="pool"]');
+        if (el) el.scrollIntoView({behavior: "smooth", block: "start"});
+      }, 100);
+    });
+  }
+
   var toolsFab = document.getElementById("toolsFab");
   var toolsDrawer = document.getElementById("toolsDrawer");
   var toolsDrawerClose = document.getElementById("toolsDrawerClose");
