@@ -104,6 +104,156 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* ==== 主题 01 · 置顶总览卡片 ==== */
+.topic-overview {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.06), rgba(124, 157, 255, 0.06));
+  border: 1px solid rgba(110, 231, 183, 0.25);
+  border-left: 3px solid #6ee7b7;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.topic-overview-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6ee7b7;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+.overview-block {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(35, 35, 35, 0.5);
+  border-radius: 6px;
+  border-left: 2px solid rgba(110, 231, 183, 0.3);
+}
+.overview-block:last-of-type { margin-bottom: 8px; }
+.overview-block-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #a4b3ff;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.overview-block-body {
+  font-size: 11.5px;
+  color: #d8dcec;
+  line-height: 1.75;
+}
+.ov-item {
+  padding: 3px 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ov-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+.ov-tag-1 { background: rgba(124, 157, 255, 0.15); color: #a4b3ff; border: 1px solid rgba(124, 157, 255, 0.35); }
+.ov-tag-2 { background: rgba(180, 120, 255, 0.15); color: #d6b4ff; border: 1px solid rgba(180, 120, 255, 0.35); }
+.ov-tag-3 { background: rgba(240, 171, 252, 0.15); color: #f0abfc; border: 1px solid rgba(240, 171, 252, 0.35); }
+.ov-tag-4 { background: rgba(255, 176, 87, 0.12); color: #ffb457; border: 1px solid rgba(255, 176, 87, 0.35); }
+.ov-task {
+  padding: 3px 0;
+  color: #d8dcec;
+}
+.ov-progress {
+  padding: 5px 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ov-p-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: "SF Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+.ov-done .ov-p-tag { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.35); }
+.ov-doing .ov-p-tag { background: rgba(124, 157, 255, 0.15); color: #a4b3ff; border: 1px solid rgba(124, 157, 255, 0.35); }
+.ov-verify .ov-p-tag { background: rgba(255, 176, 87, 0.12); color: #ffb457; border: 1px solid rgba(255, 176, 87, 0.35); }
+.overview-hint {
+  font-size: 10.5px;
+  color: #9ca3b8;
+  padding: 8px 10px;
+  background: rgba(52, 211, 153, 0.06);
+  border-radius: 5px;
+  line-height: 1.6;
+  border-left: 2px solid rgba(110, 231, 183, 0.35);
+}
+
+.topic-redline {
+  background: rgba(255, 140, 156, 0.06);
+  border: 1px solid rgba(255, 140, 156, 0.25);
+  border-left: 3px solid #ff8c9c;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+.topic-redline-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ff8c9c;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.topic-redline-body {
+  font-size: 11px;
+  color: #d8dcec;
+  line-height: 1.7;
+}
+.rl-item {
+  padding: 3px 0;
+}
+.topic-redline-note {
+  font-size: 10px;
+  color: #7d84a8;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 140, 156, 0.2);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* tab-btn 副标签 */
+.tab-btn .tab-hint {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 500;
+  padding: 1px 5px;
+  margin-left: 5px;
+  border-radius: 3px;
+  background: rgba(124, 157, 255, 0.12);
+  color: #a4b3ff;
+  font-family: "SF Mono", monospace;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
+  opacity: 0.85;
+}
+.tab-btn.active .tab-hint {
+  background: rgba(180, 120, 255, 0.18);
+  color: #d6b4ff;
+  opacity: 1;
+}
+@media (max-width: 500px) {
+  .tab-btn .tab-hint { display: none; }
+}
+
 /* ==== Tabs · 下划线风格 ==== */
 .tab-bar {
   display: flex;
@@ -3945,11 +4095,67 @@ footer strong { color: #7d84a8; }
   <!-- ===== 主题 E 内容(现有 tab 结构) ===== -->
   <div class="topic-content" data-topic-content="E">
 
+  <!-- 置顶总览卡片 · 主题 01 搭建导航 -->
+  <div class="topic-overview">
+    <div class="topic-overview-title">主题 01｜怎么搭建适合我的 AI 工作台</div>
+
+    <div class="overview-block">
+      <div class="overview-block-title">🎯 主题目标</div>
+      <div class="overview-block-body">
+        搭建个人专属 ClaudeCode AI 工作台 · 落地三层架构(元层 ｜讨论层 ｜执行层)· 实现多 AI 协同 · 思考链路完整沉淀 · 可复用资产持续流转
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-block-title">📦 工作台搭建模块清单</div>
+      <div class="overview-block-body">
+        <div class="ov-item"><span class="ov-tag ov-tag-1">① 元层</span>Claude 脑 / 天蓝脑 / 公共元层(待定收纳区 · 复盘体系)</div>
+        <div class="ov-item"><span class="ov-tag ov-tag-2">② 讨论层</span>标准化主题载体(4Tab 标准模板)</div>
+        <div class="ov-item"><span class="ov-tag ov-tag-3">③ 执行层</span>资产复用 · 工具分工落地主题</div>
+        <div class="ov-item"><span class="ov-tag ov-tag-4">④ 配套支撑</span>三端硬件分工 · 数据通路 · 跨 AI 协作 SOP</div>
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-block-title">📋 搭建推进任务清单</div>
+      <div class="overview-block-body">
+        <div class="ov-task">· 完成元层「Claude 脑 / 天蓝脑」边界划分 · 素材批量归位</div>
+        <div class="ov-task">· 输出可复制标准化主题模板(是什么 / 怎么用 / 怎么进这里 + 4 空白 Tab)</div>
+        <div class="ov-task">· 确立资产跨主题回流标准化 SOP</div>
+        <div class="ov-task">· 产出从零复刻工作台分步启动指南</div>
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-block-title">📊 当前进度看板</div>
+      <div class="overview-block-body">
+        <div class="ov-progress ov-done"><span class="ov-p-tag">✅ 已定型</span>三层全局架构 · 4Tab 主题载体 · 三设备分工 · iPad 三层结构</div>
+        <div class="ov-progress ov-doing"><span class="ov-p-tag">⏳ 待落地</span>元层素材归类梳理 · 标准化主题模板 · 资产回流流程 · 复刻启动指南</div>
+        <div class="ov-progress ov-verify"><span class="ov-p-tag">🟡 待验证</span>想法储备内未收敛备选构想</div>
+      </div>
+    </div>
+
+    <div class="overview-hint">
+      👉 阅读指引:下方 4Tab · <strong style="color:#6ee7b7;">⭐ 定版成品</strong> 存放正式可落地架构 · 迭代日志 / 想法储备 为讨论过程 · 未验证灵感 · 溯源查阅使用
+    </div>
+  </div>
+
+  <!-- 长期维护红线 · 展示中 · 后期无用可去掉 -->
+  <div class="topic-redline">
+    <div class="topic-redline-title">⚠ 长期维护红线</div>
+    <div class="topic-redline-body">
+      <div class="rl-item">1. 只有收到「定型」指令的内容 · 才能迁入【定版成品】· 临时思路 / 争议讨论 一律留在迭代日志 / 想法储备</div>
+      <div class="rl-item">2. 定版成品内存量成熟架构 · 以补丁迭代方式更新 · 不直接大面积覆盖</div>
+      <div class="rl-item">3. 迭代日志不再持续追加和工作台架构无关的大段自省感悟</div>
+    </div>
+    <div class="topic-redline-note">↑ 展示中 · 用一段时间看是否真守得住 · 违反日后自身作为反例复盘(参考 15 天回望)</div>
+  </div>
+
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="review">迭代日志</button>
-    <button class="tab-btn" data-tab="action">待办清单</button>
-    <button class="tab-btn" data-tab="pool">想法储备</button>
-    <button class="tab-btn" data-tab="main">定版成品</button>
+    <button class="tab-btn active" data-tab="review" title="讨论回溯｜思考过程 · 包含中途被推翻观点 · 不可直接当作落地依据">📝 迭代日志<span class="tab-hint">过程</span></button>
+    <button class="tab-btn" data-tab="action" title="执行任务｜本主题搭建待推进事项">⚙️ 待办清单<span class="tab-hint">待做</span></button>
+    <button class="tab-btn" data-tab="pool" title="待验证灵感｜未纳入正式定型方案">💡 想法储备<span class="tab-hint">未定型</span></button>
+    <button class="tab-btn" data-tab="main" title="最终方案｜共识定型 · 可直接复用稳定架构">⭐ 定版成品<span class="tab-hint">主干</span></button>
   </div>
 
   <!-- ========== TAB · 讨论沉淀 ========== -->
@@ -5492,7 +5698,6 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           <span class="brain-why">你 CLAUDE.md 二部分 2 明写</span>
         </li>
       </ul>
-      <div style="font-size: 10px; color: #7d84a8; margin: 6px 4px 0; font-family: 'SF Mono', monospace; letter-spacing: 0.5px;">▸ 天蓝方法论(边用边写/先散后收/各端自完备/偏离不是错/绕开 AI 限制)已迁 <span style="color: #6ee7b7;">天蓝脑 → 思考方式 tab</span></div>
     </div>
 
     <!-- 2. 元原则 -->
@@ -5505,7 +5710,6 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         <li class="brain-item"><strong>能扩不新建</strong>扩现有文件优先 · 不轻易造新的</li>
         <li class="brain-item"><strong>不 fabricate</strong>不编造 · 不确定时说不确定</li>
       </ul>
-      <div style="font-size: 10px; color: #7d84a8; margin: 6px 4px 0; font-family: 'SF Mono', monospace; letter-spacing: 0.5px;">▸ 天蓝的自治 4 条已迁 <span style="color: #6ee7b7;">天蓝脑 → 思考方式 tab</span></div>
     </div>
 
     <!-- 3. 认知偏好 -->
