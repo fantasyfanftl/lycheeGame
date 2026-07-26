@@ -5980,10 +5980,27 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <!-- 复盘 tab · 大脑的第一次复盘 -->
     <div class="brain-panel" data-brain-panel="review" style="display:none;">
 
+      <!-- 演化日志顶部定位说明 -->
+      <div style="padding: 12px 14px; margin-bottom: 12px; background: linear-gradient(135deg, rgba(124, 157, 255, 0.08), rgba(180, 120, 255, 0.05)); border: 1px solid rgba(124, 157, 255, 0.25); border-left: 3px solid #7c9dff; border-radius: 8px; font-size: 11.5px; color: #d8dcec; line-height: 1.7;">
+        <div style="font-size: 12px; font-weight: 700; color: #a4b3ff; margin-bottom: 6px; text-shadow: 0 0 8px rgba(124, 157, 255, 0.3);">▎演化日志 · 定位</div>
+        <strong style="color: #6ee7b7;">✓ 仅存放</strong>:工作台全局版本迭代 · 架构重大调整 · 跨主题全局性决策 · 版本变更快照<br>
+        <strong style="color: #ff8c9c;">✗ 禁止录入</strong>:单次会话零散感悟 · 临时猜想 · 局部主题讨论反思 → 一律归入对应主题「迭代日志」<br>
+        <span style="color: #7d84a8; font-size: 10.5px;">作用:留存 ClaudeCode 工作台完整演进脉络 · 用于追溯 v 版本改动/架构调整历史</span>
+      </div>
+
+      <!-- 准入红线 -->
+      <div style="padding: 10px 12px; margin-bottom: 14px; background: rgba(255, 140, 156, 0.05); border: 1px dashed rgba(255, 140, 156, 0.3); border-radius: 6px; font-size: 10.5px; color: #d8dcec; line-height: 1.6;">
+        <div style="font-size: 10px; font-weight: 700; color: #ff8c9c; margin-bottom: 4px; letter-spacing: 0.5px; font-family: 'SF Mono', monospace;">▎准入红线(至少满足 1 条)</div>
+        · 工作台大版本(v01/v02…)架构调整<br>
+        · 三层架构 / 双脑边界 / 全局协作 SOP 的重大修订<br>
+        · 跨全部主题通用机制变更(资产回流 / 跨 AI 交接规范等)<br>
+        <span style="color: #7d84a8; margin-top: 4px; display: block;">▸ 只记录已敲定生效的变更 · 待定/待验证构想禁止放入</span>
+      </div>
+
       <div class="brain-review">
         <div class="brain-review-title">
-          <span class="num">v02</span>本次复盘 · 决策同步
-          <span class="date">2026-07-26 · 补丁期开始 · 批注 7 条校验完成</span>
+          <span class="num">v02</span>本次版本快照 · 决策同步
+          <span class="date">2026-07-26 · 补丁期开始</span>
         </div>
 
         <!-- 上次遗留 · 全部办结 -->
@@ -6011,9 +6028,9 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           </div>
         </div>
 
-        <!-- 1. 核心决策更新 -->
+        <!-- 🟢 保留 · 核心决策 -->
         <div class="review-block">
-          <div class="review-block-label">核心决策 · 定位更新</div>
+          <div class="review-block-label">🟢 核心决策 · 定位更新(全局架构级)</div>
           <div class="review-insight" style="border-left-color: #34d399;">
             <span class="idx" style="color: #6ee7b7;">✓</span>
             <strong>工作台进入 v02 迭代补丁期</strong><br>
@@ -6022,124 +6039,102 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           <div class="review-insight" style="border-left-color: #34d399;">
             <span class="idx" style="color: #6ee7b7;">✓</span>
             <strong>关系全景 · 想法池思维导图 = 有效资产</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">确认具备回看价值 · 不再列"不确定" · 关系全景已改浮层唤起</span>
-          </div>
-          <div class="review-insight" style="border-left-color: #34d399;">
-            <span class="idx" style="color: #6ee7b7;">✓</span>
-            <strong>24+ 小时开发投入 = 正常</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">你拍板 · 排除"过度投入"判定 · 不再作为疑问项</span>
+            <span style="color: #7d84a8; font-size: 11px;">确认具备回看价值 · 关系全景已改浮层唤起</span>
           </div>
           <div class="review-insight" style="border-left-color: #34d399;">
             <span class="idx" style="color: #6ee7b7;">✓</span>
             <strong>主题 03 · AI 工具分工 · 脱离空占位</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">5 张 AI 详细卡已铺完 · 场景决策图已画 · "需单独会话展开"判定同步失效</span>
+            <span style="color: #7d84a8; font-size: 11px;">5 张 AI 详细卡已铺完 · 场景决策图已画</span>
+          </div>
+          <div class="review-insight" style="border-left-color: #34d399;">
+            <span class="idx" style="color: #6ee7b7;">✓</span>
+            <strong>双脑边界规则定稿</strong><br>
+            <span style="color: #7d84a8; font-size: 11px;">Claude 脑 = AI 侧规则 · 天蓝脑 = 用户方法论 · 迁 10 条到天蓝脑思考方式 tab · 已存 memory feedback-brain-boundary-rules</span>
+          </div>
+          <div class="review-insight" style="border-left-color: #34d399;">
+            <span class="idx" style="color: #6ee7b7;">✓</span>
+            <strong>元层 tab 更名:复盘 → 演化日志</strong><br>
+            <span style="color: #7d84a8; font-size: 11px;">演化日志只放全局版本级变更 · 局部反思下沉到主题 01 迭代日志</span>
           </div>
         </div>
 
-        <!-- 2. 执行规范 -->
+        <!-- 🟢 保留 · 资产双版本机制 -->
         <div class="review-block">
-          <div class="review-block-label">执行规范 · 协作规则</div>
-          <div class="review-insight" style="border-left-color: #b478ff;">
-            <span class="idx">★</span>
-            <strong>AI 主动抛矛盾作校准</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">深度讨论主动抛矛盾 · 用户判断真矛盾 vs 理解偏差 · 已存 memory</span>
-          </div>
-          <div class="review-insight" style="border-left-color: #b478ff;">
-            <span class="idx">★</span>
-            <strong>复盘 4 层框架 + 结转追加</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">改了 · 偏离 · 丢了(3 类) · 沉淀 —— 每次复盘顺延未完成 · 补充新增 · 已存 memory</span>
-          </div>
-          <div class="review-insight" style="border-left-color: #b478ff;">
-            <span class="idx">★</span>
-            <strong>触发词机制</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">"push / 同步"→ git push · "复盘"→ 结转+追加 · 已存 memory</span>
-          </div>
-          <div class="review-insight" style="border-left-color: #b478ff;">
-            <span class="idx">★</span>
-            <strong>footer 时间戳 = 最新版判定</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">页脚时间戳作为版本新鲜度确定感 · 解决"不知道同步了没"焦虑</span>
-          </div>
-          <div class="review-insight" style="border-left-color: #b478ff;">
-            <span class="idx">★</span>
-            <strong>资产库双版本切换</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">v01 Kimi 原版 / v02 实测优化版 · 保留演化轨迹</span>
+          <div class="review-block-label">🟢 资产库版本切换机制</div>
+          <div class="review-insight" style="border-left-color: #34d399;">
+            <span class="idx" style="color: #6ee7b7;">✓</span>
+            <strong>资产双版本切换</strong><br>
+            <span style="color: #7d84a8; font-size: 11px;">v01 原版 / v02 实测优化版 · 保留演化轨迹 · 全局机制</span>
           </div>
         </div>
 
-        <!-- 3. 已知问题 -->
+        <!-- 🟡 萃取归档 · 执行规范原文留存 -->
         <div class="review-block">
-          <div class="review-block-label">已知问题 · 待核实</div>
-          <div class="review-insight" style="border-left-color: #ffb457;">
-            <span class="idx" style="color: #ffb457;">已核</span>
-            <strong>候选资产 4 条状态</strong>(2026-07-26 核实)<br>
-            <span style="color: #7d84a8; font-size: 11px;">
-              · <strong style="color: #d6b4ff;">你的画像</strong> · 真未整理 · 待和豆包出 prompt<br>
-              · <strong style="color: #d6b4ff;">5 段结构</strong> · 半整理 · 元层+Kimi prompt 里已有 · 缺独立卡<br>
-              · <strong style="color: #d6b4ff;">状态标签系统</strong> · 实际在用(新增/升级/悬置/归档/待验证 tag) · 未抽成规则文档<br>
-              · <strong style="color: #d6b4ff;">哲学熔断器</strong> · 真未整理 · 缺触发词和落地文本<br>
-              全在 天蓝脑 → 想法储备 21-24 · pending 状态
-            </span>
+          <div class="review-block-label">🟡 执行规范 · 协作规则(原始底稿)</div>
+          <div style="font-size: 10.5px; color: #6ee7b7; margin-bottom: 8px; padding: 6px 10px; background: rgba(52, 211, 153, 0.08); border-left: 2px solid #6ee7b7; border-radius: 4px; font-family: 'SF Mono', monospace;">
+            ✅ 核心规则已萃取归档至 Claude 脑 → Memory 全库 + 元层第 02 节 · 本段为原始讨论底稿 · 仅溯源使用
           </div>
-          <div class="review-insight" style="border-left-color: #ffb457;">
-            <span class="idx" style="color: #ffb457;">待明</span>
-            <strong>协作沉淀内容分类归属</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">批注 #1 提问:"这些好沉淀去哪了?" · 目前分散在 Memory/元层/主题 02 资产 · 分类体系未成文</span>
+          <div class="review-insight" style="border-left-color: #b478ff;">
+            <span class="idx">★</span>
+            <strong>AI 主动抛矛盾作校准</strong>
+          </div>
+          <div class="review-insight" style="border-left-color: #b478ff;">
+            <span class="idx">★</span>
+            <strong>复盘 4 层框架 + 结转追加</strong>
+          </div>
+          <div class="review-insight" style="border-left-color: #b478ff;">
+            <span class="idx">★</span>
+            <strong>触发词机制</strong>("push / 同步" · "复盘")
+          </div>
+          <div class="review-insight" style="border-left-color: #b478ff;">
+            <span class="idx">★</span>
+            <strong>footer 时间戳 = 最新版判定</strong>
           </div>
         </div>
 
-        <!-- 4. 好的沉淀(带落点说明) -->
+        <!-- 🟡 萃取归档 · 4 类沉淀体系原文留存 -->
         <div class="review-block">
-          <div class="review-block-label">好的沉淀 · 落到哪(回答批注 #1)</div>
-          <div class="review-insight" style="border-left-color: #b478ff;">
-            <span class="idx">→</span>
-            <strong>协作规则类</strong> · 5 段结构 / 复盘 4 层框架 / 触发词 / AI 抛矛盾<br>
-            <span style="color: #7d84a8; font-size: 11px;">落点 = Claude 脑 → Memory 全库(左侧📖 词表可跳)</span>
+          <div class="review-block-label">🟡 好的沉淀 · 4 类落点体系(原始底稿)</div>
+          <div style="font-size: 10.5px; color: #6ee7b7; margin-bottom: 8px; padding: 6px 10px; background: rgba(52, 211, 153, 0.08); border-left: 2px solid #6ee7b7; border-radius: 4px; font-family: 'SF Mono', monospace;">
+            ✅ 定稿框架副本已归档至 主题 02 → 跨 AI 复用资产(资产 12 · 4 类沉淀体系) · 本段为原始讨论底稿 · 仅溯源使用
           </div>
           <div class="review-insight" style="border-left-color: #b478ff;">
             <span class="idx">→</span>
-            <strong>思考方式类</strong> · 边干边发现 / 先散后收 / 各端自完备 / 偏离不是错<br>
-            <span style="color: #7d84a8; font-size: 11px;">落点 = Claude 脑 → 元层第 01 节「思考方式」</span>
+            <strong>协作规则类</strong> → Claude 脑 · Memory 全库
           </div>
           <div class="review-insight" style="border-left-color: #b478ff;">
             <span class="idx">→</span>
-            <strong>Prompt 资产类</strong> · Kimi 元规则 / Handoff / 大脑说明书 等<br>
-            <span style="color: #7d84a8; font-size: 11px;">落点 = 主题 02 → 跨 AI 复用资产库(Tab1 已成型)</span>
+            <strong>思考方式类</strong> → 天蓝脑 · 思考方式 tab
           </div>
           <div class="review-insight" style="border-left-color: #b478ff;">
             <span class="idx">→</span>
-            <strong>案例经验类</strong> · 15 天回望 · AI 协作系统<br>
-            <span style="color: #7d84a8; font-size: 11px;">落点 = 天蓝脑 → 经验案例 tab</span>
+            <strong>Prompt 资产类</strong> → 主题 02 · 资产库
+          </div>
+          <div class="review-insight" style="border-left-color: #b478ff;">
+            <span class="idx">→</span>
+            <strong>案例经验类</strong> → 天蓝脑 · 经验案例 tab
           </div>
         </div>
 
-        <!-- 5. 当期优先级 -->
+        <!-- ⏳ 迁移待办 -->
         <div class="review-block">
-          <div class="review-block-label">当期优先级</div>
-          <div class="review-insight" style="border-left-color: #ff8c9c;">
-            <span class="idx" style="color: #ff8c9c;">高</span>
-            <strong>4 条候选资产整理成 prompt</strong><br>
-            <span style="color: #7d84a8; font-size: 11px;">已核实(见上) · 2 条真未整(你的画像/哲学熔断器) · 1 条半整(5 段结构) · 1 条在用未成文(状态标签) · 需和豆包出 prompt 或抽规则</span>
-          </div>
-          <div class="review-insight" style="border-left-color: #ff8c9c;">
-            <span class="idx" style="color: #ff8c9c;">高</span>
-            <strong>明确协作沉淀分类归属</strong> —— 4 类落点体系(见沉淀区)已初拟 · 需你拍板
-          </div>
-          <div class="review-insight" style="border-left-color: #7d84a8;">
-            <span class="idx" style="color: #7d84a8;">后</span>
-            <strong>v02 改动清单价值评估</strong> —— 用几天看使用频次再定
-          </div>
-          <div class="review-insight" style="border-left-color: #7d84a8;">
-            <span class="idx" style="color: #7d84a8;">后</span>
-            <strong>主题 03 完整细化</strong> —— 5 AI 卡已铺 · 深度补充等基础事实先核实
+          <div class="review-block-label">⏳ 已知问题 · 已迁全局待办清单</div>
+          <div style="padding: 8px 10px; background: rgba(255, 176, 87, 0.06); border-left: 2px solid #ffb457; border-radius: 4px; font-size: 10.5px; color: #d8dcec; line-height: 1.6;">
+            <strong style="color: #ffb457;">已迁走</strong>:
+            <br>· 4 条候选资产整理(你的画像/5 段结构/状态标签/哲学熔断器)
+            <br>· 协作沉淀分类归属明确
+            <br>· v02 改动清单价值评估(观察期)
+            <br>· 主题 03 完整细化(后置)
+            <br><span style="color: #7d84a8; margin-top: 4px; display: block;">▸ 存放位置:主题 01 · 待办清单 tab / 全局待办</span>
           </div>
         </div>
 
-        <!-- 6. 权责说明 -->
+        <!-- 🟢 权责定稿 -->
         <div class="review-block">
-          <div class="review-block-label">权责说明</div>
+          <div class="review-block-label">🟢 权责定稿</div>
           <div class="review-meta-reflect">
-            标记为「已定决策」「执行规范」的以你最终拍板为准 · 我(Claude)提优化建议但**核心定位/规则/优先级判定权归你**。<br><br>
-            批注原文、评论内容仅作背景参考 · 不直接等同执行要求 —— 需要经你**"拍板"信号**才能算数。
+            标记为「已定决策」「执行规范」的以天蓝最终拍板为准 · Claude 提优化建议但<strong>核心定位/规则/优先级判定权归天蓝</strong>。<br><br>
+            批注原文、评论内容仅作背景参考 · 不直接等同执行要求 —— 需要经天蓝<strong>"拍板"信号</strong>才能算数。
           </div>
         </div>
 
