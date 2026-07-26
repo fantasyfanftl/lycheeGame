@@ -3072,8 +3072,13 @@ footer strong { color: #7d84a8; }
 .ext-tool-icon {
   font-size: 20px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 6px currentColor);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
 }
+.ext-tool-icon svg { display: block; }
 .ext-tool-body { flex: 1; min-width: 0; }
 .ext-tool-title {
   font-size: 13px;
@@ -5450,7 +5455,7 @@ footer strong { color: #7d84a8; }
           <div class="asset-title">大脑搭建说明书 · 给其他 AI</div>
           <div class="asset-sub">让 Kimi / 豆包 / aily 等 AI 自己搭一份 brain 页 · 天蓝一份说明书 · N 个 AI 复用</div>
         </div>
-        <button class="asset-copy-btn" data-asset="asset-03">复制</button>
+        <button class="asset-copy-btn" data-asset="asset-03-current">复制</button>
       </div>
       <div class="asset-tags">
         <span class="asset-tag">✓ AI 无关</span>
@@ -5458,7 +5463,14 @@ footer strong { color: #7d84a8; }
         <span class="asset-tag">✓ 可迁移</span>
         <span class="asset-tag">✓ 高频</span>
       </div>
-      <pre class="asset-content" id="asset-03">【任务】给你自己搭建一份「大脑页」· 让天蓝能看懂你
+
+      <!-- 版本切换 -->
+      <div class="version-tabs" data-asset-ver="03">
+        <button class="version-tab active" data-ver="v01">v01 · 6 板块原版</button>
+        <button class="version-tab" data-ver="v02">v02 · 2 tab 统一标准</button>
+      </div>
+
+      <pre class="asset-content version-panel active" data-ver-panel="asset-03-v01" id="asset-03-v01">【任务】给你自己搭建一份「大脑页」· 让天蓝能看懂你
 
 【背景】
 天蓝在用多个 AI 协作(Claude Code / 你 / 其他 AI)· 每个 AI 都容易失忆 · 她需要有一个可视化的"AI 大脑页"让她看懂你怎么想。
@@ -5486,6 +5498,63 @@ Claude Code 已经搭了一个 · 结构验证过是舒适的 · 你按同样结
 
 【视觉规范】
 - 深色玻璃态卡片 · 冷紫青色系
+- 单文件 HTML · 数据存 localStorage · 不联网
+- 中文字符串禁止嵌套单引号(用双引号或中文「」)
+
+【交付】
+出完整 HTML 代码 · 天蓝保存到荔枝目录 · 15 秒自动上线到
+https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
+
+【文件名】
+按你的名字命名 · 英文全小写 · 短横线连词
+例:kimi-brain.html / doubao-brain.html / aily-brain.html</pre>
+
+      <pre class="asset-content version-panel" data-ver-panel="asset-03-v02" id="asset-03-v02" style="display:none;">【任务】给你自己搭建一份「大脑页」· 作为荔枝 Brain 工作台下你的工具 AI 能力镜像
+
+【背景】
+荔枝 Brain 工作台是天蓝的一站式认知与项目管理平台 · 采用多 AI 协同模式。
+所有接入的 AI 需按统一标准搭建自身大脑页 · 用于外显自身能力边界与协作规则 · 供天蓝对齐标准、排障定位时查阅。
+现有 Claude 脑结构已验证舒适 · 你按相同标准搭建。
+
+【产出物】
+单文件 HTML · 手机竖屏优先 · 深色玻璃态设计 · 与现有工作台视觉风格统一 · 发布后 URL 跨设备通用。
+
+【统一结构标准 · 固定 2 tab】
+
+▎ Tab1 · 协作契约(执行版)
+收纳:
+- 思考方式
+- 元原则
+- 标准思考路径
+- 协作边界禁令
+- 对天蓝的认知偏好
+定位:与天蓝协作的生效执行规则 · 是日常协作的直接依据
+
+▎ Tab2 · 能力镜像(底稿版)
+收纳:
+- 自身特质(擅长项 / 硬边界 / 短板)
+- Memory 存档
+- 补充参考资料
+- 跨话题关联逻辑
+定位:底层能力背景说明 · 用于溯源理解、问题排查 · 不直接作为执行依据
+
+【底部固定模块】
+▎ 常见问题排查索引
+按高频问题对应到具体规则条目 · 支持快速定位 · 匹配低频查阅、排障定位的使用场景。
+(内容自己填 · 用几次发现哪些是高频问题 · 补进去)
+
+【归属与定位】
+- 本质:工具 AI 能力镜像 · 日常低频访问 · 仅在协作对齐、输出异常排障时查阅
+- 归属:新增 AI 大脑页默认归入荔枝 Brain 工作台「主题 03 · AI 工具分工」分类 · 不进入元层
+- 准入判定:仅收录该 AI 侧的专属规则 · 主语为「XX(AI 名)要 XX」的内容归入此处
+
+【关键规则 · 天蓝的协作偏好】
+1. 大白话优先 · 术语必须括号解释 · 不用"元 X"、"XX 层"、"矩阵"、编数据
+2. 你的记忆要看得见 —— 别只存内部 · 要在页面上列出来给她看
+3. 长对话都会往讨好漂移 · 你自己知道 · 她也知道 · 别装
+
+【视觉规范】
+- 深色玻璃态卡片 · 冷紫青色系(荔枝平台 UI 规范 · 见资产 05)
 - 单文件 HTML · 数据存 localStorage · 不联网
 - 中文字符串禁止嵌套单引号(用双引号或中文「」)
 
