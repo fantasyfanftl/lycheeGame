@@ -7135,6 +7135,14 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
       </div>
     </div>
 
+    <!-- 主题 03 · 3 tab 结构(2026-07-26)-->
+    <div class="tab-bar topic-f-tabs">
+      <button class="tab-btn active" data-f-tab="tree" title="快速选型决策树">🌲 决策树<span class="tab-hint">选型</span></button>
+      <button class="tab-btn" data-f-tab="swimlane" title="多工具协作泳道图">🏊 泳道图<span class="tab-hint">链路</span></button>
+      <button class="tab-btn" data-f-tab="cards" title="6 个工具详情卡片">📇 详情卡<span class="tab-hint">卡片</span></button>
+    </div>
+
+    <div class="topic-f-panel active" data-f-panel="tree">
     <!-- 决策树 · 起点问题 → 2 层判断 → 选哪个 AI/平台 -->
     <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(240, 171, 252, 0.2);">
       <div class="card-title" style="color: #f0abfc;">▎模块 1 · 快速选型决策树</div>
@@ -7176,7 +7184,9 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         📌 荔枝 Brain 是平台基础能力 · 所有工具产出物均可分发
       </div>
     </div>
+    </div>
 
+    <div class="topic-f-panel" data-f-panel="swimlane" style="display:none;">
     <!-- 泳道图 · 任务从想法到落地怎么流转 -->
     <div class="card" style="background: rgba(45, 45, 45, 0.5); border-color: rgba(124, 157, 255, 0.2);">
       <div class="card-title" style="color: #a4b3ff;">▎模块 2 · 多工具协作泳道图</div>
@@ -7283,11 +7293,10 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         📌 Kimi 独立并行 · 不接入主链路 · 所有 AI 产出均可对接 Brain 平台
       </div>
     </div>
+    </div>
 
-    <!-- 分隔 -->
-    <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎模块 3 · 6 个工具详情卡片</div>
-
-    <div class="ai-card-grid">
+    <div class="topic-f-panel" data-f-panel="cards" style="display:none;">
+<div class="ai-card-grid">
       <!-- Claude 卡 -->
     <div class="card ai-card">
       <div class="ai-card-header">
@@ -7523,8 +7532,9 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
       </div>
     </div>
     </div><!-- /.ai-card-grid -->
+    </div>
 
-    <!-- 分隔 -->
+<!-- 分隔 -->
     <div style="text-align: center; font-size: 10px; color: #7d84a8; letter-spacing: 2px; margin: 20px 0 12px; font-family: 'SF Mono', monospace;">▎独立模块 · 荔枝 Brain 平台基础能力</div>
 
     <!-- 荔枝 Brain 平台基础能力 · 独立模块 -->
@@ -7557,6 +7567,8 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         📌 荔枝 Brain 是平台 · 不是 AI · 别把它归到单个工具名下
       </div>
     </div>
+
+  </div>
 
   </div>
 
