@@ -3035,9 +3035,12 @@ footer strong { color: #7d84a8; }
 }
 .ext-tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 10px;
   margin-bottom: 14px;
+}
+@media (max-width: 500px) {
+  .ext-tools-grid { grid-template-columns: 1fr; }
 }
 .ext-tool {
   display: flex;
