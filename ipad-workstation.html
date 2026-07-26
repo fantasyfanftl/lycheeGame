@@ -1222,7 +1222,7 @@ footer strong { color: #7d84a8; }
 .ti-row {
   display: flex;
   gap: 8px;
-  padding: 4px 0 4px 50px;
+  padding: 4px 0 4px 45px;
   font-size: 11px;
   color: #d8dcec;
   line-height: 1.5;
@@ -4267,6 +4267,16 @@ footer strong { color: #7d84a8; }
   <!-- ===== 主题 E 内容(现有 tab 结构) ===== -->
   <div class="topic-content" data-topic-content="E">
 
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="overview" title="总览｜主题目标 · 架构清单 · 进度看板 · 长期红线 · 定版架构">🏠 总览<span class="tab-hint">首屏</span></button>
+    <button class="tab-btn" data-tab="review" title="讨论回溯｜思考过程 · 包含中途被推翻观点 · 不可直接当作落地依据">📝 迭代日志<span class="tab-hint">过程</span></button>
+    <button class="tab-btn" data-tab="action" title="执行任务｜本主题搭建待推进事项">⚙️ 待办清单<span class="tab-hint">待做</span></button>
+    <button class="tab-btn" data-tab="pool" title="待验证灵感｜未纳入正式定型方案">💡 想法储备<span class="tab-hint">未定型</span></button>
+    <button class="tab-btn" data-tab="cases" title="经验案例｜完整项目复盘 · 15 天回望·踩坑与产出">📚 经验案例<span class="tab-hint">复盘</span></button>
+  </div>
+  <!-- ========== TAB 1 · 总览(默认激活)========== -->
+  <div class="tab-panel active" data-panel="overview">
+
   <!-- 置顶总览卡片 · 主题 01 搭建导航 -->
   <div class="topic-overview">
     <div class="topic-overview-title">主题 01｜怎么搭建适合我的 AI 工作台</div>
@@ -4367,16 +4377,10 @@ footer strong { color: #7d84a8; }
     </div>
   </div>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" data-tab="review" title="讨论回溯｜思考过程 · 包含中途被推翻观点 · 不可直接当作落地依据">📝 迭代日志<span class="tab-hint">过程</span></button>
-    <button class="tab-btn" data-tab="action" title="执行任务｜本主题搭建待推进事项">⚙️ 待办清单<span class="tab-hint">待做</span></button>
-    <button class="tab-btn" data-tab="pool" title="待验证灵感｜未纳入正式定型方案">💡 想法储备<span class="tab-hint">未定型</span></button>
-    <button class="tab-btn" data-tab="main" title="最终方案｜共识定型 · 可直接复用稳定架构">⭐ 定版成品<span class="tab-hint">主干</span></button>
-    <button class="tab-btn" data-tab="cases" title="经验案例｜完整项目复盘 · 15 天回望·踩坑与产出">📚 经验案例<span class="tab-hint">复盘</span></button>
-  </div>
 
-  <!-- ========== TAB · 讨论沉淀 ========== -->
-  <div class="tab-panel" data-panel="main">
+    <!-- 定版架构内容 · 2026-07-26 从原定版成品 tab 合并进总览 -->
+    <div class="topic-overview-title" style="margin-top: 20px;">⭐ 定版架构</div>
+
 
     <div class="card definition-card">
       <div class="card-title">当前定位</div>
@@ -4469,7 +4473,12 @@ footer strong { color: #7d84a8; }
       ↳ 原「B 阶段准备 · 5 个数据源」card 因含"未来挑战"字样属未收敛构想 · 2026-07-26 已迁至想法储备 tab
     </div>
 
+  
   </div>
+
+
+
+  
 
   <!-- ========== TAB 2 · 行动 ========== -->
   <div class="tab-panel" data-panel="action">
