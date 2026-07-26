@@ -254,6 +254,93 @@ body {
   .tab-btn .tab-hint { display: none; }
 }
 
+/* ==== 主题 01 · Tab 使用说明卡 ==== */
+.tab-guide {
+  background: rgba(35, 35, 35, 0.5);
+  border: 1px solid rgba(124, 157, 255, 0.18);
+  border-left: 3px solid #a4b3ff;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.tab-guide-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a4b3ff;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.tab-guide-desc {
+  font-size: 10.5px;
+  color: #9ca3b8;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(124, 157, 255, 0.15);
+  line-height: 1.5;
+}
+.tab-guide-principle {
+  margin-bottom: 10px;
+}
+.tg-p-item {
+  font-size: 11px;
+  color: #d8dcec;
+  padding: 4px 0;
+  line-height: 1.6;
+}
+.tg-p-key {
+  display: inline-block;
+  color: #a4b3ff;
+  font-weight: 700;
+  margin-right: 6px;
+  font-family: "SF Mono", monospace;
+  font-size: 10.5px;
+}
+.tab-guide-list {
+  background: rgba(15, 15, 25, 0.4);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.tg-tab-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  font-size: 10.5px;
+  line-height: 1.5;
+  align-items: baseline;
+}
+.tg-tab-row:last-child { border-bottom: none; }
+.tg-tab-name {
+  color: #eaecf5;
+  font-weight: 700;
+  font-family: "SF Mono", monospace;
+}
+.tg-tab-role {
+  color: #d8dcec;
+  grid-column: 2;
+}
+.tg-tab-work {
+  color: #7d84a8;
+  font-size: 10px;
+  grid-column: 2;
+  padding-top: 2px;
+}
+.tab-guide-note {
+  margin-top: 10px;
+  padding: 6px 10px;
+  background: rgba(255, 176, 87, 0.06);
+  border-left: 2px solid rgba(255, 180, 87, 0.35);
+  border-radius: 4px;
+  font-size: 10px;
+  color: #9ca3b8;
+  line-height: 1.5;
+}
+@media (max-width: 500px) {
+  .tg-tab-row { grid-template-columns: 1fr; }
+  .tg-tab-role, .tg-tab-work { grid-column: 1; }
+}
+
 /* ==== Tabs · 下划线风格 ==== */
 .tab-bar {
   display: flex;
