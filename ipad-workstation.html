@@ -6448,6 +6448,20 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
       </div>
 
+      <div class="asset-stash">
+        <div class="stash-header">
+          <span class="stash-title"><span class="stash-icon">📨</span>豆包对话暂存(第二天转 Claude 用)</span>
+          <span class="stash-hint">localStorage · 保存后不丢</span>
+        </div>
+        <textarea class="stash-textarea" id="doubaoStashInput" placeholder="粘豆包整理好的对话/内容 · 一段一保存 · 可累加 · 第二天一键导出粘给 Claude"></textarea>
+        <div class="stash-actions">
+          <button class="stash-btn stash-btn-save" id="doubaoStashSave">💾 保存</button>
+          <button class="stash-btn stash-btn-export" id="doubaoStashExport">📤 一键导出</button>
+          <button class="stash-btn stash-btn-clear" id="doubaoStashClear">🗑 清空</button>
+        </div>
+        <div class="stash-status" id="doubaoStashStatus"></div>
+      </div>
+
       <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15);">
         <div class="card-title" style="color: #d6b4ff;">▎ 待办 · 3 条已完成入库 · 1 条待做</div>
         <div style="font-size: 10.5px; color: #7d84a8; margin: -4px 0 10px; padding: 6px 10px; background: rgba(52,211,153,0.06); border-left: 2px solid rgba(52,211,153,0.35); border-radius: 4px; line-height: 1.5;">
@@ -8379,6 +8393,96 @@ document.addEventListener("DOMContentLoaded", function() {
       if (!open) promptPre.textContent = CLAUDE_PROMPT;
     });
   }
+})();
+
+/* ============ 豆包对话暂存 · 第二天转 Claude 用 · localStorage 追加 · 纯拷贝 ============ */
+(function() {
+  var STASH_KEY = "doubao-chat-stash-v1";
+  var input = document.getElementById("doubaoStashInput");
+  var saveBtn = document.getElementById("doubaoStashSave");
+  var exportBtn = document.getElementById("doubaoStashExport");
+  var clearBtn = document.getElementById("doubaoStashClear");
+  var status = document.getElementById("doubaoStashStatus");
+  if (!input) return;
+
+  function loadStash() {
+    try { return JSON.parse(localStorage.getItem(STASH_KEY) || "[]"); }
+    catch(e) { return []; }
+  }
+  function saveStash(list) { localStorage.setItem(STASH_KEY, JSON.stringify(list)); }
+
+  function refreshStatus() {
+    var list = loadStash();
+    status.textContent = list.length === 0 ? "" : "✓ 已存 " + list.length + " 段 · 未导出";
+  }
+
+  var draft = localStorage.getItem(STASH_KEY + "-draft");
+  if (draft) input.value = draft;
+  input.addEventListener("input", function() {
+    localStorage.setItem(STASH_KEY + "-draft", input.value);
+  });
+  refreshStatus();
+
+  saveBtn.addEventListener("click", function() {
+    var text = input.value.trim();
+    if (!text) { status.textContent = "· 空的 · 先填内容"; return; }
+    var list = loadStash();
+    list.push({ ts: new Date().toISOString().slice(0,19).replace("T"," "), body: text });
+    saveStash(list);
+    localStorage.removeItem(STASH_KEY + "-draft");
+    input.value = "";
+    saveBtn.textContent = "✓ 已存";
+    saveBtn.classList.add("copied");
+    setTimeout(function() {
+      saveBtn.textContent = "💾 保存";
+      saveBtn.classList.remove("copied");
+    }, 1500);
+    refreshStatus();
+  });
+
+  exportBtn.addEventListener("click", function() {
+    var current = input.value.trim();
+    var list = loadStash();
+    if (current) {
+      list.push({ ts: new Date().toISOString().slice(0,19).replace("T"," "), body: current });
+      saveStash(list);
+      input.value = "";
+      localStorage.removeItem(STASH_KEY + "-draft");
+    }
+    if (list.length === 0) { status.textContent = "· 空的 · 先填内容"; return; }
+    var payload = list.map(function(item) {
+      return "── " + item.ts.slice(0, 16) + " ──\n" + item.body;
+    }).join("\n\n");
+    var textarea = document.createElement("textarea");
+    textarea.value = payload;
+    textarea.style.position = "fixed"; textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e) {}
+    document.body.removeChild(textarea);
+    if (ok) {
+      exportBtn.textContent = "✓ 已复制 · 粘给 Claude";
+      exportBtn.classList.add("copied");
+      setTimeout(function() {
+        exportBtn.textContent = "📤 一键导出";
+        exportBtn.classList.remove("copied");
+      }, 3000);
+    } else {
+      status.textContent = "· 复制失败 · 请手动全选复制";
+    }
+    refreshStatus();
+  });
+
+  clearBtn.addEventListener("click", function() {
+    if (loadStash().length === 0 && !input.value.trim()) return;
+    if (confirm("清空当前输入 + 所有暂存?(导出后可清)")) {
+      saveStash([]);
+      input.value = "";
+      localStorage.removeItem(STASH_KEY + "-draft");
+      refreshStatus();
+    }
+  });
 })();
 
 /* ============ 主题 02 · 一键导出全部资产 · 给豆包审核复盘 ============ */
