@@ -5491,62 +5491,164 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
     <!-- 5. AI 使用手册 -->
     <div class="brain-section">
-      <div class="brain-section-title"><span class="num">05</span>AI 使用手册 · Memory</div>
+      <div class="brain-section-title"><span class="num">05</span>AI 使用手册 · Memory 全库</div>
       <div style="font-size: 11px; color: #7d84a8; margin-bottom: 10px; padding: 10px 12px; background: rgba(180, 120, 255, 0.06); border-radius: 6px; border-left: 2px solid rgba(180, 120, 255, 0.3); line-height: 1.7;">
         <strong style="color: #d6b4ff;">为什么需要这份东西:</strong><br>
         · AI 容易失忆 · 需要外部说明书兜底<br>
         · AI 之间有壁垒 · 需要共享的规则集打通<br>
         · 每样东西都是产品 · 需要「给人 + 给 AI」两份说明书<br>
         <br>
-        <span style="color: #7d84a8;">每次会话 Claude 自动读这份 · 就像收到一个新产品时先读说明书 · 知道自己在接管什么、该怎么做</span>
+        <span style="color: #7d84a8;">每次会话 Claude 自动读这份 · 就像收到一个新产品时先读说明书 · 知道自己在接管什么、该怎么做</span><br>
+        <br>
+        <span style="color: #6ee7b7; font-size: 10px; font-family: 'SF Mono', monospace;">▸ 当前共 20 条 feedback + 3 条 reference · 存 <code style="color: #a4b3ff;">~/.claude/projects/C--Users-tianlan/memory/</code></span>
       </div>
+
+      <div style="font-size: 10px; color: #a4b3ff; font-family: 'SF Mono', monospace; letter-spacing: 1.2px; margin: 12px 4px 6px;">▸ FEEDBACK · 协作偏好 (20)</div>
 
       <div class="brain-mem-item">
         <span class="mem-tag">feedback</span>
         <span class="mem-title">截图对话先做角色映射</span>
-        <span class="mem-desc">发聊天截图问主观判断时 · 先列每条谁说的+时间轴 · 校对通过再下结论</span>
+        <span class="mem-desc">发截图问主观判断时 · 先列每条谁说的+时间轴 · 校对通过再下结论</span>
       </div>
 
       <div class="brain-mem-item">
         <span class="mem-tag">feedback</span>
         <span class="mem-title">未踩坑不复核</span>
-        <span class="mem-desc">未实战使用的 SOP 章节不主动复核 · 用到再核</span>
+        <span class="mem-desc">未实战使用的 SOP 章节不主动复核 · 用到再核 · 违背 v0.3 沉淀链路精神</span>
       </div>
 
       <div class="brain-mem-item">
         <span class="mem-tag">feedback</span>
         <span class="mem-title">SOP × 表 × 使用说明 3 层结构</span>
-        <span class="mem-desc">表是 SOP 落地副产品 · 使用说明是冷启动包 · 各端自完备</span>
+        <span class="mem-desc">表是 SOP 落地副产品 · 使用说明是冷启动包 · 各端自完备不追求同步</span>
       </div>
 
       <div class="brain-mem-item">
         <span class="mem-tag">feedback</span>
-        <span class="mem-title">4 AI 分工定稿</span>
-        <span class="mem-desc">GitHub Claude 结构 / aily 精准操作 / 豆包深度讨论 / 荔枝半退休</span>
+        <span class="mem-title">4 AI 分工定稿 v3.0</span>
+        <span class="mem-desc">GitHub Claude 结构 / aily 精准操作 / 豆包分析人+prompt 润色 / Kimi 情绪深挖 / 荔枝 lark-cli 执行 / 荔执飞书内智能体 / 荔枝 Brain 分发平台</span>
       </div>
 
       <div class="brain-mem-item">
         <span class="mem-tag">feedback</span>
         <span class="mem-title">AI 作镜子而非答案机</span>
-        <span class="mem-desc">探索式话题抛 v0 · 让你在纠正中长出真实定位 · 别一次给完美框架</span>
+        <span class="mem-desc">探索式话题抛可推翻的 v0 · 让天蓝在纠正中长出真实定位 · 别一次给完美框架</span>
       </div>
 
       <div class="brain-mem-item">
         <span class="mem-tag">feedback</span>
         <span class="mem-title">5 段回复结构</span>
-        <span class="mem-desc">深度讨论 · 核心目标 + 精简/标准 + 想法池 + 待确认</span>
+        <span class="mem-desc">深度讨论 · 核心目标 + 精简/标准 + 想法池 + 待确认 · Kimi 风格 · 天蓝亲测舒适</span>
       </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">大白话优先</span>
+        <span class="mem-desc">新内容默认大白话 · 术语必须括号解释 · 元层等专业术语可用但要标注 · 不生造新词</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">复盘 4 层框架</span>
+        <span class="mem-desc">改了 + 偏离对错 + 丢了怎么办 + 沉淀可复用 · 每次复盘默认这 4 层</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">丢了的东西 · 分类处理</span>
+        <span class="mem-desc">复盘中"丢了什么" 3 类:已解决/未解决/不确定 · 别一股脑进待办</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">AI 会往讨好漂移</span>
+        <span class="mem-desc">任何 AI + 任何长对话都会 · 结构性 · 无法对抗 · 用户当警报器</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">AI 抛矛盾作校准</span>
+        <span class="mem-desc">深度讨论主动抛矛盾 · 用户判断是真矛盾还是理解偏差</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">Push 触发流程</span>
+        <span class="mem-desc">天蓝说 push/推工作台/同步 → 立即 git status→commit→push · 报告 commit hash · 排除 brain.html</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">复盘触发流程</span>
+        <span class="mem-desc">天蓝说"复盘"→ 4 层框架整理 · 上次已解删/未解留 · 结转+追加 · 遵守中立指令 · 自动 push</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">新项目至少 15 天告诫</span>
+        <span class="mem-desc">天蓝心急 · 提醒自己新项目至少给 15 天 · 别每天想每天焦虑 · 15 天前 1-2 月的乱是必要的</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">SOP 默认流程图呈现</span>
+        <span class="mem-desc">SOP/流程/阶段类内容默认用流程图 · 不用长文列表 · 视觉化优先</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">任务转接触发词</span>
+        <span class="mem-desc">"转接 X"/"全量转接 X"/"待办转接 X" · 自动套模板 · 输出代码块 · 生成时把[生成方 AI 名称]替换为"Claude Code(GitHub Claude)"</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">UI 视觉问题必须截图</span>
+        <span class="mem-desc">Claude 看不到界面 · UI/显示/位置/颜色类问题必须让天蓝截图 · 别靠猜</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">工作台 = 私人化</span>
+        <span class="mem-desc">元层定义 · 不追求通用 · 不服务他人 · 只对天蓝个人有用 · 未来 AI 别推通用方案</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">UI 活儿去 Artifacts</span>
+        <span class="mem-desc">Claude Code 没实时预览 · 界面/CSS/视觉类主动提醒切网页版 · 做完贴回来我 push</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">改完扫相关旧状态</span>
+        <span class="mem-desc">主任务完成后主动扫相关区域找矛盾条目 · 提出来让天蓝拍板 · 不自作主张删/改</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag">feedback</span>
+        <span class="mem-title">豆包审核 SOP 4 步</span>
+        <span class="mem-desc">导出→粘→回传→push · 已够简单 · 别造轮子加复杂化 · 豆包结论必须分层处理不能照做</span>
+      </div>
+
+      <div style="font-size: 10px; color: #6ee7b7; font-family: 'SF Mono', monospace; letter-spacing: 1.2px; margin: 14px 4px 6px;">▸ REFERENCE · 外部资源 (3)</div>
 
       <div class="brain-mem-item">
         <span class="mem-tag tag-reference">reference</span>
         <span class="mem-title">荔枝游戏平台</span>
-        <span class="mem-desc">GitHub Pages 单文件 HTML 分发中心 · 15 秒自动上线</span>
+        <span class="mem-desc">GitHub Pages 静态 HTML 分发中心 · 15 秒自动上线 · 单文件 HTML 约束</span>
       </div>
 
       <div class="brain-mem-item">
         <span class="mem-tag tag-reference">reference</span>
         <span class="mem-title">荔枝文件分工</span>
-        <span class="mem-desc">brain.html 归对方 AI · 我不主动碰 · 双 AI 协作防冲突</span>
+        <span class="mem-desc">brain.html 归对方 AI · 我不主动碰 · 双 AI 协作防冲突协议</span>
+      </div>
+
+      <div class="brain-mem-item">
+        <span class="mem-tag tag-reference">reference</span>
+        <span class="mem-title">荔/荔枝 Brain/荔执 3 实体区分</span>
+        <span class="mem-desc">平台/独立 AI/飞书智能体 · 天蓝口语常混 · 每次问清楚</span>
       </div>
     </div>
 
