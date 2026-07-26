@@ -7820,7 +7820,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  var tabs = document.querySelectorAll(".tab-bar:not(.brain-tabs):not(.tianlan-tabs):not(.asset-tabs) .tab-btn");
+  var tabs = document.querySelectorAll(".tab-bar:not(.brain-tabs):not(.tianlan-tabs):not(.asset-tabs):not(.topic-f-tabs) .tab-btn");
   var panels = document.querySelectorAll(".tab-panel");
   tabs.forEach(function(tab) {
     tab.addEventListener("click", function() {
@@ -7830,6 +7830,21 @@ document.addEventListener("DOMContentLoaded", function() {
       tab.classList.add("active");
       document.querySelector("[data-panel=\"" + target + "\"]").classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+
+  // 主题 03 · 内部 3 tab
+  var fTabs = document.querySelectorAll(".topic-f-tabs .tab-btn");
+  var fPanels = document.querySelectorAll(".topic-f-panel");
+  fTabs.forEach(function(tab) {
+    tab.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var target = tab.getAttribute("data-f-tab");
+      fTabs.forEach(function(t) { t.classList.remove("active"); });
+      fPanels.forEach(function(p) { p.classList.remove("active"); p.style.display = "none"; });
+      tab.classList.add("active");
+      var targetPanel = document.querySelector("[data-f-panel=\"" + target + "\"]");
+      if (targetPanel) { targetPanel.classList.add("active"); targetPanel.style.display = "block"; }
     });
   });
 
