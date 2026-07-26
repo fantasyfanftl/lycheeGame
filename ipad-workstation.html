@@ -2940,6 +2940,56 @@ footer strong { color: #7d84a8; }
 }
 .lc-branch-arrow { color: #b478ff; margin: 0 4px; }
 
+/* ==== 天蓝脑 · 底层代码触发开关卡 ==== */
+.trigger-card {
+  border-left: 3px solid #ffb457;
+  background: linear-gradient(135deg, rgba(255, 180, 87, 0.05), rgba(255, 140, 156, 0.03));
+}
+.trigger-group {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: rgba(35, 35, 35, 0.5);
+  border-radius: 6px;
+}
+.trigger-group-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+.trigger-good { border-left: 2px solid #6ee7b7; }
+.trigger-good .trigger-group-title { color: #6ee7b7; }
+.trigger-bad { border-left: 2px solid #ff8c9c; }
+.trigger-bad .trigger-group-title { color: #ff8c9c; }
+.trigger-drive { border-left: 2px solid #a4b3ff; }
+.trigger-drive .trigger-group-title { color: #a4b3ff; }
+.trigger-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  color: #d8dcec;
+  line-height: 1.75;
+}
+.trigger-item {
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+}
+.trigger-item:last-child { border-bottom: none; }
+.trigger-item strong { color: #eaecf5; font-weight: 700; }
+.trigger-case {
+  display: block;
+  font-size: 10.5px;
+  color: #9ca3b8;
+  padding-left: 8px;
+  margin-top: 4px;
+  font-family: "SF Mono", monospace;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
 /* ==== 外部工具入口卡(天蓝脑 · 想法储备顶部) ==== */
 .ext-tools-title {
   font-size: 10px;
@@ -5691,6 +5741,101 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 - 新内容出现 · 先判 4 类归属 · 再存
 - 不在 4 类里的 · 抛出来问用户 · 别自作主张塞
 - 同一条内容不能存 2 处 · 只能 1 主 1 引用</pre>
+    </div>
+
+    <!-- 资产 13 · 长对话偏移处理 SOP · 4 级预案 -->
+    <div class="asset-card">
+      <div class="asset-card-header">
+        <div class="asset-num">13</div>
+        <div class="asset-meta">
+          <div class="asset-title">长对话偏移处理 SOP · 4 级预案</div>
+          <div class="asset-sub">AI 跑题/讨好/污染时按级别处理 · 含可复制话术</div>
+        </div>
+        <button class="asset-copy-btn" data-asset="asset-13">复制</button>
+      </div>
+      <div class="asset-tags">
+        <span class="asset-tag">✓ AI 无关</span>
+        <span class="asset-tag">✓ 主题无关</span>
+        <span class="asset-tag">✓ 可迁移</span>
+        <span class="asset-tag">✓ 高频</span>
+      </div>
+      <pre class="asset-content" id="asset-13">【长对话偏移处理 SOP · 4 级预案】
+
+═══════════════════════════════════════
+【1】轻度偏移 · 一句话点刹
+═══════════════════════════════════════
+
+场景:AI 偶尔跑题 / 轻微讨好 / 输出格式走样
+判定:整体方向正确 · 仅局部偏离 · 纠正 1 次即可复位
+处理:一句话精准点刹 · 只纠偏离点 · 不重发全套规则
+
+▸ 拉回主线:
+回到本次核心目标:XXX · 支线内容自动收纳进想法池 · 不用展开
+
+▸ 校准风格:
+按资产 01 元规则执行 · 客观直接 · 去掉套话和过度肯定
+
+▸ 纠正格式:
+输出恢复精简结论 + 标准版两层结构 · 控制信息密度
+
+═══════════════════════════════════════
+【2】中度偏移 · 规则重注入
+═══════════════════════════════════════
+
+场景:AI 持续讨好 / 反复踩红线 / 规则记忆模糊
+判定:偏离超过 3 轮 · 单次提醒无效 · 但对话讨论成果仍有价值
+处理:规则重注入 + 目标锚定 · 一次性打回基准
+
+▸ 话术:
+重置对话基准 · 按以下规则继续推进:
+
+1. 协作规则沿用资产 01「个人协作元规则」· 核心要求:
+   客观中立 · 分层输出 · 批判性反馈 · 禁止讨好式表述
+
+2. 当前任务核心目标:[填一句话目标]
+   处于[探索期 / 打磨期 / 验收期]阶段
+
+3. 后续只围绕核心目标推进 · 偏离内容自动归档想法池 · 不展开
+
+═══════════════════════════════════════
+【3】重度偏移 · 提纯后转接
+═══════════════════════════════════════
+
+场景:AI 逻辑混乱 / 完全跑偏 / 反复纠正无效 / 上下文被污染
+判定:几十轮深度偏离 · 继续纠偏成本高于开新对话
+处理:信息提纯后转接重置 · 保留成果 · 清零污染
+
+▸ 步骤:
+1. 用资产 04「复盘中立指令」提取核心信息:
+   已定共识 / 已淘汰方向 / 当前阶段 / 下一步动作
+2. 开新对话 · 用资产 06「新对话初始化」模板加载基础规则
+3. 用资产 06「同 AI 专项转接」模板把提纯后的进度发过去 · 断点继续
+
+▸ 第一步提纯话术:
+按资产 04 复盘中立指令 · 提取本次对话核心信息:
+已定共识 · 已淘汰方向 · 当前阶段 · 下一步动作
+只输出结论 · 不展开
+
+═══════════════════════════════════════
+【4】提前预防 · 固定节奏
+═══════════════════════════════════════
+
+场景:所有长周期对话通用
+判定:主动执行即可 · 减少 70%+ 偏移
+
+▸ 3 件固定动作:
+1. 每 3-5 轮主动锚定一次目标(对应资产 01「主线锚定机制」)
+2. 阶段切换(探索→打磨→验收)时同步重申阶段规则
+3. 第一次出现讨好/套话苗头就校准 · 不等形成习惯再纠正
+
+═══════════════════════════════════════
+【级别判定速查】
+═══════════════════════════════════════
+
+▸ 1 次纠正就回 → 轻度 · 用【1】
+▸ 3 次纠正无效 → 中度 · 用【2】
+▸ 上下文已污染 · 继续对话成本 > 开新的 → 重度 · 用【3】
+▸ 什么问题都没出 → 【4】主动预防</pre>
     </div>
 
     <!-- 候选资产 4 条已迁想法储备(21-24) · 待整理成完整版时再回搬 -->
