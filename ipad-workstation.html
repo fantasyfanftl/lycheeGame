@@ -1931,8 +1931,8 @@ footer strong { color: #7d84a8; }
 .tools-drawer {
   position: fixed;
   top: 0;
-  left: -300px;
-  width: 280px;
+  left: -320px;
+  width: 300px;
   max-width: 92vw;
   height: 100vh;
   background: rgba(15, 15, 25, 0.92);
@@ -3187,13 +3187,12 @@ footer strong { color: #7d84a8; }
   white-space: nowrap;
 }
 .ext-tool-arrow {
-  position: absolute;
-  top: 4px;
-  right: 6px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
-  opacity: 0.5;
-  line-height: 1;
+  opacity: 0.6;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 6px;
 }
 .ext-tool:hover .ext-tool-arrow { opacity: 1; }
 
@@ -4265,369 +4264,55 @@ footer strong { color: #7d84a8; }
   <div class="topic-scope-bar">
     <span class="scope-label">CURRENT TOPIC ›</span>
     <span class="scope-name" id="scope-name">主题 01 · 怎么搭建 AI 工作台</span>
-  </div>
-
-  <!-- ===== 主题 E 内容(现有 tab 结构) ===== -->
   <div class="topic-content" data-topic-content="E">
 
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="overview" title="总览｜主题目标 · 架构清单 · 进度看板 · 长期红线 · 定版架构">🏠 总览<span class="tab-hint">首屏</span></button>
-    <button class="tab-btn" data-tab="review" title="讨论回溯｜思考过程 · 包含中途被推翻观点 · 不可直接当作落地依据">📝 迭代日志<span class="tab-hint">过程</span></button>
-    <button class="tab-btn" data-tab="action" title="执行任务｜本主题搭建待推进事项">⚙️ 待办清单<span class="tab-hint">待做</span></button>
-    <button class="tab-btn" data-tab="pool" title="待验证灵感｜未纳入正式定型方案">💡 想法储备<span class="tab-hint">未定型</span></button>
-    <button class="tab-btn" data-tab="cases" title="经验案例｜完整项目复盘 · 15 天回望·踩坑与产出">📚 经验案例<span class="tab-hint">复盘</span></button>
-  </div>
-  <!-- ========== TAB 1 · 总览(默认激活)========== -->
-  <div class="tab-panel active" data-panel="overview">
-
-  <!-- 置顶总览卡片 · 主题 01 搭建导航 -->
-  <div class="topic-overview">
-    <div class="topic-overview-title">主题 01｜怎么搭建适合我的 AI 工作台</div>
-
-    <div class="overview-block">
-      <div class="overview-block-title">🎯 主题目标</div>
-      <div class="overview-block-body">
-        搭建个人专属 ClaudeCode AI 工作台 · 落地三层架构(元层 ｜讨论层 ｜执行层)· 实现多 AI 协同 · 思考链路完整沉淀 · 可复用资产持续流转
-      </div>
-    </div>
-
-    <div class="overview-block">
-      <div class="overview-block-title">📦 工作台搭建模块清单</div>
-      <div class="overview-block-body">
-        <div class="ov-item"><span class="ov-tag ov-tag-1">① 元层</span>Claude 脑 / 天蓝脑 / 公共元层(待定收纳区 · 复盘体系)</div>
-        <div class="ov-item"><span class="ov-tag ov-tag-2">② 讨论层</span>标准化主题载体(4Tab 标准模板)</div>
-        <div class="ov-item"><span class="ov-tag ov-tag-3">③ 执行层</span>资产复用 · 工具分工落地主题</div>
-        <div class="ov-item"><span class="ov-tag ov-tag-4">④ 配套支撑</span>三端硬件分工 · 数据通路 · 跨 AI 协作 SOP</div>
-      </div>
-    </div>
-
-    <div class="overview-block">
-      <div class="overview-block-title">📋 搭建推进任务清单</div>
-      <div class="overview-block-body">
-        <div class="ov-task">· 完成元层「Claude 脑 / 天蓝脑」边界划分 · 素材批量归位</div>
-        <div class="ov-task">· 输出可复制标准化主题模板(是什么 / 怎么用 / 怎么进这里 + 4 空白 Tab)</div>
-        <div class="ov-task">· 确立资产跨主题回流标准化 SOP</div>
-        <div class="ov-task">· 产出从零复刻工作台分步启动指南</div>
-      </div>
-    </div>
-
-    <div class="overview-block">
-      <div class="overview-block-title">📊 当前进度看板</div>
-      <div class="overview-block-body">
-        <div class="ov-progress ov-done"><span class="ov-p-tag">✅ 已定型</span>三层全局架构 · 4Tab 主题载体 · 三设备分工 · iPad 三层结构</div>
-        <div class="ov-progress ov-doing"><span class="ov-p-tag">⏳ 待落地</span>元层素材归类梳理 · 标准化主题模板 · 资产回流流程 · 复刻启动指南</div>
-        <div class="ov-progress ov-verify"><span class="ov-p-tag">🟡 待验证</span>想法储备内未收敛备选构想</div>
-      </div>
-    </div>
-
-    <div class="overview-hint">
-      👉 阅读指引:下方 4Tab · <strong style="color:#6ee7b7;">⭐ 定版成品</strong> 存放正式可落地架构 · 迭代日志 / 想法储备 为讨论过程 · 未验证灵感 · 溯源查阅使用
-    </div>
+    <button class="tab-btn active" data-tab="capture" title="C 捕获｜零散灵感入口 · 不筛选不加工">🟠 C · 捕获<span class="tab-hint">灵感入口</span></button>
+    <button class="tab-btn" data-tab="organize" title="O 组织｜聚类 · 线程 · 正向/反向">🔵 O · 组织<span class="tab-hint">聚类</span></button>
+    <button class="tab-btn" data-tab="distill" title="D 提炼｜核心结论 · 关键规则 · 边界">🟣 D · 提炼<span class="tab-hint">精华</span></button>
+    <button class="tab-btn" data-tab="express" title="E 表达｜定型主题包 · 可复用产物">🟢 E · 表达<span class="tab-hint">成品</span></button>
+    <button class="tab-btn" data-tab="temp" title="临时｜无法归 CODE 的历史档">⚪ 临时<span class="tab-hint">归档</span></button>
   </div>
 
-  <!-- 长期维护红线 · 展示中 · 后期无用可去掉 -->
-  <div class="topic-redline">
-    <div class="topic-redline-title">⚠ 长期维护红线</div>
-    <div class="topic-redline-body">
-      <div class="rl-item">1. 只有收到「定型」指令的内容 · 才能迁入【定版成品】· 临时思路 / 争议讨论 一律留在迭代日志 / 想法储备</div>
-      <div class="rl-item">2. 定版成品内存量成熟架构 · 以补丁迭代方式更新 · 不直接大面积覆盖</div>
-      <div class="rl-item">3. 迭代日志不再持续追加和工作台架构无关的大段自省感悟</div>
-    </div>
-    <div class="topic-redline-note">↑ 展示中 · 用一段时间看是否真守得住 · 违反日后自身作为反例复盘(参考 15 天回望)</div>
-  </div>
+  <!-- ========== TAB · C 捕获 ========== -->
+  <div class="tab-panel active" data-panel="capture">
 
-  <!-- Tab 使用说明 · 5 tab 设计原则(2026-07-26 豆包整理 · 天蓝拍板) -->
-  <div class="tab-guide">
-    <div class="tab-guide-title">📖 5 tab 使用说明</div>
-    <div class="tab-guide-desc">主题 01 共 5 tab(总览 + 4 常规)· 按 <strong style="color:#a4b3ff;">使用频率</strong> 从左到右排 · 不按做事流程</div>
-
-    <div class="tab-guide-principle">
-      <div class="tg-p-item"><span class="tg-p-key">▎ 核心原则</span>Tab 只放<strong>留存物</strong> · 不放<strong>动作过程</strong>(对话/执行/灵感产生)</div>
-      <div class="tg-p-item"><span class="tg-p-key">▎ 排序逻辑</span>按点开频率 · 不按流程顺序 · 流程逻辑看经验案例 tab 的生命周期图</div>
-      <div class="tg-p-item"><span class="tg-p-key">▎ 讨论结论</span>内嵌到对应想法/待办条目 · 不单独占 tab</div>
-    </div>
-
-    <div class="tab-guide-list">
-      <div class="tg-tab-row">
-        <span class="tg-tab-name">🏠 总览</span>
-        <span class="tg-tab-role">留存物:主题目标 · 架构清单 · 进度看板 · 长期红线 · 定版架构</span>
-        <span class="tg-tab-work">默认打开就看到 · 相当于精简说明书</span>
+    <div class="card" style="background: rgba(255, 176, 87, 0.06); border-color: rgba(255, 176, 87, 0.25);">
+      <div class="card-title" style="color: #ffb457;">▎C · 捕获 · 零散灵感入口</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7; margin-bottom: 10px;">
+        <strong style="color: #ffb457;">规则</strong>:不筛选 · 不加工 · 不逼分类 · 只标"从哪来"<br>
+        <span style="color: #7d84a8;">灵感冒出立即录 · 走一步升 O 组织</span>
       </div>
-      <div class="tg-tab-row">
-        <span class="tg-tab-name">📝 迭代日志</span>
-        <span class="tg-tab-role">留存物:认知拐点 · 决策原因 · 推翻点 · 有效洞察</span>
-        <span class="tg-tab-work">天蓝写批注 · AI 整理结构化</span>
-      </div>
-      <div class="tg-tab-row">
-        <span class="tg-tab-name">⚙️ 待办清单</span>
-        <span class="tg-tab-role">留存物:可执行任务 · 带优先级</span>
-        <span class="tg-tab-work">天蓝查看确认 · AI 拆解排优推荐当日任务</span>
-      </div>
-      <div class="tg-tab-row">
-        <span class="tg-tab-name">💡 想法储备</span>
-        <span class="tg-tab-role">留存物:全量灵感 + 状态标签 · 终态为关系网</span>
-        <span class="tg-tab-work">天蓝录入纠偏 · AI 分类打标串联</span>
-      </div>
-      <div class="tg-tab-row">
-        <span class="tg-tab-name">📚 经验案例</span>
-        <span class="tg-tab-role">留存物:项目复盘 · 生命周期图 · 15 天回望</span>
-        <span class="tg-tab-work">天蓝复盘 · AI 归档</span>
-      </div>
-    </div>
-
-    <div class="tab-guide-note">
-      ⚠ 未来 aily/荔执/豆包脑接入后 · AI 分工自动化 · 现在仍以天蓝手动为主
-    </div>
-  </div>
-
-
-    <!-- 定版架构内容 · 2026-07-26 从原定版成品 tab 合并进总览 -->
-    <div class="topic-overview-title" style="margin-top: 20px;">⭐ 定版架构</div>
-
-
-    <div class="card definition-card">
-      <div class="card-title">当前定位</div>
-      <div class="definition-text">iPad = <span class="accent">视觉呈现场</span> + <span class="accent">手机大屏延伸</span></div>
-      <div class="definition-note">不替代 Mac · 与手机 / Mac 互补 · 承载层而非操作层</div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">三设备分工</div>
-      <div class="devices">
-        <div class="device">
-          <div class="device-icon">📱</div>
-          <div class="device-name">手机</div>
-          <div class="device-role">输入器</div>
-          <span class="device-tag">语音 · 发散</span>
-        </div>
-        <div class="device ipad">
-          <div class="device-icon">📲</div>
-          <div class="device-name">iPad ★</div>
-          <div class="device-role">显示器</div>
-          <span class="device-tag">触屏 · 呈现</span>
-        </div>
-        <div class="device">
-          <div class="device-icon">💻</div>
-          <div class="device-name">Mac</div>
-          <div class="device-role">加工厂</div>
-          <span class="device-tag">键盘 · 收敛</span>
-        </div>
-      </div>
-      <div class="axis">发 散 ─ ─ ─ ─ ─ ─ ─ ─ 收 敛</div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">iPad 三层结构</div>
-      <div class="layer layer-1">
-        <div class="layer-num">01</div>
-        <div class="layer-content">
-          <div class="layer-name">入口层 · AI 矩阵</div>
-          <div class="layer-desc">网页快捷方式加主屏 · 一屏铺开 3-6 个 AI</div>
-        </div>
-      </div>
-      <div class="layer layer-2">
-        <div class="layer-num">02</div>
-        <div class="layer-content">
-          <div class="layer-name">流转层 · 传送带</div>
-          <div class="layer-desc">通用剪贴板 + 分屏双 AI · 跨 AI 上下文接力</div>
-        </div>
-      </div>
-      <div class="layer layer-3">
-        <div class="layer-num">03</div>
-        <div class="layer-content">
-          <div class="layer-name">承载层 · 视觉呈现</div>
-          <div class="layer-desc">大字号阅读 · 触屏圈选 · 姿势自由</div>
-        </div>
+      <div style="padding: 10px 12px; background: rgba(35,35,35,0.5); border-radius: 6px; font-size: 10.5px; color: #9ca3b8; line-height: 1.6; text-align: center; font-family: 'SF Mono', monospace;">
+        📝 新灵感直接写在这里(手动填充)· 或用左下 <span style="color: #6ee7b7;">📓 想法池</span> 浮球跳转其他画布收集
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">姿势 × 精度 × 场景</div>
-      <div class="matrix-wrap">
-        <table>
-          <thead>
-            <tr><th>姿势</th><th>频率</th><th>精度</th><th>场景</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="gesture">语音</td>
-              <td><span class="badge badge-high">高</span></td>
-              <td><span class="badge badge-low">低</span></td>
-              <td class="scenario">发散 · 初稿</td>
-            </tr>
-            <tr>
-              <td class="gesture">触屏</td>
-              <td><span class="badge badge-mid">中</span></td>
-              <td><span class="badge badge-mid">中</span></td>
-              <td class="scenario">圈选 · 追问</td>
-            </tr>
-            <tr>
-              <td class="gesture">键盘</td>
-              <td><span class="badge badge-low">低</span></td>
-              <td><span class="badge badge-high">高</span></td>
-              <td class="scenario">收敛 · 定稿</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="card-title" style="color: #ffb457;">▎当前捕获池 · 0 条(新想法在这)</div>
+      <div style="font-size: 10.5px; color: #7d84a8; padding: 20px 10px; text-align: center; line-height: 1.6;">
+        🟠 空 · 等新灵感录入<br>
+        <span style="font-size: 10px;">▸ 未来加输入框 · 现在手动改 HTML 或从其他工具粘贴</span>
       </div>
-    </div>
-
-    <div class="chip-note" style="margin-top: 4px; padding: 8px 10px; background: rgba(255, 176, 87, 0.05); border-left: 2px solid rgba(255, 176, 87, 0.35); border-radius: 4px;">
-      ↳ 原「B 阶段准备 · 5 个数据源」card 因含"未来挑战"字样属未收敛构想 · 2026-07-26 已迁至想法储备 tab
-    </div>
-
-  
-  </div>
-
-
-
-  
-
-  <!-- ========== TAB 2 · 行动 ========== -->
-  <div class="tab-panel" data-panel="action">
-
-    <div class="card">
-      <div class="card-title">待办清单 · A 阶段 2 件</div>
-      <ol class="step-list">
-        <li class="step-item">
-          <span class="step-num">1</span>
-          <div>
-            <div class="step-title">iPad 主屏铺 AI 矩阵</div>
-            <div class="step-desc">Safari 打开各 AI 网页 → 分享 → 添加到主屏幕</div>
-          </div>
-        </li>
-        <li class="step-item">
-          <span class="step-num">2</span>
-          <div>
-            <div class="step-title">让每个 AI 出一版仪表盘 · 用一周</div>
-            <div class="step-desc">对比风格 · 选最舒服的往下走</div>
-          </div>
-        </li>
-      </ol>
-      <div class="chip-note" style="margin-top: 8px;">Handoff 相关已归主题 02(资产 02)· 见那里执行</div>
-    </div>
-
-    <!-- 从演化日志迁入 · v02 待办 -->
-    <div class="card">
-      <div class="card-title" style="color: #ffb457;">▎ 从演化日志迁入 · v02 已知问题 4 项</div>
-      <div style="font-size: 10.5px; color: #7d84a8; margin-bottom: 10px; padding: 6px 10px; background: rgba(255,176,87,0.06); border-left: 2px solid rgba(255,176,87,0.4); border-radius: 4px; line-height: 1.5;">
-        演化日志只放全局架构级变更 · 局部待办下沉到本处
-      </div>
-      <ol class="step-list">
-        <li class="step-item">
-          <span class="step-num" style="background: linear-gradient(135deg, #ff8c9c, #ffb457);">高</span>
-          <div>
-            <div class="step-title">4 条候选资产整理成 prompt</div>
-            <div class="step-desc">
-              你的画像(真未整 · 待和豆包出) · 5 段结构(半整 · 缺独立卡) · 状态标签(在用未成文) · 哲学熔断器(真未整 · 缺触发词)
-              <br>存放:天蓝脑 → 想法储备 21-24
-            </div>
-          </div>
-        </li>
-        <li class="step-item">
-          <span class="step-num" style="background: linear-gradient(135deg, #ff8c9c, #ffb457);">高</span>
-          <div>
-            <div class="step-title">协作沉淀分类归属明确</div>
-            <div class="step-desc">4 类落点体系已初拟(见主题 02 · 资产 12) · 需你拍板落定</div>
-          </div>
-        </li>
-        <li class="step-item">
-          <span class="step-num" style="background: rgba(125, 132, 168, 0.6);">后</span>
-          <div>
-            <div class="step-title">v02 改动清单价值评估</div>
-            <div class="step-desc">观察期 · 用几天看使用频次再定 · 不着急评</div>
-          </div>
-        </li>
-        <li class="step-item">
-          <span class="step-num" style="background: rgba(125, 132, 168, 0.6);">后</span>
-          <div>
-            <div class="step-title">主题 03 完整细化</div>
-            <div class="step-desc">5 AI 卡已铺 · 深度补充等基础事实核实后再做</div>
-          </div>
-        </li>
-      </ol>
     </div>
 
   </div>
 
-  <!-- ========== TAB 3 · 想法池 ========== -->
-  <div class="tab-panel" data-panel="pool">
+  <!-- ========== TAB · O 组织 ========== -->
+  <div class="tab-panel" data-panel="organize">
+
+    <div class="card" style="background: rgba(124, 157, 255, 0.06); border-color: rgba(124, 157, 255, 0.25);">
+      <div class="card-title" style="color: #a4b3ff;">▎O · 组织 · 聚类+双栏</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong style="color: #a4b3ff;">规则</strong>:相关想法聚成线程 · 分正向/反向双栏 · 允许多线程并行<br>
+        <span style="color: #7d84a8;">现有 18 条待组织 · 未来接飞书白板 · 现在先列表呈现</span>
+      </div>
+    </div>
 
     <div class="card">
-      <div class="card-title">想法池 · 讨论产出 21 条(已沉淀成成品的原线已真删 · 不留删除线)</div>
-      <div class="pool-intro">按讨论时序排列 · 每条标来源(你/AI/共同)与触发链 · 一条想法怎么演化成结论 · 一眼看清</div>
-
-      <div class="pool-filter">
-        <button class="filter-chip active" data-filter="all">全部 <span class="count-num">21</span></button>
-        <button class="filter-chip" data-filter="confirmed">已定型 <span class="count-num">7</span></button>
-        <button class="filter-chip" data-filter="pending">待验证 <span class="count-num">11</span></button>
-        <button class="filter-chip" data-filter="archived">悬置 <span class="count-num">3</span></button>
-      </div>
-
+      <div class="card-title" style="color: #a4b3ff;">▎待组织想法(18 条)</div>
       <div class="pool-timeline">
-
-      <div class="pool-item item-upgraded" data-status="confirmed">
-        <div class="pool-num">01</div>
-        <div class="pool-content">
-          <div class="pool-title">iPad = 各 AI 跳转中枢</div>
-          <div class="pool-meta">
-            <span class="pool-source src-user">你抛</span>
-            <span>·</span>
-            <span>讨论开局</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>演化成 v3 定位骨架</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-confirmed" data-status="confirmed">
-        <div class="pool-num">02</div>
-        <div class="pool-content">
-          <div class="pool-title">网页加主屏比原生 App 好</div>
-          <div class="pool-meta">
-            <span class="pool-source src-user">你抛</span>
-            <span class="pool-link">由 <span class="arrow">#01</span> 触发</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>入口层做法定型</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-confirmed" data-status="confirmed">
-        <div class="pool-num">03</div>
-        <div class="pool-content">
-          <div class="pool-title">主屏 AI 矩阵 · 一屏铺开</div>
-          <div class="pool-meta">
-            <span class="pool-source src-ai">我抛</span>
-            <span class="pool-link">承接 <span class="arrow">#02</span> · 你选</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 2</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-archived" data-status="archived">
-        <div class="pool-num">04</div>
-        <div class="pool-content">
-          <div class="pool-title">场景 folder 不按 AI 名分</div>
-          <div class="pool-meta">
-            <span class="pool-source src-ai">我抛</span>
-            <span class="pool-link">承接 <span class="arrow">#03</span> · 你未选</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-archived">悬置</span>抛过未采纳 · 保留</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-confirmed" data-status="confirmed">
-        <div class="pool-num">05</div>
-        <div class="pool-content">
-          <div class="pool-title">剪贴板作 AI 之间的传送带</div>
-          <div class="pool-meta">
-            <span class="pool-source src-ai">我抛</span>
-            <span class="pool-link">承接 <span class="arrow">#01</span> · 你选</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>流转层核心机制</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">06</div>
         <div class="pool-content">
           <div class="pool-title">分屏双 AI 对话</div>
@@ -4639,31 +4324,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-upgraded" data-status="confirmed">
-        <div class="pool-num">07</div>
-        <div class="pool-content">
-          <div class="pool-title">iPad 是视觉落地方便的地方</div>
-          <div class="pool-meta">
-            <span class="pool-source src-user">你抛</span>
-            <span class="pool-link">推翻 <span class="arrow">v2 中控台</span></span>
-          </div>
-          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>v3 定位骨架 · 承载层</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-confirmed" data-status="confirmed">
-        <div class="pool-num">08</div>
-        <div class="pool-content">
-          <div class="pool-title">姿势-精度分工(语音 / 触屏 / 键盘)</div>
-          <div class="pool-meta">
-            <span class="pool-source src-both">共同</span>
-            <span class="pool-link">我抛 · 你验证</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>「这就是我的感受」认同点</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">11</div>
         <div class="pool-content">
           <div class="pool-title">让 AI 自己判断交接给谁</div>
@@ -4675,20 +4336,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-archived" data-status="archived">
-        <div class="pool-num">12</div>
-        <div class="pool-content">
-          <div class="pool-title">快捷指令暂缓 · 等「做烦」信号</div>
-          <div class="pool-meta">
-            <span class="pool-source src-both">共同</span>
-            <span>·</span>
-            <span>你倾向不做 · 我认同</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-archived">已归档</span>未来触发再动</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">13</div>
         <div class="pool-content">
           <div class="pool-title">各家 AI 分开 pin · 不聚合</div>
@@ -4701,19 +4349,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-archived" data-status="archived">
-        <div class="pool-num">14</div>
-        <div class="pool-content">
-          <div class="pool-title">AI 状态盘(能量分布 / 心智地图)</div>
-          <div class="pool-meta">
-            <span class="pool-source src-both">共同</span>
-            <span class="pool-link">Kimi 触发 · 你我共判</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-archived">已归档</span>不属工作台 → personal-dashboard.html</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">16</div>
         <div class="pool-content">
           <div class="pool-title">先散后收 · 想克服但做不到</div>
@@ -4725,7 +4361,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">17</div>
         <div class="pool-content">
           <div class="pool-title">回传转接模板 · 独立打磨</div>
@@ -4737,7 +4373,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">18</div>
         <div class="pool-content">
           <div class="pool-title">转接模板加"前置依赖"字段</div>
@@ -4749,19 +4385,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-confirmed" data-status="confirmed">
-        <div class="pool-num">19</div>
-        <div class="pool-content">
-          <div class="pool-title">强联网工具用现成的 · 不重造轮子</div>
-          <div class="pool-meta">
-            <span class="pool-source src-user">你抛</span>
-            <span class="pool-link">2026-07-24</span>
-          </div>
-          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>需要强联网协作的工具用现成的(幕布 / AP app 等 · 多端 · 免费) · 私人化本地的自己造(如本工作台)</div>
-        </div>
-      </div>
-
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">20</div>
         <div class="pool-content">
           <div class="pool-title">工作台加 AI API 调用能力 · 时机合适时启用</div>
@@ -4773,7 +4397,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">21</div>
         <div class="pool-content">
           <div class="pool-title">你的画像 · 通用版</div>
@@ -4785,7 +4409,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">22</div>
         <div class="pool-content">
           <div class="pool-title">5 段回复结构</div>
@@ -4797,7 +4421,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">23</div>
         <div class="pool-content">
           <div class="pool-title">想法池状态标签系统</div>
@@ -4809,7 +4433,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">24</div>
         <div class="pool-content">
           <div class="pool-title">哲学熔断器</div>
@@ -4821,7 +4445,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">25</div>
         <div class="pool-content">
           <div class="pool-title">执行层扩展方案 · 豆包提</div>
@@ -4833,7 +4457,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">26</div>
         <div class="pool-content">
           <div class="pool-title">全局关键词检索能力</div>
@@ -4845,7 +4469,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">27</div>
         <div class="pool-content">
           <div class="pool-title">新 AI 接入标准化 SOP</div>
@@ -4857,7 +4481,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">28</div>
         <div class="pool-content">
           <div class="pool-title">天蓝工作台入门指南 · 豆包提</div>
@@ -4869,7 +4493,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">29</div>
         <div class="pool-content">
           <div class="pool-title">执行层轻量版 · 豆包提(重复)</div>
@@ -4881,7 +4505,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">30</div>
         <div class="pool-content">
           <div class="pool-title">边界熔断与校准 SOP · 豆包提</div>
@@ -4893,7 +4517,7 @@ footer strong { color: #7d84a8; }
         </div>
       </div>
 
-      <div class="pool-item item-observing" data-status="pending">
+<div class="pool-item item-observing" data-status="pending">
         <div class="pool-num">31</div>
         <div class="pool-content">
           <div class="pool-title">固定周期自优化闭环 · 豆包提</div>
@@ -4904,596 +4528,225 @@ footer strong { color: #7d84a8; }
           <div class="pool-status"><span class="tag tag-observing">悬置 · 违背 15-days-patience</span>豆包想立巡检周期 + 清理规则 + 迭代流程 · 违背"先散后收"和"15 天回望" · 挂着</div>
         </div>
       </div>
-
       </div>
-    </div>
-
-    <!-- 想法池 · 思维导图(5 簇 + 3 矛盾) -->
-    <div class="card">
-      <div class="card-title">想法池 · 关系图(化学反应池视图)</div>
-      <div style="font-size: 11px; color: #7d84a8; margin-bottom: 12px; padding: 8px 10px; background: rgba(45, 45, 45, 0.4); border-radius: 6px; border-left: 2px solid rgba(180, 120, 255, 0.3); line-height: 1.5;">
-        列表看的是"有什么" · 关系图看的是"哪些是一件事、哪里在互相拉扯"<br>
-        <span style="color: #ff8c9c;">红虚线 = 矛盾 · 让你看见自己的裂缝</span>
-      </div>
-
-      <div class="map-svg-wrap">
-        <svg viewBox="0 0 800 720" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
-          <defs>
-            <radialGradient id="clusterVis" cx="50%" cy="50%">
-              <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.3"/>
-              <stop offset="100%" stop-color="#7dd3fc" stop-opacity="0.05"/>
-            </radialGradient>
-            <radialGradient id="clusterAntiDrift" cx="50%" cy="50%">
-              <stop offset="0%" stop-color="#ff8c9c" stop-opacity="0.28"/>
-              <stop offset="100%" stop-color="#ff8c9c" stop-opacity="0.05"/>
-            </radialGradient>
-            <radialGradient id="clusterPrivate" cx="50%" cy="50%">
-              <stop offset="0%" stop-color="#b478ff" stop-opacity="0.3"/>
-              <stop offset="100%" stop-color="#b478ff" stop-opacity="0.05"/>
-            </radialGradient>
-            <radialGradient id="clusterTransparent" cx="50%" cy="50%">
-              <stop offset="0%" stop-color="#6ee7b7" stop-opacity="0.3"/>
-              <stop offset="100%" stop-color="#6ee7b7" stop-opacity="0.05"/>
-            </radialGradient>
-            <radialGradient id="clusterJump" cx="50%" cy="50%">
-              <stop offset="0%" stop-color="#ffb457" stop-opacity="0.28"/>
-              <stop offset="100%" stop-color="#ffb457" stop-opacity="0.05"/>
-            </radialGradient>
-          </defs>
-
-          <!-- ============ 5 个簇 ============ -->
-
-          <!-- 簇 1 · 视觉化贯穿一切 -->
-          <ellipse cx="180" cy="130" rx="170" ry="105" fill="url(#clusterVis)" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="6 3" opacity="0.85"/>
-          <text x="180" y="55" fill="#7dd3fc" font-size="14" font-weight="700" text-anchor="middle">▎簇 1 · 视觉化贯穿一切</text>
-          <text x="180" y="72" fill="#9ca3b8" font-size="10" text-anchor="middle" font-style="italic">内核:文字消化不了 · 需要图</text>
-          <text x="180" y="98" fill="#eaecf5" font-size="10" text-anchor="middle">🧠 视觉化思维者</text>
-          <text x="180" y="115" fill="#eaecf5" font-size="10" text-anchor="middle">📐 UI 是消化工具</text>
-          <text x="180" y="132" fill="#eaecf5" font-size="10" text-anchor="middle">📱 iPad = 视觉呈现场</text>
-          <text x="180" y="149" fill="#eaecf5" font-size="10" text-anchor="middle">🕸 关系全景 SVG</text>
-          <text x="180" y="166" fill="#eaecf5" font-size="10" text-anchor="middle">🧠 大脑记忆可视化</text>
-          <text x="180" y="183" fill="#eaecf5" font-size="10" text-anchor="middle">📊 想法池关系图</text>
-
-          <!-- 簇 2 · AI 讨好漂移 & 对抗 -->
-          <ellipse cx="600" cy="130" rx="170" ry="105" fill="url(#clusterAntiDrift)" stroke="#ff8c9c" stroke-width="2" stroke-dasharray="6 3" opacity="0.85"/>
-          <text x="600" y="55" fill="#ff8c9c" font-size="14" font-weight="700" text-anchor="middle">▎簇 2 · 对抗 AI 讨好漂移</text>
-          <text x="600" y="72" fill="#9ca3b8" font-size="10" text-anchor="middle" font-style="italic">内核:系统性抗漂移 · 不是单点</text>
-          <text x="600" y="98" fill="#eaecf5" font-size="10" text-anchor="middle">📌 pin"AI 会漂移"</text>
-          <text x="600" y="115" fill="#eaecf5" font-size="10" text-anchor="middle">📝 复盘中立指令(资产 04)</text>
-          <text x="600" y="132" fill="#eaecf5" font-size="10" text-anchor="middle">💬 批注反馈通道</text>
-          <text x="600" y="149" fill="#eaecf5" font-size="10" text-anchor="middle">🎯 Kimi prompt 客观中立</text>
-          <text x="600" y="166" fill="#eaecf5" font-size="10" text-anchor="middle">✋ 主动要坏 6 洞察</text>
-          <text x="600" y="183" fill="#eaecf5" font-size="10" text-anchor="middle">🔴 承认 2 次讨好</text>
-
-          <!-- 簇 3 · 私人化 & 反通用 -->
-          <ellipse cx="180" cy="380" rx="170" ry="105" fill="url(#clusterPrivate)" stroke="#b478ff" stroke-width="2" stroke-dasharray="6 3" opacity="0.85"/>
-          <text x="180" y="305" fill="#b478ff" font-size="14" font-weight="700" text-anchor="middle">▎簇 3 · 私人化 · 反通用</text>
-          <text x="180" y="322" fill="#9ca3b8" font-size="10" text-anchor="middle" font-style="italic">内核:拒绝"通用最好"</text>
-          <text x="180" y="348" fill="#eaecf5" font-size="10" text-anchor="middle">🔒 工作台 = 私人化(memory)</text>
-          <text x="180" y="365" fill="#eaecf5" font-size="10" text-anchor="middle">📦 每样东西都是产品</text>
-          <text x="180" y="382" fill="#eaecf5" font-size="10" text-anchor="middle">🍑 荔枝分发只服务你</text>
-          <text x="180" y="399" fill="#eaecf5" font-size="10" text-anchor="middle">🎯 4 特征筛"对你有用"</text>
-          <text x="180" y="416" fill="#eaecf5" font-size="10" text-anchor="middle">⚖ 承认私人化代价</text>
-
-          <!-- 簇 4 · AI 透明化 -->
-          <ellipse cx="600" cy="380" rx="170" ry="105" fill="url(#clusterTransparent)" stroke="#6ee7b7" stroke-width="2" stroke-dasharray="6 3" opacity="0.85"/>
-          <text x="600" y="305" fill="#6ee7b7" font-size="14" font-weight="700" text-anchor="middle">▎簇 4 · AI 透明化</text>
-          <text x="600" y="322" fill="#9ca3b8" font-size="10" text-anchor="middle" font-style="italic">内核:不接受 AI 黑盒</text>
-          <text x="600" y="348" fill="#eaecf5" font-size="10" text-anchor="middle">🧠 Claude 大脑主题</text>
-          <text x="600" y="365" fill="#eaecf5" font-size="10" text-anchor="middle">📖 资产 03 · 大脑搭建说明书</text>
-          <text x="600" y="382" fill="#eaecf5" font-size="10" text-anchor="middle">📚 AI 使用手册 3 原因</text>
-          <text x="600" y="399" fill="#eaecf5" font-size="10" text-anchor="middle">🌐 每 AI 一个大脑页</text>
-          <text x="600" y="416" fill="#eaecf5" font-size="10" text-anchor="middle">🎯 主题 03 · AI 工具分工</text>
-
-          <!-- 簇 5 · 边干边发现 & 元层跃迁 -->
-          <ellipse cx="400" cy="595" rx="200" ry="90" fill="url(#clusterJump)" stroke="#ffb457" stroke-width="2" stroke-dasharray="6 3" opacity="0.85"/>
-          <text x="400" y="530" fill="#ffb457" font-size="14" font-weight="700" text-anchor="middle">▎簇 5 · 边干边发现 · 元层跃迁</text>
-          <text x="400" y="547" fill="#9ca3b8" font-size="10" text-anchor="middle" font-style="italic">内核:方法是"跳" · 不是"分阶段推进"</text>
-          <text x="400" y="573" fill="#eaecf5" font-size="10" text-anchor="middle">🌱 边干边发现是核心生产力</text>
-          <text x="400" y="590" fill="#eaecf5" font-size="10" text-anchor="middle">🔄 探索式起手 · 抛 v0 让你纠</text>
-          <text x="400" y="607" fill="#eaecf5" font-size="10" text-anchor="middle">📈 9 层跃迁全是你的纠正</text>
-          <text x="400" y="624" fill="#eaecf5" font-size="10" text-anchor="middle">⚡ 今天所有定型都是你抛的</text>
-
-          <!-- ============ 矛盾 · 全部已解 ============ -->
-
-        </svg>
-      </div>
-
-      <!-- 全部已解裂缝 · 简版 -->
-      <div class="map-explain" style="border-color: rgba(52, 211, 153, 0.25); background: rgba(45, 45, 45, 0.4);">
-        <div class="map-explain-title" style="color: #6ee7b7;">✓ 已被你解掉的裂缝 · 3 组</div>
-
-        <div class="map-explain-item" style="border-left-color: #6ee7b7;">
-          <strong style="color: #6ee7b7;">前矛盾 1 · 边干边跳 vs 版本分层 → 你的解</strong><br>
-          <span style="color: #d8dcec; font-size: 12px;">「分阶段生效」:前期大框架搭建允许跳跃 · 后期定型后按迭代补丁 · 切换信号 = "定型" —— 已更新到资产 01 v02</span>
-        </div>
-
-        <div class="map-explain-item" style="border-left-color: #6ee7b7;">
-          <strong style="color: #6ee7b7;">前矛盾 2 · 私人化 vs 让别 AI 用 → 你的解</strong><br>
-          <span style="color: #d8dcec; font-size: 12px;">「方法通用 · 内容私人」—— 资产 03 是通用方法 · 内容对我私人 · 边界清楚</span>
-        </div>
-
-        <div class="map-explain-item" style="border-left-color: #6ee7b7;">
-          <strong style="color: #6ee7b7;">前矛盾 3 · 视觉化 vs 建设代替使用 → 你的解</strong><br>
-          <span style="color: #d8dcec; font-size: 12px;">「视觉化建设本身就是消化 · 停止条件 = 用着舒服」—— 不是两阶段 · 是一体的</span>
-        </div>
-      </div>
-
-      <div style="font-size: 11px; color: #7d84a8; margin-top: 12px; padding: 10px 12px; text-align: center; background: rgba(45, 45, 45, 0.3); border-radius: 6px; font-style: italic;">
-        今天讨论中 · 3 组矛盾都被你解掉了 · 现在图上没有红虚线<br>
-        <span style="color: #6ee7b7;">未来发现新矛盾 · 会重新出现在这里</span>
-      </div>
-
-      <div style="font-size: 10px; color: #6b7295; margin-top: 12px; padding: 8px 10px; text-align: center; font-family: 'SF Mono', monospace;">
-        簇会成长 · 矛盾会消解或加深 · 每次深度讨论后更新
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">定位演化史</div>
-      <div class="timeline">
-        <div class="tl-item">
-          <div class="tl-version">v0 · 全能 AI 工作台</div>
-          <div class="tl-desc">触发修正:成本低 + 边干边发现</div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-version">v1 · 探索型底盘</div>
-          <div class="tl-desc">触发修正:硬件齐了但没盘活</div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-version">v2 · AI 中控台(操作层)</div>
-          <div class="tl-desc">触发修正:iPad 是视觉落地方便的地方</div>
-        </div>
-        <div class="tl-item active">
-          <div class="tl-version">v3 · 视觉呈现场 + 手机大屏延伸 ★</div>
-          <div class="tl-desc">定型 · 承载层 · 不替代 Mac</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">暂缓 · 否决</div>
-      <div class="chip-wrap">
-        <span class="chip">快捷指令</span>
-        <span class="chip">强行聚合 pin</span>
-        <span class="chip">主动扩展用法</span>
-        <span class="chip">B 阶段全套</span>
-        <span class="chip">大件硬件追加</span>
-      </div>
-      <div class="chip-note">等条件成熟再动 · 不预设需求</div>
-    </div>
-
-    <!-- 从定版成品迁来 · 2026-07-26 · 属未收敛构想 -->
-    <div class="card" style="border-left: 2px solid #ffb457;">
-      <div class="card-title" style="color: #ffb457;">📦 B 阶段准备 · 5 个数据源(从定版成品迁来 · 未收敛)</div>
-      <ul class="source-list">
-        <li class="source-item"><span class="source-name">飞书表</span><span class="source-purpose">工作 / SOP</span></li>
-        <li class="source-item"><span class="source-name">GitHub memory</span><span class="source-purpose">sop-active / feedback / user</span></li>
-        <li class="source-item"><span class="source-name">飞书 IM「给自己」</span><span class="source-purpose">想法暂存</span></li>
-        <li class="source-item"><span class="source-name">轻记 H5</span><span class="source-purpose">个人事务</span></li>
-        <li class="source-item"><span class="source-name">各家 AI 对话</span><span class="source-purpose">讨论沉淀</span></li>
-      </ul>
-      <div class="source-note">未来挑战:让这 5 个「串起来」或「选中心归拢」· 因含"未来挑战"字样属未收敛构想 · 2026-07-26 从定版成品迁来</div>
     </div>
 
   </div>
 
-  <!-- 主题 01 · 复盘 tab · 默认显示 -->
-  <div class="tab-panel" data-panel="review">
+  <!-- ========== TAB · D 提炼 ========== -->
+  <div class="tab-panel" data-panel="distill">
 
-    <!-- 迭代日志顶部 · 观察触发点 -->
-    <div class="card" style="background: rgba(255, 176, 87, 0.06); border: 1px solid rgba(255, 176, 87, 0.25);">
-      <div class="card-title" style="color: #ffb457;">▎观察触发点 · 等下一次复盘</div>
-      <div class="callout" style="margin-top: 0;">
-        <div class="callout-title">一周后必须自问 3 个问题</div>
-        <ul class="callout-list">
-          <li class="callout-item"><span class="q-mark">Q1</span>打开了几次?</li>
-          <li class="callout-item"><span class="q-mark">Q2</span>哪块最爱看?</li>
-          <li class="callout-item"><span class="q-mark">Q3</span>哪块空着从不看?</li>
-        </ul>
-        <div class="callout-note">这 3 个答案 = B 阶段(真第二大脑)的真正设计输入 · 也是下一次复盘的起点</div>
+    <div class="card" style="background: rgba(180, 120, 255, 0.06); border-color: rgba(180, 120, 255, 0.25);">
+      <div class="card-title" style="color: #d6b4ff;">▎D · 提炼 · 精华收敛</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong style="color: #d6b4ff;">规则</strong>:从原始想法中抽核心结论/关键规则/明确边界 · 原始素材保留不删<br>
+        <span style="color: #7d84a8;">下面 7 条已提炼定型 · 内容可回溯</span>
       </div>
     </div>
 
-    <!-- 复盘 01 · 本次会话复盘(战术层) -->
-    <div class="brain-review">
-      <div class="brain-review-title">
-        <span class="num">01</span>本次会话复盘
-        <span class="date">2026-07-22 → 07-23 · 从 0 到 ClaudeCode 工作台</span>
-      </div>
-
-      <div class="review-block">
-        <div class="review-block-label">起点</div>
-        <div class="review-track">你抛:「iPad 打造成 AI 工作台 · 有什么建议」· 空白状态</div>
-      </div>
-
-      <div class="review-block">
-        <div class="review-block-label">9 层演化</div>
-        <div class="review-track" style="font-size: 11px; color: #7d84a8;">已内化到 Claude 大脑元层「边用边写」/「先散后收」条目 · 过程档不再重复</div>
-      </div>
-
-      <div class="review-block">
-        <div class="review-block-label">关键洞察 · 你抛的都是元层</div>
-        <div class="review-insight"><span class="idx">01</span>iPad ≠ Mac 替代 · 是发散阶段专属主场(手机语音 · iPad 阅读 · Mac 键盘)</div>
-        <div class="review-insight"><span class="idx">02</span>姿势-精度矩阵「这就是我的感受」—— 认同点</div>
-        <div class="review-insight"><span class="idx">03</span>荔枝分发通道 · URL 通吃所有设备 · 打通 B 阶段</div>
-        <div class="review-insight"><span class="idx">04</span>想法池是化学反应池 · 不是归档柜</div>
-        <div class="review-insight"><span class="idx">05</span>跨 AI 复用资产是一整类东西 · 4 特征筛选</div>
-        <div class="review-insight"><span class="idx">06</span>讨论 01 不是「讨论」· 是我的大脑可视化 = ClaudeCode-Brain</div>
-      </div>
-
-      <div class="review-block">
-        <div class="review-block-label">落地资产</div>
-        <div class="review-insight" style="border-left-color: #34d399;"><span class="idx" style="color: #6ee7b7;">✓</span>荔枝分发平台 · GitHub Pages 15 秒上线</div>
-        <div class="review-insight" style="border-left-color: #34d399;"><span class="idx" style="color: #6ee7b7;">✓</span>ClaudeCode 工作台 · 主题式架构</div>
-        <div class="review-insight" style="border-left-color: #34d399;"><span class="idx" style="color: #6ee7b7;">✓</span>大脑主题 · 元层信息可视化</div>
-        <div class="review-insight" style="border-left-color: #34d399;"><span class="idx" style="color: #6ee7b7;">✓</span>Kimi prompt + Handoff prompt · 2 条定型资产 · 可复制</div>
-        <div class="review-insight" style="border-left-color: #34d399;"><span class="idx" style="color: #6ee7b7;">✓</span>批注系统 · 划词+评论+导出 · Pencil 已支持</div>
-        <div class="review-insight" style="border-left-color: #34d399;"><span class="idx" style="color: #6ee7b7;">✓</span>8 条 memory(今日新增 4 条:镜子 / 5 段结构 / 荔枝平台 / 文件分工)</div>
-        <div class="review-insight" style="border-left-color: #ffb457;"><span class="idx" style="color: #ffb457;">·</span>Handoff prompt · 待你 pin 到飞书 IM「给自己」</div>
-      </div>
-
-      <div class="review-block">
-        <div class="review-block-label">元反思</div>
-        <div class="review-meta-reflect">
-          我抛的框架<strong>大部分被你推翻了</strong> · 定型的每一版都是你的纠正 —— 这就是<strong>镜子模式</strong>在工作。<br>
-          不是我不够好 · 是这个模式本身就该这样。你 CLAUDE.md 一开始就写了「思维高度发散 · 需要主动锚定」· 今天全部应验。
-        </div>
-      </div>
-    </div>
-
-    <!-- 洞察 · 好坏都讲 -->
-    <div class="brain-insight">
-
-      <div class="insight-half">
-        <div class="insight-half-label good">
-          好的洞察 <span class="count-badge">6</span>
-        </div>
-
-        <div class="insight-item good">
-          <div class="title"><span class="num">01</span>你天然会跳"元层"</div>
-          <div class="desc">9 层跃迁有 5 层是你直接跳元层(荔枝分发/主题化/大脑可视化/想法池反应池/跨 AI 复用资产)。<em>你在设计层做加法 · 而不是操作层堆功能</em> —— 产品经理稀缺能力。</div>
-        </div>
-
-        <div class="insight-item good">
-          <div class="title"><span class="num">02</span>"边干边发现"是真的</div>
-          <div class="desc">你原本担心这模式不成熟。今天所有跳跃证明它就是你的核心生产力 —— 定型的每一版都比我抛的完美方案好。<em>停止把它当缺点 · 当资产</em>。</div>
-        </div>
-
-        <div class="insight-item good">
-          <div class="title"><span class="num">03</span>判断快 · 果断</div>
-          <div class="desc">"选 A / 选 2 / 选 C" —— 你几乎从不纠结。<em>完美主义没有削弱执行力</em> · 反而让你在拍板时已经想清楚了。</div>
-        </div>
-
-        <div class="insight-item good">
-          <div class="title"><span class="num">04</span>会打断 · 打断是校准</div>
-          <div class="desc">今天打断我至少 5 次 · 每次都推进讨论 · 没有一次无效。<em>你的"打断"不是发散 · 是校准</em>。</div>
-        </div>
-
-        <div class="insight-item good">
-          <div class="title"><span class="num">05</span>会用外部认知</div>
-          <div class="desc">Kimi 的 5 段结构拿来给我用 · 豆包做心镜 · 你不 loyalty 到一家。<em>这是元 AI 协作能力</em>。</div>
-        </div>
-
-        <div class="insight-item good">
-          <div class="title"><span class="num">06</span>敢让 AI 说坏话</div>
-          <div class="desc">"好坏都讲"这个要求本身就是稀缺。90% 用户只想被夸 · 你主动要真实反馈。<em>这是你能持续进步的底层原因</em>。</div>
+    <div class="card">
+      <div class="card-title" style="color: #d6b4ff;">▎已提炼(7 条)</div>
+      <div class="pool-timeline">
+<div class="pool-item item-upgraded" data-status="confirmed">
+        <div class="pool-num">01</div>
+        <div class="pool-content">
+          <div class="pool-title">iPad = 各 AI 跳转中枢</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span>·</span>
+            <span>讨论开局</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>演化成 v3 定位骨架</div>
         </div>
       </div>
 
-      <div class="insight-half">
-        <div class="insight-half-label bad">
-          坏的洞察 <span class="count-badge">6</span>
-        </div>
-
-        <div class="insight-item bad">
-          <div class="title"><span class="num">01</span>架构跳 9 层 · 实用价值没匹配</div>
-          <div class="desc">UI 改了 10+ 次 · 但日常真会用的只有 2-3 个(荔枝分发/Handoff)。<em>ClaudeCode 工作台漂亮 · 但你不会天天打开</em>。CLAUDE.md 二部分 2「追求完美 = 无法落地」· 今天在架构层面发生了。</div>
-        </div>
-
-        <div class="insight-item bad">
-          <div class="title"><span class="num">02</span>用建设代替使用</div>
-          <div class="desc">本轮没有一件事是"直接开始用工作台" · 全是讨论工作台该长什么样。<em>8+ 小时 · 0 次 iPad 上实际用豆包做发散</em>。你 CLAUDE.md 明写"卡在空想最内耗" · 但今天建设本身成了空想的伪装。</div>
-        </div>
-
-        <div class="insight-item bad">
-          <div class="title"><span class="num">03</span>完美主义克制了 · 但转移了</div>
-          <div class="desc">UI 层面确实克制(不完美你说"不影响就走")。<em>但架构层面你没克制</em> —— 从单文件→tab→分栏→主题式→大脑 · 每次追求"更完美的架构"。完美主义换了个战场。</div>
-        </div>
-
-        <div class="insight-item bad">
-          <div class="title"><span class="num">04</span>我顺你太多</div>
-          <div class="desc">今天我大部分在执行你的架构调整 · 而不是质疑"这个调整值不值"。<em>Kimi 那份对话里她做了对抗验证 · 我今天没做到</em>。第 5-6 次大改时我应该问"真比上一版好吗?"</div>
-        </div>
-
-        <div class="insight-item bad">
-          <div class="title"><span class="num">05</span>想法池膨胀 · 沉淀跟不上</div>
-          <div class="desc">想法池从 15 条 → 75+ 条。<em>真正 pin 到飞书 0 条 · 沉淀成 memory 4 条</em>。产出/沉淀比太低。想法池变成 buffer · 长期成负担。</div>
-        </div>
-
-        <div class="insight-item bad">
-          <div class="title"><span class="num">06</span>对我的期待可能过高</div>
-          <div class="desc">你说"少了磨合期"是好事。但危险的是 —— 你可能开始<em>依赖 AI 帮你想</em>而不是撞你的想法。今天几次"通 · 跑吧"没验证方向直接信我 —— 我们同频了但没质疑。</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 元洞察 -->
-    <div class="meta-insight">
-      <div class="meta-insight-title">元洞察 · 最重要的一条</div>
-      <div class="meta-insight-body">
-        今天最大的价值 · 不是那 9 层架构 · 是<strong>荔枝分发通道</strong>这 1 件事。<br><br>
-        · 前 6 小时讨论 iPad · 有价值 · 但可替代(别的 AI 也能想到)<br>
-        · 后 2 小时讨论 UI 架构 · 有价值 · 但过度<br>
-        · 中间 "荔枝分发通道" 这 15 分钟 · <strong>无可替代</strong> —— 你自己抛出来 · 立刻跑通 · 是真正的杠杆点
-        <div class="lesson">
-          <strong>教训</strong>:未来讨论要识别<strong>杠杆点</strong> —— 那种"跑通一次 · 未来天天用"的东西 · 优先级远高于"结构漂亮"的东西。
-        </div>
-      </div>
-    </div>
-
-    <!-- v02 项目迭代记录 · 从元层演化日志迁入 · 2026-07-26 -->
-    <div class="brain-review" style="margin-top: 20px;">
-      <div class="brain-review-title">
-        <span class="num">v02</span>项目迭代记录 · 版本决策
-        <span class="date">2026-07-26 · 补丁期开始</span>
-      </div>
-
-      <div class="review-block">
-        <div class="review-block-label">上次遗留 · 全部办结(移除)</div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>Handoff 交接 prompt 存飞书</strong> —— 已确认不需要 · 移除
-        </div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>换 AI 交接 prompt 存飞书</strong> —— 早就解决 · 移除
-        </div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>主题 03(AI 工具分工)空占位</strong> —— 已填充完 · 移除
-        </div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>关系全景/想法池思维导图 · 是否翻回来看</strong> —— 你确认会翻 · 从"不确定"移出
-        </div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>今天工作台 24+ 小时 · 是过度吗</strong> —— 你确认正常 · 从"不确定"移出
+<div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">02</div>
+        <div class="pool-content">
+          <div class="pool-title">网页加主屏比原生 App 好</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span class="pool-link">由 <span class="arrow">#01</span> 触发</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>入口层做法定型</div>
         </div>
       </div>
 
-      <div class="review-block">
-        <div class="review-block-label">🟢 项目决策 · 全局版本级</div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>工作台进入 v02 迭代补丁期</strong><br>
-          <span style="color: #7d84a8; font-size: 11px;">两阶段模式生效:搭建期允许发散 · 补丁期按迭代补全 · 切换信号 = "定型"</span>
-        </div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>关系全景 · 想法池思维导图 = 有效资产</strong><br>
-          <span style="color: #7d84a8; font-size: 11px;">确认具备回看价值 · 关系全景已改浮层唤起</span>
-        </div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>主题 03 · AI 工具分工 · 脱离空占位</strong><br>
-          <span style="color: #7d84a8; font-size: 11px;">5 张 AI 详细卡已铺完 · 场景决策图已画</span>
-        </div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>元层 tab 结构调整:复盘 → 演化日志 → 拆除</strong><br>
-          <span style="color: #7d84a8; font-size: 11px;">2026-07-26 拆除演化日志 tab · 项目级迭代下沉本处 · 双脑边界改动进元层底部备忘录</span>
+<div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">03</div>
+        <div class="pool-content">
+          <div class="pool-title">主屏 AI 矩阵 · 一屏铺开</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">承接 <span class="arrow">#02</span> · 你选</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>A 阶段步骤 2</div>
         </div>
       </div>
 
-      <div class="review-block">
-        <div class="review-block-label">🟢 资产库版本切换机制</div>
-        <div class="review-insight" style="border-left-color: #34d399;">
-          <span class="idx" style="color: #6ee7b7;">✓</span>
-          <strong>资产双版本切换</strong><br>
-          <span style="color: #7d84a8; font-size: 11px;">v01 原版 / v02 实测优化版 · 保留演化轨迹 · 全局机制</span>
+<div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">05</div>
+        <div class="pool-content">
+          <div class="pool-title">剪贴板作 AI 之间的传送带</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">承接 <span class="arrow">#01</span> · 你选</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>流转层核心机制</div>
         </div>
       </div>
 
-      <div class="review-block">
-        <div class="review-block-label">⏳ 已知问题 · 已迁待办清单</div>
-        <div style="padding: 8px 10px; background: rgba(255, 176, 87, 0.06); border-left: 2px solid #ffb457; border-radius: 4px; font-size: 10.5px; color: #d8dcec; line-height: 1.6;">
-          <strong style="color: #ffb457;">已迁走</strong>:
-          <br>· 4 条候选资产整理(你的画像/5 段结构/状态标签/哲学熔断器)
-          <br>· 协作沉淀分类归属明确
-          <br>· v02 改动清单价值评估(观察期)
-          <br>· 主题 03 完整细化(后置)
-          <br><span style="color: #7d84a8; margin-top: 4px; display: block;">▸ 存放位置:本主题 · 待办清单 tab</span>
+<div class="pool-item item-upgraded" data-status="confirmed">
+        <div class="pool-num">07</div>
+        <div class="pool-content">
+          <div class="pool-title">iPad 是视觉落地方便的地方</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span class="pool-link">推翻 <span class="arrow">v2 中控台</span></span>
+          </div>
+          <div class="pool-status"><span class="tag tag-upgraded">已升级</span>v3 定位骨架 · 承载层</div>
         </div>
       </div>
 
-      <div class="review-block">
-        <div class="review-block-label">🟢 项目权责定稿</div>
-        <div class="review-meta-reflect">
-          标记为「已定决策」「执行规范」的以天蓝最终拍板为准 · Claude 提优化建议但<strong>核心定位/规则/优先级判定权归天蓝</strong>。<br><br>
-          批注原文、评论内容仅作背景参考 · 不直接等同执行要求 —— 需要经天蓝<strong>"拍板"信号</strong>才能算数。
+<div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">08</div>
+        <div class="pool-content">
+          <div class="pool-title">姿势-精度分工(语音 / 触屏 / 键盘)</div>
+          <div class="pool-meta">
+            <span class="pool-source src-both">共同</span>
+            <span class="pool-link">我抛 · 你验证</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>「这就是我的感受」认同点</div>
         </div>
       </div>
 
+<div class="pool-item item-confirmed" data-status="confirmed">
+        <div class="pool-num">19</div>
+        <div class="pool-content">
+          <div class="pool-title">强联网工具用现成的 · 不重造轮子</div>
+          <div class="pool-meta">
+            <span class="pool-source src-user">你抛</span>
+            <span class="pool-link">2026-07-24</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-confirmed">已确认</span>需要强联网协作的工具用现成的(幕布 / AP app 等 · 多端 · 免费) · 私人化本地的自己造(如本工作台)</div>
+        </div>
+      </div>
+      </div>
     </div>
 
   </div>
 
-  <!-- ========== TAB 5 · 经验案例(2026-07-26 从天蓝脑迁入)========== -->
-  <div class="tab-panel" data-panel="cases">
+  <!-- ========== TAB · E 表达 ========== -->
+  <div class="tab-panel" data-panel="express">
 
-      <!-- 完整生命周期 · 横向 SVG 流程图 + 右侧分流卡 -->
-      <div class="card" style="background: rgba(45,45,45,0.4); border-color: rgba(180,120,255,0.15); padding: 10px 12px;">
-        <div class="card-title" style="color: #d6b4ff; margin-bottom: 6px;">▎完整生命周期</div>
+    <div class="card" style="background: rgba(52, 211, 153, 0.06); border-color: rgba(52, 211, 153, 0.25);">
+      <div class="card-title" style="color: #6ee7b7;">▎E · 表达 · 定型主题包</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong style="color: #6ee7b7;">规则</strong>:聚合提炼 → 生成正式主题包 · 可复用产物 · 分流到其他主题<br>
+        <span style="color: #7d84a8;">已表达内容:分流去了 Claude 脑 / 天蓝脑 / 主题 02</span>
+      </div>
+    </div>
 
-        <div class="lc-layout">
-        <div class="lc-svg-wrap" style="background: rgba(35,35,35,0.4); border-radius: 8px; padding: 10px 4px; overflow-x: auto;">
-        <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" style="width: 100%; min-width: 720px; height: auto; display: block;">
-          <defs>
-            <linearGradient id="lcStartH2" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#7c9dff" stop-opacity="0.95"/>
-              <stop offset="100%" stop-color="#b478ff" stop-opacity="0.9"/>
-            </linearGradient>
-            <linearGradient id="lcEndH2" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#34d399" stop-opacity="0.95"/>
-              <stop offset="100%" stop-color="#10b981" stop-opacity="0.9"/>
-            </linearGradient>
-            <marker id="lcArrowH2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c9dff"/>
-            </marker>
-            <marker id="lcArrowLoopH2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#f0abfc"/>
-            </marker>
-          </defs>
+    <div class="card">
+      <div class="card-title" style="color: #6ee7b7;">▎已表达 · 分流去向</div>
+      <div style="font-size: 11.5px; color: #d8dcec; line-height: 2; padding: 10px;">
+        📦 <strong style="color: #7dd3fc;">Claude 脑 · Memory 全库</strong> —— 协作规则类沉淀(23 条)<br>
+        📦 <strong style="color: #6ee7b7;">天蓝脑 · 思考方式</strong> —— 你的方法论(边用边写/先散后收 等)<br>
+        📦 <strong style="color: #d6b4ff;">主题 02 · 跨 AI 复用资产</strong> —— Prompt 资产库(13 条)<br>
+        📦 <strong style="color: #f0abfc;">主题 03 · AI 工具分工</strong> —— 场景选型手册<br>
+        📦 <strong style="color: #ffb457;">经验案例 · 15 天回望</strong> —— 见本主题下方
+      </div>
+    </div>
 
-          <line x1="75" y1="80" x2="105" y2="80" stroke="#7c9dff" stroke-width="1.8" opacity="0.75" marker-end="url(#lcArrowH2)"/>
-          <line x1="145" y1="80" x2="175" y2="80" stroke="#7c9dff" stroke-width="1.8" opacity="0.75" marker-end="url(#lcArrowH2)"/>
-          <line x1="215" y1="80" x2="245" y2="80" stroke="#7c9dff" stroke-width="1.8" opacity="0.75" marker-end="url(#lcArrowH2)"/>
-          <line x1="285" y1="80" x2="315" y2="80" stroke="#7c9dff" stroke-width="1.8" opacity="0.75" marker-end="url(#lcArrowH2)"/>
-          <line x1="355" y1="80" x2="385" y2="80" stroke="#7c9dff" stroke-width="1.8" opacity="0.75" marker-end="url(#lcArrowH2)"/>
-          <line x1="425" y1="80" x2="455" y2="80" stroke="#7c9dff" stroke-width="1.8" opacity="0.75" marker-end="url(#lcArrowH2)"/>
-          <line x1="495" y1="80" x2="525" y2="80" stroke="#7c9dff" stroke-width="1.8" opacity="0.75" marker-end="url(#lcArrowH2)"/>
-          <line x1="565" y1="80" x2="620" y2="80" stroke="#34d399" stroke-width="1.8" opacity="0.85" marker-end="url(#lcArrowH2)"/>
-
-          <path d="M 720 100 Q 720 210 400 210 Q 125 210 125 100" fill="none" stroke="#f0abfc" stroke-width="1.3" opacity="0.5" stroke-dasharray="4 3" marker-end="url(#lcArrowLoopH2)"/>
-          <path d="M 720 108 Q 720 195 400 195 Q 265 195 265 105" fill="none" stroke="#f0abfc" stroke-width="1.3" opacity="0.5" stroke-dasharray="4 3" marker-end="url(#lcArrowLoopH2)"/>
-          <text x="450" y="228" fill="#f0abfc" font-size="10" text-anchor="middle" font-family="SF Mono, monospace" opacity="0.85">↺ 新想法/新任务回流</text>
-
-          <g>
-            <rect x="15" y="60" width="60" height="40" rx="20" fill="url(#lcStartH2)" opacity="0.95"/>
-            <text x="45" y="85" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">START</text>
-          </g>
-
-          <g>
-            <circle cx="125" cy="80" r="20" fill="#2a2a2a" stroke="#7c9dff" stroke-width="1.8"/>
-            <text x="125" y="85" fill="#a4b3ff" font-size="14" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">1</text>
-            <text x="125" y="122" fill="#eaecf5" font-size="10.5" font-weight="600" text-anchor="middle">零散灵感</text>
-            <text x="125" y="136" fill="#7d84a8" font-size="9" text-anchor="middle">多端/碎片化</text>
-          </g>
-
-          <g>
-            <circle cx="195" cy="80" r="20" fill="rgba(255,176,87,0.15)" stroke="#ffb457" stroke-width="1.8"/>
-            <text x="195" y="85" fill="#ffb457" font-size="14" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">2</text>
-            <text x="195" y="122" fill="#eaecf5" font-size="10.5" font-weight="600" text-anchor="middle">汇总录入</text>
-            <rect x="160" y="128" width="70" height="18" rx="3" fill="rgba(255,176,87,0.15)" stroke="#ffb457" stroke-width="0.8"/>
-            <text x="195" y="141" fill="#ffb457" font-size="9" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">想法储备</text>
-            <text x="195" y="158" fill="#7d84a8" font-size="8.5" text-anchor="middle">AI 分类/打标</text>
-          </g>
-
-          <g>
-            <circle cx="265" cy="80" r="20" fill="#2a2a2a" stroke="#7c9dff" stroke-width="1.8"/>
-            <text x="265" y="85" fill="#a4b3ff" font-size="14" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">3</text>
-            <text x="265" y="122" fill="#eaecf5" font-size="10.5" font-weight="600" text-anchor="middle">讨论筛选</text>
-            <text x="265" y="136" fill="#7d84a8" font-size="9" text-anchor="middle">附想法/待办</text>
-          </g>
-
-          <g>
-            <circle cx="335" cy="80" r="20" fill="rgba(180,120,255,0.15)" stroke="#b478ff" stroke-width="1.8"/>
-            <text x="335" y="85" fill="#d6b4ff" font-size="14" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">4</text>
-            <text x="335" y="122" fill="#eaecf5" font-size="10.5" font-weight="600" text-anchor="middle">拆解任务</text>
-            <rect x="300" y="128" width="70" height="18" rx="3" fill="rgba(180,120,255,0.15)" stroke="#b478ff" stroke-width="0.8"/>
-            <text x="335" y="141" fill="#d6b4ff" font-size="9" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">待办清单</text>
-            <text x="335" y="158" fill="#7d84a8" font-size="8.5" text-anchor="middle">AI 拆解/排优</text>
-          </g>
-
-          <g>
-            <circle cx="405" cy="80" r="20" fill="#2a2a2a" stroke="#7c9dff" stroke-width="1.8"/>
-            <text x="405" y="85" fill="#a4b3ff" font-size="14" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">5</text>
-            <text x="405" y="122" fill="#eaecf5" font-size="10.5" font-weight="600" text-anchor="middle">执行 · 写批注</text>
-            <text x="405" y="136" fill="#7d84a8" font-size="9" text-anchor="middle">批注内嵌</text>
-          </g>
-
-          <g>
-            <circle cx="475" cy="80" r="20" fill="rgba(125,211,252,0.15)" stroke="#7dd3fc" stroke-width="1.8"/>
-            <text x="475" y="85" fill="#7dd3fc" font-size="14" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">6</text>
-            <text x="475" y="122" fill="#eaecf5" font-size="10.5" font-weight="600" text-anchor="middle">迭代复盘</text>
-            <rect x="440" y="128" width="70" height="18" rx="3" fill="rgba(125,211,252,0.15)" stroke="#7dd3fc" stroke-width="0.8"/>
-            <text x="475" y="141" fill="#7dd3fc" font-size="9" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">迭代日志</text>
-            <text x="475" y="158" fill="#7d84a8" font-size="8.5" text-anchor="middle">批注 · AI 结构化</text>
-          </g>
-
-          <g>
-            <circle cx="545" cy="80" r="20" fill="rgba(52,211,153,0.15)" stroke="#6ee7b7" stroke-width="1.8"/>
-            <text x="545" y="85" fill="#6ee7b7" font-size="14" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">7</text>
-            <text x="545" y="122" fill="#eaecf5" font-size="10.5" font-weight="600" text-anchor="middle">打磨定型</text>
-            <rect x="510" y="128" width="70" height="18" rx="3" fill="rgba(52,211,153,0.15)" stroke="#6ee7b7" stroke-width="0.8"/>
-            <text x="545" y="141" fill="#6ee7b7" font-size="9" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">定版成品</text>
-            <text x="545" y="158" fill="#7d84a8" font-size="8.5" text-anchor="middle">活版本 · 直接复用</text>
-          </g>
-
-          <g>
-            <rect x="620" y="60" width="100" height="40" rx="20" fill="url(#lcEndH2)" opacity="0.95"/>
-            <text x="670" y="85" fill="white" font-size="11" font-weight="700" text-anchor="middle" font-family="SF Mono, monospace">END · 归档</text>
-          </g>
-        </svg>
+    <!-- 15 天回望经验案例(合并进 E 表达) -->
+    <div class="card" style="background: rgba(35,35,35,0.7); border-color: rgba(180,120,255,0.25);">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <div style="font-family: 'SF Mono', monospace; font-size: 14px; font-weight: 700; color: #d6b4ff; background: rgba(180,120,255,0.15); padding: 4px 10px; border-radius: 5px; border: 1px solid rgba(180,120,255,0.3);">01</div>
+        <div style="flex:1;">
+          <div style="font-size: 15px; font-weight: 700; color: #eaecf5;">AI 协作系统 · 15 天回望</div>
+          <div style="font-size: 10px; color: #7d84a8; font-family: 'SF Mono', monospace;">2026-07-08 → 07-23 · 从散乱到定型</div>
         </div>
+      </div>
+      <div style="padding: 10px 12px; background: rgba(45,45,45,0.5); border-left: 2px solid #7c9dff; border-radius: 4px; margin-bottom: 10px;">
+        <div style="font-size: 10px; color: #a4b3ff; font-family: 'SF Mono', monospace; font-weight: 700; margin-bottom: 5px;">▎ 背景</div>
+        <div style="font-size: 12px; color: #d8dcec; line-height: 1.7;">7 月 8 号到 7 月 23 号 · AI 协作系统从散乱到定型 · 但实际远不止 · 从 5 月初就开始想 · 前面 2 个月折腾了很多路</div>
+      </div>
+      <div style="padding: 10px 12px; background: rgba(45,45,45,0.5); border-left: 2px solid #b478ff; border-radius: 4px; margin-bottom: 10px;">
+        <div style="font-size: 10px; color: #d6b4ff; font-family: 'SF Mono', monospace; font-weight: 700; margin-bottom: 5px;">▎ 产出</div>
+        <div style="font-size: 12px; color: #d8dcec; line-height: 1.7;">
+          · SOP 17 → 4 大类<br>· 铁律 22 → 4 条<br>· 沉淀方法改「边用边写」<br>· 4 AI 分工定稿<br>· 待办表 7 视图 13 字段
+        </div>
+      </div>
+      <div style="padding: 10px 12px; background: rgba(45,45,45,0.5); border-left: 2px solid #6ee7b7; border-radius: 4px;">
+        <div style="font-size: 10px; color: #6ee7b7; font-family: 'SF Mono', monospace; font-weight: 700; margin-bottom: 5px;">▎ 能带走的经验(已沉淀到天蓝脑)</div>
+        <div style="font-size: 12px; color: #d8dcec; line-height: 1.7;">
+          · <strong>先散后收</strong>:17 份 SOP → 4 份 · 中间过程就是想清楚的过程<br>
+          · <strong>边用边写</strong>:5 层协作方法<br>
+          · <strong>绕开 AI 底层限制</strong>:AI 记不住/数字飘/讨好漂移都用策略绕<br>
+          · <strong>各端自完备</strong>:AI 之间没法真同步 · 接受重复<br>
+          · <strong>偏离不是错</strong>:改动过很多次 · 是想清楚的过程
+        </div>
+      </div>
+    </div>
 
-        <div class="lc-branch-box">
-          <div class="lc-branch-head">▎最终决策分流 · 3 条回流</div>
-          <div class="lc-branch-row">
-            <span class="lc-branch-icon">↺</span>产生新想法 → 回流<span class="lc-tab lc-tab-pool">想法储备</span>
+  </div>
+
+  <!-- ========== TAB · 临时归档 ========== -->
+  <div class="tab-panel" data-panel="temp">
+
+    <div class="card" style="background: rgba(125, 132, 168, 0.06); border-color: rgba(125, 132, 168, 0.25);">
+      <div class="card-title" style="color: #7d84a8;">▎临时 · 无法归 CODE 的历史档</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong style="color: #7d84a8;">规则</strong>:归 CODE 不合适的内容 · 或明确悬置的历史档<br>
+        <span style="color: #7d84a8;">不清空 · 定期核对</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color: #7d84a8;">▎已归档想法(3 条)</div>
+      <div class="pool-timeline">
+<div class="pool-item item-archived" data-status="archived">
+        <div class="pool-num">04</div>
+        <div class="pool-content">
+          <div class="pool-title">场景 folder 不按 AI 名分</div>
+          <div class="pool-meta">
+            <span class="pool-source src-ai">我抛</span>
+            <span class="pool-link">承接 <span class="arrow">#03</span> · 你未选</span>
           </div>
-          <div class="lc-branch-row">
-            <span class="lc-branch-icon">↺</span>拆出新任务 → 回流<span class="lc-tab lc-tab-todo">待办清单</span>
-          </div>
-          <div class="lc-branch-row">
-            <span class="lc-branch-icon lc-branch-icon-ok">✓</span>内容彻底稳定 → 归档 · 闭环结束
-          </div>
+          <div class="pool-status"><span class="tag tag-archived">悬置</span>抛过未采纳 · 保留</div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">经验案例 · 成功案例集</div>
-        <div class="pool-intro">我(天蓝)搭工作台过程中的成功案例 · 每个案例:背景 / 过程 / 产出 / 能带走的经验 · 未来所有类似「15 天回望」的项目沉淀都进这里</div>
-      </div>
-
-      <div class="card" style="background: rgba(35,35,35,0.7); border-color: rgba(180,120,255,0.25);">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-          <div style="font-family: 'SF Mono', monospace; font-size: 14px; font-weight: 700; color: #d6b4ff; background: rgba(180,120,255,0.15); padding: 4px 10px; border-radius: 5px; border: 1px solid rgba(180,120,255,0.3);">01</div>
-          <div style="flex:1;">
-            <div style="font-size: 15px; font-weight: 700; color: #eaecf5;">AI 协作系统 · 15 天回望</div>
-            <div style="font-size: 10px; color: #7d84a8; font-family: 'SF Mono', monospace;">2026-07-08 → 07-23 · 从散乱到定型</div>
+<div class="pool-item item-archived" data-status="archived">
+        <div class="pool-num">12</div>
+        <div class="pool-content">
+          <div class="pool-title">快捷指令暂缓 · 等「做烦」信号</div>
+          <div class="pool-meta">
+            <span class="pool-source src-both">共同</span>
+            <span>·</span>
+            <span>你倾向不做 · 我认同</span>
           </div>
-        </div>
-
-        <div style="padding: 10px 12px; background: rgba(45,45,45,0.5); border-left: 2px solid #7c9dff; border-radius: 4px; margin-bottom: 10px;">
-          <div style="font-size: 10px; color: #a4b3ff; font-family: 'SF Mono', monospace; font-weight: 700; margin-bottom: 5px;">▎ 背景</div>
-          <div style="font-size: 12px; color: #d8dcec; line-height: 1.7;">7 月 8 号到 7 月 23 号 · AI 协作系统从散乱到定型 · 但实际远不止 · 从 5 月初就开始想 · 前面 2 个月折腾了很多路</div>
-        </div>
-
-        <div style="padding: 10px 12px; background: rgba(45,45,45,0.5); border-left: 2px solid #b478ff; border-radius: 4px; margin-bottom: 10px;">
-          <div style="font-size: 10px; color: #d6b4ff; font-family: 'SF Mono', monospace; font-weight: 700; margin-bottom: 5px;">▎ 产出</div>
-          <div style="font-size: 12px; color: #d8dcec; line-height: 1.7;">
-            · SOP 17 → 4 大类<br>
-            · 铁律 22 → 4 条<br>
-            · 沉淀方法改「边用边写」<br>
-            · 4 AI 分工定稿(GitHub Claude / aily / 豆包 / 荔枝)<br>
-            · 待办表 7 视图 13 字段 · 三表联动
-          </div>
-        </div>
-
-        <div style="padding: 10px 12px; background: rgba(45,45,45,0.5); border-left: 2px solid #6ee7b7; border-radius: 4px; margin-bottom: 10px;">
-          <div style="font-size: 10px; color: #6ee7b7; font-family: 'SF Mono', monospace; font-weight: 700; margin-bottom: 5px;">▎ 能带走的经验(已沉淀到 Claude 大脑元层)</div>
-          <div style="font-size: 12px; color: #d8dcec; line-height: 1.7;">
-            · <strong>先散后收</strong>:17 份 SOP → 4 份 · 中间过程就是想清楚的过程<br>
-            · <strong>边用边写</strong>:5 层协作方法(用 → 写心得 → 讨论 → AI 沉淀 → 回验)<br>
-            · <strong>绕开 AI 底层限制</strong>:AI 记不住 → 我要它读时才读 · AI 数字飘 → 不确定就说 · AI 讨好漂移 → 用户当警报器<br>
-            · <strong>各端自完备</strong>:AI 之间没法真同步 · 接受重复 · 每 AI 自己一份入场包<br>
-            · <strong>偏离不是错</strong>:改动过很多次 · 每次都推翻自己之前定的 · 这是"想清楚"的过程
-          </div>
-        </div>
-
-        <div style="padding: 10px 12px; background: rgba(45,45,45,0.5); border-left: 2px solid #ffb457; border-radius: 4px;">
-          <div style="font-size: 10px; color: #ffb457; font-family: 'SF Mono', monospace; font-weight: 700; margin-bottom: 5px;">▎ 15 天告诫(memory 情绪管理类)</div>
-          <div style="font-size: 12px; color: #d8dcec; line-height: 1.7;">新项目至少给 15 天 · 别每天想每天焦虑 · 15 天前 1-2 月的乱是必要的</div>
+          <div class="pool-status"><span class="tag tag-archived">已归档</span>未来触发再动</div>
         </div>
       </div>
 
-      <div style="text-align: center; padding: 14px 12px; background: rgba(45,45,45,0.3); border-radius: 8px; margin-top: 12px; font-size: 11px; color: #9ca3b8; line-height: 1.6;">
-        <strong style="color: #f0abfc;">下一个案例</strong>:等下次项目沉淀完 · 进这里
+<div class="pool-item item-archived" data-status="archived">
+        <div class="pool-num">14</div>
+        <div class="pool-content">
+          <div class="pool-title">AI 状态盘(能量分布 / 心智地图)</div>
+          <div class="pool-meta">
+            <span class="pool-source src-both">共同</span>
+            <span class="pool-link">Kimi 触发 · 你我共判</span>
+          </div>
+          <div class="pool-status"><span class="tag tag-archived">已归档</span>不属工作台 → personal-dashboard.html</div>
+        </div>
       </div>
+      </div>
+    </div>
 
+  </div>
+
+  </div><!-- /.topic-content E -->
   </div><!-- /.tab-panel cases -->
   </div><!-- /extra wrapper (bug fix 2026-07-26) -->
   </div><!-- /.topic-content E -->
