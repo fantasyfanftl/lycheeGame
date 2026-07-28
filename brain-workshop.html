@@ -881,6 +881,30 @@ document.getElementById('btnAiDistill').addEventListener('click', () => {
   }
   const sources = cards.filter(c => multiSelectedIds.has(c.id));
   const themes = cards.filter(c => c.color === 'amber');  // 琥珀 = 主题
+  if (themes.length === 0) {
+    if (confirm(
+      '当前画布无 🟨 琥珀主题 · 无法"归类"\n\n' +
+      '归类派需要先有主题 · 建议改点💡 建主题(底部)· 让 AI 从零聚类\n\n' +
+      '确认 → 跳过 · 我会自动帮你把选中的原子标"未归类" · 直接就能用💡 建主题\n' +
+      '取消 → 什么都不做'
+    )) {
+      (async () => {
+        let n = 0;
+        for (const atom of sources) {
+          if (!(atom.tags || []).includes('未归类')) {
+            atom.tags = [...(atom.tags || []), '未归类'];
+            atom.updatedAt = now();
+            await saveCard(atom);
+            n++;
+          }
+        }
+        multiSelectedIds.clear();
+        renderAll();
+        setStatus(`✓ ${n} 张原子标"未归类" · 现在点💡 建主题 · AI 会帮你聚类`);
+      })();
+    }
+    return;
+  }
   modalMode = 'aiDistill';
   modalTitle.textContent = `🤖 AI 归类 · ${sources.length} 张原子 → ${themes.length} 个已有主题`;
   modalDesc.innerHTML = `
