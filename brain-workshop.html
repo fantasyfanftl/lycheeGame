@@ -1125,6 +1125,93 @@ iPad/电脑各存各的
   modal.classList.add('show');
 });
 
+/* ============ 框选 · 空白区拖拽 ============ */
+(function initBoxSelect() {
+  const canvasEl = document.getElementById('canvas');
+  const box = document.getElementById('selectionBox');
+  let boxing = false, startX, startY;
+
+  canvasEl.addEventListener('mousedown', (e) => {
+    // 只在空白区触发(不点在卡片/svg/label 上)
+    if (e.target !== canvasEl) return;
+    if (connectMode) return;
+    boxing = true;
+    const rect = canvasEl.getBoundingClientRect();
+    startX = e.clientX - rect.left + canvasEl.parentElement.scrollLeft;
+    startY = e.clientY - rect.top + canvasEl.parentElement.scrollTop;
+    box.style.left = startX + 'px';
+    box.style.top = startY + 'px';
+    box.style.width = '0';
+    box.style.height = '0';
+    box.style.display = 'block';
+    // 清多选(如果没按 Shift)
+    if (!e.shiftKey) {
+      multiSelectedIds.clear();
+      document.querySelectorAll('.card.multi-selected').forEach(el => el.classList.remove('multi-selected'));
+    }
+    e.preventDefault();
+  });
+
+  canvasEl.addEventListener('mousemove', (e) => {
+    if (!boxing) return;
+    const rect = canvasEl.getBoundingClientRect();
+    const curX = e.clientX - rect.left + canvasEl.parentElement.scrollLeft;
+    const curY = e.clientY - rect.top + canvasEl.parentElement.scrollTop;
+    const x = Math.min(startX, curX);
+    const y = Math.min(startY, curY);
+    const w = Math.abs(curX - startX);
+    const h = Math.abs(curY - startY);
+    box.style.left = x + 'px';
+    box.style.top = y + 'px';
+    box.style.width = w + 'px';
+    box.style.height = h + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!boxing) return;
+    boxing = false;
+    // 计算框内卡片
+    const boxRect = { left: parseFloat(box.style.left), top: parseFloat(box.style.top), right: parseFloat(box.style.left) + parseFloat(box.style.width), bottom: parseFloat(box.style.top) + parseFloat(box.style.height) };
+    cards.forEach(c => {
+      // 卡片宽度约 200 · 高度约 80(粗略)
+      if (c.x < boxRect.right && c.x + 200 > boxRect.left && c.y < boxRect.bottom && c.y + 80 > boxRect.top) {
+        // 只在过滤后可见的卡才选
+        if (isCardVisible(c)) multiSelectedIds.add(c.id);
+      }
+    });
+    box.style.display = 'none';
+    renderAll();
+    updateSelectionInfo();
+  });
+})();
+
+function isCardVisible(c) {
+  if (currentStage === 'all') return true;
+  if (currentStage === 'C') return c.color === 'yellow';
+  if (currentStage === 'O') return c.color === 'yellow' || c.color === 'orange';
+  if (currentStage === 'D') return c.color === 'orange';
+  if (currentStage === 'E') return c.color === 'green';
+  return true;
+}
+
+function updateSelectionInfo() {
+  const n = multiSelectedIds.size;
+  if (n > 0) setStatus(`🟢 已选 ${n} 张卡 · Shift 加/减 · 空白点击取消`);
+  else setStatus('🟢 就绪');
+}
+
+// 空白点击取消所有选中(不带 Shift)
+document.getElementById('canvasArea').addEventListener('click', (e) => {
+  if (e.target.id === 'canvasArea' || e.target.id === 'canvas') {
+    if (!e.shiftKey) {
+      multiSelectedIds.clear();
+      selectedCardId = null;
+      document.querySelectorAll('.card').forEach(el => { el.classList.remove('selected'); el.classList.remove('multi-selected'); });
+      updateSelectionInfo();
+    }
+  }
+});
+
 /* ============ 状态栏 ============ */
 function setStatus(msg) {
   document.getElementById('statusBar').textContent = msg;
