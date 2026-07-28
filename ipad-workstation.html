@@ -3679,7 +3679,7 @@ footer strong { color: #7d84a8; }
 .asset-tag-attr-prompt { background: rgba(52, 211, 153, 0.12); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.35); }
 .asset-tag-attr-ref { background: rgba(255, 180, 87, 0.08); color: #ffb457; border-color: rgba(255, 180, 87, 0.3); }
 
-/* 分类分组小标题(占满整行) */
+/* 分组分类小标题(占满整行) */
 .asset-group-title {
   grid-column: 1 / -1;
   margin: 14px 0 2px;
@@ -3687,6 +3687,7 @@ footer strong { color: #7d84a8; }
   background: linear-gradient(90deg, rgba(180, 120, 255, 0.12), transparent);
   border-left: 3px solid rgba(180, 120, 255, 0.6);
   border-radius: 4px;
+  scroll-margin-top: 140px;
 }
 .asset-group-title:first-child { margin-top: 0; }
 .asset-group-title .g-name {
@@ -3701,6 +3702,43 @@ footer strong { color: #7d84a8; }
   margin-left: 8px;
   font-family: "SF Mono", monospace;
 }
+
+/* mini nav 快速指向(锚点跳转) */
+.asset-mini-nav {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(10, 12, 25, 0.6);
+  border: 1px solid rgba(124, 157, 255, 0.15);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.asset-mini-nav-label {
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: "SF Mono", monospace;
+  margin-right: 4px;
+  letter-spacing: 0.5px;
+}
+.mini-nav-btn {
+  font-size: 10.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(180, 120, 255, 0.3);
+  background: rgba(180, 120, 255, 0.06);
+  color: #d6b4ff;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.mini-nav-btn:hover { background: rgba(180, 120, 255, 0.18); }
+.mini-nav-btn:active { transform: scale(0.96); }
 
 /* 属性提示条(卡片顶部小横条) */
 .asset-attr-hint {
@@ -4859,6 +4897,21 @@ footer strong { color: #7d84a8; }
 
     <!-- Tab 1 · 已成型 prompt(资产 01-05) -->
     <div class="asset-panel active" data-asset-panel="ready">
+
+    <!-- Mini nav · 快速指向分组锚点 -->
+    <nav class="asset-mini-nav" aria-label="资产分组快速跳转">
+      <span class="asset-mini-nav-label">跳到</span>
+      <button class="mini-nav-btn" data-scroll-to="group-start">对话启动/转接</button>
+      <button class="mini-nav-btn" data-scroll-to="group-control">过程管控</button>
+      <button class="mini-nav-btn" data-scroll-to="group-review">复盘沉淀</button>
+      <button class="mini-nav-btn" data-scroll-to="group-infra">基建/自动化</button>
+    </nav>
+
+    <!-- ========== 分组 1 · 对话启动与转接 ========== -->
+    <div class="asset-group-title" id="group-start">
+      <span class="g-name">▎ 一、对话启动与转接</span>
+      <span class="g-desc">开新对话 / 跨 AI 接力 / 任务交接</span>
+    </div>
 
     <!-- 资产 01 · 个人协作元规则(原 Kimi 协作元规则 · 通用底层规则) -->
     <div class="asset-card">
