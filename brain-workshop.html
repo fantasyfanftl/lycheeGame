@@ -622,6 +622,7 @@ function renderCard(c) {
     document.querySelectorAll('.card').forEach(x => { x.classList.remove('selected'); x.classList.remove('multi-selected'); });
     el.classList.add('selected');
     updateSelectionInfo();
+    if (focusMode) applyFocus(c.id);
   });
 
   // 右键菜单
