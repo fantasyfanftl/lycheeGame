@@ -1637,7 +1637,16 @@ footer strong { color: #7d84a8; }
 /* ==== 主题 02 · 资产 tabs ==== */
 .asset-tabs { margin-bottom: 14px; }
 .asset-panel { display: none; }
-.asset-panel.active { display: block; animation: fadeIn 0.2s; }
+.asset-panel.active {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 10px;
+  align-items: start;
+  animation: fadeIn 0.2s;
+}
+.asset-panel.active > .asset-card { margin-bottom: 0; }
+.asset-panel.active > .asset-stash,
+.asset-panel.active > .card { grid-column: 1 / -1; }
 
 /* ==== 关系全景浮层 · 左侧滑入 ==== */
 .map-drawer {
