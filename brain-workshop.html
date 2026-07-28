@@ -1018,6 +1018,66 @@ function applyFocus(cardId) {
   });
 }
 
+/* ============ 📚 加载示例数据 · 主题 01 的 28 条真实想法 ============ */
+const SAMPLE_DATA = [
+  { text: "分屏双 AI 对话 · iPad 独占 · 未实测", tag: "观察中" },
+  { text: "让 AI 自己判断交接给谁 · 交接包加「建议给谁」· 找场景试", tag: "待验证" },
+  { text: "各家 AI 分开 pin · 不聚合 · 操作还没跑过 · 需实测", tag: "待验证" },
+  { text: "先散后收 · 想克服但做不到 · 知道自己是先散后收 · 想一开始就做清晰计划 · 但做不到 · 会痛苦", tag: "待突破" },
+  { text: "回传转接模板 · 独立打磨 · 解决跨对话同步信息时容易漏内容的问题 · 未来独立成模板", tag: "待磨" },
+  { text: "转接模板加\"前置依赖\"字段 · 标注任务的启动前提条件 · 让接手 AI 知道\"能不能直接开始\"", tag: "待磨" },
+  { text: "工作台加 AI API 调用能力 · 用途:网页内直接问 AI / 批注自动分析 / 想法自动整理 · 天蓝已拍板可联网", tag: "待突破" },
+  { text: "你的画像 · 通用版 · 从 CLAUDE.md 提炼 · 去掉 Claude 特有部分 · 整理成完整版后回主题 02 资产", tag: "待整理" },
+  { text: "5 段回复结构 · 核心目标 + 精简 + 标准 + 想法池 + 待确认 · Kimi 风格 · 亲测舒适", tag: "待整理" },
+  { text: "想法池状态标签系统 · 新增 / 升级 / 悬置 / 归档 / 待验证 · 现已在池子里用 · 未来抽成可复用规则", tag: "待整理" },
+  { text: "哲学熔断器 · 话题跑偏到抽象层 · 强制降级到具体行动 · 需具体触发词+落地文本", tag: "待整理" },
+  { text: "执行层扩展方案 · 豆包提 · 全局待办调度池 / 产出沉淀 3 问分流 / 刚性边界规则", tag: "悬置" },
+  { text: "全局关键词检索能力 · 跨主题跨分区定位资产与规则 · 未来资产超 20 张时回来", tag: "悬置" },
+  { text: "新 AI 接入标准化 SOP · 接入 → 大脑页搭建 → 规则对齐 → 试运行", tag: "悬置" },
+  { text: "天蓝工作台入门指南 · 豆包提 · 工作台=私人化 · 不服务他人", tag: "悬置" },
+  { text: "执行层轻量版 · 豆包提(重复) · 已在悬置 · 保留对照", tag: "悬置" },
+  { text: "边界熔断与校准 SOP · 豆包提 · 违背\"守不住的规则就是立错了\"", tag: "悬置" },
+  { text: "固定周期自优化闭环 · 豆包提 · 违背\"先散后收\"和\"15 天回望\"", tag: "悬置" },
+  { text: "iPad = 各 AI 跳转中枢 · 演化成 v3 定位骨架", tag: "已升级" },
+  { text: "网页加主屏比原生 App 好 · 入口层做法定型", tag: "已确认" },
+  { text: "主屏 AI 矩阵 · 一屏铺开 · A 阶段步骤 2", tag: "已确认" },
+  { text: "剪贴板作 AI 之间的传送带 · 流转层核心机制", tag: "已确认" },
+  { text: "iPad 是视觉落地方便的地方 · v3 定位骨架 · 承载层", tag: "已升级" },
+  { text: "姿势-精度分工(语音 / 触屏 / 键盘) · 「这就是我的感受」认同点", tag: "已确认" },
+  { text: "强联网工具用现成的 · 不重造轮子 · 私人化本地的自己造", tag: "已确认" },
+  { text: "场景 folder 不按 AI 名分 · 抛过未采纳 · 保留", tag: "悬置" },
+  { text: "快捷指令暂缓 · 等「做烦」信号 · 未来触发再动", tag: "已归档" },
+  { text: "AI 状态盘(能量分布 / 心智地图) · 不属工作台 → personal-dashboard.html", tag: "已归档" }
+];
+
+async function loadSampleData() {
+  if (cards.length > 0 && !confirm(`当前已有 ${cards.length} 张卡 · 加载示例会追加 ${SAMPLE_DATA.length} 张(不覆盖已有) · 继续?`)) return;
+  const batchId = 'sample-' + now().slice(0,16).replace(/[-: ]/g,'');
+  for (let i = 0; i < SAMPLE_DATA.length; i++) {
+    const s = SAMPLE_DATA[i];
+    const col = i % 4;
+    const row = Math.floor(i / 4);
+    const c = {
+      id: uuid(),
+      x: 60 + col * 250,
+      y: 120 + row * 170,
+      color: 'yellow',
+      type: '🌱 示例 · ' + s.tag,
+      text: s.text,
+      tags: [batchId, s.tag],
+      source: { type: 'sample', batchId, importedAt: now(), origTag: s.tag },
+      createdAt: now(),
+      updatedAt: now()
+    };
+    cards.push(c);
+    await saveCard(c);
+  }
+  renderAll();
+  setStatus(`✓ 已加载 ${SAMPLE_DATA.length} 张示例卡 · 来自主题 01 想法储备`);
+}
+
+document.getElementById('btnLoadSample').addEventListener('click', loadSampleData);
+
 document.getElementById('btnBatchDelete').addEventListener('click', async () => {
   const nY = cards.filter(c => c.color === 'yellow').length;
   const nA = cards.filter(c => c.color === 'amber').length;
