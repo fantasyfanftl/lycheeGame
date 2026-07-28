@@ -5718,6 +5718,62 @@ footer strong { color: #7d84a8; }
 输出结构:复用本模板核心框架 · 精简为「已确认共识 / 问题偏差 / 待执行事项 / 附录原批注」四部分</pre>
     </div>
 
+    <!-- 资产 C3 · 对话想法提取·想法池专用 prompt -->
+    <div class="asset-card">
+      <div class="asset-card-header">
+        <div class="asset-num">C3</div>
+        <div class="asset-meta">
+          <div class="asset-title">对话想法提取·想法池专用 prompt</div>
+          <div class="asset-sub">对话收尾触发 · 自动提取未落地零散想法 · 按三类标准归档 · 同步至想法池</div>
+        </div>
+        <button class="asset-copy-btn" data-asset="asset-c3">复制</button>
+      </div>
+      <span class="asset-attr-hint for-ai">Prompt 指令 · 可直接发给 AI</span>
+      <div class="asset-tags">
+        <span class="asset-tag asset-tag-freq-scene">◆ 场景专用</span>
+        <span class="asset-tag asset-tag-attr-prompt">Prompt 指令</span>
+        <span class="asset-tag">✓ AI 无关</span>
+        <span class="asset-tag">✓ 主题无关</span>
+      </div>
+      <pre class="asset-content" id="asset-c3">【角色】对话想法提取专员
+【核心任务】从当前对话内容中,精准提取所有未落地、未定论、待后续处理的零散想法、优化点、待办项。仅客观提取用户明确表达的内容,不脑补、不延伸、不评价价值。
+
+【输出强制结构】
+# 本次对话 · 想法池提取结果
+> 来源:[对话主题/对应项目]
+> 用途:收纳对话中产生的未落地想法,同步至想法池统一管理
+
+## 一、项目迭代待办
+(当前项目的后续版本功能、优化点、待完善项)
+1.
+2.
+
+## 二、SOP 优化项
+(协作规则、流程本身的调整建议、资产库优化点)
+1.
+2.
+
+## 三、远期灵感
+(无关当前主线的零散想法、暂不展开的创意、远期可探索方向)
+1.
+2.
+
+【执行规则】
+1. 仅提取用户明确提及、未形成最终决策、未安排立即执行的内容;已敲定、已安排执行的内容不计入
+2. 每条想法用一句话精简表述,不超过 2 行,不添加解释、评价、延伸内容
+3. 严格按以上三类归档,无法明确归类的标记「待确认」,不自行归类
+4. 默认遵循资产 C1「复盘中立指令」核心要求 · 全程客观中立,无主观评判
+5. 重复、相似的想法合并表述,保留核心含义
+
+【禁忌】
+- 禁止脑补用户未明确表达的想法
+- 禁止对想法的好坏、可行性做主观评价
+- 禁止将已敲定的决策、已安排的执行任务计入想法池
+- 禁止添加多余的引导、总结性话术
+
+开始提取。</pre>
+    </div>
+
     <!-- ========== 分组 4 · 基建与自动化 ========== -->
     <div class="asset-group-title" id="group-infra">
       <span class="g-name">▎ 四、基建与自动化</span>
