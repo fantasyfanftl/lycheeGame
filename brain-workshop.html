@@ -545,8 +545,8 @@ function renderAll() {
   const visibleCards = cards.filter(c => {
     if (currentStage === 'all') return true;
     if (currentStage === 'C') return c.color === 'yellow';
-    if (currentStage === 'O') return c.color === 'yellow' || c.color === 'orange';
-    if (currentStage === 'D') return c.color === 'orange';
+    if (currentStage === 'O') return c.color === 'yellow' || c.color === 'amber';
+    if (currentStage === 'D') return c.color === 'amber' || c.color === 'orange';
     if (currentStage === 'E') return c.color === 'green';
     return true;
   });
