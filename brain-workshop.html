@@ -405,11 +405,13 @@ html, body {
 
 <!-- 底部工具栏 -->
 <div class="bottom-bar">
-  <button class="bottom-btn" id="btnAddYellow">+ 🟡 黄卡</button>
-  <button class="bottom-btn" id="btnAddOrange">+ 🟠 橙卡</button>
-  <button class="bottom-btn" id="btnAddGreen">+ 🟢 绿卡</button>
-  <button class="bottom-btn" id="btnAddGray">+ ⚪ 灰卡</button>
+  <button class="bottom-btn" id="btnAddYellow" title="🌱 原始素材">+ 🟡 黄卡</button>
+  <button class="bottom-btn" id="btnAddAmber" title="⚗️ AI 拆解的原子单元">+ 🟨 浅橙</button>
+  <button class="bottom-btn" id="btnAddOrange" title="🟠 手动提炼">+ 🟠 深橙</button>
+  <button class="bottom-btn" id="btnAddGreen" title="🟢 成熟单元">+ 🟢 绿卡</button>
+  <button class="bottom-btn" id="btnAddGray" title="⚪ 临时便签">+ ⚪ 灰卡</button>
   <button class="bottom-btn" id="btnConnectMode" title="连线模式:先点起点卡 · 再点终点卡">🔗 连线</button>
+  <button class="bottom-btn" id="btnAutoLayout" title="按颜色自动分区重排">🧹 一键整理</button>
 </div>
 
 <div class="status-bar" id="statusBar">🟢 就绪</div>
@@ -652,7 +654,11 @@ function renderLink(l) {
 }
 
 function updateCount() {
-  document.getElementById('cardCount').textContent = `${cards.length} 卡 · ${links.length} 连线`;
+  const nY = cards.filter(c => c.color === 'yellow').length;
+  const nA = cards.filter(c => c.color === 'amber').length;
+  const nO = cards.filter(c => c.color === 'orange').length;
+  const nG = cards.filter(c => c.color === 'green').length;
+  document.getElementById('cardCount').textContent = `🌱${nY} · ⚗️${nA} · 🟠${nO} · 🟢${nG} · 🔗${links.length}`;
 }
 
 function escapeHtml(s) {

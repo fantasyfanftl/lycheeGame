@@ -3669,6 +3669,20 @@ footer strong { color: #7d84a8; }
   border-color: rgba(255, 180, 87, 0.35);
 }
 
+/* 归档卡 · 视觉弱化 */
+.asset-card.is-archived {
+  opacity: 0.6;
+  background: rgba(35, 35, 35, 0.4);
+  border-color: rgba(107, 114, 149, 0.2);
+  box-shadow: none;
+}
+.asset-card.is-archived:hover { opacity: 0.9; }
+.asset-tag-archived {
+  background: rgba(107, 114, 149, 0.15);
+  color: #7d84a8;
+  border-color: rgba(107, 114, 149, 0.35);
+}
+
 /* 6 档频率标签 + 2 类属性标签 */
 .asset-tag-freq-core { background: rgba(180, 120, 255, 0.18); color: #d6b4ff; border-color: rgba(180, 120, 255, 0.45); }
 .asset-tag-freq-scene { background: rgba(125, 211, 252, 0.12); color: #7dd3fc; border-color: rgba(125, 211, 252, 0.35); }
@@ -5433,8 +5447,8 @@ footer strong { color: #7d84a8; }
 请完整读取并内化以上规则,所有交互严格按此执行。</pre>
     </div>
 
-    <!-- 资产 02 · Handoff 交接包 -->
-    <div class="asset-card">
+    <!-- 资产 02 · Handoff 交接包(归档 · 弱视觉) -->
+    <div class="asset-card is-archived">
       <div class="asset-card-header">
         <div class="asset-num">02</div>
         <div class="asset-meta">
@@ -5446,9 +5460,9 @@ footer strong { color: #7d84a8; }
       <span class="asset-attr-hint for-ai">Prompt 指令 · 可直接发给 AI</span>
       <div class="asset-tags">
         <span class="asset-tag asset-tag-freq-low">○ 低频备用</span>
+        <span class="asset-tag asset-tag-archived">📦 归档</span>
         <span class="asset-tag asset-tag-attr-prompt">Prompt 指令</span>
         <span class="asset-tag">✓ AI 无关</span>
-        <span class="asset-tag">✓ 主题无关</span>
       </div>
       <pre class="asset-content" id="asset-02">整理这次对话 · 给下一个 AI 接手 · 格式:
 
@@ -5720,9 +5734,7 @@ Claude Code 已经搭了一个 · 结构验证过是舒适的 · 你按同样结
 3. 长对话都会往讨好漂移 · 你自己知道 · 她也知道 · 别装
 
 【视觉规范】
-- 深色玻璃态卡片 · 冷紫青色系
-- 单文件 HTML · 数据存 localStorage · 不联网
-- 中文字符串禁止嵌套单引号(用双引号或中文「」)
+视觉样式统一遵循资产 05「荔枝平台 UI 规范模板」· 保持全平台风格一致(单文件 HTML · localStorage · 中文字符串禁止嵌套单引号 · 用双引号或中文「」)
 
 【交付】
 出完整 HTML 代码 · 天蓝保存到荔枝目录 · 15 秒自动上线到
@@ -5777,9 +5789,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 3. 长对话都会往讨好漂移 · 你自己知道 · 她也知道 · 别装
 
 【视觉规范】
-- 深色玻璃态卡片 · 冷紫青色系(荔枝平台 UI 规范 · 见资产 05)
-- 单文件 HTML · 数据存 localStorage · 不联网
-- 中文字符串禁止嵌套单引号(用双引号或中文「」)
+视觉样式统一遵循资产 05「荔枝平台 UI 规范模板」· 保持全平台风格一致(单文件 HTML · localStorage · 中文字符串禁止嵌套单引号 · 用双引号或中文「」)
 
 【交付】
 出完整 HTML 代码 · 天蓝保存到荔枝目录 · 15 秒自动上线到
