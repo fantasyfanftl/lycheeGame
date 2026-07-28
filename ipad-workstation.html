@@ -5694,20 +5694,21 @@ footer strong { color: #7d84a8; }
       <pre class="asset-content" id="asset-11">天蓝从主题 02 「新增暂存」导出了新 prompt · 请:
 
 1. 读 C:\Users\tianlan\lycheeGame\ipad-workstation.html
-2. 找 data-topic-content="D" 里 「资产 05 · UI 模板」 后面的位置(候选资产之前)
+2. 判断新 prompt 归哪组:启动/转接 · 过程管控 · 复盘沉淀 · 基建自动化
+   找 data-topic-content="D" 里对应分组(id=group-start/group-review/group-control/group-infra)· 插入该组最后一张卡之后
 3. 从下面 JSON 提取:name / desc / tags / body(以及 v01/v02 若有)
 4. 按现有 .asset-card 结构新增一张卡:
-   - .asset-num 用下一个编号(现在最大是 11 · 加就是 12 起)
+   - .asset-num 用下一个编号(找当前最大编号 · 加 1)
    - .asset-title 用 name
    - .asset-sub 用 desc
-   - .asset-tags 里放 4 个 tag(格式 <span class="asset-tag">✓ XX</span>)
+   - 属性 hint 条:for-ai(Prompt 指令)或 for-human(SOP/框架/基准)
+   - .asset-tags 里放:频率标签(freq-core/scene/low/base/ref/tool)+ 属性标签(attr-prompt/attr-ref)+ 2 个 ✓ XX 标签
    - .asset-content 里放 body(记得转义 HTML 特殊字符)
    - 如有 v01/v02 · 复用 asset-01 的 .version-tabs 结构
    - 复制按钮 data-asset 指向新的 id
-5. 更新顶部计数:主题 02 顶部说明「资产 X 条已收 · Y 条待填」
-6. 落卡完成 · 从 HTML 里删除该 stash 条目(避免下次重复落)
+5. 落卡完成 · 从 HTML 里删除该 stash 条目(避免下次重复落)
    —— 直接编辑文件 · 不用等我确认
-7. push · commit 信息:「主题 02 · 新增资产 · [name]」
+6. push · commit 信息:「主题 02 · 新增资产 · [name]」
 
 导出内容(JSON):
 [粘贴下面 JSON]</pre>
@@ -7778,7 +7779,11 @@ document.addEventListener("DOMContentLoaded", function() {
   var promptPre = document.getElementById("assetPromptPre");
   if (!input) return;
 
-  var CLAUDE_PROMPT = "天蓝从主题 02 「新增暂存」导出了新 prompt · 请:\n\n1. 读 C:\\Users\\tianlan\\lycheeGame\\ipad-workstation.html\n2. 找 data-topic-content=\"D\" 里 「资产 05 · UI 模板」 后面的位置(候选资产之前)\n3. 从下面 JSON 提取:name / desc / tags / body(以及 v01/v02 若有)\n4. 按现有 .asset-card 结构新增一张卡:\n   - .asset-num 用下一个编号(现在最大是 06 · 加就是 07 起)\n   - .asset-title 用 name\n   - .asset-sub 用 desc\n   - .asset-tags 里放 4 个 tag(格式 <span class=\"asset-tag\">✓ XX</span>)\n   - .asset-content 里放 body(记得转义 HTML 特殊字符)\n   - 如有 v01/v02 · 复用 asset-01 的 .version-tabs 结构\n   - 复制按钮 data-asset 指向新的 id\n5. 更新顶部计数:主题 02 顶部说明「资产 X 条已收 · Y 条待填」\n6. 更新大脑复盘 tab 的「资产从 2 条 → 5 条(2 条已收 · 3 条待你填)」文字为最新数\n7. 落卡完成 · 从 HTML 里删除该 stash 条目(避免下次重复落)\n   —— 直接编辑 index.html · 不用等我确认\n8. push · commit 信息:「主题 02 · 新增资产 · [name]」\n\n导出内容(JSON):\n[粘贴下面 JSON]";
+  var CLAUDE_PROMPT_FALLBACK = "天蓝从主题 02 「新增暂存」导出了新 prompt · 请按资产 11 卡片正文执行(在主题 02 的基建/自动化组)· 若找不到:读 ipad-workstation.html · 判断新 prompt 归哪组 · 参考现有卡片结构落卡 · push.\n\n导出内容(JSON):\n[粘贴下面 JSON]";
+  function getClaudePrompt() {
+    var el = document.getElementById("asset-11");
+    return el && el.textContent ? el.textContent : CLAUDE_PROMPT_FALLBACK;
+  }
 
   function loadStash() {
     try { return JSON.parse(localStorage.getItem(STASH_KEY) || "[]"); }
@@ -7831,7 +7836,7 @@ document.addEventListener("DOMContentLoaded", function() {
       localStorage.removeItem(STASH_KEY + "-draft");
     }
     if (list.length === 0) { status.textContent = "· 空的 · 先填内容"; return; }
-    var payload = CLAUDE_PROMPT + "\n\n" + JSON.stringify({ items: list }, null, 2);
+    var payload = getClaudePrompt() + "\n\n" + JSON.stringify({ items: list }, null, 2);
     var textarea = document.createElement("textarea");
     textarea.value = payload;
     textarea.style.position = "fixed"; textarea.style.opacity = "0";
@@ -7868,7 +7873,7 @@ document.addEventListener("DOMContentLoaded", function() {
       var open = promptPre.style.display !== "none";
       promptPre.style.display = open ? "none" : "block";
       promptToggle.textContent = open ? "▸ 展开落卡 prompt(给 Claude Code)" : "▾ 收起落卡 prompt";
-      if (!open) promptPre.textContent = CLAUDE_PROMPT;
+      if (!open) promptPre.textContent = getClaudePrompt();
     });
   }
 })();
