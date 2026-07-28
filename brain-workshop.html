@@ -1252,6 +1252,86 @@ function buildExportPayload() {
   return header + JSON.stringify(data, null, 2);
 }
 
+/* ============ 📸 快照给 Claude · 打包数据+全套分析 prompt ============ */
+document.getElementById('btnSnapshotClaude').addEventListener('click', () => {
+  modalMode = 'snapshot';
+  modalTitle.textContent = '📸 快照给 Claude · 全套分析';
+  modalDesc.innerHTML = `
+    <strong style="color:#7dd3fc;">已复制 · 直接 Ctrl+V 给 Claude Code</strong><br>
+    <span style="color:#ffb457;">Claude 会自动分析 4 项:</span><br>
+    <span style="color:#d8dcec;">① CODE 4 阶段进度分布 · ② 混乱/星型爆炸检测 · ③ 卡在哪 · 该往下走哪张 · ④ 推荐下一步动作</span>
+  `;
+  const payload = buildSnapshotPayload();
+  modalTextarea.value = payload;
+  modalConfirm.textContent = '关闭';
+  modal.classList.add('show');
+  navigator.clipboard.writeText(payload).then(() => {
+    setStatus('✓ 快照+分析 prompt 已复制 · 直接粘给 Claude');
+  }).catch(() => setStatus('复制失败 · 请手动全选复制'));
+});
+
+function buildSnapshotPayload() {
+  const yellowN  = cards.filter(c => c.color === 'yellow').length;
+  const amberN   = cards.filter(c => c.color === 'amber').length;
+  const orangeN  = cards.filter(c => c.color === 'orange').length;
+  const greenN   = cards.filter(c => c.color === 'green').length;
+  const grayN    = cards.filter(c => c.color === 'gray').length;
+
+  const linkTypeCount = {};
+  links.forEach(l => { linkTypeCount[l.type || '未标'] = (linkTypeCount[l.type || '未标'] || 0) + 1; });
+  const linkSummary = Object.entries(linkTypeCount).map(([t,n]) => `${t}×${n}`).join(' · ') || '无连线';
+
+  const outDeg = {};
+  links.forEach(l => { outDeg[l.from] = (outDeg[l.from] || 0) + 1; });
+  const hotSources = Object.entries(outDeg).filter(([_,n]) => n >= 4).length;
+
+  const data = { version: '0.1', snapshotAt: now(), cards: cards, links: links };
+
+  return `# 📸 大脑工坊快照 · ${now()}
+
+天蓝手动点了"📸 快照给 Claude" · 请按下面 4 项分析当前画布状态。
+
+## 概况
+
+- **总卡** ${cards.length} 张:🟡黄 ${yellowN}(原始素材) · 🟨琥珀 ${amberN}(枢纽) · 🟠橙 ${orangeN}(结论) · 🟢绿 ${greenN}(成品) · ⚪灰 ${grayN}(临时/归档)
+- **连线** ${links.length} 条:${linkSummary}
+- **爆炸源检测** ${hotSources} 张卡的出度 ≥ 4(星型爆炸嫌疑)
+
+## 请分析 · 4 项(按顺序回)
+
+### ① CODE 4 阶段进度分布
+
+- Capture(黄卡)· Organize(黄→琥珀)· Distill(琥珀→橙)· Express(橙→绿)
+- 每阶段的**卡片密度、停留时间、瓶颈**
+- 哪个阶段"堆积"了 · 哪个阶段"饿死"了
+
+### ② 混乱/星型爆炸检测
+
+- 检查连线密度 · 是否有卡片"出度 ≥ 4"的星型爆炸
+- Zettelkasten 建议:出度 ≥ 4 的应该升为枢纽卡(琥珀色)
+- 列出具体是哪几张卡 · 建议怎么处理
+
+### ③ 该往下走哪张 · 卡在哪
+
+- 找**滞留最久的黄卡**(应升琥珀但没升)
+- 找**孤立的橙卡**(没有源头连线 · 缺回溯)
+- 找**未升绿的橙卡**(结论定型了但没做成成品)
+
+### ④ 推荐下一步动作 · 3 条
+
+- 具体、可执行、优先级排序
+- 每条包括:动作 + 涉及的卡片 ID + 预期效果
+
+━━━━━━━━━━━━━━━━━━
+
+## 原始数据(JSON)
+
+\`\`\`json
+${JSON.stringify(data, null, 2)}
+\`\`\`
+`;
+}
+
 document.getElementById('btnImport').addEventListener('click', () => {
   modalMode = 'import';
   modalTitle.textContent = '📥 导入 JSON · 覆盖当前画布';
