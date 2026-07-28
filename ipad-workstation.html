@@ -1636,6 +1636,34 @@ footer strong { color: #7d84a8; }
 
 /* ==== 主题 02 · 资产 tabs ==== */
 .asset-tabs { margin-bottom: 14px; }
+.asset-tabs .tab-tools {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 8px 4px 4px;
+  flex-shrink: 0;
+}
+.tab-tool-btn {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(180, 120, 255, 0.3);
+  background: rgba(180, 120, 255, 0.1);
+  color: #d6b4ff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab-tool-btn:hover { background: rgba(180, 120, 255, 0.2); }
+.tab-tool-btn:active { transform: scale(0.96); }
+.tab-tool-btn.copied {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  border-color: transparent;
+  color: white;
+}
 .asset-panel { display: none; }
 .asset-panel.active {
   display: grid;
@@ -4206,26 +4234,6 @@ footer strong { color: #7d84a8; }
           <div class="ti-row"><span class="ti-key">是什么</span><span class="ti-val">跨 AI 复用 prompt 资产库</span></div>
           <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">开新对话 · 复制 · 粘过去</span></div>
           <div class="ti-row"><span class="ti-key">准入项</span><span class="ti-val">4 特征筛全 yes 才准入</span></div>
-
-          <div class="asset-audit-row">
-            <div class="asset-audit" onclick="event.stopPropagation();">
-              <div class="asset-audit-header">
-                <span class="asset-audit-title">🔍 资产库审核</span>
-              </div>
-              <div class="asset-audit-desc">导出全部 prompt · 粘给豆包复盘 · 查重/查冗/优化建议</div>
-              <button class="asset-audit-btn" id="assetAuditBtn">📤 导出全部</button>
-              <div class="asset-audit-status" id="assetAuditStatus"></div>
-            </div>
-
-            <div class="asset-audit" onclick="event.stopPropagation();">
-              <div class="asset-audit-header">
-                <span class="asset-audit-title">📋 候选池审核</span>
-              </div>
-              <div class="asset-audit-desc">导出暂存 + 待办 · 粘给豆包判断 · 有无重复/必要性/建议归类</div>
-              <button class="asset-audit-btn" id="assetDraftBtn">📋 导出候选</button>
-              <div class="asset-audit-status" id="assetDraftStatus"></div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -4774,6 +4782,10 @@ footer strong { color: #7d84a8; }
     <div class="tab-bar asset-tabs">
       <button class="tab-btn active" data-asset-tab="ready">已成型 prompt</button>
       <button class="tab-btn" data-asset-tab="draft">新增和待办 prompt</button>
+      <div class="tab-tools">
+        <button class="tab-tool-btn" id="assetAuditBtn" title="导出全部 prompt · 粘给豆包复盘 · 查重/查冗/优化建议">📤 库审核</button>
+        <button class="tab-tool-btn" id="assetDraftBtn" title="导出暂存 + 待办 · 粘给豆包判断">📋 候选</button>
+      </div>
     </div>
 
     <!-- Tab 1 · 已成型 prompt(资产 01-05) -->
@@ -7887,7 +7899,7 @@ document.addEventListener("DOMContentLoaded", function() {
       btn.classList.add("copied");
       if (status) status.textContent = "已导出 " + cards.length + " 张资产 · " + stamp;
       setTimeout(function() {
-        btn.textContent = "📤 导出全部";
+        btn.textContent = "📤 库审核";
         btn.classList.remove("copied");
       }, 3000);
     } else {
@@ -7995,7 +8007,7 @@ document.addEventListener("DOMContentLoaded", function() {
       var stashCount = stashList.length + (draft ? 1 : 0);
       if (status) status.textContent = "已导出 " + stashCount + " 条暂存 + " + todoItems.length + " 条待办 · " + stamp;
       setTimeout(function() {
-        btn.textContent = "📋 导出候选";
+        btn.textContent = "📋 候选";
         btn.classList.remove("copied");
       }, 3000);
     } else {
