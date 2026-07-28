@@ -1232,37 +1232,40 @@ modalConfirm.addEventListener('click', async () => {
     if (!distilled) { alert('先写一句提炼'); return; }
     const sources = cards.filter(c => multiSelectedIds.has(c.id));
     if (sources.length === 0) { alert('源卡已丢失'); modal.classList.remove('show'); return; }
-    const newCard = await generateDistilledCard(sources, distilled, 'orange');
+    const radio = document.querySelector('input[name="distillTarget"]:checked');
+    const target = radio ? radio.value : 'amber';
+    const newCard = await generateDistilledCard(sources, distilled, target);
     modal.classList.remove('show');
     multiSelectedIds.clear();
     selectedCardId = newCard.id;
     renderAll();
-    setStatus(`✓ 已从 ${sources.length} 张源卡提炼出新橙卡 · 已连线`);
+    const targetLabel = {amber: '🟨 枢纽卡', orange: '🟠 结论卡', green: '🟢 成品卡'}[target];
+    setStatus(`✓ 已从 ${sources.length} 张源卡提炼 → ${targetLabel} · 自动连线`);
     return;
   }
   if (modalMode === 'aiDistill') {
     const raw = modalTextarea.value.trim();
     if (!raw) return;
-    // 提取"精炼:xxx"或直接一段文字
     let distilled = raw;
     const m = raw.match(/精炼[::]\s*([\s\S]+)/);
     if (m) distilled = m[1].trim();
-    // 检查是否用户还没清空 · 仍是 prompt 原文
     if (raw.includes('请把以下') && raw.includes('源素材')) {
       alert('请先点"⭐ 我已复制 · 清空贴 AI 结果" · 然后粘 AI 输出');
       return;
     }
     const sources = cards.filter(c => multiSelectedIds.has(c.id));
     if (sources.length === 0) { alert('源卡已丢失'); modal.classList.remove('show'); return; }
-    const newCard = await generateDistilledCard(sources, distilled, 'orange');
+    const radio = document.querySelector('input[name="distillTarget"]:checked');
+    const target = radio ? radio.value : 'amber';
+    const newCard = await generateDistilledCard(sources, distilled, target);
     modal.classList.remove('show');
     multiSelectedIds.clear();
     selectedCardId = newCard.id;
-    // 清除按钮
     const clearBtn = document.getElementById('aiDistillClear');
     if (clearBtn) clearBtn.remove();
     renderAll();
-    setStatus(`✓ AI 提炼完成 · 已生成新橙卡 · ${sources.length} 张源卡自动连线`);
+    const targetLabel = {amber: '🟨 枢纽卡', orange: '🟠 结论卡', green: '🟢 成品卡'}[target];
+    setStatus(`✓ AI 提炼 → ${targetLabel} · ${sources.length} 张源卡自动连线`);
     return;
   }
   if (modalMode === 'help') {
