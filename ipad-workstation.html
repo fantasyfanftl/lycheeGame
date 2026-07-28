@@ -4282,20 +4282,33 @@ footer strong { color: #7d84a8; }
   padding-left: 40px;
 }
 
-/* 横屏分栏 · ≥ 900px */
+/* 大屏 · 全局锁定 · 只右栏卡片区内滚 */
 @media (min-width: 900px) {
-  .container { max-width: 1200px; padding: 12px 16px 0; }
+  html, body { height: 100vh; overflow: hidden; padding-bottom: 0; }
+  .container {
+    max-width: 1200px;
+    padding: 12px 16px 0;
+    height: calc(100vh - 42px); /* 减去 nav-back 高度 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .hero {
+    position: static;
+    flex-shrink: 0;
+  }
   .workspace-layout {
     display: grid;
     grid-template-columns: 240px 1fr;
     gap: 16px;
-    align-items: start;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
   .product-column {
-    position: sticky;
-    top: 90px;
-    margin-bottom: 0;
-    max-height: calc(100vh - 110px);
+    position: static;
+    max-height: 100%;
     overflow-y: auto;
     padding-right: 4px;
   }
@@ -4306,10 +4319,25 @@ footer strong { color: #7d84a8; }
   }
   .discussion-column {
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
-  .topic-scope-bar { top: 70px; }
-  .tab-bar { top: 80px; }
-  .hero { padding: 4px 16px 8px; top: 30px; }
+  .discussion-column > .topic-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .discussion-column > .topic-content::-webkit-scrollbar { width: 5px; }
+  .discussion-column > .topic-content::-webkit-scrollbar-thumb {
+    background: rgba(124, 157, 255, 0.25);
+    border-radius: 3px;
+  }
+  /* 大屏时 sticky top 值改为相对 .topic-content 滚动容器 */
+  .topic-scope-bar { top: 0; }
+  .tab-header-stack { top: 0; }
+  .tab-bar { top: 0; }
 }
 /* 大屏 · 让内容更松弛 */
 @media (min-width: 1100px) {
