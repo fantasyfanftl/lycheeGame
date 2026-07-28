@@ -909,15 +909,17 @@ ${sources.map((c, i) => `${i+1}. ${c.text}`).join('\n\n')}`;
 });
 
 async function generateDistilledCard(sources, distilledText, targetColor = 'orange') {
-  // 生成新卡 · 摆在源卡右侧偏下
-  const avgX = sources.reduce((s, c) => s + c.x, 0) / sources.length;
-  const avgY = sources.reduce((s, c) => s + c.y, 0) / sources.length;
-  const maxX = Math.max(...sources.map(c => c.x));
+  // 固定摆逻辑推演区(区域 2 · x=1200+) · 纵向叠加 · 避免重叠
+  const zoneX = 1400;
+  const zoneY = 200;
+  // 检测该颜色已有多少 · 决定 Y 偏移
+  const existing = cards.filter(c => c.color === targetColor);
+  const newY = zoneY + existing.length * 200;
 
   const newCard = {
     id: uuid(),
-    x: maxX + 320,
-    y: avgY + 40,
+    x: zoneX,
+    y: newY,
     color: targetColor,
     type: (targetColor === 'orange' ? '🟠 手动提炼' : '🟢 成熟单元') + ` | 从 ${sources.length} 张源卡提炼`,
     text: distilledText,
@@ -933,7 +935,7 @@ async function generateDistilledCard(sources, distilledText, targetColor = 'oran
   cards.push(newCard);
   await saveCard(newCard);
 
-  // 每张源 → 新卡 · 画"提炼衍生"箭头
+  // 源 → 新卡 · 画"提炼衍生"箭头
   for (const src of sources) {
     const link = {
       id: uuid(),
