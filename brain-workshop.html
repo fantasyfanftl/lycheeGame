@@ -1553,6 +1553,10 @@ document.getElementById('canvasArea').addEventListener('click', (e) => {
       document.querySelectorAll('.card').forEach(el => { el.classList.remove('selected'); el.classList.remove('multi-selected'); });
       updateSelectionInfo();
     }
+    // 聚焦模式下 · 空白清高亮 · 恢复全部显示
+    if (focusMode) {
+      document.querySelectorAll('.card').forEach(el => { el.classList.remove('dimmed'); el.classList.remove('focused-highlight'); });
+    }
   }
 });
 
