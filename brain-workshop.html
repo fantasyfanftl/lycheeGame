@@ -583,7 +583,7 @@ function renderCard(c) {
     await saveCard(c);
   });
 
-  // 点击选中(连线模式下 = 选起点/终点)
+  // 点击选中(Shift 加多选 · 连线模式下 = 选起点/终点)
   el.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains('card-body')) return; // 编辑区不选中
     if (connectMode) {
@@ -591,9 +591,21 @@ function renderCard(c) {
       e.stopPropagation();
       return;
     }
+    if (e.shiftKey) {
+      // Shift 多选
+      if (multiSelectedIds.has(c.id)) multiSelectedIds.delete(c.id);
+      else multiSelectedIds.add(c.id);
+      renderAll();
+      updateSelectionInfo();
+      e.stopPropagation();
+      return;
+    }
+    // 普通单选 · 清多选
+    multiSelectedIds.clear();
     selectedCardId = c.id;
-    document.querySelectorAll('.card').forEach(x => x.classList.remove('selected'));
+    document.querySelectorAll('.card').forEach(x => { x.classList.remove('selected'); x.classList.remove('multi-selected'); });
     el.classList.add('selected');
+    updateSelectionInfo();
   });
 
   // 右键菜单
