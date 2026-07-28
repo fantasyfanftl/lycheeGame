@@ -152,7 +152,18 @@ html, body {
 }
 .card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
 .card.selected { outline: 2px solid #7c9dff; box-shadow: 0 0 20px rgba(124, 157, 255, 0.5); }
+.card.multi-selected { outline: 2px solid #6ee7b7; box-shadow: 0 0 20px rgba(52, 211, 153, 0.5); }
 .card.dragging { opacity: 0.7; z-index: 100; }
+
+/* 框选矩形 */
+.selection-box {
+  position: absolute;
+  border: 1.5px dashed #7c9dff;
+  background: rgba(124, 157, 255, 0.08);
+  pointer-events: none;
+  z-index: 500;
+  display: none;
+}
 
 /* 三色 · 豆包定义 */
 .card-yellow {
