@@ -867,33 +867,6 @@ document.getElementById('btnImport').addEventListener('click', () => {
   modal.classList.add('show');
 });
 
-modalConfirm.addEventListener('click', async () => {
-  if (modalMode === 'export') {
-    modal.classList.remove('show');
-    return;
-  }
-  // 导入
-  const raw = modalTextarea.value.trim();
-  if (!raw) return;
-  try {
-    // 允许粘贴带 header 的完整包
-    const jsonStart = raw.indexOf('{');
-    const jsonEnd = raw.lastIndexOf('}');
-    if (jsonStart === -1) throw new Error('未找到 JSON');
-    const data = JSON.parse(raw.slice(jsonStart, jsonEnd + 1));
-    if (!Array.isArray(data.cards)) throw new Error('缺 cards 字段');
-    if (!confirm(`将覆盖当前 ${cards.length} 张卡 · 换成 ${data.cards.length} 张 · 确认?`)) return;
-    await clearAll();
-    for (const c of data.cards) { cards.push(c); await saveCard(c); }
-    for (const l of (data.links || [])) { links.push(l); await saveLink(l); }
-    modal.classList.remove('show');
-    renderAll();
-    setStatus(`✓ 导入完成 · ${cards.length} 卡 · ${links.length} 连线`);
-  } catch (e) {
-    alert('导入失败:' + e.message);
-  }
-});
-
 modalCancel.addEventListener('click', () => modal.classList.remove('show'));
 
 /* ============ 📋 粘贴导入 · 2 种格式 ============ */
