@@ -821,7 +821,132 @@ document.getElementById('btnAddOrange').addEventListener('click', () => addCard(
 document.getElementById('btnAddGreen').addEventListener('click', () => addCard('green'));
 document.getElementById('btnAddGray').addEventListener('click', () => addCard('gray'));
 
-/* ============ 🧹 一键整理 · 按颜色自动分区重排 ============ */
+/* ============ ✍️ 手动提炼 · 多选 → 新橙卡 + 连线 ============ */
+document.getElementById('btnManualDistill').addEventListener('click', () => {
+  if (multiSelectedIds.size < 1) {
+    alert('先选中要提炼的源卡片(Shift 多选 · 或框选)');
+    return;
+  }
+  const sources = cards.filter(c => multiSelectedIds.has(c.id));
+  modalMode = 'manualDistill';
+  modalTitle.textContent = `✍️ 手动提炼 · ${sources.length} 张源卡`;
+  modalDesc.innerHTML = `
+    <strong style="color:#ff9857;">源素材:</strong><br>
+    ${sources.map((c, i) => `<span style="color:#d8dcec; font-size:11px;">${i+1}. ${escapeHtml(c.text).slice(0, 60)}${c.text.length > 60 ? '...' : ''}</span>`).join('<br>')}
+    <br><br>
+    <strong style="color:#ff9857;">在下方写"提炼后的一句话"</strong><span style="color:#7d84a8;"> · 精炼 / 概括 / 抽核心</span><br>
+    <span style="color:#6ee7b7; font-size:10px;">▸ 生成新 🟠 深橙卡 · 摆源卡右侧 · 自动画"提炼衍生"箭头 · 源卡保留</span>
+  `;
+  modalTextarea.value = '';
+  modalTextarea.placeholder = '写一句精炼的话...';
+  modalConfirm.textContent = '生成橙卡';
+  modal.classList.add('show');
+  setTimeout(() => modalTextarea.focus(), 100);
+});
+
+/* ============ 🤖 AI 提炼 · 多选 → 生成 prompt 打包 ============ */
+document.getElementById('btnAiDistill').addEventListener('click', () => {
+  if (multiSelectedIds.size < 1) {
+    alert('先选中要提炼的源卡片(Shift 多选 · 或框选)');
+    return;
+  }
+  const sources = cards.filter(c => multiSelectedIds.has(c.id));
+  modalMode = 'aiDistill';
+  modalTitle.textContent = `🤖 AI 提炼 · ${sources.length} 张源卡 → 1 张精炼卡`;
+  modalDesc.innerHTML = `
+    <strong style="color:#d6b4ff;">操作 3 步:</strong><br>
+    <span style="color:#ffb457;">1. Prompt 已复制 · 或点下方"打开豆包"直接跳</span><br>
+    <span style="color:#a4b3ff;">2. 豆包/Kimi/Claude · Ctrl+V 粘贴 + 发送</span><br>
+    <span style="color:#6ee7b7;">3. AI 输出"精炼:xxx" · 复制回来 · 粘下方 · 点"生成橙卡"</span><br>
+    <br>
+    <div style="display:flex; gap:8px;">
+      <button class="top-btn" onclick="window.open('https://www.doubao.com','_blank','noopener')">🥟 豆包</button>
+      <button class="top-btn" onclick="window.open('https://www.kimi.com','_blank','noopener')">🌙 Kimi</button>
+      <button class="top-btn" onclick="window.open('https://claude.ai','_blank','noopener')">🤖 Claude</button>
+    </div>
+  `;
+  const prompt = `请把以下 ${sources.length} 张卡的核心提炼成一句话:
+
+要求:
+1. 精炼 · 一句话 · 不超过 60 字
+2. 抽核心 · 保留最本质的观点/规则/事实
+3. 自包含 · 单看这句话意思完整
+
+输出格式(严格):
+精炼:[提炼后的一句话]
+
+━━━━━━━━━━━━━━━━━━
+
+源素材:
+
+${sources.map((c, i) => `${i+1}. ${c.text}`).join('\n\n')}`;
+
+  modalTextarea.value = prompt;
+  modalConfirm.textContent = 'AI 输出粘这里 → 生成橙卡';
+  modal.classList.add('show');
+  navigator.clipboard.writeText(prompt).then(() => {
+    setStatus(`✓ AI 提炼 prompt 已复制 · ${sources.length} 张源卡`);
+  }).catch(() => setStatus('复制失败 · 请手动全选'));
+
+  // 让用户之后能贴 AI 输出 · 弹窗打开时先展示 prompt · 用户复制后清空贴结果
+  // 加个"我复制好了 · 清空贴结果"按钮
+  setTimeout(() => {
+    if (!document.getElementById('aiDistillClear')) {
+      const btn = document.createElement('button');
+      btn.id = 'aiDistillClear';
+      btn.className = 'top-btn';
+      btn.textContent = '⭐ 我已复制 · 清空贴 AI 结果';
+      btn.style.marginTop = '8px';
+      btn.onclick = () => {
+        modalTextarea.value = '';
+        modalTextarea.placeholder = 'AI 返回的内容粘这里 · 格式:"精炼:xxx"';
+        modalTextarea.focus();
+        btn.remove();
+      };
+      modalTextarea.parentElement.insertBefore(btn, modalTextarea.nextSibling);
+    }
+  }, 50);
+});
+
+async function generateDistilledCard(sources, distilledText, targetColor = 'orange') {
+  // 生成新卡 · 摆在源卡右侧偏下
+  const avgX = sources.reduce((s, c) => s + c.x, 0) / sources.length;
+  const avgY = sources.reduce((s, c) => s + c.y, 0) / sources.length;
+  const maxX = Math.max(...sources.map(c => c.x));
+
+  const newCard = {
+    id: uuid(),
+    x: maxX + 320,
+    y: avgY + 40,
+    color: targetColor,
+    type: (targetColor === 'orange' ? '🟠 手动提炼' : '🟢 成熟单元') + ` | 从 ${sources.length} 张源卡提炼`,
+    text: distilledText,
+    tags: ['提炼产物'],
+    source: {
+      type: 'distilled',
+      fromCards: sources.map(c => c.id),
+      distilledAt: now()
+    },
+    createdAt: now(),
+    updatedAt: now()
+  };
+  cards.push(newCard);
+  await saveCard(newCard);
+
+  // 每张源 → 新卡 · 画"提炼衍生"箭头
+  for (const src of sources) {
+    const link = {
+      id: uuid(),
+      from: src.id,
+      to: newCard.id,
+      type: '提炼衍生'
+    };
+    links.push(link);
+    await saveLink(link);
+  }
+  return newCard;
+}
+
 document.getElementById('btnAutoLayout').addEventListener('click', async () => {
   if (!confirm(`将按颜色重排所有卡片:\n🟡 黄卡 → 左上素材区\n🟨 浅橙 → 中央推演区\n🟠 深橙 → 中央右侧\n🟢 绿卡 → 右侧成熟区\n⚪ 灰卡 → 底部临时区\n\n继续?`)) return;
 
