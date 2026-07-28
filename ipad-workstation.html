@@ -3739,10 +3739,29 @@ footer strong { color: #7d84a8; }
   top: 72px;
   z-index: 55;
   margin-bottom: 10px;
+  background: rgba(14, 16, 36, 0.98);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(124, 157, 255, 0.15);
 }
 .tab-header-stack .tab-bar {
   position: static;
   margin-bottom: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.tab-header-stack .asset-mini-nav {
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  margin-top: 4px;
 }
 @media (max-width: 900px) {
   .tab-header-stack { top: 70px; }
