@@ -998,7 +998,6 @@ document.getElementById('btnFocusMode').addEventListener('click', () => {
 
 function applyFocus(cardId) {
   if (!focusMode || !cardId) return;
-  // 找和这张卡有直接连线关系的卡片
   const related = new Set([cardId]);
   links.forEach(l => {
     if (l.from === cardId) related.add(l.to);
@@ -1016,17 +1015,6 @@ function applyFocus(cardId) {
     }
   });
 }
-
-// 让点击卡片时触发聚焦
-const oldRenderCard = renderCard;
-renderCard = function(c) {
-  const el = oldRenderCard(c);
-  el.addEventListener('click', (e) => {
-    if (e.target.classList.contains('card-body')) return;
-    if (focusMode) applyFocus(c.id);
-  });
-  return el;
-};
 
 document.getElementById('btnBatchDelete').addEventListener('click', async () => {
   const nY = cards.filter(c => c.color === 'yellow').length;
