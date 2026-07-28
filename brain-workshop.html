@@ -520,6 +520,7 @@ const canvas = document.getElementById('canvas');
 const canvasSvg = document.getElementById('canvasSvg');
 let currentStage = 'all';
 let selectedCardId = null;
+let multiSelectedIds = new Set();  // 多选
 let connectMode = false;
 let connectFrom = null;
 
