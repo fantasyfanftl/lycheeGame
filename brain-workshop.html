@@ -155,9 +155,20 @@ html, body {
 .card.multi-selected { outline: 2px solid #6ee7b7; box-shadow: 0 0 20px rgba(52, 211, 153, 0.5); }
 .card.dragging { opacity: 0.7; z-index: 100; }
 
-/* 聚焦模式 · 非相关卡淡化 */
-.card.dimmed { opacity: 0.18; filter: grayscale(0.6); }
-.card.focused-highlight { box-shadow: 0 0 30px rgba(124, 157, 255, 0.7); z-index: 50; }
+/* 聚焦模式 · 非相关卡淡化 · 焦点卡强高亮 · 关联卡半亮 */
+.card.dimmed { opacity: 0.15; filter: grayscale(0.7); }
+.card.focused-highlight {
+  box-shadow: 0 0 0 3px #ffd166, 0 0 40px rgba(255, 209, 102, 0.6);
+  z-index: 50;
+  filter: brightness(1.15);
+  transform: scale(1.03);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.card.focused-related {
+  box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.5);
+  z-index: 40;
+  filter: brightness(1.05);
+}
 
 /* 框选矩形 */
 .selection-box {
@@ -925,11 +936,7 @@ document.getElementById('btnAiDistill').addEventListener('click', () => {
     : '(当前画布无琥珀主题 · 所有原子将标"未归类")';
   const prompt = `# 任务 · 归类原子卡到已有主题
 
-## 主题 vs 结论 · 边界定义
-
-- 🟨 **主题(琥珀)** = 一个方向 / 一个筐 · 还在"聚" · 可挂多张原子 · 是"问题/方向"
-- 🟠 **结论(橙)** = 一句判断 / 一条规则 · 已经"落" · 不再展开 · 是"答案/判断"
-- **归类目标 = 只归到主题(琥珀)** · 结论(橙)不作为归类目标
+${getWorkshopContext()}
 
 ## 已有主题清单(${themes.length} 个)
 
@@ -1057,11 +1064,11 @@ document.getElementById('btnBuildTheme').addEventListener('click', () => {
   `;
   const prompt = `# 任务 · 从未归类原子聚类出新主题
 
-## 主题 vs 结论 · 边界定义
+${getWorkshopContext()}
 
-- 🟨 **主题** = 一个方向 / 一个筐 · 可挂多张原子 · 是"问题/方向"
-- 🟠 **结论** = 一句判断 / 一条规则 · 不再展开 · 是"答案/判断"
-- **本任务产出:主题** · 不产出结论
+## 本任务
+
+从下面 ${unclassified.length} 张"未归类"原子中 · 聚类出 2-5 个新的**主题(琥珀)** —— 不产结论(橙)。
 
 ## 待聚类原子(${unclassified.length} 张 · 都是未归类)
 
@@ -1119,7 +1126,7 @@ document.getElementById('btnFocusMode').addEventListener('click', () => {
     setStatus('🎯 聚焦模式 · 点卡片高亮 · 再点空白取消');
   } else {
     btn.style.background = 'rgba(124, 157, 255, 0.12)';
-    document.querySelectorAll('.card').forEach(el => { el.classList.remove('dimmed'); el.classList.remove('focused-highlight'); });
+    document.querySelectorAll('.card').forEach(el => { el.classList.remove('dimmed'); el.classList.remove('focused-highlight'); el.classList.remove('focused-related'); });
     setStatus('🟢 就绪');
   }
 });
@@ -1133,13 +1140,16 @@ function applyFocus(cardId) {
   });
   document.querySelectorAll('.card').forEach(el => {
     const id = el.dataset.id;
-    if (related.has(id)) {
+    el.classList.remove('focused-highlight');
+    el.classList.remove('focused-related');
+    if (id === cardId) {
       el.classList.remove('dimmed');
-      if (id === cardId) el.classList.add('focused-highlight');
-      else el.classList.remove('focused-highlight');
+      el.classList.add('focused-highlight');
+    } else if (related.has(id)) {
+      el.classList.remove('dimmed');
+      el.classList.add('focused-related');
     } else {
       el.classList.add('dimmed');
-      el.classList.remove('focused-highlight');
     }
   });
 }
@@ -1219,29 +1229,12 @@ async function loadSampleData(silent = false) {
 document.getElementById('btnLoadSample').addEventListener('click', () => loadSampleData(false));
 
 document.getElementById('btnBatchDelete').addEventListener('click', async () => {
-  const nY = cards.filter(c => c.color === 'yellow').length;
-  const nA = cards.filter(c => c.color === 'amber').length;
-  const nO = cards.filter(c => c.color === 'orange').length;
-  const nG = cards.filter(c => c.color === 'green').length;
-  const nGray = cards.filter(c => c.color === 'gray').length;
   const nSel = multiSelectedIds.size;
-  const choice = prompt(`选择要清的类别 · 输入编号:
 
-1. 只清 🟠 深橙(结论卡)· ${nO} 张
-2. 只清 🟨 浅橙(枢纽卡)· ${nA} 张
-3. 只清 🟢 绿卡(成品)· ${nG} 张
-4. 只清 ⚪ 灰卡(临时)· ${nGray} 张
-5. 清所有非黄卡(保留原始素材)
-6. 只清所选中的 · ${nSel} 张
-7. 全部清空(危险!)
-
-留空取消`, '');
-  if (!choice) return;
-
-  const doDelete = async (predicate) => {
+  const doDelete = async (predicate, label) => {
     const toDel = cards.filter(predicate);
     if (toDel.length === 0) { alert('没找到要清的卡'); return; }
-    if (!confirm(`确认删除 ${toDel.length} 张卡?连带删除相关连线`)) return;
+    if (!confirm(`确认删除 ${toDel.length} 张卡?连带删除相关连线\n${label || ''}`)) return;
     for (const c of toDel) {
       await deleteCard(c.id);
       cards = cards.filter(x => x.id !== c.id);
@@ -1252,13 +1245,37 @@ document.getElementById('btnBatchDelete').addEventListener('click', async () => 
     setStatus(`✓ 已清 ${toDel.length} 张卡`);
   };
 
+  // 有选中 → 直接删选中 · 跳过弹窗
+  if (nSel > 0) {
+    await doDelete(c => multiSelectedIds.has(c.id), `(所选 ${nSel} 张)`);
+    return;
+  }
+
+  // 无选中 → 弹分类选择
+  const nY = cards.filter(c => c.color === 'yellow').length;
+  const nA = cards.filter(c => c.color === 'amber').length;
+  const nO = cards.filter(c => c.color === 'orange').length;
+  const nG = cards.filter(c => c.color === 'green').length;
+  const nGray = cards.filter(c => c.color === 'gray').length;
+  const choice = prompt(`未选中卡 · 请选类别 · 输入编号:
+
+1. 只清 🟠 深橙(结论卡)· ${nO} 张
+2. 只清 🟨 琥珀(枢纽卡)· ${nA} 张
+3. 只清 🟢 绿卡(成品)· ${nG} 张
+4. 只清 ⚪ 灰卡(临时)· ${nGray} 张
+5. 清所有非黄卡(保留原始素材)
+6. 全部清空(危险!)
+
+▸ 想删指定几张 → 先框选/Shift 多选 → 再点 🗑 会直接删所选
+留空取消`, '');
+  if (!choice) return;
+
   if (choice === '1') await doDelete(c => c.color === 'orange');
   else if (choice === '2') await doDelete(c => c.color === 'amber');
   else if (choice === '3') await doDelete(c => c.color === 'green');
   else if (choice === '4') await doDelete(c => c.color === 'gray');
   else if (choice === '5') await doDelete(c => c.color !== 'yellow');
-  else if (choice === '6') await doDelete(c => multiSelectedIds.has(c.id));
-  else if (choice === '7') {
+  else if (choice === '6') {
     if (confirm(`将删除全部 ${cards.length} 张卡 + ${links.length} 连线 · 真的确认?`)) {
       await clearAll();
       renderAll();
@@ -1366,15 +1383,40 @@ function buildExportPayload() {
   const data = { version: '0.1', exportedAt: now(), cards: cards, links: links };
   const header = `# 大脑工坊 · JSON 导出 · ${now()}
 
-天蓝从 brain-workshop 导出的画布数据 · 请协助分析/合并/建议下一步。
+${getWorkshopContext()}
 
-- 卡片 ${cards.length} 张(黄 ${cards.filter(c=>c.color==='yellow').length} · 橙 ${cards.filter(c=>c.color==='orange').length} · 绿 ${cards.filter(c=>c.color==='green').length} · 灰 ${cards.filter(c=>c.color==='gray').length})
+## 本次导出
+
+天蓝从 brain-workshop 导出的画布数据。请协助分析/合并/建议下一步。
+
+- 卡片 ${cards.length} 张(黄 ${cards.filter(c=>c.color==='yellow').length} · 琥珀 ${cards.filter(c=>c.color==='amber').length} · 橙 ${cards.filter(c=>c.color==='orange').length} · 绿 ${cards.filter(c=>c.color==='green').length} · 灰 ${cards.filter(c=>c.color==='gray').length})
 - 连线 ${links.length} 条
+
+## 你可以选 3 种回法
+
+① **只分析** · 回文字建议(天蓝手动做)
+② **生成清理版 JSON** · 保留 version/cards/links 字段 · 天蓝📥 导入 JSON 直接覆盖
+③ **分步指令** · 每步 1 句话 · 让天蓝逐条手动做
 
 ━━━━━━━━━━━━━━━━━━
 
 `;
   return header + JSON.stringify(data, null, 2);
+}
+
+/* ============ 🌐 工坊自我介绍 · 所有 prompt 前置 · 让新 Claude 秒懂 ============ */
+function getWorkshopContext() {
+  return `## 工坊上下文(每次都读 · 别跳过)
+
+你正在读天蓝的"大脑工坊(brain-workshop.html)"数据。工坊是:
+- **单文件 HTML** 卡片画布 · iPad/手机 通过 GitHub Pages 访问 · IndexedDB 本地存
+- **CODE 4 阶段** · Capture(捕获)→ Organize(组织)→ Distill(提炼)→ Express(表达)
+- **卡片 5 色** · 🟡黄=原始素材 · 🟨琥珀=主题(方向/筐 · 挂原子) · 🟠橙=结论(判断/规则 · 已定型) · 🟢绿=成品 · ⚪灰=临时/归档
+- **主题 vs 结论**:主题是"问题/方向" · 结论是"答案/判断"。归类只归主题(琥珀)。
+- **天蓝画像**:完美主义克制版 · P 型思维 · 大白话优先 · 5 段回复(核心目标/精简/标准/想法池/待确认)· 不要空话
+- **天蓝无法立即执行你的建议**(在 iPad 上)· 你要给"可直接粘回工坊导入的 JSON"或"1-2 步能手动做的指令"
+
+`;
 }
 
 /* ============ 📸 快照给 Claude · 打包数据+全套分析 prompt ============ */
@@ -1414,38 +1456,47 @@ function buildSnapshotPayload() {
 
   return `# 📸 大脑工坊快照 · ${now()}
 
+${getWorkshopContext()}
+
+## 本次快照
+
 天蓝手动点了"📸 快照给 Claude" · 请按下面 4 项分析当前画布状态。
 
-## 概况
+### 概况
 
-- **总卡** ${cards.length} 张:🟡黄 ${yellowN}(原始素材) · 🟨琥珀 ${amberN}(枢纽) · 🟠橙 ${orangeN}(结论) · 🟢绿 ${greenN}(成品) · ⚪灰 ${grayN}(临时/归档)
+- **总卡** ${cards.length} 张:🟡黄 ${yellowN}(原始) · 🟨琥珀 ${amberN}(主题) · 🟠橙 ${orangeN}(结论) · 🟢绿 ${greenN}(成品) · ⚪灰 ${grayN}(临时)
 - **连线** ${links.length} 条:${linkSummary}
-- **爆炸源检测** ${hotSources} 张卡的出度 ≥ 4(星型爆炸嫌疑)
+- **入度爆炸嫌疑** ${hotSources} 张卡的出度 ≥ 4(注:此检测按出度算 · 星型爆炸真正靠入度 · 请你也自己按入度重算)
 
-## 请分析 · 4 项(按顺序回)
+## 请分析 · 4 项
 
 ### ① CODE 4 阶段进度分布
 
-- Capture(黄卡)· Organize(黄→琥珀)· Distill(琥珀→橙)· Express(橙→绿)
-- 每阶段的**卡片密度、停留时间、瓶颈**
+- 每阶段的卡片密度、连线密度、瓶颈
 - 哪个阶段"堆积"了 · 哪个阶段"饿死"了
 
-### ② 混乱/星型爆炸检测
+### ② 星型爆炸检测(请按**入度**重算)
 
-- 检查连线密度 · 是否有卡片"出度 ≥ 4"的星型爆炸
-- Zettelkasten 建议:出度 ≥ 4 的应该升为枢纽卡(琥珀色)
-- 列出具体是哪几张卡 · 建议怎么处理
+- 找入度 ≥ 8 的琥珀 → 建议拆分
+- 找出度 ≥ 4 的原子 → 建议升为琥珀
+- 具体是哪几张卡 · 建议怎么处理
 
 ### ③ 该往下走哪张 · 卡在哪
 
-- 找**滞留最久的黄卡**(应升琥珀但没升)
-- 找**孤立的橙卡**(没有源头连线 · 缺回溯)
-- 找**未升绿的橙卡**(结论定型了但没做成成品)
+- 滞留最久的黄卡(应升琥珀但没升)
+- 孤立的橙卡(没有源头连线 · 缺回溯)
+- 未升绿的橙卡(结论定型了但没做成成品)
 
 ### ④ 推荐下一步动作 · 3 条
 
 - 具体、可执行、优先级排序
 - 每条包括:动作 + 涉及的卡片 ID + 预期效果
+
+## 你可以选 3 种回法
+
+① **只分析** · 回 4 项文字建议(天蓝在 iPad 上手动做)
+② **生成清理版 JSON** · 结构 { version, cards, links } · 天蓝📥 导入 JSON 直接覆盖
+③ **分步指令** · 每步 1 句话可操作 · 让天蓝逐条做
 
 ━━━━━━━━━━━━━━━━━━
 
@@ -1747,13 +1798,18 @@ document.getElementById('btnAiDecouple').addEventListener('click', async () => {
     </div>
   `;
 
-  const prompt = `请把以下原始素材 · 按【原子知识单元】三条标准拆解:
+  const prompt = `# 任务 · 拆解原始素材为原子知识单元
 
-1. 单一语义 · 一张卡只讲一个观点/事实/概念/待办
-2. 自包含 · 卡片脱离上下文单独看依然语义完整 · 不用"这个/它"等指代
-3. 可复用 · 具备独立引用价值 · 可被多个主题调用
+${getWorkshopContext()}
 
-输出格式(严格按此):
+## 拆解标准 · 3 条
+
+1. **单一语义** · 一张卡只讲一个观点/事实/概念/待办
+2. **自包含** · 卡片脱离上下文单独看依然语义完整 · 不用"这个/它"等指代
+3. **可复用** · 具备独立引用价值 · 可被多个主题调用
+
+## 输出格式(严格)
+
 卡片 1: [卡片内容一句话]
 卡片 2: [卡片内容一句话]
 卡片 3: [卡片内容一句话]
@@ -1761,7 +1817,7 @@ document.getElementById('btnAiDecouple').addEventListener('click', async () => {
 
 ━━━━━━━━━━━━━━━━━━
 
-原始素材(${targetCards.length} 张卡):
+## 原始素材(${targetCards.length} 张卡)
 
 ${targetCards.map((c, i) => `[${i+1}] ${c.text}`).join('\n\n')}
 ${targetCards.length === 0 ? '(在此粘贴你的原始素材)' : ''}`;
@@ -1936,7 +1992,7 @@ document.getElementById('canvasArea').addEventListener('click', (e) => {
     }
     // 聚焦模式下 · 空白清高亮 · 恢复全部显示
     if (focusMode) {
-      document.querySelectorAll('.card').forEach(el => { el.classList.remove('dimmed'); el.classList.remove('focused-highlight'); });
+      document.querySelectorAll('.card').forEach(el => { el.classList.remove('dimmed'); el.classList.remove('focused-highlight'); el.classList.remove('focused-related'); });
     }
   }
 });
