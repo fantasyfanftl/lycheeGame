@@ -3705,7 +3705,6 @@ footer strong { color: #7d84a8; }
 
 /* mini nav 快速指向(锚点跳转) · sticky 吸在 tab-bar 下方 */
 .asset-mini-nav {
-  grid-column: 1 / -1;
   position: -webkit-sticky;
   position: sticky;
   top: 130px;
@@ -3719,7 +3718,7 @@ footer strong { color: #7d84a8; }
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(124, 157, 255, 0.2);
   border-radius: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   align-items: center;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
@@ -5182,17 +5181,17 @@ footer strong { color: #7d84a8; }
       </div>
     </div>
 
-    <!-- Tab 1 · 已成型 prompt(资产 01-05) -->
-    <div class="asset-panel active" data-asset-panel="ready">
-
-    <!-- Mini nav · 快速指向分组锚点 -->
-    <nav class="asset-mini-nav" aria-label="资产分组快速跳转">
+    <!-- Mini nav · 快速指向分组锚点(仅 ready tab 显示 · sticky 在 tab-bar 下方) -->
+    <nav class="asset-mini-nav" aria-label="资产分组快速跳转" data-mini-nav>
       <span class="asset-mini-nav-label">跳到</span>
       <button class="mini-nav-btn" data-scroll-to="group-start">对话启动/转接</button>
       <button class="mini-nav-btn" data-scroll-to="group-review">复盘沉淀</button>
       <button class="mini-nav-btn" data-scroll-to="group-control">过程管控</button>
       <button class="mini-nav-btn" data-scroll-to="group-infra">基建/自动化</button>
     </nav>
+
+    <!-- Tab 1 · 已成型 prompt(资产 01-05) -->
+    <div class="asset-panel active" data-asset-panel="ready">
 
     <!-- ========== 分组 1 · 对话启动与转接 ========== -->
     <div class="asset-group-title" id="group-start">
@@ -7432,6 +7431,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   var assetTabs = document.querySelectorAll(".asset-tabs .tab-btn");
   var assetPanels = document.querySelectorAll(".asset-panel");
+  var miniNav = document.querySelector("[data-mini-nav]");
   assetTabs.forEach(function(bt) {
     bt.addEventListener("click", function(e) {
       e.stopPropagation();
@@ -7447,6 +7447,7 @@ document.addEventListener("DOMContentLoaded", function() {
         targetPanel.style.display = "";
         targetPanel.classList.add("active");
       }
+      if (miniNav) miniNav.style.display = (target === "ready") ? "" : "none";
     });
   });
 
