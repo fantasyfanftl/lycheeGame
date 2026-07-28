@@ -934,19 +934,26 @@ ${sources.map((c, i) => `${i+1}. ${c.text}`).join('\n\n')}`;
 });
 
 async function generateDistilledCard(sources, distilledText, targetColor = 'orange') {
-  // 固定摆逻辑推演区(区域 2 · x=1200+) · 纵向叠加 · 避免重叠
-  const zoneX = 1400;
+  // Zettelkasten 分层摆位:
+  //   amber(枢纽) → x=1200 · 中央左
+  //   orange(结论) → x=1800 · 中央右
+  //   green(成品)  → x=2400 · 右侧成熟区
+  const zoneX = {amber: 1200, orange: 1800, green: 2400}[targetColor] || 1200;
   const zoneY = 200;
-  // 检测该颜色已有多少 · 决定 Y 偏移
   const existing = cards.filter(c => c.color === targetColor);
-  const newY = zoneY + existing.length * 200;
+  const cols = 2;
+  const col = existing.length % cols;
+  const row = Math.floor(existing.length / cols);
+  const newX = zoneX + col * 260;
+  const newY = zoneY + row * 200;
 
+  const label = {amber: '🟨 枢纽卡', orange: '🟠 结论卡', green: '🟢 成品卡'}[targetColor];
   const newCard = {
     id: uuid(),
-    x: zoneX,
+    x: newX,
     y: newY,
     color: targetColor,
-    type: (targetColor === 'orange' ? '🟠 手动提炼' : '🟢 成熟单元') + ` | 从 ${sources.length} 张源卡提炼`,
+    type: label + ` | 从 ${sources.length} 张源卡提炼`,
     text: distilledText,
     tags: ['提炼产物'],
     source: {
