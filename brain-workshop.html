@@ -1003,22 +1003,33 @@ modalConfirm.addEventListener('click', async () => {
 
 /* ============ 🤖 投喂 AI · 生成解耦 prompt ============ */
 document.getElementById('btnAiDecouple').addEventListener('click', async () => {
-  // 收集所有黄卡内容(未处理的原始素材)
-  const yellowCards = cards.filter(c => c.color === 'yellow');
-  if (yellowCards.length === 0) {
-    if (!confirm('当前没有黄卡素材 · 是否粘贴新文本让 AI 解耦?')) return;
+  // 优先投喂选中的(多选) · 否则所有黄卡
+  let targetCards;
+  if (multiSelectedIds.size > 0) {
+    targetCards = cards.filter(c => multiSelectedIds.has(c.id));
+  } else {
+    targetCards = cards.filter(c => c.color === 'yellow');
+  }
+  const isSelection = multiSelectedIds.size > 0;
+
+  if (targetCards.length === 0) {
+    if (!confirm('当前无选中 · 也没有黄卡 · 是否粘贴新文本让 AI 解耦?')) return;
   }
 
   modalMode = 'ai';
-  modalTitle.textContent = '🤖 投喂 AI · 自动解耦成原子卡';
+  modalTitle.textContent = isSelection ? `🤖 投喂 AI · 已选 ${targetCards.length} 张卡` : `🤖 投喂 AI · 全部黄卡(${targetCards.length} 张)`;
   modalDesc.innerHTML = `
     <strong style="color:#a4b3ff;">操作路径:</strong><br>
-    <span style="color:#ffb457;">1. 复制下方 prompt(已自动打包所有黄卡)</span><br>
-    <span style="color:#a4b3ff;">2. 打开豆包/Kimi/Claude 网页版 · 粘贴发送</span><br>
-    <span style="color:#d6b4ff;">3. AI 输出"卡片 1:xxx / 卡片 2:xxx"结构化文本</span><br>
-    <span style="color:#6ee7b7;">4. 复制 AI 输出 · 回到工坊 · 点📋 粘贴导入 · 自动拆卡入库</span><br>
+    <span style="color:#ffb457;">1. Prompt 已复制 · 或点下方"打开豆包"直接跳</span><br>
+    <span style="color:#a4b3ff;">2. 豆包/Kimi/Claude 页面 · Ctrl+V 粘贴发送</span><br>
+    <span style="color:#d6b4ff;">3. AI 输出"卡片 1: xxx / 卡片 2: xxx"结构化文本</span><br>
+    <span style="color:#6ee7b7;">4. 复制 AI 输出 · 回工坊 · 点 📋 粘贴导入 · 自动拆卡入库</span><br>
     <br>
-    <span style="color:#7d84a8; font-size:10px;">▸ AI 解耦规则已写入 prompt · 三原子标准 · 单一语义/自包含/可复用</span>
+    <div style="display:flex; gap:8px; margin-top:8px;">
+      <button class="top-btn" onclick="window.open('https://www.doubao.com','_blank','noopener')">🥟 打开豆包</button>
+      <button class="top-btn" onclick="window.open('https://www.kimi.com','_blank','noopener')">🌙 打开 Kimi</button>
+      <button class="top-btn" onclick="window.open('https://claude.ai','_blank','noopener')">🤖 打开 Claude</button>
+    </div>
   `;
 
   const prompt = `请把以下原始素材 · 按【原子知识单元】三条标准拆解:
@@ -1035,17 +1046,16 @@ document.getElementById('btnAiDecouple').addEventListener('click', async () => {
 
 ━━━━━━━━━━━━━━━━━━
 
-原始素材:
+原始素材(${targetCards.length} 张卡):
 
-${yellowCards.map((c, i) => `[${i+1}] ${c.text}`).join('\n\n')}
-${yellowCards.length === 0 ? '(在此粘贴你的原始素材)' : ''}`;
+${targetCards.map((c, i) => `[${i+1}] ${c.text}`).join('\n\n')}
+${targetCards.length === 0 ? '(在此粘贴你的原始素材)' : ''}`;
 
   modalTextarea.value = prompt;
   modalConfirm.textContent = '关闭';
   modal.classList.add('show');
-  // 自动复制
   navigator.clipboard.writeText(prompt).then(() => {
-    setStatus('✓ AI 投喂 prompt 已复制 · 粘给豆包/Kimi/Claude');
+    setStatus(`✓ AI 投喂 prompt 已复制 · ${targetCards.length} 张卡素材`);
   }).catch(() => setStatus('复制失败 · 请手动全选'));
 });
 
