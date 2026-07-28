@@ -1644,13 +1644,9 @@ function setStatus(msg) {
 (async function init() {
   db = await openDB();
   await loadAll();
-  // 首次打开 · 若无数据 · 加个欢迎卡
+  // 首次打开(空库)· 自动灌主题 01 想法池(不是示例 · 是真实运转数据)
   if (cards.length === 0) {
-    await addCard('yellow');
-    const c = cards[cards.length - 1];
-    c.text = '欢迎!这是你的第一张黄卡。\n\n🎯 快速开始:\n· 点顶部 📚 加载示例 · 灌 28 条主题 01 真实想法\n· 试试 Shift 多选 → 点 ✍️ 手动提炼\n· 看 📖 使用说明 了解全流程\n\n📤 一键导出 JSON 给 Claude 讨论 · 📥 导入回来同步';
-    c.type = '🌱 欢迎卡 | 说明';
-    await saveCard(c);
+    await loadSampleData(true);
   }
   renderAll();
   setStatus('🟢 就绪 · IndexedDB 已加载');
