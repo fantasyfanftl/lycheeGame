@@ -3687,7 +3687,7 @@ footer strong { color: #7d84a8; }
   background: linear-gradient(90deg, rgba(180, 120, 255, 0.12), transparent);
   border-left: 3px solid rgba(180, 120, 255, 0.6);
   border-radius: 4px;
-  scroll-margin-top: 140px;
+  scroll-margin-top: 200px;
 }
 .asset-group-title:first-child { margin-top: 0; }
 .asset-group-title .g-name {
@@ -3703,18 +3703,28 @@ footer strong { color: #7d84a8; }
   font-family: "SF Mono", monospace;
 }
 
-/* mini nav 快速指向(锚点跳转) */
+/* mini nav 快速指向(锚点跳转) · sticky 吸在 tab-bar 下方 */
 .asset-mini-nav {
   grid-column: 1 / -1;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 130px;
+  z-index: 50;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   padding: 8px 10px;
-  background: rgba(10, 12, 25, 0.6);
-  border: 1px solid rgba(124, 157, 255, 0.15);
+  background: rgba(10, 12, 25, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(124, 157, 255, 0.2);
   border-radius: 8px;
   margin-bottom: 6px;
   align-items: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+@media (max-width: 900px) {
+  .asset-mini-nav { top: 128px; }
 }
 .asset-mini-nav-label {
   font-size: 10px;

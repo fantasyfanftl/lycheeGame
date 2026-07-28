@@ -562,6 +562,7 @@ function renderCard(c) {
   el.style.left = c.x + 'px';
   el.style.top = c.y + 'px';
   if (c.id === selectedCardId) el.classList.add('selected');
+  if (multiSelectedIds.has(c.id)) el.classList.add('multi-selected');
 
   el.innerHTML = `
     <div class="card-type">${c.type || '·'}</div>
