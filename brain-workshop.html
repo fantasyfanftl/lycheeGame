@@ -421,6 +421,7 @@ html, body {
   <button class="bottom-btn" id="btnFocusMode" title="聚焦模式:点卡片只显示它+它的连线 · 其他淡化" style="background: rgba(124, 157, 255, 0.12); color: #a4b3ff;">🎯 聚焦</button>
   <button class="bottom-btn" id="btnManualDistill" title="选中多张卡 → 手动精炼一句话 → 生成新橙卡 · 自动连线" style="background: rgba(255, 130, 50, 0.15); color: #ff9857;">✍️ 手动提炼</button>
   <button class="bottom-btn" id="btnAiDistill" title="选中多张卡 → 生成 AI 提炼 prompt → 拿结果回来一键成橙卡" style="background: rgba(180, 120, 255, 0.15); color: #d6b4ff;">🤖 AI 提炼</button>
+  <button class="bottom-btn" id="btnBuildTheme" title="扫画布所有'未归类'原子 → AI 建议聚类为新主题" style="background: rgba(255, 200, 87, 0.15); color: #ffcc77;">💡 建主题</button>
   <button class="bottom-btn" id="btnAutoLayout" title="按颜色自动分区重排">🧹 一键整理</button>
 </div>
 
@@ -872,20 +873,22 @@ document.getElementById('btnManualDistill').addEventListener('click', () => {
   setTimeout(() => modalTextarea.focus(), 100);
 });
 
-/* ============ 🤖 AI 提炼 · 多选 → 生成 prompt 打包 ============ */
+/* ============ 🤖 AI 提炼 · v2 归类派 · 归到已有琥珀主题 · 不硬合并 ============ */
 document.getElementById('btnAiDistill').addEventListener('click', () => {
   if (multiSelectedIds.size < 1) {
-    alert('先选中要提炼的源卡片(Shift 多选 · 或框选)');
+    alert('先选中要归类的原子卡(Shift 多选 · 或框选)');
     return;
   }
   const sources = cards.filter(c => multiSelectedIds.has(c.id));
+  const themes = cards.filter(c => c.color === 'amber');  // 琥珀 = 主题
   modalMode = 'aiDistill';
-  modalTitle.textContent = `🤖 AI 提炼 · ${sources.length} 张源卡 → 1 张精炼卡`;
+  modalTitle.textContent = `🤖 AI 归类 · ${sources.length} 张原子 → ${themes.length} 个已有主题`;
   modalDesc.innerHTML = `
-    <strong style="color:#d6b4ff;">操作 3 步:</strong><br>
-    <span style="color:#ffb457;">1. Prompt 已复制 · 或点下方"打开豆包"直接跳</span><br>
-    <span style="color:#a4b3ff;">2. 豆包/Kimi/Claude · Ctrl+V 粘贴 + 发送</span><br>
-    <span style="color:#6ee7b7;">3. AI 输出"精炼:xxx" · 复制回来 · 粘下方 · 点"生成橙卡"</span><br>
+    <strong style="color:#d6b4ff;">归类派 · 不硬合并 · 只判归属</strong><br>
+    <span style="color:#ffb457;">1. Prompt 已复制 · 或点下方跳 AI</span><br>
+    <span style="color:#a4b3ff;">2. 豆包/Kimi/Claude · Ctrl+V + 发送</span><br>
+    <span style="color:#6ee7b7;">3. AI 输出"卡 X → 主题 Y"格式 · 复制回来 · 粘下方 · 点"应用归类"</span><br>
+    <span style="color:#7d84a8;">▸ 已有主题 = 画布上所有 🟨 琥珀卡(${themes.length} 个) · 无主题时未归类会全体挂标</span><br>
     <br>
     <div style="display:flex; gap:8px;">
       <button class="top-btn" onclick="window.open('https://www.doubao.com','_blank','noopener')">🥟 豆包</button>
@@ -893,41 +896,63 @@ document.getElementById('btnAiDistill').addEventListener('click', () => {
       <button class="top-btn" onclick="window.open('https://claude.ai','_blank','noopener')">🤖 Claude</button>
     </div>
   `;
-  const prompt = `请把以下 ${sources.length} 张卡的核心提炼成一句话:
+  const themeList = themes.length > 0
+    ? themes.map((t, i) => `T${i+1}. ${t.text}`).join('\n')
+    : '(当前画布无琥珀主题 · 所有原子将标"未归类")';
+  const prompt = `# 任务 · 归类原子卡到已有主题
 
-要求:
-1. 精炼 · 一句话 · 不超过 60 字
-2. 抽核心 · 保留最本质的观点/规则/事实
-3. 自包含 · 单看这句话意思完整
+## 主题 vs 结论 · 边界定义
 
-输出格式(严格):
-精炼:[提炼后的一句话]
+- 🟨 **主题(琥珀)** = 一个方向 / 一个筐 · 还在"聚" · 可挂多张原子 · 是"问题/方向"
+- 🟠 **结论(橙)** = 一句判断 / 一条规则 · 已经"落" · 不再展开 · 是"答案/判断"
+- **归类目标 = 只归到主题(琥珀)** · 结论(橙)不作为归类目标
+
+## 已有主题清单(${themes.length} 个)
+
+${themeList}
+
+## 待归类原子(${sources.length} 张)
+
+${sources.map((c, i) => `A${i+1}. ${c.text}`).join('\n')}
+
+## 判断规则
+
+1. 每张原子卡 · 判断它是否属于**已有的某个主题**
+2. **属于** · 输出 "A1 → T2"(A1 归到主题 T2)
+3. **不属于任何已有主题** · 输出 "A1 → 未归类"
+4. **禁止**:不要建议新主题 · 不要合并、总结、改写内容 · 只做归类判断
+
+## 输出格式(严格)
+
+一行一条 · 每行是 \`AX → TY\` 或 \`AX → 未归类\`
+
+示例:
+A1 → T2
+A2 → 未归类
+A3 → T1
+A4 → T2
 
 ━━━━━━━━━━━━━━━━━━
 
-源素材:
-
-${sources.map((c, i) => `${i+1}. ${c.text}`).join('\n\n')}`;
+现在开始:`;
 
   modalTextarea.value = prompt;
-  modalConfirm.textContent = 'AI 输出粘这里 → 生成橙卡';
+  modalConfirm.textContent = 'AI 输出粘这里 → 应用归类';
   modal.classList.add('show');
   navigator.clipboard.writeText(prompt).then(() => {
-    setStatus(`✓ AI 提炼 prompt 已复制 · ${sources.length} 张源卡`);
+    setStatus(`✓ AI 归类 prompt 已复制 · ${sources.length} 张原子 · ${themes.length} 主题`);
   }).catch(() => setStatus('复制失败 · 请手动全选'));
 
-  // 让用户之后能贴 AI 输出 · 弹窗打开时先展示 prompt · 用户复制后清空贴结果
-  // 加个"我复制好了 · 清空贴结果"按钮
   setTimeout(() => {
     if (!document.getElementById('aiDistillClear')) {
       const btn = document.createElement('button');
       btn.id = 'aiDistillClear';
       btn.className = 'top-btn';
-      btn.textContent = '⭐ 我已复制 · 清空贴 AI 结果';
+      btn.textContent = '⭐ 我已复制 · 清空贴 AI 归类结果';
       btn.style.marginTop = '8px';
       btn.onclick = () => {
         modalTextarea.value = '';
-        modalTextarea.placeholder = 'AI 返回的内容粘这里 · 格式:"精炼:xxx"';
+        modalTextarea.placeholder = 'AI 返回归类结果粘这里 · 格式:\nA1 → T2\nA2 → 未归类\nA3 → T1';
         modalTextarea.focus();
         btn.remove();
       };
@@ -983,6 +1008,82 @@ async function generateDistilledCard(sources, distilledText, targetColor = 'oran
   }
   return newCard;
 }
+
+/* ============ 💡 建主题 · 扫未归类原子 → 生成聚类 prompt ============ */
+document.getElementById('btnBuildTheme').addEventListener('click', () => {
+  const unclassified = cards.filter(c => (c.tags || []).includes('未归类'));
+  if (unclassified.length === 0) {
+    alert('当前无"未归类"原子\n▸ 先点 🤖 AI 提炼 · AI 归类过 · 未归的会打 tag');
+    return;
+  }
+  modalMode = 'buildTheme';
+  modalTitle.textContent = `💡 AI 建主题 · ${unclassified.length} 张未归类原子`;
+  modalDesc.innerHTML = `
+    <strong style="color:#ffcc77;">让 AI 反过来建主题 · 只处理"未归类"原子</strong><br>
+    <span style="color:#ffb457;">1. Prompt 已复制 · 或点下方跳 AI</span><br>
+    <span style="color:#a4b3ff;">2. AI 聚类 · 输出"主题 X · 含 AY, AZ"格式</span><br>
+    <span style="color:#6ee7b7;">3. 复制回来 · 粘下方 · 点"生成新主题"</span><br>
+    <span style="color:#7d84a8;">▸ 生成后 · 未归类 tag 自动移除 · 原子挂到新琥珀下</span><br>
+    <br>
+    <div style="display:flex; gap:8px;">
+      <button class="top-btn" onclick="window.open('https://www.doubao.com','_blank','noopener')">🥟 豆包</button>
+      <button class="top-btn" onclick="window.open('https://www.kimi.com','_blank','noopener')">🌙 Kimi</button>
+      <button class="top-btn" onclick="window.open('https://claude.ai','_blank','noopener')">🤖 Claude</button>
+    </div>
+  `;
+  const prompt = `# 任务 · 从未归类原子聚类出新主题
+
+## 主题 vs 结论 · 边界定义
+
+- 🟨 **主题** = 一个方向 / 一个筐 · 可挂多张原子 · 是"问题/方向"
+- 🟠 **结论** = 一句判断 / 一条规则 · 不再展开 · 是"答案/判断"
+- **本任务产出:主题** · 不产出结论
+
+## 待聚类原子(${unclassified.length} 张 · 都是未归类)
+
+${unclassified.map((c, i) => `A${i+1}. ${c.text}`).join('\n')}
+
+## 聚类规则
+
+1. 找语义/领域相近的原子 · 聚成 2-5 个主题
+2. 主题名 · 短(≤ 15 字)· 是"方向名"不是"结论句"
+3. 每张原子只归一个主题
+4. 极特殊的孤立原子可以保留"未归类"
+
+## 输出格式(严格 · 一定要按这个格式回)
+
+主题 1: [主题名] · 含: A1, A3, A5
+主题 2: [主题名] · 含: A2, A4
+主题 3: [主题名] · 含: A6, A7, A8
+
+━━━━━━━━━━━━━━━━━━
+
+现在开始:`;
+
+  modalTextarea.value = prompt;
+  modalConfirm.textContent = 'AI 输出粘这里 → 生成新主题';
+  modal.classList.add('show');
+  navigator.clipboard.writeText(prompt).then(() => {
+    setStatus(`✓ 建主题 prompt 已复制 · ${unclassified.length} 张未归类`);
+  }).catch(() => setStatus('复制失败 · 请手动全选'));
+
+  setTimeout(() => {
+    if (!document.getElementById('buildThemeClear')) {
+      const btn = document.createElement('button');
+      btn.id = 'buildThemeClear';
+      btn.className = 'top-btn';
+      btn.textContent = '⭐ 我已复制 · 清空贴 AI 建主题结果';
+      btn.style.marginTop = '8px';
+      btn.onclick = () => {
+        modalTextarea.value = '';
+        modalTextarea.placeholder = 'AI 建主题结果粘这里 · 格式:\n主题 1: XXX · 含: A1, A3\n主题 2: YYY · 含: A2';
+        modalTextarea.focus();
+        btn.remove();
+      };
+      modalTextarea.parentElement.insertBefore(btn, modalTextarea.nextSibling);
+    }
+  }, 50);
+});
 
 /* ============ 🎯 聚焦模式 · 点卡片突出它+连线 · 其他淡化 ============ */
 let focusMode = false;
@@ -1444,26 +1545,126 @@ modalConfirm.addEventListener('click', async () => {
   if (modalMode === 'aiDistill') {
     const raw = modalTextarea.value.trim();
     if (!raw) return;
-    let distilled = raw;
-    const m = raw.match(/精炼[::]\s*([\s\S]+)/);
-    if (m) distilled = m[1].trim();
-    if (raw.includes('请把以下') && raw.includes('源素材')) {
-      alert('请先点"⭐ 我已复制 · 清空贴 AI 结果" · 然后粘 AI 输出');
+    if (raw.includes('任务 · 归类原子卡') && raw.includes('已有主题清单')) {
+      alert('请先点"⭐ 我已复制 · 清空贴 AI 归类结果" · 然后粘 AI 输出');
       return;
     }
     const sources = cards.filter(c => multiSelectedIds.has(c.id));
     if (sources.length === 0) { alert('源卡已丢失'); modal.classList.remove('show'); return; }
-    const radio = document.querySelector('input[name="distillTarget"]:checked');
-    const target = radio ? radio.value : 'amber';
-    const newCard = await generateDistilledCard(sources, distilled, target);
+    const themes = cards.filter(c => c.color === 'amber');
+
+    // 解析 · 每行找 AX → TY 或 AX → 未归类
+    const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+    const mapping = [];  // { aIdx, tIdx | null }
+    const reMatch = /A\s*(\d+)\s*[→\->]+\s*(?:T\s*(\d+)|未归类)/;
+    for (const line of lines) {
+      const m = line.match(reMatch);
+      if (!m) continue;
+      const aIdx = parseInt(m[1], 10) - 1;
+      const tIdx = m[2] ? parseInt(m[2], 10) - 1 : null;
+      if (aIdx >= 0 && aIdx < sources.length) mapping.push({ aIdx, tIdx });
+    }
+    if (mapping.length === 0) {
+      alert('没解析到归类结果 · 检查 AI 输出格式\n应为:A1 → T2 · 或 A1 → 未归类');
+      return;
+    }
+
+    let linkedN = 0, unclassifiedN = 0;
+    for (const { aIdx, tIdx } of mapping) {
+      const atom = sources[aIdx];
+      if (!atom) continue;
+      if (tIdx !== null && themes[tIdx]) {
+        const dupe = links.some(l => l.from === atom.id && l.to === themes[tIdx].id);
+        if (!dupe) {
+          const link = { id: uuid(), from: atom.id, to: themes[tIdx].id, type: '提炼衍生' };
+          links.push(link);
+          await saveLink(link);
+        }
+        atom.tags = (atom.tags || []).filter(t => t !== '未归类');
+        atom.updatedAt = now();
+        await saveCard(atom);
+        linkedN++;
+      } else {
+        if (!(atom.tags || []).includes('未归类')) {
+          atom.tags = [...(atom.tags || []), '未归类'];
+        }
+        atom.updatedAt = now();
+        await saveCard(atom);
+        unclassifiedN++;
+      }
+    }
     modal.classList.remove('show');
     multiSelectedIds.clear();
-    selectedCardId = newCard.id;
     const clearBtn = document.getElementById('aiDistillClear');
     if (clearBtn) clearBtn.remove();
     renderAll();
-    const targetLabel = {amber: '🟨 枢纽卡', orange: '🟠 结论卡', green: '🟢 成品卡'}[target];
-    setStatus(`✓ AI 提炼 → ${targetLabel} · ${sources.length} 张源卡自动连线`);
+    setStatus(`✓ AI 归类 · 已归 ${linkedN} 条连线 · 未归类 ${unclassifiedN} 张(打 tag)`);
+    return;
+  }
+  if (modalMode === 'buildTheme') {
+    const raw = modalTextarea.value.trim();
+    if (!raw) return;
+    if (raw.includes('任务 · 从未归类原子') && raw.includes('待聚类原子')) {
+      alert('请先点"⭐ 我已复制 · 清空贴 AI 建主题结果" · 然后粘 AI 输出');
+      return;
+    }
+    const unclassified = cards.filter(c => (c.tags || []).includes('未归类'));
+    if (unclassified.length === 0) { alert('当前无未归类原子'); modal.classList.remove('show'); return; }
+
+    // 解析 · 每个"主题:XXX / 含卡:A1,A3,A5"
+    // 兼容格式:
+    //   主题 1: 转接机制 · 含: A1, A3, A5
+    //   T1: xxx / A: 1,3,5
+    const themeBlocks = [];
+    const themeRe = /(?:主题\s*\d+|T\d+)\s*[::]\s*([^\n]+?)(?:\s*[·|\-]|\s+含[::]?|\s*\n)([\s\S]*?)(?=(?:主题\s*\d+|T\d+)\s*[::]|$)/g;
+    let m;
+    while ((m = themeRe.exec(raw)) !== null) {
+      const name = m[1].trim().replace(/[·\-|]+$/,'').trim();
+      const idxs = [...m[2].matchAll(/A\s*(\d+)/g)].map(x => parseInt(x[1],10) - 1).filter(i => i >= 0 && i < unclassified.length);
+      if (name && idxs.length > 0) themeBlocks.push({ name, idxs });
+    }
+    if (themeBlocks.length === 0) {
+      alert('没解析到主题 · 检查 AI 输出\n应为:\n主题 1: XXX · 含: A1, A3\n主题 2: YYY · 含: A2');
+      return;
+    }
+
+    // 生成新琥珀 + 连线
+    const existingAmber = cards.filter(c => c.color === 'amber');
+    let createdN = 0, linkedN = 0;
+    for (let i = 0; i < themeBlocks.length; i++) {
+      const { name, idxs } = themeBlocks[i];
+      const col = (existingAmber.length + i) % 2;
+      const row = Math.floor((existingAmber.length + i) / 2);
+      const newCard = {
+        id: uuid(),
+        x: 1200 + col * 260,
+        y: 200 + row * 200,
+        color: 'amber',
+        type: '🟨 枢纽卡 | AI 建主题',
+        text: name,
+        tags: ['主题', 'AI-建'],
+        source: { type: 'ai-build-theme', fromUnclassified: idxs.map(i => unclassified[i].id), builtAt: now() },
+        createdAt: now(),
+        updatedAt: now()
+      };
+      cards.push(newCard);
+      await saveCard(newCard);
+      createdN++;
+      for (const idx of idxs) {
+        const atom = unclassified[idx];
+        if (!atom) continue;
+        const link = { id: uuid(), from: atom.id, to: newCard.id, type: '提炼衍生' };
+        links.push(link);
+        await saveLink(link);
+        linkedN++;
+        atom.tags = (atom.tags || []).filter(t => t !== '未归类');
+        atom.updatedAt = now();
+        await saveCard(atom);
+      }
+    }
+    modal.classList.remove('show');
+    renderAll();
+    setStatus(`✓ AI 建主题 · 新增 ${createdN} 个琥珀主题 · 归入 ${linkedN} 张原子`);
     return;
   }
   if (modalMode === 'help') {
