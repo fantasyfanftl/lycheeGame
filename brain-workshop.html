@@ -1035,11 +1035,11 @@ document.getElementById('btnAutoLayout').addEventListener('click', async () => {
   if (!confirm(`将按颜色重排所有卡片:\n🟡 黄卡 → 左上素材区\n🟨 浅橙 → 中央推演区\n🟠 深橙 → 中央右侧\n🟢 绿卡 → 右侧成熟区\n⚪ 灰卡 → 底部临时区\n\n继续?`)) return;
 
   const zones = {
-    yellow: { x: 60,   y: 120  },  // 左上
-    amber:  { x: 1200, y: 120  },  // 中央
-    orange: { x: 1700, y: 120  },  // 中央右
-    green:  { x: 2300, y: 120  },  // 右侧
-    gray:   { x: 60,   y: 1700 }   // 底部
+    yellow: { x: 60,   y: 120  },  // 左上素材
+    amber:  { x: 1200, y: 120  },  // 中央左 · 枢纽
+    orange: { x: 1800, y: 120  },  // 中央右 · 结论
+    green:  { x: 2400, y: 120  },  // 右侧成熟
+    gray:   { x: 60,   y: 1700 }   // 底部临时
   };
   const grouped = { yellow: [], amber: [], orange: [], green: [], gray: [] };
   cards.forEach(c => { if (grouped[c.color]) grouped[c.color].push(c); });
