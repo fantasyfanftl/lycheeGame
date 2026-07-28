@@ -896,6 +896,236 @@ modalConfirm.addEventListener('click', async () => {
 
 modalCancel.addEventListener('click', () => modal.classList.remove('show'));
 
+/* ============ 📋 粘贴导入 · 2 种格式 ============ */
+document.getElementById('btnPasteImport').addEventListener('click', () => {
+  modalMode = 'paste';
+  modalTitle.textContent = '📋 粘贴导入 · 自动拆卡';
+  modalDesc.innerHTML = `
+    <strong style="color:#a4b3ff;">支持 2 种格式(自动识别):</strong><br>
+    <span style="color:#ffb457;">▸ 格式 A · 幕布/Markdown/纯文本</span> —— 按行/段落/缩进机械拆卡<br>
+    <span style="color:#6ee7b7;">▸ 格式 B · AI 拆好的结构化文本</span> —— 识别"卡片:xxx"、"- xxx"、"数字. xxx"等格式<br>
+    <br>
+    <span style="color:#7d84a8; font-size:10px;">▸ 每张卡自动带 · 溯源 tag(粘贴时间戳)· 默认色 🟡 黄卡</span>
+  `;
+  modalTextarea.value = '';
+  modalTextarea.placeholder = '示例 1 · 直接粘幕布导出\n- 想法一\n- 想法二\n  - 子想法\n\n示例 2 · 粘 AI 输出\n卡片 1: xxx\n卡片 2: xxx';
+  modalConfirm.textContent = '拆卡入库';
+  modal.classList.add('show');
+});
+
+async function pasteImportSplit(text) {
+  // 智能识别 · 拆卡列表
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+
+  // 格式 B 优先 · 识别 "卡片 N: xxx" 或 "N. xxx" 或 "- xxx"
+  const patternB = /^(?:卡片\s*\d+[:：]|\d+[.、)]|\s*[-*·]\s)/;
+  const lines = trimmed.split(/\n+/).map(l => l.trim()).filter(Boolean);
+
+  let items = [];
+  if (lines.filter(l => patternB.test(l)).length >= 2) {
+    // 按 pattern B 拆
+    items = lines.map(l => l.replace(patternB, '').trim()).filter(Boolean);
+  } else if (trimmed.includes('\n\n')) {
+    // 按空行分段
+    items = trimmed.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean);
+  } else {
+    // 按单行拆
+    items = lines;
+  }
+  return items;
+}
+
+modalConfirm.addEventListener('click', async () => {
+  if (modalMode === 'export') {
+    modal.classList.remove('show');
+    return;
+  }
+  if (modalMode === 'paste') {
+    const raw = modalTextarea.value.trim();
+    if (!raw) return;
+    const items = await pasteImportSplit(raw);
+    if (items.length === 0) { alert('没识别到内容'); return; }
+    const batchId = 'batch-' + now().slice(0,16).replace(/[-: ]/g,'');
+    const area = document.getElementById('canvasArea');
+    let baseX = 60, baseY = 120;
+    for (let i = 0; i < items.length; i++) {
+      const col = i % 6;
+      const row = Math.floor(i / 6);
+      const c = {
+        id: uuid(),
+        x: baseX + col * 250,
+        y: baseY + row * 180,
+        color: 'yellow',
+        type: '初级单元 | 粘贴导入',
+        text: items[i],
+        tags: [batchId],
+        source: { type: 'paste', batchId: batchId, importedAt: now() },
+        createdAt: now(),
+        updatedAt: now()
+      };
+      cards.push(c);
+      await saveCard(c);
+    }
+    modal.classList.remove('show');
+    renderAll();
+    setStatus(`✓ 已拆 ${items.length} 卡 · 批次 ${batchId}`);
+    return;
+  }
+  if (modalMode === 'ai') {
+    // AI 投喂模式 · 关闭
+    modal.classList.remove('show');
+    return;
+  }
+  if (modalMode === 'help') {
+    modal.classList.remove('show');
+    return;
+  }
+  // 默认 · JSON 导入
+  const raw = modalTextarea.value.trim();
+  if (!raw) return;
+  try {
+    const jsonStart = raw.indexOf('{');
+    const jsonEnd = raw.lastIndexOf('}');
+    if (jsonStart === -1) throw new Error('未找到 JSON');
+    const data = JSON.parse(raw.slice(jsonStart, jsonEnd + 1));
+    if (!Array.isArray(data.cards)) throw new Error('缺 cards 字段');
+    if (!confirm(`将覆盖当前 ${cards.length} 张卡 · 换成 ${data.cards.length} 张 · 确认?`)) return;
+    await clearAll();
+    for (const c of data.cards) { cards.push(c); await saveCard(c); }
+    for (const l of (data.links || [])) { links.push(l); await saveLink(l); }
+    modal.classList.remove('show');
+    renderAll();
+    setStatus(`✓ 导入完成 · ${cards.length} 卡 · ${links.length} 连线`);
+  } catch (e) {
+    alert('导入失败:' + e.message);
+  }
+});
+
+/* ============ 🤖 投喂 AI · 生成解耦 prompt ============ */
+document.getElementById('btnAiDecouple').addEventListener('click', async () => {
+  // 收集所有黄卡内容(未处理的原始素材)
+  const yellowCards = cards.filter(c => c.color === 'yellow');
+  if (yellowCards.length === 0) {
+    if (!confirm('当前没有黄卡素材 · 是否粘贴新文本让 AI 解耦?')) return;
+  }
+
+  modalMode = 'ai';
+  modalTitle.textContent = '🤖 投喂 AI · 自动解耦成原子卡';
+  modalDesc.innerHTML = `
+    <strong style="color:#a4b3ff;">操作路径:</strong><br>
+    <span style="color:#ffb457;">1. 复制下方 prompt(已自动打包所有黄卡)</span><br>
+    <span style="color:#a4b3ff;">2. 打开豆包/Kimi/Claude 网页版 · 粘贴发送</span><br>
+    <span style="color:#d6b4ff;">3. AI 输出"卡片 1:xxx / 卡片 2:xxx"结构化文本</span><br>
+    <span style="color:#6ee7b7;">4. 复制 AI 输出 · 回到工坊 · 点📋 粘贴导入 · 自动拆卡入库</span><br>
+    <br>
+    <span style="color:#7d84a8; font-size:10px;">▸ AI 解耦规则已写入 prompt · 三原子标准 · 单一语义/自包含/可复用</span>
+  `;
+
+  const prompt = `请把以下原始素材 · 按【原子知识单元】三条标准拆解:
+
+1. 单一语义 · 一张卡只讲一个观点/事实/概念/待办
+2. 自包含 · 卡片脱离上下文单独看依然语义完整 · 不用"这个/它"等指代
+3. 可复用 · 具备独立引用价值 · 可被多个主题调用
+
+输出格式(严格按此):
+卡片 1: [卡片内容一句话]
+卡片 2: [卡片内容一句话]
+卡片 3: [卡片内容一句话]
+...
+
+━━━━━━━━━━━━━━━━━━
+
+原始素材:
+
+${yellowCards.map((c, i) => `[${i+1}] ${c.text}`).join('\n\n')}
+${yellowCards.length === 0 ? '(在此粘贴你的原始素材)' : ''}`;
+
+  modalTextarea.value = prompt;
+  modalConfirm.textContent = '关闭';
+  modal.classList.add('show');
+  // 自动复制
+  navigator.clipboard.writeText(prompt).then(() => {
+    setStatus('✓ AI 投喂 prompt 已复制 · 粘给豆包/Kimi/Claude');
+  }).catch(() => setStatus('复制失败 · 请手动全选'));
+});
+
+/* ============ 📖 使用说明 ============ */
+document.getElementById('btnHelp').addEventListener('click', () => {
+  modalMode = 'help';
+  modalTitle.textContent = '📖 大脑工坊使用说明';
+  modalDesc.innerHTML = `<strong style="color:#a4b3ff;">底层定位:</strong> CODE 4 步加工画布(Capture → Organize → Distill → Express)`;
+  modalTextarea.value = `━━━ 全流程 · 5 步 ━━━
+
+1️⃣ Capture · 收集(移动端)
+   · 打开幕布/轻记 · 3 秒记想法
+   · 装油猴脚本 · 一键提取选中文本
+
+2️⃣ 导入工坊
+   · 复制幕布内容
+   · 点顶部 📋 粘贴导入
+   · 自动拆卡 · 默认 🟡 黄卡(初级单元)
+
+3️⃣ Organize · 组织(在工坊内)
+   · 拖拽黄卡到画布右侧
+   · 相关的聚成一堆
+   · 点 🔗 连线 · 两卡间加关联(5 种类型)
+
+4️⃣ Distill · AI 解耦提炼
+   · 点顶部 🤖 投喂 AI
+   · 自动生成 prompt 复制到剪贴板
+   · 打开豆包/Kimi/Claude 网页版粘贴
+   · AI 按【三原子标准】拆解
+     单一语义 · 自包含 · 可复用
+   · AI 输出"卡片 1:xxx / 卡片 2:xxx"
+   · 复制 AI 输出 · 回工坊
+   · 再点 📋 粘贴导入 · 精细化黄卡入库
+   · 手动 · 右键卡片 → 转橙卡(预提炼)
+
+5️⃣ Express · 定型入库
+   · 反复审核橙卡 · 合格 → 右键转绿卡
+   · 绿卡 = 成熟原子单元
+   · 点 📤 一键导出 · JSON 到剪贴板
+   · 电脑上 · 粘给 Claude Code
+   · Claude 合入主工作台
+     协作规则 → Claude 脑 Memory
+     思考方式 → 天蓝脑
+     Prompt 资产 → 主题 02
+     案例经验 → 主题 01 · E 表达
+
+━━━ 卡片色 · 4 种 ━━━
+
+🟡 黄卡 · 初级原子单元(刚导入 · 待复核)
+🟠 橙卡 · 预提炼单元(黄卡二次加工)
+🟢 绿卡 · 成熟单元(可导出入库)
+⚪ 灰卡 · 临时便签(不参与最终导出)
+
+━━━ 连线 · 5 种 ━━━
+
+提炼衍生 · 蓝箭头(原→提炼)
+相互补充 · 绿双向
+因果推导 · 紫箭头
+矛盾冲突 · 红虚线
+同源素材 · 灰细线
+
+━━━ 快捷操作 ━━━
+
+· 双击卡片 · 编辑文字
+· 拖拽卡片 · 换位置
+· 右键卡片 · 换色/复制/删除
+· 🔗 模式 · 点两张卡建立连线
+· 底部按钮 · 快加 4 色卡片
+
+━━━ 数据 · 单端本地 ━━━
+
+存 IndexedDB · 关浏览器不丢
+iPad/电脑各存各的
+用 📤 导出 / 📥 导入 JSON 手动同步`;
+
+  modalConfirm.textContent = '关闭';
+  modal.classList.add('show');
+});
+
 /* ============ 状态栏 ============ */
 function setStatus(msg) {
   document.getElementById('statusBar').textContent = msg;
