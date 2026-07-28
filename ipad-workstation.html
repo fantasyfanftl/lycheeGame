@@ -3701,7 +3701,7 @@ footer strong { color: #7d84a8; }
   background: linear-gradient(90deg, rgba(180, 120, 255, 0.12), transparent);
   border-left: 3px solid rgba(180, 120, 255, 0.6);
   border-radius: 4px;
-  scroll-margin-top: 200px;
+  scroll-margin-top: 220px;
 }
 .asset-group-title:first-child { margin-top: 0; }
 .asset-group-title .g-name {
@@ -3717,12 +3717,8 @@ footer strong { color: #7d84a8; }
   font-family: "SF Mono", monospace;
 }
 
-/* mini nav 快速指向(锚点跳转) · sticky 吸在 tab-bar 下方 */
+/* mini nav 快速指向(锚点跳转) · 在 sticky wrapper 内 · 自身不 sticky */
 .asset-mini-nav {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 130px;
-  z-index: 50;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -3732,12 +3728,24 @@ footer strong { color: #7d84a8; }
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(124, 157, 255, 0.2);
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-top: 6px;
   align-items: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Tab-bar + mini nav 整体吸顶容器 */
+.tab-header-stack {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 72px;
+  z-index: 55;
+  margin-bottom: 10px;
+}
+.tab-header-stack .tab-bar {
+  position: static;
+  margin-bottom: 0;
 }
 @media (max-width: 900px) {
-  .asset-mini-nav { top: 128px; }
+  .tab-header-stack { top: 70px; }
 }
 .asset-mini-nav-label {
   font-size: 10px;
@@ -5185,24 +5193,26 @@ footer strong { color: #7d84a8; }
 
     <!-- 3 行大白话介绍已迁到左栏卡片展开区(active 时显示) -->
 
-    <!-- 主题 02 · 2 tab 结构 -->
-    <div class="tab-bar asset-tabs">
-      <button class="tab-btn active" data-asset-tab="ready">已成型 prompt</button>
-      <button class="tab-btn" data-asset-tab="draft">新增和待办 prompt</button>
-      <div class="tab-tools">
-        <button class="tab-tool-btn" id="assetAuditBtn" title="导出全部 prompt · 粘给豆包复盘 · 查重/查冗/优化建议">📤 库审核</button>
-        <button class="tab-tool-btn" id="assetDraftBtn" title="导出暂存 + 待办 · 粘给豆包判断">📋 候选</button>
+    <!-- 主题 02 · tab bar + mini nav · 整体 sticky 吸顶 -->
+    <div class="tab-header-stack">
+      <div class="tab-bar asset-tabs">
+        <button class="tab-btn active" data-asset-tab="ready">已成型 prompt</button>
+        <button class="tab-btn" data-asset-tab="draft">新增和待办 prompt</button>
+        <div class="tab-tools">
+          <button class="tab-tool-btn" id="assetAuditBtn" title="导出全部 prompt · 粘给豆包复盘 · 查重/查冗/优化建议">📤 库审核</button>
+          <button class="tab-tool-btn" id="assetDraftBtn" title="导出暂存 + 待办 · 粘给豆包判断">📋 候选</button>
+        </div>
       </div>
-    </div>
 
-    <!-- Mini nav · 快速指向分组锚点(仅 ready tab 显示 · sticky 在 tab-bar 下方) -->
-    <nav class="asset-mini-nav" aria-label="资产分组快速跳转" data-mini-nav>
-      <span class="asset-mini-nav-label">跳到</span>
-      <button class="mini-nav-btn" data-scroll-to="group-start">对话启动/转接</button>
-      <button class="mini-nav-btn" data-scroll-to="group-control">过程管控</button>
-      <button class="mini-nav-btn" data-scroll-to="group-review">复盘沉淀</button>
-      <button class="mini-nav-btn" data-scroll-to="group-infra">基建/自动化</button>
-    </nav>
+      <!-- Mini nav · 快速指向分组锚点(仅 ready tab 显示) -->
+      <nav class="asset-mini-nav" aria-label="资产分组快速跳转" data-mini-nav>
+        <span class="asset-mini-nav-label">跳到</span>
+        <button class="mini-nav-btn" data-scroll-to="group-start">对话启动/转接</button>
+        <button class="mini-nav-btn" data-scroll-to="group-control">过程管控</button>
+        <button class="mini-nav-btn" data-scroll-to="group-review">复盘沉淀</button>
+        <button class="mini-nav-btn" data-scroll-to="group-infra">基建/自动化</button>
+      </nav>
+    </div>
 
     <!-- Tab 1 · 已成型 prompt(资产 01-05) -->
     <div class="asset-panel active" data-asset-panel="ready">
