@@ -1919,7 +1919,9 @@ document.getElementById('canvasArea').addEventListener('click', (e) => {
 
 /* ============ 状态栏 ============ */
 function setStatus(msg) {
-  document.getElementById('statusBar').textContent = msg;
+  const unclassifiedN = cards.filter(c => (c.tags || []).includes('未归类')).length;
+  const suffix = unclassifiedN > 0 ? ` · ⚠ 未归类 ${unclassifiedN} 张 · 点💡 建主题` : '';
+  document.getElementById('statusBar').textContent = msg + suffix;
 }
 
 /* ============ 启动 ============ */
