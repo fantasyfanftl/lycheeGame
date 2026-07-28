@@ -981,7 +981,53 @@ async function generateDistilledCard(sources, distilledText, targetColor = 'oran
   return newCard;
 }
 
-/* ============ 🗑 批量清 · 按颜色一键清除 ============ */
+/* ============ 🎯 聚焦模式 · 点卡片突出它+连线 · 其他淡化 ============ */
+let focusMode = false;
+document.getElementById('btnFocusMode').addEventListener('click', () => {
+  focusMode = !focusMode;
+  const btn = document.getElementById('btnFocusMode');
+  if (focusMode) {
+    btn.style.background = 'rgba(124, 157, 255, 0.35)';
+    setStatus('🎯 聚焦模式 · 点卡片高亮 · 再点空白取消');
+  } else {
+    btn.style.background = 'rgba(124, 157, 255, 0.12)';
+    document.querySelectorAll('.card').forEach(el => { el.classList.remove('dimmed'); el.classList.remove('focused-highlight'); });
+    setStatus('🟢 就绪');
+  }
+});
+
+function applyFocus(cardId) {
+  if (!focusMode || !cardId) return;
+  // 找和这张卡有直接连线关系的卡片
+  const related = new Set([cardId]);
+  links.forEach(l => {
+    if (l.from === cardId) related.add(l.to);
+    if (l.to === cardId) related.add(l.from);
+  });
+  document.querySelectorAll('.card').forEach(el => {
+    const id = el.dataset.id;
+    if (related.has(id)) {
+      el.classList.remove('dimmed');
+      if (id === cardId) el.classList.add('focused-highlight');
+      else el.classList.remove('focused-highlight');
+    } else {
+      el.classList.add('dimmed');
+      el.classList.remove('focused-highlight');
+    }
+  });
+}
+
+// 让点击卡片时触发聚焦
+const oldRenderCard = renderCard;
+renderCard = function(c) {
+  const el = oldRenderCard(c);
+  el.addEventListener('click', (e) => {
+    if (e.target.classList.contains('card-body')) return;
+    if (focusMode) applyFocus(c.id);
+  });
+  return el;
+};
+
 document.getElementById('btnBatchDelete').addEventListener('click', async () => {
   const nY = cards.filter(c => c.color === 'yellow').length;
   const nA = cards.filter(c => c.color === 'amber').length;
