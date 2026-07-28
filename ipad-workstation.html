@@ -4286,16 +4286,18 @@ footer strong { color: #7d84a8; }
 @media (min-width: 900px) {
   html, body { height: 100vh; overflow: hidden; padding-bottom: 0; }
   .nav-back {
-    position: fixed;
-    top: 0; left: 0;
-    padding: 6px 14px;
+    position: static;
+    padding: 0;
+    margin-right: 12px;
     font-size: 12px;
-    border-bottom: none;
     background: transparent;
-    z-index: 101;
+    border-bottom: none;
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    display: inline-block;
+    flex-shrink: 0;
+    align-self: baseline;
   }
   .container {
     max-width: 1200px;
@@ -4308,9 +4310,10 @@ footer strong { color: #7d84a8; }
   .hero {
     position: static;
     flex-shrink: 0;
-    padding: 4px 16px 4px 90px; /* 左边预留 nav-back 空间 */
+    padding: 6px 16px;
     margin: 0 -16px 4px;
     border-bottom: 1px solid rgba(124, 157, 255, 0.08);
+    background: rgba(30, 30, 30, 0.5);
   }
   .hero-title { font-size: 15px; }
   .hero-subtitle { font-size: 11px; }
@@ -4371,11 +4374,10 @@ footer strong { color: #7d84a8; }
 </head>
 <body>
 
-<a href="brain.html" class="nav-back">← 返回荔枝Brain</a>
-
 <div class="container">
 
   <div class="hero">
+    <a href="brain.html" class="nav-back">← 返回荔枝Brain</a>
     <div class="hero-left">
       <span class="hero-title">荔枝 Brain 工作台</span>
       <span class="hero-version">v0.1</span>
