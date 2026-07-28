@@ -814,9 +814,42 @@ async function addCard(color) {
   }, 50);
 }
 document.getElementById('btnAddYellow').addEventListener('click', () => addCard('yellow'));
+document.getElementById('btnAddAmber').addEventListener('click', () => addCard('amber'));
 document.getElementById('btnAddOrange').addEventListener('click', () => addCard('orange'));
 document.getElementById('btnAddGreen').addEventListener('click', () => addCard('green'));
 document.getElementById('btnAddGray').addEventListener('click', () => addCard('gray'));
+
+/* ============ 🧹 一键整理 · 按颜色自动分区重排 ============ */
+document.getElementById('btnAutoLayout').addEventListener('click', async () => {
+  if (!confirm(`将按颜色重排所有卡片:\n🟡 黄卡 → 左上素材区\n🟨 浅橙 → 中央推演区\n🟠 深橙 → 中央右侧\n🟢 绿卡 → 右侧成熟区\n⚪ 灰卡 → 底部临时区\n\n继续?`)) return;
+
+  const zones = {
+    yellow: { x: 60,   y: 120  },  // 左上
+    amber:  { x: 1200, y: 120  },  // 中央
+    orange: { x: 1700, y: 120  },  // 中央右
+    green:  { x: 2300, y: 120  },  // 右侧
+    gray:   { x: 60,   y: 1700 }   // 底部
+  };
+  const grouped = { yellow: [], amber: [], orange: [], green: [], gray: [] };
+  cards.forEach(c => { if (grouped[c.color]) grouped[c.color].push(c); });
+
+  const colCounts = { yellow: 4, amber: 2, orange: 2, green: 2, gray: 6 };
+
+  for (const color of Object.keys(grouped)) {
+    const arr = grouped[color];
+    const cols = colCounts[color];
+    for (let i = 0; i < arr.length; i++) {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      arr[i].x = zones[color].x + col * 240;
+      arr[i].y = zones[color].y + row * 170;
+      arr[i].updatedAt = now();
+      await saveCard(arr[i]);
+    }
+  }
+  renderAll();
+  setStatus(`✓ 已整理 ${cards.length} 张卡 · 按颜色分区`);
+});
 
 /* ============ 右键菜单 ============ */
 const ctxMenu = document.getElementById('ctxMenu');
