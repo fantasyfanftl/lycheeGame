@@ -827,25 +827,44 @@ document.getElementById('btnAddOrange').addEventListener('click', () => addCard(
 document.getElementById('btnAddGreen').addEventListener('click', () => addCard('green'));
 document.getElementById('btnAddGray').addEventListener('click', () => addCard('gray'));
 
-/* ============ ✍️ 手动提炼 · 多选 → 新橙卡 + 连线 ============ */
+/* ============ ✍️ 手动提炼 · 多选 → 新卡(枢纽/结论/成品)+ 连线 ============ */
 document.getElementById('btnManualDistill').addEventListener('click', () => {
   if (multiSelectedIds.size < 1) {
     alert('先选中要提炼的源卡片(Shift 多选 · 或框选)');
     return;
   }
   const sources = cards.filter(c => multiSelectedIds.has(c.id));
+  // 默认目标层级 · 按源色推断
+  const srcColors = new Set(sources.map(c => c.color));
+  let defaultTarget = 'amber';  // 黄 → 枢纽
+  if (srcColors.has('amber') && !srcColors.has('yellow')) defaultTarget = 'orange';  // 枢纽 → 结论
+  if (srcColors.has('orange') && !srcColors.has('amber')) defaultTarget = 'green';   // 结论 → 成品
+
   modalMode = 'manualDistill';
   modalTitle.textContent = `✍️ 手动提炼 · ${sources.length} 张源卡`;
   modalDesc.innerHTML = `
+    <div style="margin-bottom:8px;">
+      <strong style="color:#a4b3ff;">选目标层级(Zettelkasten 分层提炼):</strong><br>
+      <label style="display:inline-block; margin:4px 6px 0 0; font-size:11px; cursor:pointer;">
+        <input type="radio" name="distillTarget" value="amber" ${defaultTarget==='amber'?'checked':''}> 🟨 枢纽卡(主题汇总)
+      </label>
+      <label style="display:inline-block; margin:4px 6px 0 0; font-size:11px; cursor:pointer;">
+        <input type="radio" name="distillTarget" value="orange" ${defaultTarget==='orange'?'checked':''}> 🟠 结论卡(精炼定型)
+      </label>
+      <label style="display:inline-block; margin:4px 6px 0 0; font-size:11px; cursor:pointer;">
+        <input type="radio" name="distillTarget" value="green" ${defaultTarget==='green'?'checked':''}> 🟢 成品卡(可复用)
+      </label>
+    </div>
     <strong style="color:#ff9857;">源素材:</strong><br>
-    ${sources.map((c, i) => `<span style="color:#d8dcec; font-size:11px;">${i+1}. ${escapeHtml(c.text).slice(0, 60)}${c.text.length > 60 ? '...' : ''}</span>`).join('<br>')}
+    ${sources.slice(0, 8).map((c, i) => `<span style="color:#d8dcec; font-size:11px;">${i+1}. ${escapeHtml(c.text).slice(0, 60)}${c.text.length > 60 ? '...' : ''}</span>`).join('<br>')}
+    ${sources.length > 8 ? `<br><span style="color:#7d84a8; font-size:10px;">... 还有 ${sources.length - 8} 张</span>` : ''}
     <br><br>
-    <strong style="color:#ff9857;">在下方写"提炼后的一句话"</strong><span style="color:#7d84a8;"> · 精炼 / 概括 / 抽核心</span><br>
-    <span style="color:#6ee7b7; font-size:10px;">▸ 生成新 🟠 深橙卡 · 摆源卡右侧 · 自动画"提炼衍生"箭头 · 源卡保留</span>
+    <strong style="color:#ff9857;">在下方写"提炼后的一句话"</strong><br>
+    <span style="color:#6ee7b7; font-size:10px;">▸ 自动摆到对应分区 · 自动画"提炼衍生"箭头 · 源卡保留</span>
   `;
   modalTextarea.value = '';
   modalTextarea.placeholder = '写一句精炼的话...';
-  modalConfirm.textContent = '生成橙卡';
+  modalConfirm.textContent = '生成卡片';
   modal.classList.add('show');
   setTimeout(() => modalTextarea.focus(), 100);
 });
