@@ -868,6 +868,7 @@ ctxMenu.querySelectorAll('.ctx-item').forEach(item => {
     if (!c) return;
     const action = item.dataset.action;
     if (action === 'toYellow') c.color = 'yellow';
+    else if (action === 'toAmber') c.color = 'amber';
     else if (action === 'toOrange') c.color = 'orange';
     else if (action === 'toGreen') c.color = 'green';
     else if (action === 'toGray') c.color = 'gray';
