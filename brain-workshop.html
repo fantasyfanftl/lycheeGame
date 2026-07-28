@@ -171,10 +171,15 @@ html, body {
   border: 1px solid rgba(255, 200, 90, 0.4);
   border-left: 3px solid #ffd54f;
 }
+.card-amber {
+  background: linear-gradient(135deg, rgba(255, 193, 100, 0.18), rgba(255, 160, 70, 0.10));
+  border: 1px solid rgba(255, 175, 80, 0.5);
+  border-left: 3px solid #ffb457;
+}
 .card-orange {
-  background: linear-gradient(135deg, rgba(255, 167, 87, 0.15), rgba(255, 130, 50, 0.08));
-  border: 1px solid rgba(255, 130, 50, 0.4);
-  border-left: 3px solid #ff9857;
+  background: linear-gradient(135deg, rgba(255, 140, 87, 0.20), rgba(255, 100, 40, 0.12));
+  border: 1px solid rgba(255, 100, 40, 0.5);
+  border-left: 3px solid #ff7a3d;
 }
 .card-green {
   background: linear-gradient(135deg, rgba(110, 231, 183, 0.15), rgba(52, 211, 153, 0.08));
@@ -913,26 +918,24 @@ document.getElementById('btnPasteImport').addEventListener('click', () => {
 });
 
 async function pasteImportSplit(text) {
-  // 智能识别 · 拆卡列表
+  // 智能识别 · 拆卡列表 · 同时返回是否 AI 输出
   const trimmed = text.trim();
-  if (!trimmed) return [];
+  if (!trimmed) return { items: [], isAiOutput: false };
 
-  // 格式 B 优先 · 识别 "卡片 N: xxx" 或 "N. xxx" 或 "- xxx"
   const patternB = /^(?:卡片\s*\d+[:：]|\d+[.、)]|\s*[-*·]\s)/;
   const lines = trimmed.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const matchCount = lines.filter(l => patternB.test(l)).length;
+  const isAiOutput = /卡片\s*\d+[:：]/.test(trimmed);  // 严格 · 只有"卡片 N:"格式才判 AI
 
   let items = [];
-  if (lines.filter(l => patternB.test(l)).length >= 2) {
-    // 按 pattern B 拆
+  if (matchCount >= 2) {
     items = lines.map(l => l.replace(patternB, '').trim()).filter(Boolean);
   } else if (trimmed.includes('\n\n')) {
-    // 按空行分段
     items = trimmed.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean);
   } else {
-    // 按单行拆
     items = lines;
   }
-  return items;
+  return { items, isAiOutput };
 }
 
 modalConfirm.addEventListener('click', async () => {
