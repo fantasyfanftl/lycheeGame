@@ -955,6 +955,56 @@ async function generateDistilledCard(sources, distilledText, targetColor = 'oran
   return newCard;
 }
 
+/* ============ 🗑 批量清 · 按颜色一键清除 ============ */
+document.getElementById('btnBatchDelete').addEventListener('click', async () => {
+  const nY = cards.filter(c => c.color === 'yellow').length;
+  const nA = cards.filter(c => c.color === 'amber').length;
+  const nO = cards.filter(c => c.color === 'orange').length;
+  const nG = cards.filter(c => c.color === 'green').length;
+  const nGray = cards.filter(c => c.color === 'gray').length;
+  const nSel = multiSelectedIds.size;
+  const choice = prompt(`选择要清的类别 · 输入编号:
+
+1. 只清 🟠 深橙(结论卡)· ${nO} 张
+2. 只清 🟨 浅橙(枢纽卡)· ${nA} 张
+3. 只清 🟢 绿卡(成品)· ${nG} 张
+4. 只清 ⚪ 灰卡(临时)· ${nGray} 张
+5. 清所有非黄卡(保留原始素材)
+6. 只清所选中的 · ${nSel} 张
+7. 全部清空(危险!)
+
+留空取消`, '');
+  if (!choice) return;
+
+  const doDelete = async (predicate) => {
+    const toDel = cards.filter(predicate);
+    if (toDel.length === 0) { alert('没找到要清的卡'); return; }
+    if (!confirm(`确认删除 ${toDel.length} 张卡?连带删除相关连线`)) return;
+    for (const c of toDel) {
+      await deleteCard(c.id);
+      cards = cards.filter(x => x.id !== c.id);
+    }
+    multiSelectedIds.clear();
+    selectedCardId = null;
+    renderAll();
+    setStatus(`✓ 已清 ${toDel.length} 张卡`);
+  };
+
+  if (choice === '1') await doDelete(c => c.color === 'orange');
+  else if (choice === '2') await doDelete(c => c.color === 'amber');
+  else if (choice === '3') await doDelete(c => c.color === 'green');
+  else if (choice === '4') await doDelete(c => c.color === 'gray');
+  else if (choice === '5') await doDelete(c => c.color !== 'yellow');
+  else if (choice === '6') await doDelete(c => multiSelectedIds.has(c.id));
+  else if (choice === '7') {
+    if (confirm(`将删除全部 ${cards.length} 张卡 + ${links.length} 连线 · 真的确认?`)) {
+      await clearAll();
+      renderAll();
+      setStatus('✓ 全部清空');
+    }
+  }
+});
+
 document.getElementById('btnAutoLayout').addEventListener('click', async () => {
   if (!confirm(`将按颜色重排所有卡片:\n🟡 黄卡 → 左上素材区\n🟨 浅橙 → 中央推演区\n🟠 深橙 → 中央右侧\n🟢 绿卡 → 右侧成熟区\n⚪ 灰卡 → 底部临时区\n\n继续?`)) return;
 
