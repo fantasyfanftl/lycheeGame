@@ -1463,8 +1463,12 @@ function buildSnapshotPayload() {
   links.forEach(l => { linkTypeCount[l.type || '未标'] = (linkTypeCount[l.type || '未标'] || 0) + 1; });
   const linkSummary = Object.entries(linkTypeCount).map(([t,n]) => `${t}×${n}`).join(' · ') || '无连线';
 
-  const outDeg = {};
-  links.forEach(l => { outDeg[l.from] = (outDeg[l.from] || 0) + 1; });
+  const outDeg = {}, inDeg = {};
+  links.forEach(l => {
+    outDeg[l.from] = (outDeg[l.from] || 0) + 1;
+    inDeg[l.to]    = (inDeg[l.to]    || 0) + 1;
+  });
+  const hotHubs    = Object.entries(inDeg).filter(([_,n]) => n >= 8).length;
   const hotSources = Object.entries(outDeg).filter(([_,n]) => n >= 4).length;
 
   const data = { version: '0.1', snapshotAt: now(), cards: cards, links: links };
@@ -1481,7 +1485,7 @@ ${getWorkshopContext()}
 
 - **总卡** ${cards.length} 张:🟡黄 ${yellowN}(原始) · 🟨琥珀 ${amberN}(主题) · 🟠橙 ${orangeN}(结论) · 🟢绿 ${greenN}(成品) · ⚪灰 ${grayN}(临时)
 - **连线** ${links.length} 条:${linkSummary}
-- **入度爆炸嫌疑** ${hotSources} 张卡的出度 ≥ 4(注:此检测按出度算 · 星型爆炸真正靠入度 · 请你也自己按入度重算)
+- **星型爆炸嫌疑** ${hotHubs} 张卡入度 ≥ 8(琥珀吸太多·该拆) · ${hotSources} 张卡出度 ≥ 4(原子发太多·该升琥珀)
 
 ## 请分析 · 4 项
 
@@ -1490,7 +1494,7 @@ ${getWorkshopContext()}
 - 每阶段的卡片密度、连线密度、瓶颈
 - 哪个阶段"堆积"了 · 哪个阶段"饿死"了
 
-### ② 星型爆炸检测(请按**入度**重算)
+### ② 星型爆炸检测
 
 - 找入度 ≥ 8 的琥珀 → 建议拆分
 - 找出度 ≥ 4 的原子 → 建议升为琥珀
