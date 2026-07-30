@@ -9990,6 +9990,348 @@ document.addEventListener("DOMContentLoaded", function() {
 })();
 
 /* ================================================================
+   主题 04 · 出厂设置 · 回看观察(浓缩多张卡为一条自我观察)
+   ================================================================ */
+(function () {
+  var CARDS_KEY = "factory-cards-v1";
+  var REVIEWS_KEY = "factory-reviews-v1";
+  var editingId = null;
+  var selectedSourceIds = [];
+  var modalTempSelected = [];
+
+  function loadCards() {
+    try { return JSON.parse(localStorage.getItem(CARDS_KEY) || "[]"); } catch (e) { return []; }
+  }
+  function loadReviews() {
+    try { return JSON.parse(localStorage.getItem(REVIEWS_KEY) || "[]"); } catch (e) { return []; }
+  }
+  function saveReviews(reviews) {
+    localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews));
+  }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function todayStr() {
+    var d = new Date();
+    var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function cardShortLabel(card) {
+    var body = card.mine || card.original || "(无内容)";
+    var one = body.split(/\r?\n/)[0];
+    var trunc = one.length > 12 ? one.slice(0, 12) + "…" : one;
+    return (card.date || "") + " " + trunc;
+  }
+
+  function renderSelectedChips() {
+    var container = document.getElementById("review-selected-cards");
+    var emptyEl = document.getElementById("review-selected-empty");
+    if (!container) return;
+    var cards = loadCards();
+    var cardMap = {};
+    cards.forEach(function (c) { cardMap[c.id] = c; });
+
+    if (selectedSourceIds.length === 0) {
+      container.innerHTML = '<span id="review-selected-empty" style="font-size: 10.5px; color: #5a6180;">未选 · 点下方按钮挑</span>';
+      return;
+    }
+    container.innerHTML = selectedSourceIds.map(function (id) {
+      var c = cardMap[id];
+      if (c) {
+        return '<button type="button" class="review-src-chip" data-src-id="' + id + '">' +
+          escapeHtml(cardShortLabel(c)) +
+          '<span class="remove-x" data-remove="' + id + '">×</span></button>';
+      } else {
+        return '<button type="button" class="review-src-chip missing" data-src-id="' + id + '">⚠️ 已删除 (' + escapeHtml(id.slice(-6)) + ')<span class="remove-x" data-remove="' + id + '">×</span></button>';
+      }
+    }).join("");
+
+    container.querySelectorAll("[data-remove]").forEach(function (x) {
+      x.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var id = x.getAttribute("data-remove");
+        selectedSourceIds = selectedSourceIds.filter(function (v) { return v !== id; });
+        renderSelectedChips();
+      });
+    });
+  }
+
+  function openPicker() {
+    modalTempSelected = selectedSourceIds.slice();
+    var cards = loadCards();
+    var list = document.getElementById("review-modal-list");
+    if (cards.length === 0) {
+      list.innerHTML = '<div style="text-align: center; color: #7d84a8; padding: 40px 0; font-size: 11px;">暂无解法卡 · 先去 📥 解法收集 攒几张</div>';
+    } else {
+      list.innerHTML = cards.slice().reverse().map(function (c) {
+        var sel = modalTempSelected.indexOf(c.id) !== -1;
+        return '<label class="review-modal-item' + (sel ? " selected" : "") + '" data-id="' + c.id + '">' +
+          '<input type="checkbox"' + (sel ? " checked" : "") + '>' +
+          '<div class="review-modal-item-body">' +
+            '<div class="review-modal-item-meta">' +
+              '<span>' + escapeHtml(c.system || "") + '</span>' +
+              '<span>·</span>' +
+              '<span>' + escapeHtml(c.status || "") + '</span>' +
+              '<span>·</span>' +
+              '<span>' + escapeHtml(c.date || "") + '</span>' +
+            '</div>' +
+            (c.mine ? '<div class="review-modal-item-mine">' + escapeHtml(c.mine) + '</div>' : '') +
+            (c.original ? '<div class="review-modal-item-original">原:' + escapeHtml(c.original.slice(0, 80)) + (c.original.length > 80 ? "…" : "") + '</div>' : '') +
+          '</div>' +
+        '</label>';
+      }).join("");
+
+      list.querySelectorAll(".review-modal-item").forEach(function (item) {
+        var cb = item.querySelector('input[type="checkbox"]');
+        item.addEventListener("click", function (e) {
+          if (e.target.tagName !== "INPUT") cb.checked = !cb.checked;
+          var id = item.getAttribute("data-id");
+          if (cb.checked) {
+            if (modalTempSelected.indexOf(id) === -1) modalTempSelected.push(id);
+            item.classList.add("selected");
+          } else {
+            modalTempSelected = modalTempSelected.filter(function (v) { return v !== id; });
+            item.classList.remove("selected");
+          }
+          document.getElementById("review-modal-count").textContent = modalTempSelected.length;
+        });
+      });
+    }
+    document.getElementById("review-modal-count").textContent = modalTempSelected.length;
+    document.getElementById("review-picker-modal").style.display = "flex";
+  }
+  function closePicker() {
+    document.getElementById("review-picker-modal").style.display = "none";
+  }
+  function confirmPicker() {
+    selectedSourceIds = modalTempSelected.slice();
+    closePicker();
+    renderSelectedChips();
+  }
+
+  function readForm() {
+    return {
+      summary: (document.getElementById("review-summary").value || "").trim(),
+      next: (document.getElementById("review-next").value || "").trim(),
+      sourceIds: selectedSourceIds.slice()
+    };
+  }
+  function clearForm() {
+    document.getElementById("review-summary").value = "";
+    document.getElementById("review-next").value = "";
+    selectedSourceIds = [];
+    renderSelectedChips();
+  }
+  function cancelEdit() {
+    editingId = null;
+    clearForm();
+    document.getElementById("review-save").textContent = "💾 保存";
+    document.getElementById("review-cancel-edit").style.display = "none";
+  }
+  function startEdit(id) {
+    var reviews = loadReviews();
+    var r = reviews.find(function (x) { return x.id === id; });
+    if (!r) return;
+    editingId = id;
+    document.getElementById("review-summary").value = r.summary || "";
+    document.getElementById("review-next").value = r.next || "";
+    selectedSourceIds = (r.sourceIds || []).slice();
+    renderSelectedChips();
+    document.getElementById("review-save").textContent = "💾 更新";
+    document.getElementById("review-cancel-edit").style.display = "";
+    document.getElementById("review-form-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function removeReview(id) {
+    if (!confirm("删除这条回看观察?")) return;
+    var reviews = loadReviews().filter(function (x) { return x.id !== id; });
+    saveReviews(reviews);
+    if (editingId === id) cancelEdit();
+    render();
+  }
+
+  function jumpToSourceCard(cardId) {
+    var cardsTab = document.querySelector('.tab-btn[data-tab="factory-cards"]');
+    if (cardsTab) cardsTab.click();
+    setTimeout(function () {
+      var el = document.querySelector('.factory-card-item[data-id="' + cardId + '"]');
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("hl-pulse");
+        setTimeout(function () { el.classList.remove("hl-pulse"); }, 1800);
+      } else {
+        alert("这张解法卡已被删除");
+      }
+    }, 200);
+  }
+
+  function render() {
+    var reviews = loadReviews();
+    var count = document.getElementById("review-count");
+    if (count) count.textContent = reviews.length;
+    var list = document.getElementById("review-list");
+    if (!list) return;
+    if (reviews.length === 0) {
+      list.innerHTML = '<div id="review-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">🔍 空 · 攒够 5 张解法卡后主动说"回看"启动<br><span style="font-size: 10px;">▸ 本地存储 · 独立于解法卡</span></div>';
+      return;
+    }
+    var cards = loadCards();
+    var cardMap = {};
+    cards.forEach(function (c) { cardMap[c.id] = c; });
+
+    list.innerHTML = reviews.slice().reverse().map(function (r) {
+      var srcHtml = (r.sourceIds || []).map(function (id) {
+        var c = cardMap[id];
+        if (c) {
+          return '<button class="review-src-chip" data-jump="' + id + '">' + escapeHtml(cardShortLabel(c)) + '</button>';
+        }
+        return '<span class="review-src-chip missing">⚠️ 已删除 (' + escapeHtml(id.slice(-6)) + ')</span>';
+      }).join("");
+
+      return '' +
+        '<div class="review-item" data-id="' + r.id + '">' +
+          '<div class="review-item-head">' +
+            '<span class="review-item-date">' + escapeHtml(r.date || "") + (r.updated ? " · 更新 " + escapeHtml(r.updated) : "") + '</span>' +
+            '<div class="factory-card-actions">' +
+              '<button data-action="edit" title="编辑">✏️</button>' +
+              '<button data-action="delete" title="删除">🗑</button>' +
+            '</div>' +
+          '</div>' +
+          (r.summary ? '<div class="review-item-summary">' + escapeHtml(r.summary) + '</div>' : '') +
+          (r.next ? '<div class="review-item-next">' + escapeHtml(r.next) + '</div>' : '') +
+          '<div class="review-item-sources">' +
+            '<span class="review-item-sources-label">依据 ·</span>' + srcHtml +
+          '</div>' +
+        '</div>';
+    }).join("");
+
+    list.querySelectorAll(".review-item").forEach(function (item) {
+      var id = item.getAttribute("data-id");
+      var editBtn = item.querySelector('[data-action="edit"]');
+      var delBtn = item.querySelector('[data-action="delete"]');
+      if (editBtn) editBtn.addEventListener("click", function () { startEdit(id); });
+      if (delBtn) delBtn.addEventListener("click", function () { removeReview(id); });
+      item.querySelectorAll("[data-jump]").forEach(function (btn) {
+        btn.addEventListener("click", function () { jumpToSourceCard(btn.getAttribute("data-jump")); });
+      });
+    });
+  }
+
+  function onSave() {
+    var data = readForm();
+    if (!data.summary) { alert("请填「一句话观察」"); return; }
+    if (data.sourceIds.length === 0) {
+      if (!confirm("没选依据卡 · 是否继续保存?")) return;
+    }
+    var reviews = loadReviews();
+    if (editingId) {
+      var idx = reviews.findIndex(function (x) { return x.id === editingId; });
+      if (idx >= 0) reviews[idx] = Object.assign({}, reviews[idx], data, { updated: todayStr() });
+    } else {
+      reviews.push(Object.assign({
+        id: "r_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 6),
+        date: todayStr()
+      }, data));
+    }
+    saveReviews(reviews);
+    cancelEdit();
+    render();
+  }
+
+  function onExport() {
+    var reviews = loadReviews();
+    if (reviews.length === 0) { alert("还没有回看记录 · 无法导出"); return; }
+    var cards = loadCards();
+    var cardMap = {};
+    cards.forEach(function (c) { cardMap[c.id] = c; });
+
+    var md = "# 出厂设置 · 回看观察导出\n\n> 导出时间:" + todayStr() + " · 共 " + reviews.length + " 条\n\n---\n\n";
+    md += reviews.map(function (r, i) {
+      var lines = [];
+      lines.push("## " + (i + 1) + ". " + (r.summary ? r.summary.split("\n")[0].slice(0, 40) : "(无标题)"));
+      lines.push("");
+      lines.push("- **日期**:" + (r.date || "") + (r.updated ? " · 更新 " + r.updated : ""));
+      lines.push("");
+      if (r.summary) { lines.push("**一句话观察**"); lines.push(""); lines.push(r.summary); lines.push(""); }
+      if (r.next) { lines.push("**下一步**:" + r.next); lines.push(""); }
+      if (r.sourceIds && r.sourceIds.length) {
+        lines.push("**依据卡** (" + r.sourceIds.length + " 张)");
+        lines.push("");
+        r.sourceIds.forEach(function (id) {
+          var c = cardMap[id];
+          if (c) {
+            lines.push("- [" + (c.system || "") + " · " + (c.status || "") + "] " + (c.mine || c.original || "(空)").split("\n")[0].slice(0, 60));
+          } else {
+            lines.push("- ⚠️ (已删除) id=" + id);
+          }
+        });
+        lines.push("");
+      }
+      return lines.join("\n");
+    }).join("\n---\n\n");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(md).then(function () {
+        var btn = document.getElementById("review-export");
+        var old = btn.textContent;
+        btn.textContent = "✓ 已复制";
+        setTimeout(function () { btn.textContent = old; }, 2500);
+      }, function () { fallbackCopy(md); });
+    } else {
+      fallbackCopy(md);
+    }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); alert("已复制到剪贴板"); } catch (e) { alert("复制失败 · 请手动复制"); }
+    document.body.removeChild(ta);
+  }
+
+  function onClearAllReviews() {
+    var reviews = loadReviews();
+    if (reviews.length === 0) { alert("已经是空的"); return; }
+    if (!confirm("将清空全部 " + reviews.length + " 条回看记录 · 不可恢复 · 建议先导出 · 继续?")) return;
+    if (!confirm("再次确认 · 真的清空?")) return;
+    saveReviews([]);
+    cancelEdit();
+    render();
+  }
+
+  function init() {
+    if (!document.getElementById("review-save")) return;
+    document.getElementById("review-save").addEventListener("click", onSave);
+    document.getElementById("review-clear-form").addEventListener("click", function () {
+      if (confirm("清空表单?")) cancelEdit();
+    });
+    document.getElementById("review-cancel-edit").addEventListener("click", cancelEdit);
+    document.getElementById("review-pick-btn").addEventListener("click", openPicker);
+    document.getElementById("review-selected-clear").addEventListener("click", function () {
+      selectedSourceIds = [];
+      renderSelectedChips();
+    });
+    document.getElementById("review-modal-close").addEventListener("click", closePicker);
+    document.getElementById("review-modal-cancel").addEventListener("click", closePicker);
+    document.getElementById("review-modal-confirm").addEventListener("click", confirmPicker);
+    document.querySelector("#review-picker-modal .review-modal-mask").addEventListener("click", closePicker);
+    document.getElementById("review-export").addEventListener("click", onExport);
+    document.getElementById("review-clear-all").addEventListener("click", onClearAllReviews);
+    renderSelectedChips();
+    render();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+/* ================================================================
    主题 05 · 读书孵化器 · 反馈卡 + 待办答案 + 想法池 + 导出 md
    ================================================================ */
 (function () {
