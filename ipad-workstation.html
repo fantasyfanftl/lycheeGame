@@ -9604,8 +9604,102 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     document.getElementById("factory-cancel").addEventListener("click", cancelEdit);
     document.getElementById("factory-export").addEventListener("click", onExport);
+
+    var mockBtn = document.getElementById("factory-mock");
+    if (mockBtn) mockBtn.addEventListener("click", onMock);
+    var clearAllBtn = document.getElementById("factory-clear-all");
+    if (clearAllBtn) clearAllBtn.addEventListener("click", onClearAll);
+
     render();
   }
+
+  var MOCK_CARDS = [
+    {
+      system: "星盘", status: "共鸣",
+      source: "⚠️ MOCK · 抖音某狮子座博主",
+      original: "太阳狮子的人 · 骨子里是要被看见的 · 一旦感觉被忽略 · 会突然冷下去 · 但表面装无所谓",
+      mine: "开会我提的方案没被采纳那次 · 我说没事 · 但接下来一周都不想说话"
+    },
+    {
+      system: "星盘", status: "共鸣",
+      source: "⚠️ MOCK · 星盘书摘",
+      original: "月亮摩羯的人 · 情绪会自己消化 · 不习惯示弱 · 但内心其实累",
+      mine: "跟朋友聊天从来只说'还好' · 累的时候只能自己扛"
+    },
+    {
+      system: "星盘", status: "半信半疑",
+      source: "⚠️ MOCK · 某公众号",
+      original: "上升巨蟹会把家人和亲密的人当整个世界",
+      mine: "对我妈是这样 · 但对朋友我其实挺有距离感 · 不完全命中"
+    },
+    {
+      system: "紫微", status: "共鸣",
+      source: "⚠️ MOCK · 紫微斗数入门",
+      original: "命宫有天梁的人 · 天生喜欢照顾人 · 但容易变成拯救者情结",
+      mine: "接工作/协作总是想帮别人补位 · 补到自己心力耗尽还停不下来"
+    },
+    {
+      system: "面相", status: "待验证",
+      source: "⚠️ MOCK · 面相学速成",
+      original: "眉心距宽的人心大 · 不容易钻牛角尖",
+      mine: "不确定 · 感觉我恰恰相反 · 但也许别人看我是心大的?待观察"
+    },
+    {
+      system: "星盘", status: "共鸣",
+      source: "⚠️ MOCK · 抖音相位解读",
+      original: "月亮和土星刑克的人 · 从小对情感表达不安全 · 长大后习惯先压抑再爆发",
+      mine: "小时候哭会被说矫情 · 现在积到临界点才发火 · 但发完又立刻自责"
+    },
+    {
+      system: "星盘", status: "共鸣",
+      source: "⚠️ MOCK · INFP 型格分析",
+      original: "INFP 会为了不让别人失望而承担超过自己能力的事 · 累坏了才发现自己根本不想做",
+      mine: "接项目时就是这样 · 别人一说'只有你能做' · 我就答应了 · 然后拖到最后自己撑不住"
+    },
+    {
+      system: "紫微", status: "共鸣",
+      source: "⚠️ MOCK · 命理博主",
+      original: "夫妻宫有化忌的人 · 亲密关系里容易起怀疑心 · 越在乎越难开口",
+      mine: "确认过这样 · 越是重要的人越问不出口 · 只能自己揣测"
+    },
+    {
+      system: "面相", status: "半信半疑",
+      source: "⚠️ MOCK · 面相笔记",
+      original: "下巴尖的人晚年孤独",
+      mine: "这种通用描述我总觉得像塔罗话术 · 但确实我不怕独处"
+    },
+    {
+      system: "星盘", status: "已应用",
+      source: "⚠️ MOCK · 自己第 1 张卡的延伸",
+      original: "狮子座不缺人爱 · 只是自己愿不愿意 · 但气场不合的会被主动过滤掉",
+      mine: "上次那个饭局 · 有人主动加我微信但我没通过 · 就是气场不对 · 不是缺爱是我在筛"
+    }
+  ];
+
+  function onMock() {
+    if (!confirm("将插入 10 张 MOCK 数据 · 出处会标记 ⚠️ MOCK · 追加到现有卡后 · 继续?")) return;
+    var cards = load();
+    var now = Date.now();
+    MOCK_CARDS.forEach(function (m, i) {
+      cards.push(Object.assign({
+        id: "mock_" + now.toString(36) + "_" + i,
+        date: todayStr()
+      }, m));
+    });
+    save(cards);
+    render();
+  }
+
+  function onClearAll() {
+    var cards = load();
+    if (cards.length === 0) { alert("已经是空的"); return; }
+    if (!confirm("将清空全部 " + cards.length + " 张卡(含真数据和 mock)· 不可恢复 · 建议先导出 md · 继续?")) return;
+    if (!confirm("再次确认 · 真的清空?")) return;
+    save([]);
+    cancelEdit();
+    render();
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
