@@ -7386,6 +7386,13 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
             <div class="ai-tree-leaf">&nbsp;&nbsp;└─ HTML 页面发布 · 全设备 URL 访问 →&nbsp;<span class="ai-tag ai-brain">荔枝 Brain 平台</span></div>
           </div>
         </div>
+
+        <div class="ai-tree-branch">
+          <div class="ai-tree-l1">┗━ 多模型对比 / 临时选型 → 走中转</div>
+          <div class="ai-tree-l2">
+            <div class="ai-tree-leaf">&nbsp;&nbsp;└─ 一个入口切 GPT / DeepSeek / GLM / Kimi 4 后端 →&nbsp;<span class="ai-tag ai-paperhub">Paperhub</span></div>
+          </div>
+        </div>
       </div>
 
       <div style="font-size: 10px; color: #7d84a8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(240, 171, 252, 0.15); font-family: 'SF Mono', monospace; line-height: 1.6;">
@@ -7900,9 +7907,13 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
       <!-- ========== 卡片列表容器 ========== -->
       <div class="card" id="factory-list-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
           <div class="card-title" style="color: #ff985a; margin: 0;">▎当前解法卡 · <span id="factory-count">0</span> 张</div>
-          <button id="factory-export" class="factory-btn" style="font-size: 10px; padding: 4px 8px;">📤 导出全部 md</button>
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button id="factory-mock" class="factory-btn" style="font-size: 10px; padding: 4px 8px; opacity: 0.7;" title="灌 10 张模拟卡 · 出处标记 MOCK">🧪 灌 10 张 mock</button>
+            <button id="factory-clear-all" class="factory-btn" style="font-size: 10px; padding: 4px 8px; opacity: 0.7;" title="清空所有卡(含 mock 和真数据)">🗑 清空所有</button>
+            <button id="factory-export" class="factory-btn" style="font-size: 10px; padding: 4px 8px;">📤 导出全部 md</button>
+          </div>
         </div>
         <div id="factory-list">
           <div id="factory-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
