@@ -9564,6 +9564,360 @@ document.addEventListener("DOMContentLoaded", function() {
     init();
   }
 })();
+
+/* ================================================================
+   主题 05 · 读书孵化器 · 反馈卡 + 待办答案 + 想法池 + 导出 md
+   ================================================================ */
+(function () {
+  var KEY_FEEDBACK = "reading-feedback-v1";
+  var KEY_ANSWERS = "reading-answers-v1";
+  var KEY_IDEAS = "reading-ideas-v1";
+  var editingId = null;
+
+  function loadFeedback() {
+    try { return JSON.parse(localStorage.getItem(KEY_FEEDBACK) || "[]"); } catch (e) { return []; }
+  }
+  function saveFeedback(items) { localStorage.setItem(KEY_FEEDBACK, JSON.stringify(items)); }
+  function loadAnswers() {
+    try { return JSON.parse(localStorage.getItem(KEY_ANSWERS) || "{}"); } catch (e) { return {}; }
+  }
+  function saveAnswers(obj) { localStorage.setItem(KEY_ANSWERS, JSON.stringify(obj)); }
+  function loadIdeas() {
+    try { return JSON.parse(localStorage.getItem(KEY_IDEAS) || "[]"); } catch (e) { return []; }
+  }
+  function saveIdeas(items) { localStorage.setItem(KEY_IDEAS, JSON.stringify(items)); }
+
+  function getSelectedChip(containerId) {
+    var el = document.querySelector("#" + containerId + " .reading-chip.active");
+    return el ? el.getAttribute("data-stage") || el.getAttribute("data-status") : "";
+  }
+  function setSelectedChip(containerId, value) {
+    document.querySelectorAll("#" + containerId + " .reading-chip").forEach(function (b) {
+      var v = b.getAttribute("data-stage") || b.getAttribute("data-status");
+      b.classList.toggle("active", v === value);
+    });
+  }
+  function bindChips(containerId) {
+    document.querySelectorAll("#" + containerId + " .reading-chip").forEach(function (b) {
+      b.addEventListener("click", function () {
+        document.querySelectorAll("#" + containerId + " .reading-chip").forEach(function (x) { x.classList.remove("active"); });
+        b.classList.add("active");
+      });
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function todayStr() {
+    var d = new Date();
+    var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  /* ---------- Feedback CRUD ---------- */
+  function readFeedbackForm() {
+    return {
+      stage: getSelectedChip("reading-stage-chips") || "读",
+      blocker: (document.getElementById("reading-blocker").value || "").trim(),
+      feeling: (document.getElementById("reading-feeling").value || "").trim(),
+      status: getSelectedChip("reading-status-chips") || "顺"
+    };
+  }
+  function fillFeedbackForm(item) {
+    setSelectedChip("reading-stage-chips", item.stage);
+    document.getElementById("reading-blocker").value = item.blocker || "";
+    document.getElementById("reading-feeling").value = item.feeling || "";
+    setSelectedChip("reading-status-chips", item.status);
+  }
+  function clearFeedbackForm() {
+    setSelectedChip("reading-stage-chips", "读");
+    document.getElementById("reading-blocker").value = "";
+    document.getElementById("reading-feeling").value = "";
+    setSelectedChip("reading-status-chips", "顺");
+  }
+  function renderFeedback() {
+    var items = loadFeedback();
+    var list = document.getElementById("reading-feedback-list");
+    var count = document.getElementById("reading-feedback-count");
+    if (count) count.textContent = items.length;
+    if (!list) return;
+    if (items.length === 0) {
+      list.innerHTML = '<div id="reading-feedback-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">🧪 空 · 走试验田时填第 1 条<br><span style="font-size: 10px;">▸ 本地存储 · 换设备/清缓存会丢 · 定期用顶部「导出给 AI」备份</span></div>';
+      return;
+    }
+    var html = items.slice().reverse().map(function (c) {
+      return '' +
+        '<div class="reading-card-item" data-id="' + c.id + '">' +
+          '<div class="reading-card-head">' +
+            '<div class="reading-card-meta">' +
+              '<span class="reading-card-tag stage-' + c.stage + '">' + escapeHtml(c.stage) + '</span>' +
+              '<span class="reading-card-tag status-' + c.status + '">' + escapeHtml(c.status) + '</span>' +
+            '</div>' +
+            '<div class="reading-card-actions">' +
+              '<button data-action="edit" title="编辑">✏️</button>' +
+              '<button data-action="delete" title="删除">🗑</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="reading-card-body">' +
+            (c.blocker ? '<span class="label">卡在哪</span><span class="content">' + escapeHtml(c.blocker) + '</span>' : '') +
+            (c.feeling ? '<span class="label">感受</span><span class="content">' + escapeHtml(c.feeling) + '</span>' : '') +
+            '<div style="font-size: 9.5px; color: #5a6180; margin-top: 8px; font-family: \'SF Mono\', monospace;">' + (c.date || '') + '</div>' +
+          '</div>' +
+        '</div>';
+    }).join("");
+    list.innerHTML = html;
+    list.querySelectorAll(".reading-card-item").forEach(function (item) {
+      var id = item.getAttribute("data-id");
+      item.querySelector('[data-action="edit"]').addEventListener("click", function () { startEditFeedback(id); });
+      item.querySelector('[data-action="delete"]').addEventListener("click", function () { removeFeedback(id); });
+    });
+  }
+  function startEditFeedback(id) {
+    var items = loadFeedback();
+    var item = items.find(function (c) { return c.id === id; });
+    if (!item) return;
+    editingId = id;
+    fillFeedbackForm(item);
+    document.getElementById("reading-feedback-save").textContent = "💾 更新";
+    document.getElementById("reading-feedback-cancel").style.display = "";
+    document.getElementById("reading-feedback-form-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function cancelEditFeedback() {
+    editingId = null;
+    clearFeedbackForm();
+    document.getElementById("reading-feedback-save").textContent = "💾 保存";
+    document.getElementById("reading-feedback-cancel").style.display = "none";
+  }
+  function removeFeedback(id) {
+    if (!confirm("删除这条反馈?")) return;
+    var items = loadFeedback().filter(function (c) { return c.id !== id; });
+    saveFeedback(items);
+    if (editingId === id) cancelEditFeedback();
+    renderFeedback();
+  }
+  function onFeedbackSave() {
+    var data = readFeedbackForm();
+    if (!data.blocker && !data.feeling) {
+      alert("「卡在哪」和「感受」至少填一项");
+      return;
+    }
+    var items = loadFeedback();
+    if (editingId) {
+      var idx = items.findIndex(function (c) { return c.id === editingId; });
+      if (idx >= 0) items[idx] = Object.assign({}, items[idx], data, { updated: todayStr() });
+    } else {
+      items.push(Object.assign({
+        id: "r_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 6),
+        date: todayStr()
+      }, data));
+    }
+    saveFeedback(items);
+    cancelEditFeedback();
+    renderFeedback();
+  }
+
+  /* ---------- Answers ---------- */
+  function fillAnswers() {
+    var a = loadAnswers();
+    document.getElementById("reading-answer-fasan").value = a.fasan || "";
+    document.getElementById("reading-answer-output").value = a.output || "";
+    document.getElementById("reading-answer-graduate").value = a.graduate || "";
+  }
+  function onAnswersSave() {
+    var a = {
+      fasan: (document.getElementById("reading-answer-fasan").value || "").trim(),
+      output: (document.getElementById("reading-answer-output").value || "").trim(),
+      graduate: (document.getElementById("reading-answer-graduate").value || "").trim(),
+      updated: todayStr()
+    };
+    saveAnswers(a);
+    var btn = document.getElementById("reading-answers-save");
+    var old = btn.textContent;
+    btn.textContent = "✓ 已保存";
+    setTimeout(function () { btn.textContent = old; }, 1500);
+  }
+  function onAnswersClear() {
+    if (!confirm("清空 3 条答案?")) return;
+    saveAnswers({});
+    fillAnswers();
+  }
+
+  /* ---------- Ideas ---------- */
+  function renderIdeas() {
+    var items = loadIdeas();
+    var list = document.getElementById("reading-ideas-list");
+    var count = document.getElementById("reading-ideas-count");
+    if (count) count.textContent = items.length;
+    if (!list) return;
+    if (items.length === 0) {
+      list.innerHTML = '<div id="reading-ideas-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 14px 10px; line-height: 1.6;">📌 空 · 遇到再加<br><span style="font-size: 10px;">▸ 一本书一张入口卡?未来多本时读书 tab 里怎么排 · 这条待收</span></div>';
+      return;
+    }
+    var html = items.slice().reverse().map(function (idea) {
+      return '<div class="reading-card-item" data-id="' + idea.id + '" style="padding: 8px 10px;">' +
+        '<div style="display: flex; justify-content: space-between; gap: 8px; align-items: flex-start;">' +
+          '<div style="flex: 1; font-size: 11.5px; color: #d8dcec; line-height: 1.5;">' + escapeHtml(idea.text) + '</div>' +
+          '<div class="reading-card-actions">' +
+            '<button data-action="delete-idea" title="删除">🗑</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size: 9.5px; color: #5a6180; margin-top: 4px; font-family: \'SF Mono\', monospace;">' + (idea.date || '') + '</div>' +
+      '</div>';
+    }).join("");
+    list.innerHTML = html;
+    list.querySelectorAll(".reading-card-item").forEach(function (item) {
+      var id = item.getAttribute("data-id");
+      var del = item.querySelector('[data-action="delete-idea"]');
+      if (del) del.addEventListener("click", function () {
+        if (!confirm("删除这条想法?")) return;
+        var items = loadIdeas().filter(function (x) { return x.id !== id; });
+        saveIdeas(items);
+        renderIdeas();
+      });
+    });
+  }
+  function onIdeaSave() {
+    var input = document.getElementById("reading-idea-input");
+    var text = (input.value || "").trim();
+    if (!text) return;
+    var items = loadIdeas();
+    items.push({
+      id: "i_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 6),
+      text: text,
+      date: todayStr()
+    });
+    saveIdeas(items);
+    input.value = "";
+    renderIdeas();
+  }
+
+  /* ---------- Export md ---------- */
+  function buildMd() {
+    var feedback = loadFeedback();
+    var answers = loadAnswers();
+    var ideas = loadIdeas();
+
+    var lines = [];
+    lines.push("# 主题 05 · 读书孵化器 · 状态快照");
+    lines.push("");
+    lines.push("**导出时间**:" + todayStr());
+    lines.push("**来源**:https://fantasyfanftl.github.io/lycheeGame/ipad-workstation.html");
+    lines.push("");
+    lines.push("**本文用途**:让任何 AI 秒懂「主题 05 · 读书孵化器」现状 · 便于跨 AI 讨论 / 协助设计");
+    lines.push("");
+    lines.push("---");
+    lines.push("");
+    lines.push("## 定位");
+    lines.push("研究「怎么把读书的价值发挥出来」· 设计「用来读书的」东西(工具 / 方法 / 模板)");
+    lines.push("性质:元层设计实验室 · 产出物给读书用 · 不是执行读书的地方");
+    lines.push("07-30 从主题 01 独立 · 讨论深度触发 · 未走 2 周试点");
+    lines.push("");
+    lines.push("## 当前设计草稿 · 5 步(未定型)");
+    lines.push("读 → 批注 → 散发 → 收敛 → 输出");
+    lines.push("");
+    lines.push("对应 CODE 范式(Building a Second Brain · Tiago Forte):");
+    lines.push("- 读 + 批注 = Capture");
+    lines.push("- 散发 = Organize(?)· 待解释");
+    lines.push("- 收敛 = Distill");
+    lines.push("- 形成内容 + 输出 = Express");
+    lines.push("");
+    lines.push("## 试验田 ·《思维的囚徒》");
+    lines.push("Alex Pattakos · 弗兰克尔学派 · 从《活出生命的意义》提炼");
+    lines.push("");
+    lines.push("### 反馈记录(" + feedback.length + " 条)");
+    if (feedback.length === 0) {
+      lines.push("(空 · 未启动)");
+    } else {
+      feedback.slice().reverse().forEach(function (f, i) {
+        lines.push("");
+        lines.push("**[" + f.stage + " · " + f.status + "]** " + (f.date || ""));
+        if (f.blocker) { lines.push("- 卡在哪:" + f.blocker); }
+        if (f.feeling) { lines.push("- 感受:" + f.feeling); }
+      });
+    }
+    lines.push("");
+    lines.push("## 待办 3 条(天蓝已答)");
+    lines.push("- **「散发」具体是啥?**");
+    lines.push("  " + (answers.fasan || "_(未拍)_"));
+    lines.push("- **「输出」去哪?**");
+    lines.push("  " + (answers.output || "_(未拍)_"));
+    lines.push("- **毕业标准?**");
+    lines.push("  " + (answers.graduate || "_(未拍)_"));
+    if (answers.updated) { lines.push(""); lines.push("_答案最后更新:" + answers.updated + "_"); }
+    lines.push("");
+    lines.push("## 想法池(" + ideas.length + " 条)");
+    if (ideas.length === 0) {
+      lines.push("(空)");
+    } else {
+      ideas.slice().reverse().forEach(function (idea) {
+        lines.push("- " + idea.text + "  _(" + (idea.date || "") + ")_");
+      });
+    }
+    lines.push("");
+    lines.push("---");
+    lines.push("");
+    lines.push("### Claude 侧上下文(其他 AI 可跳过)");
+    lines.push("- 相关 Claude memory:user-claude-brain-purpose / user-code-framework-knowledge-base / feedback-tool-self-introduction");
+    lines.push("- 最近 commit:见 lycheeGame repo main 分支");
+
+    return lines.join("\n");
+  }
+  function onExport() {
+    var md = buildMd();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(md).then(function () {
+        var btn = document.getElementById("reading-export");
+        var old = btn.textContent;
+        btn.textContent = "✓ 已复制";
+        setTimeout(function () { btn.textContent = old; }, 2500);
+      }, function () { fallbackCopy(md); });
+    } else {
+      fallbackCopy(md);
+    }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); alert("已复制到剪贴板"); } catch (e) { alert("复制失败 · 请手动复制:\n\n" + text.slice(0, 200) + "..."); }
+    document.body.removeChild(ta);
+  }
+
+  function init() {
+    if (!document.getElementById("reading-feedback-save")) return;
+    bindChips("reading-stage-chips");
+    bindChips("reading-status-chips");
+    document.getElementById("reading-feedback-save").addEventListener("click", onFeedbackSave);
+    document.getElementById("reading-feedback-clear").addEventListener("click", function () {
+      if (confirm("清空表单?")) cancelEditFeedback();
+    });
+    document.getElementById("reading-feedback-cancel").addEventListener("click", cancelEditFeedback);
+
+    document.getElementById("reading-answers-save").addEventListener("click", onAnswersSave);
+    document.getElementById("reading-answers-clear").addEventListener("click", onAnswersClear);
+
+    document.getElementById("reading-idea-save").addEventListener("click", onIdeaSave);
+    document.getElementById("reading-idea-input").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); onIdeaSave(); }
+    });
+
+    document.getElementById("reading-export").addEventListener("click", onExport);
+
+    renderFeedback();
+    fillAnswers();
+    renderIdeas();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
 </script>
 
 </body>
