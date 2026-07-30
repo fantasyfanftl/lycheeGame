@@ -8190,6 +8190,24 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
       </div>
 
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
+          <div class="card-title" style="color: #ff985a; margin: 0;">▎书写层 · 随便记</div>
+          <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+            <span id="factory-notes-status" style="font-size: 10px; color: #5a6180;"></span>
+            <button id="factory-notes-save" class="factory-btn factory-btn-primary" style="font-size: 10px; padding: 4px 10px;">💾 保存</button>
+            <button id="factory-notes-clear" class="factory-btn" style="font-size: 10px; padding: 4px 8px; opacity: 0.7;" title="清空全部笔记">🗑</button>
+          </div>
+        </div>
+        <div style="font-size: 10.5px; color: #7d84a8; line-height: 1.6; margin-bottom: 8px;">
+          <span>▸ 装觉得有用但还没成型的想法/摘抄/临时梳理 · 本地存储 · 自动读取</span>
+        </div>
+        <textarea id="factory-notes" placeholder="想到啥写啥…" class="factory-textarea" rows="10" style="min-height: 200px;"></textarea>
+        <div style="font-size: 10px; color: #5a6180; margin-top: 6px; text-align: right;">
+          <span id="factory-notes-updated"></span>
+        </div>
+      </div>
+
     </div>
 
     <!-- ========== TAB · 🔍 回看观察 ========== -->
@@ -10323,6 +10341,89 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("review-clear-all").addEventListener("click", onClearAllReviews);
     renderSelectedChips();
     render();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+/* ================================================================
+   主题 04 · 出厂设置 · SOP tab 底部书写层(随便记)
+   ================================================================ */
+(function () {
+  var KEY = "factory-notes-v1";
+  var TS_KEY = "factory-notes-updated-v1";
+  var textarea, statusEl, updatedEl, saveTimer;
+
+  function fmt(ts) {
+    if (!ts) return "";
+    var d = new Date(ts);
+    var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+
+  function loadNotes() {
+    return localStorage.getItem(KEY) || "";
+  }
+  function saveNotes(text) {
+    localStorage.setItem(KEY, text);
+    var ts = Date.now();
+    localStorage.setItem(TS_KEY, String(ts));
+    updateStatus("已保存", true);
+    if (updatedEl) updatedEl.textContent = "上次更新 · " + fmt(ts);
+  }
+  function updateStatus(msg, temp) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    if (temp) {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function () { statusEl.textContent = ""; }, 1500);
+    }
+  }
+
+  function init() {
+    textarea = document.getElementById("factory-notes");
+    if (!textarea) return;
+    statusEl = document.getElementById("factory-notes-status");
+    updatedEl = document.getElementById("factory-notes-updated");
+
+    textarea.value = loadNotes();
+    var ts = parseInt(localStorage.getItem(TS_KEY) || "0", 10);
+    if (ts && updatedEl) updatedEl.textContent = "上次更新 · " + fmt(ts);
+
+    var dirty = false;
+    textarea.addEventListener("input", function () {
+      dirty = true;
+      updateStatus("· 未保存", false);
+    });
+
+    document.getElementById("factory-notes-save").addEventListener("click", function () {
+      saveNotes(textarea.value);
+      dirty = false;
+    });
+
+    document.getElementById("factory-notes-clear").addEventListener("click", function () {
+      if (!textarea.value) { alert("已经是空的"); return; }
+      if (!confirm("清空全部笔记 · 不可恢复 · 继续?")) return;
+      textarea.value = "";
+      saveNotes("");
+    });
+
+    // Ctrl/Cmd + S 保存
+    textarea.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        saveNotes(textarea.value);
+        dirty = false;
+      }
+    });
+
+    // 页面隐藏时自动保存(防丢)
+    window.addEventListener("beforeunload", function () {
+      if (dirty) saveNotes(textarea.value);
+    });
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
