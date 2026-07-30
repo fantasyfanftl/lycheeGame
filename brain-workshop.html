@@ -229,6 +229,31 @@ html, body {
   letter-spacing: 0.3px;
   pointer-events: none;
 }
+/* PARA 徒章 · 右上角 · 淡化 inbox · 突出已归类 · 与未归类 badge 上下堆叠(top 24) */
+.card-para-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 11px;
+  line-height: 1;
+  padding: 2px 3px;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0.95;
+}
+.card-para-badge.para-inbox {
+  font-size: 10px;
+  color: #4a4f66;
+  opacity: 0.4;
+}
+.card-para-badge.para-inbox.stale {
+  color: #ffb066;
+  opacity: 0.85;
+}
+.card-unclassified-badge + .card-para-badge,
+.card-para-badge.stacked {
+  top: 24px;
+}
 .card-body {
   font-size: 12px;
   line-height: 1.5;
@@ -460,6 +485,12 @@ html, body {
   <div class="ctx-item" data-action="toGreen">🟢 转绿卡(成熟)</div>
   <div class="ctx-item" data-action="toGray">⚪ 转灰卡(临时)</div>
   <div class="ctx-sep"></div>
+  <div class="ctx-item" data-action="paraProject">🎯 归 Projects</div>
+  <div class="ctx-item" data-action="paraArea">💼 归 Areas</div>
+  <div class="ctx-item" data-action="paraResource">📚 归 Resources</div>
+  <div class="ctx-item" data-action="paraArchive">📦 归 Archives</div>
+  <div class="ctx-item" data-action="paraInbox">· 回 Inbox</div>
+  <div class="ctx-sep"></div>
   <div class="ctx-item" data-action="duplicate">📄 复制</div>
   <div class="ctx-item" data-action="delete">🗑 删除</div>
 </div>
@@ -484,8 +515,19 @@ const DB_VER = 1;
 const STORE_CARDS = 'cards';
 const STORE_LINKS = 'links';
 
+/* PARA 归属 · 与 color(Zettelkasten 提炼阶段)正交
+   inbox 视觉极淡 · 卡 >7 天变橙提示"该翻牌" · 不做压力型 UI */
+const INBOX_STALE_DAYS = 7;
+const PARA_META = {
+  inbox:    { icon: '·',  label: 'Inbox' },
+  project:  { icon: '🎯', label: 'Projects' },
+  area:     { icon: '💼', label: 'Areas' },
+  resource: { icon: '📚', label: 'Resources' },
+  archive:  { icon: '📦', label: 'Archives' }
+};
+
 let db = null;
-let cards = [];   // {id, x, y, color, type, text, tags, sourceUrl, createdAt, updatedAt}
+let cards = [];   // {id, x, y, color, type, text, tags, sourceUrl, para, inboxAt, createdAt, updatedAt}
 let links = [];   // {id, from, to, type: '提炼衍生|相互补充|因果推导|矛盾冲突|同源素材'}
 
 function openDB() {
@@ -513,10 +555,22 @@ async function loadAll() {
       const t2 = tx(STORE_LINKS).getAll();
       t2.onsuccess = () => {
         links = t2.result || [];
+        backfillPara();
         resolve();
       };
     };
   });
+}
+
+async function backfillPara() {
+  const nowStr = now();
+  for (const c of cards) {
+    if (!c.para) {
+      c.para = 'inbox';
+      c.inboxAt = c.createdAt || nowStr;
+      await saveCard(c);
+    }
+  }
 }
 
 async function saveCard(card) {
@@ -599,6 +653,24 @@ function renderAll() {
   updateCount();
 }
 
+function isInboxStale(c) {
+  if (c.para !== 'inbox' || !c.inboxAt) return false;
+  const t = new Date(c.inboxAt.replace(' ', 'T')).getTime();
+  if (!t) return false;
+  return (Date.now() - t) > INBOX_STALE_DAYS * 86400000;
+}
+
+function paraBadgeHtml(c) {
+  const key = c.para || 'inbox';
+  const meta = PARA_META[key];
+  if (!meta) return '';
+  const cls = ['card-para-badge', `para-${key}`];
+  if (key === 'inbox' && isInboxStale(c)) cls.push('stale');
+  if ((c.tags||[]).includes('未归类')) cls.push('stacked');
+  const title = key === 'inbox' && isInboxStale(c) ? 'Inbox >7 天 · 该翻牌了' : meta.label;
+  return `<div class="${cls.join(' ')}" title="${title}">${meta.icon}</div>`;
+}
+
 function renderCard(c) {
   const el = document.createElement('div');
   el.className = 'card card-' + c.color;
@@ -611,6 +683,7 @@ function renderCard(c) {
   el.innerHTML = `
     <div class="card-type">${c.type || '·'}</div>
     ${(c.tags||[]).includes('未归类') ? '<div class="card-unclassified-badge" title="未归类 · 点💡 建主题聚类">🏷 未归类</div>' : ''}
+    ${paraBadgeHtml(c)}
     <div class="card-body" contenteditable="true" spellcheck="false">${escapeHtml(c.text || '')}</div>
     <div class="card-footer">
       <span>${(c.tags||[]).map(t => `<span class="card-tag">${escapeHtml(t)}</span>`).join(' ')}</span>
@@ -831,6 +904,7 @@ document.querySelectorAll('.stage-tab').forEach(tab => {
 /* ============ 添加卡片 ============ */
 async function addCard(color) {
   const area = document.getElementById('canvasArea');
+  const nowStr = now();
   const c = {
     id: uuid(),
     x: area.scrollLeft + 80 + Math.random() * 60,
@@ -839,8 +913,10 @@ async function addCard(color) {
     type: {yellow: '🌱 原始素材', amber: '⚗️ AI 原子单元', orange: '🟠 手动提炼', green: '🟢 成熟单元', gray: '⚪ 临时便签'}[color],
     text: '',
     tags: [],
-    createdAt: now(),
-    updatedAt: now()
+    para: 'inbox',
+    inboxAt: nowStr,
+    createdAt: nowStr,
+    updatedAt: nowStr
   };
   cards.push(c);
   await saveCard(c);
@@ -1351,6 +1427,11 @@ ctxMenu.querySelectorAll('.ctx-item').forEach(item => {
     else if (action === 'toOrange') c.color = 'orange';
     else if (action === 'toGreen') c.color = 'green';
     else if (action === 'toGray') c.color = 'gray';
+    else if (action === 'paraProject')  { c.para = 'project';  c.inboxAt = null; }
+    else if (action === 'paraArea')     { c.para = 'area';     c.inboxAt = null; }
+    else if (action === 'paraResource') { c.para = 'resource'; c.inboxAt = null; }
+    else if (action === 'paraArchive')  { c.para = 'archive';  c.inboxAt = null; }
+    else if (action === 'paraInbox')    { c.para = 'inbox';    c.inboxAt = now(); }
     else if (action === 'duplicate') {
       const nc = {...c, id: uuid(), x: c.x + 30, y: c.y + 30, createdAt: now(), updatedAt: now()};
       cards.push(nc);
@@ -1362,7 +1443,7 @@ ctxMenu.querySelectorAll('.ctx-item').forEach(item => {
         await deleteCard(c.id);
       }
     }
-    if (['toYellow','toOrange','toGreen','toGray'].includes(action)) {
+    if (['toYellow','toAmber','toOrange','toGreen','toGray','paraProject','paraArea','paraResource','paraArchive','paraInbox'].includes(action)) {
       c.updatedAt = now();
       await saveCard(c);
     }
@@ -1459,6 +1540,14 @@ function buildSnapshotPayload() {
   const greenN   = cards.filter(c => c.color === 'green').length;
   const grayN    = cards.filter(c => c.color === 'gray').length;
 
+  const paraCount = { inbox: 0, project: 0, area: 0, resource: 0, archive: 0 };
+  let staleInbox = 0;
+  cards.forEach(c => {
+    const k = c.para || 'inbox';
+    if (paraCount[k] !== undefined) paraCount[k]++;
+    if (isInboxStale(c)) staleInbox++;
+  });
+
   const linkTypeCount = {};
   links.forEach(l => { linkTypeCount[l.type || '未标'] = (linkTypeCount[l.type || '未标'] || 0) + 1; });
   const linkSummary = Object.entries(linkTypeCount).map(([t,n]) => `${t}×${n}`).join(' · ') || '无连线';
@@ -1484,6 +1573,7 @@ ${getWorkshopContext()}
 ### 概况
 
 - **总卡** ${cards.length} 张:🟡黄 ${yellowN}(原始) · 🟨琥珀 ${amberN}(主题) · 🟠橙 ${orangeN}(结论) · 🟢绿 ${greenN}(成品) · ⚪灰 ${grayN}(临时)
+- **PARA 归属**:🎯P ${paraCount.project} · 💼A ${paraCount.area} · 📚R ${paraCount.resource} · 📦Arc ${paraCount.archive} · ·Inbox ${paraCount.inbox}${staleInbox > 0 ? `(其中 ${staleInbox} 张 >7 天该翻牌)` : ''}
 - **连线** ${links.length} 条:${linkSummary}
 - **星型爆炸嫌疑** ${hotHubs} 张卡入度 ≥ 8(琥珀吸太多·该拆) · ${hotSources} 张卡出度 ≥ 4(原子发太多·该升琥珀)
 

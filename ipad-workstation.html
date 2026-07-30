@@ -1356,6 +1356,12 @@ footer strong { color: #7d84a8; }
   background: rgba(240, 171, 252, 0.1);
   box-shadow: 0 0 6px rgba(240, 171, 252, 0.25);
 }
+.topic-badge-factory {
+  color: #ff985a;
+  border-color: rgba(255, 152, 90, 0.4);
+  background: rgba(255, 152, 90, 0.1);
+  box-shadow: 0 0 6px rgba(255, 152, 90, 0.25);
+}
 .topic-badge-tianlan {
   color: #6ee7b7;
   border-color: rgba(52, 211, 153, 0.4);
@@ -1444,6 +1450,23 @@ footer strong { color: #7d84a8; }
   box-shadow: 0 0 20px rgba(240, 171, 252, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .topic-card[data-topic="F"] .topic-icon { filter: drop-shadow(0 0 8px rgba(240, 171, 252, 0.4)); }
+
+.topic-card[data-topic="G"] {
+  background:
+    radial-gradient(220px 100px at 50% 50%, rgba(255, 152, 90, 0.14) 0%, transparent 70%),
+    rgba(35, 35, 35, 0.5);
+  border-color: rgba(255, 152, 90, 0.22);
+}
+.topic-card[data-topic="G"]::before {
+  background: linear-gradient(90deg, transparent, #ff985a, transparent);
+}
+.topic-card[data-topic="G"] .topic-name { color: #ff985a; text-shadow: 0 0 10px rgba(255, 152, 90, 0.4); }
+.topic-card[data-topic="G"]:not(.active) .topic-name { color: rgba(255, 152, 90, 0.75); }
+.topic-card[data-topic="G"].active {
+  border-color: rgba(255, 152, 90, 0.5);
+  box-shadow: 0 0 20px rgba(255, 152, 90, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.topic-card[data-topic="G"] .topic-icon { filter: drop-shadow(0 0 8px rgba(255, 152, 90, 0.4)); }
 
 /* ==== 层标签 ==== */
 .layer-label {
@@ -4464,6 +4487,23 @@ footer strong { color: #7d84a8; }
       </div>
 
 
+      <div class="topic-card" data-topic="G">
+        <div class="topic-badge topic-badge-factory">SELF</div>
+        <div class="topic-header">
+          <div class="topic-icon">🎛️</div>
+          <div>
+            <div class="topic-name">主题 04 · 出厂设置</div>
+            <div class="topic-sub">星盘/紫微/面相杂糅 · 反观自己</div>
+          </div>
+        </div>
+        <div class="topic-intro">
+          <div class="ti-row"><span class="ti-key">是什么</span><span class="ti-val">多命理工具当镜子照自己 · 非学工具</span></div>
+          <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">遇到共鸣解法就存 · 5 张后回看粒度</span></div>
+          <div class="ti-row"><span class="ti-key">准入项</span><span class="ti-val">"这个说的就是我"的解法准入</span></div>
+        </div>
+      </div>
+
+
       <div class="topic-card" data-topic="brain">
         <div class="topic-badge topic-badge-brain">BRAIN</div>
         <div class="topic-header">
@@ -4497,9 +4537,124 @@ footer strong { color: #7d84a8; }
 
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="book" title="读书孵化器｜读书处理台 v0 · 试点期">📚 读书<span class="tab-hint">孵化器</span></button>
-    <button class="tab-btn" data-tab="astro" title="星座孵化器｜星座处理台 v0 · 试点期">⭐ 星座<span class="tab-hint">孵化器</span></button>
     <button class="tab-btn" data-tab="daily" title="对话沉淀孵化器｜每日对话综合卡 · 试点期">📅 对话沉淀<span class="tab-hint">孵化器</span></button>
     <button class="tab-btn" data-tab="temp" title="临时｜无法归类的 · 旧 C/O/D/E 内容合并到这">⚪ 临时<span class="tab-hint">归档</span></button>
+  </div>
+
+  <!-- ========== TAB · 读书孵化器 ========== -->
+  <div class="tab-panel active" data-panel="book">
+
+    <div class="card" style="background: rgba(255, 180, 87, 0.06); border-color: rgba(255, 180, 87, 0.25);">
+      <div class="card-title" style="color: #ffb457;">▎读书孵化器 · v0 试点</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong style="color: #ffb457;">定位</strong>:读书处理台的孵化区 · 长大后独立成 <code style="color: #7dd3fc;">Areas/读书/</code> 文件夹<br>
+        <strong style="color: #ffb457;">当前状态</strong>:v0 骨架 · 未启动试点 · 等选定第 1 本书<br>
+        <span style="color: #7d84a8;">▸ 试点通过 2 周后 · 决定是否独立</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color: #ffb457;">▎v0 结构 · 一本书一个文件夹</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.8; font-family: 'SF Mono', monospace;">
+        Areas/读书/<br>
+        ├─ 在读/《书名》/<br>
+        │　　├─ 元信息(作者/评级/进度)<br>
+        │　　├─ 摘录(散的句子)<br>
+        │　　├─ 启发(触发我的想法)<br>
+        │　　└─ 书评(读完写)<br>
+        ├─ 已读/(归档)<br>
+        └─ 想读清单
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color: #ffb457;">▎消化流程 · 3 步</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong>1. 读的过程</strong> · 划重点 · 录成摘录卡/疑问卡/启发卡<br>
+        <strong>2. 读完后</strong> · 30 分钟写书评 · 回答:核心观点/我认同哪些/我用得上哪些<br>
+        <strong>3. 挑 3 张启发卡</strong> · 打 <code style="color: #7dd3fc;">#永久卡候选</code> · 后续沉淀
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color: #7d84a8;">▎当前试点 · 空</div>
+      <div style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
+        📚 空 · 等选定第 1 本书<br>
+        <span style="font-size: 10px;">▸ 挑一本正在读的书 · 走完 3 步流程 · 2 周后回看</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== TAB · 星座孵化器 · 2026-07-30 独立成主题 04 出厂设置 ========== -->
+
+  <!-- ========== TAB · 对话沉淀孵化器 ========== -->
+  <div class="tab-panel" data-panel="daily">
+
+    <div class="card" style="background: rgba(125, 211, 252, 0.06); border-color: rgba(125, 211, 252, 0.25);">
+      <div class="card-title" style="color: #7dd3fc;">▎对话沉淀孵化器 · v0 试点</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong style="color: #7dd3fc;">定位</strong>:每日 AI 对话的综合沉淀 · 长大后可能独立成 <code style="color: #7dd3fc;">Areas/对话沉淀/</code><br>
+        <strong style="color: #7dd3fc;">当前状态</strong>:v0 模板 · 第 1 张沉淀卡今天生成(见下)<br>
+        <span style="color: #7d84a8;">▸ 元层需求 · 是所有处理台的"源头供货"</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color: #7dd3fc;">▎v0 模板 · 5 栏</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.8;">
+        1. <strong style="color: #7dd3fc;">今天讨论的核心问题</strong>(1-2 条)<br>
+        2. <strong style="color: #7dd3fc;">关键收敛点</strong>(3 条内)<br>
+        3. <strong style="color: #7dd3fc;">待分发</strong>(明天做什么)<br>
+        4. <strong style="color: #7dd3fc;">想法池</strong>(未收敛 · 存着)<br>
+        5. <strong style="color: #7dd3fc;">参考对话</strong>(哪个 AI/commit hash)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color: #7dd3fc;">▎生成规则</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+        <strong>触发</strong>:天蓝说"沉淀今天" · Claude 按 5 栏模板输出<br>
+        <strong>频次</strong>:每天最多 1 张 · 空缺日子留白<br>
+        <strong>粒度</strong>:每日综合(不是每次对话)<br>
+        <strong>存放</strong>:短期在本 tab · 试通 2 周后决定是否独立成文件夹
+      </div>
+    </div>
+
+    <div class="card" id="daily-log-2026-07-29">
+      <div class="card-title" style="color: #7dd3fc;">▎2026-07-29 · 第 1 张沉淀卡</div>
+      <div style="font-size: 11px; color: #d8dcec; line-height: 1.8;">
+        <strong style="color: #7dd3fc;">今天讨论的核心问题</strong><br>
+        · 知识管理体系 · 从收集到消化到沉淀的完整链路<br>
+        · 工作台 canvas 的定位重估 · 主题 01 tab 结构重组<br>
+        <br>
+        <strong style="color: #7dd3fc;">关键收敛点(4 条)</strong><br>
+        1. <strong>整理思绪 → 呈现想法 → 工具 → 好用</strong>是分层的 · 前 2 层方法论 · 后 2 层工具<br>
+        2. <strong>PARA 前门 + 翻牌激活 + 处理台消化 + 卡片笔记法沉淀</strong> · 4 环节完整链路<br>
+        3. <strong>读书 vs 星座体系不同</strong> · 允许 Areas 内部差异化 · "处理台"概念成立<br>
+        4. <strong>主题 01 = 工作台孵化基地</strong> · 是元层容器 · 装未定型的工作台<br>
+        <br>
+        <strong style="color: #7dd3fc;">待分发</strong><br>
+        · [x] B1 星型爆炸算法修正 · commit 441d253 auto-sync 已 push<br>
+        · [x] 主题 01 tab 结构重组 · 4 个新 tab · 待 push<br>
+        · [ ] 读书孵化器 · 挑一本书试点<br>
+        · [x] 星座孵化器 → 07-30 独立为主题 04 · 出厂设置<br>
+        · [ ] 对话沉淀孵化器 · 明日继续 · 试 2 周后决定独立否<br>
+        <br>
+        <strong style="color: #7dd3fc;">想法池(未收敛 · 存着)</strong><br>
+        · 工坊 canvas 定位:装关系不装内容 · 但具体怎么改还没拍<br>
+        · "临时" tab 是否需要设"驻留上限"(比如 2 周未升 → 归档)<br>
+        · 标签体系(PARA 5 类)还没在工坊字段落地 · 只在概念层<br>
+        · 长文里"知识焦虑症/囤积式收藏"命中你的一个隐性痛点<br>
+        · 卡片笔记法 3 条质量标准(一卡一意/独立可理解/至少 1 连线)暂缓 · PARA 试通后再上<br>
+        <br>
+        <strong style="color: #7dd3fc;">参考对话</strong><br>
+        · Claude Code 会话 · brain-workshop B1 修正 commit <code style="color: #7dd3fc;">441d253</code><br>
+        · 豆包 4 段分析(幕布方案 · 长文启发 · 路线 A/B)<br>
+        · 知乎长文《2 万字深度长文:一文讲清如何高效打造个人知识体系!》· 錯哥的深夜書房 · 2026-03-17
+      </div>
+    </div>
+
   </div>
 
   <!-- ========== 旧 C 捕获 · 已合并到临时 ========== -->
@@ -4864,11 +5019,11 @@ footer strong { color: #7d84a8; }
 
   </div>
 
-  <!-- ========== TAB · E 表达 ========== -->
-  <div class="tab-panel" data-panel="express">
+  <!-- ========== 旧 E 表达 · 已合并到临时 ========== -->
+  <div class="tab-panel" data-panel="temp">
 
     <div class="card" style="background: rgba(52, 211, 153, 0.06); border-color: rgba(52, 211, 153, 0.25);">
-      <div class="card-title" style="color: #6ee7b7;">▎E · 表达 · 定型主题包</div>
+      <div class="card-title" style="color: #6ee7b7;">▎旧 E · 表达 · 定型主题包</div>
       <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
         <strong style="color: #6ee7b7;">规则</strong>:聚合提炼 → 生成正式主题包 · 可复用产物 · 分流到其他主题<br>
         <span style="color: #7d84a8;">已表达内容:分流去了 Claude 脑 / 天蓝脑 / 主题 02</span>
@@ -7244,9 +7399,75 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
   </div>
 
-  <!-- ===== 主题 04 · AI 协作系统 · 已迁到主题 01 → 经验案例 tab · 此段占位保留(无入口) =====-->
+  <!-- ===== 主题 04 · 出厂设置 · 2026-07-30 从主题 01 星座孵化器独立 =====-->
   <div class="topic-content" data-topic-content="G" style="display:none;">
-    <!-- 2026-07-08 迁至天蓝脑 → 2026-07-26 再迁至 主题 01 → 经验案例 tab -->
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="factory-cards" title="解法收集｜遇到共鸣解法就存一张卡">📥 解法收集</button>
+      <button class="tab-btn" data-tab="factory-todo" title="待办 & 想法｜围绕出厂设置的元事项">📌 待办 & 想法</button>
+    </div>
+
+    <!-- ========== TAB · 解法收集 ========== -->
+    <div class="tab-panel active" data-panel="factory-cards">
+
+      <div class="card" style="background: rgba(255, 152, 90, 0.06); border-color: rgba(255, 152, 90, 0.28);">
+        <div class="card-title" style="color: #ff985a;">▎主题 04 · 出厂设置 · v0</div>
+        <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+          <strong style="color: #ff985a;">是什么</strong>:星盘 / 紫微 / 面相 等命理工具杂糅 · 当镜子照自己 · 不学工具本身<br>
+          <strong style="color: #ff985a;">研究对象</strong>:天蓝自己 · 工具是多个 · 每个只挑对自己有用的解法<br>
+          <strong style="color: #ff985a;">准入项</strong>:遇到一条"这个说的就是我"的解法 → 存一张卡<br>
+          <span style="color: #7d84a8;">▸ 07-30 从主题 01 星座孵化器独立 · 因为不再是孵化 · 已确定要做</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color: #ff985a;">▎收集规则 · v0</div>
+        <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+          <strong>一条解法 = 一张卡</strong> · 出处 + 你的一句话总结<br>
+          <strong>粒度先不管</strong> · 5 张后回看 · 粒度自然浮出<br>
+          <strong>可能装的东西</strong>:星盘解读、紫微命盘、面相要点、其他体系(占卜/生辰八字/…)<br>
+          <span style="color: #7d84a8;">▸ 卡片不追求学术准确 · 追求"共鸣"</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color: #7d84a8;">▎当前解法卡 · 0 张</div>
+        <div style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
+          🎛️ 空 · 等第 1 张<br>
+          <span style="font-size: 10px;">▸ 抖音视频里那条正在等工具解析 · 见「待办 & 想法」tab</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== TAB · 待办 & 想法 ========== -->
+    <div class="tab-panel" data-panel="factory-todo">
+
+      <div class="card" style="background: rgba(255, 152, 90, 0.06); border-color: rgba(255, 152, 90, 0.28);">
+        <div class="card-title" style="color: #ff985a;">▎待办 & 想法 · 围绕出厂设置的元事项</div>
+        <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+          <span style="color: #7d84a8;">▸ 装工具需求、方法尝试、以后想做的 · 和解法卡分开</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color: #ff985a;">▎待办 · 1 条</div>
+        <div style="font-size: 11px; color: #d8dcec; line-height: 1.8;">
+          · [ ] <strong>找抖音视频解析工具</strong> · 用来把抖音里的星盘/紫微/面相内容转文字装进解法卡<br>
+          <span style="color: #7d84a8; font-size: 10.5px;">　　候选方向:抖音自带"识别文字" / 飞书妙记 / 豆包上传视频 / 剪映自动字幕 · 待试</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color: #7d84a8;">▎想法 · 空</div>
+        <div style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
+          📌 空 · 遇到再加<br>
+          <span style="font-size: 10px;">▸ 未来 tab 可能增加:🔍 自我观察 · 用某解法解读一次自己</span>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
   <!-- ===== 全局想法池 ===== -->
@@ -7464,7 +7685,7 @@ document.addEventListener("DOMContentLoaded", function() {
       tabs.forEach(function(t) { t.classList.remove("active"); });
       panels.forEach(function(p) { p.classList.remove("active"); });
       tab.classList.add("active");
-      document.querySelector("[data-panel=\"" + target + "\"]").classList.add("active");
+      document.querySelectorAll("[data-panel=\"" + target + "\"]").forEach(function(p) { p.classList.add("active"); });
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
@@ -7510,7 +7731,7 @@ document.addEventListener("DOMContentLoaded", function() {
     "E": "主题 01 · 怎么搭建 AI 工作台",
     "D": "主题 02 · 跨 AI 复用资产",
     "F": "主题 03 · AI 工具分工",
-    "G": "主题 04 · 成功案例 · 15 天回望(待迁天蓝大脑)",
+    "G": "主题 04 · 出厂设置",
     "brain": "🧠 Claude 脑",
     "tianlan": "💡 天蓝脑",
     "global": "全局想法池 · 未归类"
