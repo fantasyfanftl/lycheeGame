@@ -1468,6 +1468,23 @@ footer strong { color: #7d84a8; }
 }
 .topic-card[data-topic="G"] .topic-icon { filter: drop-shadow(0 0 8px rgba(255, 152, 90, 0.4)); }
 
+.topic-card[data-topic="H"] {
+  background:
+    radial-gradient(220px 100px at 50% 50%, rgba(94, 234, 212, 0.14) 0%, transparent 70%),
+    rgba(35, 35, 35, 0.5);
+  border-color: rgba(94, 234, 212, 0.22);
+}
+.topic-card[data-topic="H"]::before {
+  background: linear-gradient(90deg, transparent, #5eead4, transparent);
+}
+.topic-card[data-topic="H"] .topic-name { color: #5eead4; text-shadow: 0 0 10px rgba(94, 234, 212, 0.4); }
+.topic-card[data-topic="H"]:not(.active) .topic-name { color: rgba(94, 234, 212, 0.75); }
+.topic-card[data-topic="H"].active {
+  border-color: rgba(94, 234, 212, 0.5);
+  box-shadow: 0 0 20px rgba(94, 234, 212, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.topic-card[data-topic="H"] .topic-icon { filter: drop-shadow(0 0 8px rgba(94, 234, 212, 0.4)); }
+
 /* ==== 层标签 ==== */
 .layer-label {
   font-size: 9px;
@@ -4500,6 +4517,23 @@ footer strong { color: #7d84a8; }
           <div class="ti-row"><span class="ti-key">是什么</span><span class="ti-val">多命理工具当镜子照自己 · 非学工具</span></div>
           <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">遇到共鸣解法就存 · 5 张后回看粒度</span></div>
           <div class="ti-row"><span class="ti-key">准入项</span><span class="ti-val">"这个说的就是我"的解法准入</span></div>
+        </div>
+      </div>
+
+
+      <div class="topic-card" data-topic="H">
+        <div class="topic-badge topic-badge-live">LIVE</div>
+        <div class="topic-header">
+          <div class="topic-icon">📖</div>
+          <div>
+            <div class="topic-name">主题 05 · 读书孵化器</div>
+            <div class="topic-sub">我怎么读书 · 设计中</div>
+          </div>
+        </div>
+        <div class="topic-intro">
+          <div class="ti-row"><span class="ti-key">是什么</span><span class="ti-val">设计"用来读书的"工具/方法/模板 · 定型后独立</span></div>
+          <div class="ti-row"><span class="ti-key">怎么用</span><span class="ti-val">5 步草稿 → 试验田试点 → 反馈优化</span></div>
+          <div class="ti-row"><span class="ti-key">准入项</span><span class="ti-val">"怎么把读书价值发挥出来"的设计事项</span></div>
         </div>
       </div>
 
