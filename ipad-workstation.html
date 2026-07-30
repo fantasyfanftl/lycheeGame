@@ -7828,6 +7828,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="factory-cards" title="解法收集｜遇到共鸣解法就存一张卡">📥 解法收集</button>
       <button class="tab-btn" data-tab="factory-sop" title="SOP｜你 vs AI 分工 + 下游 3 步">📖 SOP</button>
+      <button class="tab-btn" data-tab="factory-review" title="回看观察｜浓缩多张卡为一句关于自己的观察">🔍 回看</button>
       <button class="tab-btn" data-tab="factory-todo" title="待办 & 想法｜围绕出厂设置的元事项">📌 待办 & 想法</button>
     </div>
 
@@ -7991,6 +7992,71 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
         <div style="font-size: 10.5px; color: #7d84a8; line-height: 1.7; margin-top: 10px; padding: 8px 10px; background: rgba(20,20,25,0.4); border-radius: 4px; border-left: 2px solid rgba(255, 152, 90, 0.4);">
           <strong style="color: #ff985a;">别的可能下游</strong> · 触发式(聊天想起某条 · 打开翻) · 修正式(半年后回看发现某条不是我 · 划掉) · 反向式(先有自我判断 · 反查 3 体系怎么解释)
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== TAB · 🔍 回看观察 ========== -->
+    <div class="tab-panel" data-panel="factory-review">
+
+      <div class="card" style="background: rgba(255, 152, 90, 0.06); border-color: rgba(255, 152, 90, 0.28);">
+        <div class="card-title" style="color: #ff985a;">▎回看观察 · 说明</div>
+        <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
+          <strong style="color: #ff985a;">是什么</strong>:从零散共鸣浓缩成"关于我自己的一句话观察"<br>
+          <strong style="color: #ff985a;">触发</strong>:你主动说"回看" · 不定期 · 不催<br>
+          <strong style="color: #ff985a;">流程</strong>:导出解法卡 md → 交给 AI(Claude/豆包/Kimi) → AI 出 5 条候选 → 讨论 → 保留 N 条 → 手动录入这里<br>
+          <span style="color: #7d84a8;">▸ 浓缩这步的思考在对话里发生 · 工作台只记录讨论完的结论</span>
+        </div>
+      </div>
+
+      <div class="card" id="review-form-card">
+        <div class="card-title" style="color: #ff985a;">▎新增回看</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">依据卡</div>
+            <div id="review-selected-cards" style="display: flex; flex-wrap: wrap; gap: 4px; min-height: 28px; padding: 5px 8px; background: rgba(20, 20, 25, 0.4); border: 1px dashed rgba(255, 152, 90, 0.2); border-radius: 5px; align-items: center;">
+              <span id="review-selected-empty" style="font-size: 10.5px; color: #5a6180;">未选 · 点下方按钮挑</span>
+            </div>
+            <div style="margin-top: 6px;">
+              <button id="review-pick-btn" class="factory-btn" style="font-size: 11px;">🎴 从当前解法卡挑依据</button>
+              <button id="review-selected-clear" class="factory-btn" style="font-size: 11px; margin-left: 4px;">清空所选</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">一句话观察</div>
+            <textarea id="review-summary" placeholder="关于我自己的一句话 · 从依据卡里浓缩出来" class="factory-textarea" rows="3"></textarea>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">下一步动作(可选)</div>
+            <input type="text" id="review-next" placeholder="比如:接事之前卡 10 秒问自己…" class="factory-input">
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button id="review-save" class="factory-btn factory-btn-primary">💾 保存</button>
+            <button id="review-clear-form" class="factory-btn">🧹 清空表单</button>
+            <button id="review-cancel-edit" class="factory-btn" style="display:none;">✕ 取消编辑</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card" id="review-list-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
+          <div class="card-title" style="color: #ff985a; margin: 0;">▎回看记录 · <span id="review-count">0</span> 条</div>
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button id="review-clear-all" class="factory-btn" style="font-size: 10px; padding: 4px 8px; opacity: 0.7;" title="清空所有回看记录">🗑 清空所有</button>
+            <button id="review-export" class="factory-btn" style="font-size: 10px; padding: 4px 8px;">📤 导出全部 md</button>
+          </div>
+        </div>
+        <div id="review-list">
+          <div id="review-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
+            🔍 空 · 攒够 5 张解法卡后主动说"回看"启动<br>
+            <span style="font-size: 10px;">▸ 本地存储 · 独立于解法卡</span>
+          </div>
         </div>
       </div>
 
