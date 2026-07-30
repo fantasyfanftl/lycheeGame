@@ -1468,6 +1468,138 @@ footer strong { color: #7d84a8; }
 }
 .topic-card[data-topic="G"] .topic-icon { filter: drop-shadow(0 0 8px rgba(255, 152, 90, 0.4)); }
 
+/* ==== 主题 04 · 出厂设置 · 表单 & 卡片列表 ==== */
+.factory-input, .factory-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(20, 20, 25, 0.6);
+  border: 1px solid rgba(255, 152, 90, 0.18);
+  border-radius: 5px;
+  color: #d8dcec;
+  font-size: 12px;
+  font-family: inherit;
+  padding: 7px 9px;
+  outline: none;
+  transition: border-color 0.15s;
+  resize: vertical;
+  line-height: 1.5;
+}
+.factory-input:focus, .factory-textarea:focus {
+  border-color: rgba(255, 152, 90, 0.55);
+  background: rgba(25, 22, 20, 0.75);
+}
+.factory-input::placeholder, .factory-textarea::placeholder { color: #5a6180; }
+
+.factory-chip {
+  background: rgba(255, 152, 90, 0.06);
+  border: 1px solid rgba(255, 152, 90, 0.2);
+  color: #b4b8cc;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.factory-chip:hover { border-color: rgba(255, 152, 90, 0.4); }
+.factory-chip.active {
+  background: rgba(255, 152, 90, 0.2);
+  border-color: rgba(255, 152, 90, 0.6);
+  color: #ff985a;
+  font-weight: 600;
+}
+
+.factory-btn {
+  background: rgba(35, 35, 40, 0.7);
+  border: 1px solid rgba(255, 152, 90, 0.25);
+  color: #d8dcec;
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.factory-btn:hover { border-color: rgba(255, 152, 90, 0.5); background: rgba(45, 40, 35, 0.8); }
+.factory-btn-primary {
+  background: rgba(255, 152, 90, 0.18);
+  border-color: rgba(255, 152, 90, 0.55);
+  color: #ff985a;
+  font-weight: 600;
+}
+.factory-btn-primary:hover { background: rgba(255, 152, 90, 0.28); }
+
+.factory-card-item {
+  background: rgba(30, 26, 22, 0.5);
+  border: 1px solid rgba(255, 152, 90, 0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.factory-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.factory-card-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 10px;
+}
+.factory-card-tag {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(255, 152, 90, 0.12);
+  color: #ff985a;
+  border: 1px solid rgba(255, 152, 90, 0.25);
+}
+.factory-card-tag.status-共鸣 { background: rgba(110, 231, 183, 0.12); color: #6ee7b7; border-color: rgba(110, 231, 183, 0.3); }
+.factory-card-tag.status-半信半疑 { background: rgba(255, 176, 87, 0.12); color: #ffb457; border-color: rgba(255, 176, 87, 0.3); }
+.factory-card-tag.status-待验证 { background: rgba(124, 130, 155, 0.12); color: #9ca3b8; border-color: rgba(124, 130, 155, 0.3); }
+.factory-card-tag.status-已应用 { background: rgba(125, 211, 252, 0.12); color: #7dd3fc; border-color: rgba(125, 211, 252, 0.3); }
+
+.factory-card-source {
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: 'SF Mono', monospace;
+}
+.factory-card-actions { display: flex; gap: 4px; }
+.factory-card-actions button {
+  background: transparent;
+  border: none;
+  color: #7d84a8;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.factory-card-actions button:hover { background: rgba(255, 152, 90, 0.12); color: #ff985a; }
+
+.factory-card-body {
+  font-size: 11.5px;
+  color: #d8dcec;
+  line-height: 1.6;
+}
+.factory-card-body .label {
+  color: #ff985a;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-top: 4px;
+  margin-bottom: 1px;
+}
+.factory-card-body .content {
+  white-space: pre-wrap;
+  color: #d8dcec;
+}
+
 .topic-card[data-topic="H"] {
   background:
     radial-gradient(220px 100px at 50% 50%, rgba(94, 234, 212, 0.14) 0%, transparent 70%),
@@ -4570,56 +4702,11 @@ footer strong { color: #7d84a8; }
   <div class="topic-content" data-topic-content="E">
 
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="book" title="读书孵化器｜读书处理台 v0 · 试点期">📚 读书<span class="tab-hint">孵化器</span></button>
-    <button class="tab-btn" data-tab="daily" title="对话沉淀孵化器｜每日对话综合卡 · 试点期">📅 对话沉淀<span class="tab-hint">孵化器</span></button>
+    <button class="tab-btn active" data-tab="daily" title="对话沉淀孵化器｜每日对话综合卡 · 试点期">📅 对话沉淀<span class="tab-hint">孵化器</span></button>
     <button class="tab-btn" data-tab="temp" title="临时｜无法归类的 · 旧 C/O/D/E 内容合并到这">⚪ 临时<span class="tab-hint">归档</span></button>
   </div>
 
-  <!-- ========== TAB · 读书孵化器 ========== -->
-  <div class="tab-panel active" data-panel="book">
-
-    <div class="card" style="background: rgba(255, 180, 87, 0.06); border-color: rgba(255, 180, 87, 0.25);">
-      <div class="card-title" style="color: #ffb457;">▎读书孵化器 · v0 试点</div>
-      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
-        <strong style="color: #ffb457;">定位</strong>:读书处理台的孵化区 · 长大后独立成 <code style="color: #7dd3fc;">Areas/读书/</code> 文件夹<br>
-        <strong style="color: #ffb457;">当前状态</strong>:v0 骨架 · 未启动试点 · 等选定第 1 本书<br>
-        <span style="color: #7d84a8;">▸ 试点通过 2 周后 · 决定是否独立</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title" style="color: #ffb457;">▎v0 结构 · 一本书一个文件夹</div>
-      <div style="font-size: 11px; color: #d8dcec; line-height: 1.8; font-family: 'SF Mono', monospace;">
-        Areas/读书/<br>
-        ├─ 在读/《书名》/<br>
-        │　　├─ 元信息(作者/评级/进度)<br>
-        │　　├─ 摘录(散的句子)<br>
-        │　　├─ 启发(触发我的想法)<br>
-        │　　└─ 书评(读完写)<br>
-        ├─ 已读/(归档)<br>
-        └─ 想读清单
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title" style="color: #ffb457;">▎消化流程 · 3 步</div>
-      <div style="font-size: 11px; color: #d8dcec; line-height: 1.7;">
-        <strong>1. 读的过程</strong> · 划重点 · 录成摘录卡/疑问卡/启发卡<br>
-        <strong>2. 读完后</strong> · 30 分钟写书评 · 回答:核心观点/我认同哪些/我用得上哪些<br>
-        <strong>3. 挑 3 张启发卡</strong> · 打 <code style="color: #7dd3fc;">#永久卡候选</code> · 后续沉淀
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title" style="color: #7d84a8;">▎当前试点 · 空</div>
-      <div style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
-        📚 空 · 等选定第 1 本书<br>
-        <span style="font-size: 10px;">▸ 挑一本正在读的书 · 走完 3 步流程 · 2 周后回看</span>
-      </div>
-    </div>
-
-  </div>
-
+  <!-- ========== TAB · 读书孵化器 · 2026-07-30 独立成主题 05 读书孵化器 ========== -->
   <!-- ========== TAB · 星座孵化器 · 2026-07-30 独立成主题 04 出厂设置 ========== -->
 
   <!-- ========== TAB · 对话沉淀孵化器 ========== -->
@@ -7464,11 +7551,66 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title" style="color: #7d84a8;">▎当前解法卡 · 0 张</div>
-        <div style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
-          🎛️ 空 · 等第 1 张<br>
-          <span style="font-size: 10px;">▸ 抖音视频里那条正在等工具解析 · 见「待办 & 想法」tab</span>
+      <!-- ========== 填写区 ========== -->
+      <div class="card" id="factory-form-card">
+        <div class="card-title" style="color: #ff985a;">▎新增解法卡</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">体系</div>
+            <div id="factory-system-chips" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button class="factory-chip active" data-system="星盘">星盘</button>
+              <button class="factory-chip" data-system="紫微">紫微</button>
+              <button class="factory-chip" data-system="面相">面相</button>
+              <button class="factory-chip" data-system="其他">其他</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">出处</div>
+            <input type="text" id="factory-source" placeholder="抖音某博主 / 书名 / 朋友说 / …" class="factory-input">
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">解法原文</div>
+            <textarea id="factory-original" placeholder="让你共鸣的那句话 · 照抄或概括" class="factory-textarea" rows="3"></textarea>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">我的一句话</div>
+            <textarea id="factory-mine" placeholder="为啥觉得说的是我 / 想到的具体片段" class="factory-textarea" rows="2"></textarea>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">状态</div>
+            <div id="factory-status-chips" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button class="factory-chip active" data-status="共鸣">共鸣</button>
+              <button class="factory-chip" data-status="半信半疑">半信半疑</button>
+              <button class="factory-chip" data-status="待验证">待验证</button>
+              <button class="factory-chip" data-status="已应用">已应用</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button id="factory-save" class="factory-btn factory-btn-primary">💾 保存</button>
+            <button id="factory-clear" class="factory-btn">🧹 清空</button>
+            <button id="factory-cancel" class="factory-btn" style="display:none;">✕ 取消编辑</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========== 卡片列表容器 ========== -->
+      <div class="card" id="factory-list-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div class="card-title" style="color: #ff985a; margin: 0;">▎当前解法卡 · <span id="factory-count">0</span> 张</div>
+          <button id="factory-export" class="factory-btn" style="font-size: 10px; padding: 4px 8px;">📤 导出全部 md</button>
+        </div>
+        <div id="factory-list">
+          <div id="factory-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
+            🎛️ 空 · 保存第 1 张后显示在这里<br>
+            <span style="font-size: 10px;">▸ 本地存储 · 不上云 · 换设备/清缓存会丢 · 请定期导出 md</span>
+          </div>
         </div>
       </div>
 
@@ -8627,6 +8769,220 @@ document.addEventListener("DOMContentLoaded", function() {
       if (status) status.textContent = "· 复制失败 · 浏览器不支持";
     }
   });
+})();
+
+/* ================================================================
+   主题 04 · 出厂设置 · 解法卡 CRUD + localStorage + 导出 md
+   ================================================================ */
+(function () {
+  var KEY = "factory-cards-v1";
+  var editingId = null;
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { return []; }
+  }
+  function save(cards) {
+    localStorage.setItem(KEY, JSON.stringify(cards));
+  }
+  function getSelectedChip(containerId) {
+    var el = document.querySelector("#" + containerId + " .factory-chip.active");
+    return el ? el.getAttribute("data-system") || el.getAttribute("data-status") : "";
+  }
+  function setSelectedChip(containerId, value) {
+    document.querySelectorAll("#" + containerId + " .factory-chip").forEach(function (b) {
+      var v = b.getAttribute("data-system") || b.getAttribute("data-status");
+      b.classList.toggle("active", v === value);
+    });
+  }
+  function bindChips(containerId) {
+    document.querySelectorAll("#" + containerId + " .factory-chip").forEach(function (b) {
+      b.addEventListener("click", function () {
+        document.querySelectorAll("#" + containerId + " .factory-chip").forEach(function (x) { x.classList.remove("active"); });
+        b.classList.add("active");
+      });
+    });
+  }
+
+  function readForm() {
+    return {
+      system: getSelectedChip("factory-system-chips") || "星盘",
+      source: (document.getElementById("factory-source").value || "").trim(),
+      original: (document.getElementById("factory-original").value || "").trim(),
+      mine: (document.getElementById("factory-mine").value || "").trim(),
+      status: getSelectedChip("factory-status-chips") || "共鸣"
+    };
+  }
+  function fillForm(card) {
+    setSelectedChip("factory-system-chips", card.system);
+    document.getElementById("factory-source").value = card.source || "";
+    document.getElementById("factory-original").value = card.original || "";
+    document.getElementById("factory-mine").value = card.mine || "";
+    setSelectedChip("factory-status-chips", card.status);
+  }
+  function clearForm() {
+    setSelectedChip("factory-system-chips", "星盘");
+    document.getElementById("factory-source").value = "";
+    document.getElementById("factory-original").value = "";
+    document.getElementById("factory-mine").value = "";
+    setSelectedChip("factory-status-chips", "共鸣");
+  }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function render() {
+    var cards = load();
+    var list = document.getElementById("factory-list");
+    var count = document.getElementById("factory-count");
+    if (count) count.textContent = cards.length;
+    if (!list) return;
+
+    if (cards.length === 0) {
+      list.innerHTML = '<div id="factory-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">🎛️ 空 · 保存第 1 张后显示在这里<br><span style="font-size: 10px;">▸ 本地存储 · 不上云 · 换设备/清缓存会丢 · 请定期导出 md</span></div>';
+      return;
+    }
+
+    var html = cards.slice().reverse().map(function (c) {
+      return '' +
+        '<div class="factory-card-item" data-id="' + c.id + '">' +
+          '<div class="factory-card-head">' +
+            '<div class="factory-card-meta">' +
+              '<span class="factory-card-tag">' + escapeHtml(c.system) + '</span>' +
+              '<span class="factory-card-tag status-' + c.status + '">' + escapeHtml(c.status) + '</span>' +
+              (c.source ? '<span class="factory-card-source">出处 · ' + escapeHtml(c.source) + '</span>' : '') +
+            '</div>' +
+            '<div class="factory-card-actions">' +
+              '<button data-action="edit" title="编辑">✏️</button>' +
+              '<button data-action="delete" title="删除">🗑</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="factory-card-body">' +
+            (c.original ? '<span class="label">解法原文</span><span class="content">' + escapeHtml(c.original) + '</span>' : '') +
+            (c.mine ? '<span class="label">我的一句话</span><span class="content">' + escapeHtml(c.mine) + '</span>' : '') +
+            '<div style="font-size: 9.5px; color: #5a6180; margin-top: 8px; font-family: \'SF Mono\', monospace;">' + (c.date || '') + '</div>' +
+          '</div>' +
+        '</div>';
+    }).join("");
+    list.innerHTML = html;
+
+    list.querySelectorAll(".factory-card-item").forEach(function (item) {
+      var id = item.getAttribute("data-id");
+      item.querySelector('[data-action="edit"]').addEventListener("click", function () { startEdit(id); });
+      item.querySelector('[data-action="delete"]').addEventListener("click", function () { removeCard(id); });
+    });
+  }
+
+  function startEdit(id) {
+    var cards = load();
+    var card = cards.find(function (c) { return c.id === id; });
+    if (!card) return;
+    editingId = id;
+    fillForm(card);
+    document.getElementById("factory-save").textContent = "💾 更新";
+    document.getElementById("factory-cancel").style.display = "";
+    document.getElementById("factory-form-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function cancelEdit() {
+    editingId = null;
+    clearForm();
+    document.getElementById("factory-save").textContent = "💾 保存";
+    document.getElementById("factory-cancel").style.display = "none";
+  }
+  function removeCard(id) {
+    if (!confirm("删除这张解法卡?")) return;
+    var cards = load().filter(function (c) { return c.id !== id; });
+    save(cards);
+    if (editingId === id) cancelEdit();
+    render();
+  }
+
+  function todayStr() {
+    var d = new Date();
+    var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  function onSave() {
+    var data = readForm();
+    if (!data.original && !data.mine) {
+      alert("解法原文和「我的一句话」至少填一项");
+      return;
+    }
+    var cards = load();
+    if (editingId) {
+      var idx = cards.findIndex(function (c) { return c.id === editingId; });
+      if (idx >= 0) {
+        cards[idx] = Object.assign({}, cards[idx], data, { updated: todayStr() });
+      }
+    } else {
+      cards.push(Object.assign({
+        id: "f_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 6),
+        date: todayStr()
+      }, data));
+    }
+    save(cards);
+    cancelEdit();
+    render();
+  }
+
+  function onExport() {
+    var cards = load();
+    if (cards.length === 0) { alert("还没有卡 · 无法导出"); return; }
+    var md = "# 出厂设置 · 解法卡导出\n\n> 导出时间:" + todayStr() + " · 共 " + cards.length + " 张\n\n---\n\n";
+    md += cards.map(function (c, i) {
+      var lines = [];
+      lines.push("## " + (i + 1) + ". [" + c.system + "] " + (c.original ? c.original.split("\n")[0].slice(0, 40) : "(无标题)"));
+      lines.push("");
+      lines.push("- **状态**:" + c.status);
+      if (c.source) lines.push("- **出处**:" + c.source);
+      lines.push("- **日期**:" + (c.date || "") + (c.updated ? " · 更新 " + c.updated : ""));
+      lines.push("");
+      if (c.original) { lines.push("**解法原文**"); lines.push(""); lines.push(c.original); lines.push(""); }
+      if (c.mine) { lines.push("**我的一句话**"); lines.push(""); lines.push(c.mine); lines.push(""); }
+      return lines.join("\n");
+    }).join("\n---\n\n");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(md).then(function () {
+        var btn = document.getElementById("factory-export");
+        var old = btn.textContent;
+        btn.textContent = "✓ 已复制到剪贴板";
+        setTimeout(function () { btn.textContent = old; }, 2500);
+      }, function () { fallbackCopy(md); });
+    } else {
+      fallbackCopy(md);
+    }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); alert("已复制到剪贴板"); } catch (e) { alert("复制失败 · 请手动复制:\n\n" + text.slice(0, 200) + "..."); }
+    document.body.removeChild(ta);
+  }
+
+  function init() {
+    if (!document.getElementById("factory-save")) return;
+    bindChips("factory-system-chips");
+    bindChips("factory-status-chips");
+    document.getElementById("factory-save").addEventListener("click", onSave);
+    document.getElementById("factory-clear").addEventListener("click", function () {
+      if (confirm("清空表单?")) cancelEdit();
+    });
+    document.getElementById("factory-cancel").addEventListener("click", cancelEdit);
+    document.getElementById("factory-export").addEventListener("click", onExport);
+    render();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
 </script>
 
