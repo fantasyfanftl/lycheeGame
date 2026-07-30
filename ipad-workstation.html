@@ -1617,6 +1617,155 @@ footer strong { color: #7d84a8; }
 }
 .topic-card[data-topic="H"] .topic-icon { filter: drop-shadow(0 0 8px rgba(94, 234, 212, 0.4)); }
 
+/* ==== 主题 05 · 读书孵化器 · 表单 & 卡片列表(青色) ==== */
+.reading-input, .reading-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(20, 20, 25, 0.6);
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  border-radius: 5px;
+  color: #d8dcec;
+  font-size: 12px;
+  font-family: inherit;
+  padding: 7px 9px;
+  outline: none;
+  transition: border-color 0.15s;
+  resize: vertical;
+  line-height: 1.5;
+}
+.reading-input:focus, .reading-textarea:focus {
+  border-color: rgba(94, 234, 212, 0.55);
+  background: rgba(20, 25, 24, 0.75);
+}
+.reading-input::placeholder, .reading-textarea::placeholder { color: #5a6180; }
+
+.reading-chip {
+  background: rgba(94, 234, 212, 0.06);
+  border: 1px solid rgba(94, 234, 212, 0.2);
+  color: #b4b8cc;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.reading-chip:hover { border-color: rgba(94, 234, 212, 0.4); }
+.reading-chip.active {
+  background: rgba(94, 234, 212, 0.2);
+  border-color: rgba(94, 234, 212, 0.6);
+  color: #5eead4;
+  font-weight: 600;
+}
+
+.reading-btn {
+  background: rgba(35, 40, 38, 0.7);
+  border: 1px solid rgba(94, 234, 212, 0.25);
+  color: #d8dcec;
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.reading-btn:hover { border-color: rgba(94, 234, 212, 0.5); background: rgba(35, 45, 43, 0.8); }
+.reading-btn-primary {
+  background: rgba(94, 234, 212, 0.18);
+  border-color: rgba(94, 234, 212, 0.55);
+  color: #5eead4;
+  font-weight: 600;
+}
+.reading-btn-primary:hover { background: rgba(94, 234, 212, 0.28); }
+
+.reading-card-item {
+  background: rgba(22, 30, 28, 0.5);
+  border: 1px solid rgba(94, 234, 212, 0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.reading-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.reading-card-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 10px;
+}
+.reading-card-tag {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(94, 234, 212, 0.12);
+  color: #5eead4;
+  border: 1px solid rgba(94, 234, 212, 0.25);
+}
+.reading-card-tag.stage-读 { background: rgba(125, 211, 252, 0.12); color: #7dd3fc; border-color: rgba(125, 211, 252, 0.3); }
+.reading-card-tag.stage-批注 { background: rgba(214, 180, 255, 0.12); color: #d6b4ff; border-color: rgba(214, 180, 255, 0.3); }
+.reading-card-tag.stage-散发 { background: rgba(255, 180, 87, 0.12); color: #ffb457; border-color: rgba(255, 180, 87, 0.3); }
+.reading-card-tag.stage-收敛 { background: rgba(110, 231, 183, 0.12); color: #6ee7b7; border-color: rgba(110, 231, 183, 0.3); }
+.reading-card-tag.stage-输出 { background: rgba(240, 171, 252, 0.12); color: #f0abfc; border-color: rgba(240, 171, 252, 0.3); }
+.reading-card-tag.status-顺 { background: rgba(110, 231, 183, 0.12); color: #6ee7b7; border-color: rgba(110, 231, 183, 0.3); }
+.reading-card-tag.status-卡 { background: rgba(255, 176, 87, 0.12); color: #ffb457; border-color: rgba(255, 176, 87, 0.3); }
+.reading-card-tag.status-待验 { background: rgba(124, 130, 155, 0.12); color: #9ca3b8; border-color: rgba(124, 130, 155, 0.3); }
+
+.reading-card-actions { display: flex; gap: 4px; }
+.reading-card-actions button {
+  background: transparent;
+  border: none;
+  color: #7d84a8;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.reading-card-actions button:hover { background: rgba(94, 234, 212, 0.12); color: #5eead4; }
+
+.reading-card-body {
+  font-size: 11.5px;
+  color: #d8dcec;
+  line-height: 1.6;
+}
+.reading-card-body .label {
+  color: #5eead4;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-top: 4px;
+  margin-bottom: 1px;
+}
+.reading-card-body .content {
+  white-space: pre-wrap;
+  color: #d8dcec;
+}
+
+/* 主题 05 · tab-bar 内导出按钮 */
+.reading-export-inbar {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10.5px;
+  padding: 4px 10px;
+  background: rgba(94, 234, 212, 0.1);
+  border: 1px solid rgba(94, 234, 212, 0.3);
+  color: #5eead4;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.reading-export-inbar:hover { background: rgba(94, 234, 212, 0.2); border-color: rgba(94, 234, 212, 0.55); }
+
 /* ==== 层标签 ==== */
 .layer-label {
   font-size: 9px;
