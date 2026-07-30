@@ -7981,11 +7981,12 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
   <!-- ========== TOPIC · 主题 05 · 读书孵化器 ========== -->
   <div class="topic-content" data-topic-content="H" style="display:none;">
 
-    <div class="tab-bar">
+    <div class="tab-bar" style="position: relative;">
       <button class="tab-btn active" data-tab="reading-what" title="是什么 + 怎么做｜读书孵化器定位与设计草稿">📖 是什么 · 怎么做</button>
       <button class="tab-btn" data-tab="reading-lab" title="试验田｜拿具体书试草稿">🧪 试验田</button>
       <button class="tab-btn" data-tab="reading-todo" title="待办 & 想法｜设计过程冒出的元事项">📌 待办 & 想法</button>
       <button class="tab-btn" data-tab="reading-graduate" title="毕业 & 已产出｜什么条件独立出去 · 定型物落哪">🎓 毕业 & 已产出</button>
+      <button id="reading-export" class="reading-export-inbar" title="导出主题 05 完整快照 md · 给别的 AI 看">📤 导出给 AI</button>
     </div>
 
     <!-- ========== TAB · 是什么 · 怎么做 ========== -->
@@ -7998,6 +7999,41 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           <strong style="color: #5eead4;">性质</strong>:元层设计实验室 · 不是执行读书的地方 · 产出物是给读书用的<br>
           <strong style="color: #5eead4;">试验田</strong>:《思维的囚徒》(Alex Pattakos · 弗兰克尔学派)<br>
           <span style="color: #7d84a8;">▸ 07-30 从主题 01 读书孵化器 tab 独立 · 讨论深度触发 · 不等 2 周试点</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color: #5eead4;">▎你 vs AI 分工</div>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+            <thead>
+              <tr style="background: rgba(94, 234, 212, 0.1);">
+                <th style="padding: 6px 8px; text-align: left; color: #5eead4; border: 1px solid rgba(94, 234, 212, 0.25); font-weight: 600;">你的活(不能代)</th>
+                <th style="padding: 6px 8px; text-align: left; color: #5eead4; border: 1px solid rgba(94, 234, 212, 0.25); font-weight: 600;">AI 的活(可以交)</th>
+              </tr>
+            </thead>
+            <tbody style="color: #d8dcec;">
+              <tr>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">拍 5 步方向和词意("散发"/"输出"啥意思)</td>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">写代码结构 / push</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">判反馈(读起来卡不卡这类主观感受)</td>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">起 v0 版本让你推翻</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">拍毕业标准</td>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">你说结果 · 我敲进反馈卡</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">挑试验田用哪本书 / 何时换</td>
+                <td style="padding: 6px 8px; border: 1px solid rgba(94, 234, 212, 0.18); vertical-align: top; line-height: 1.6;">生成导出 md · 抛校验</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size: 10.5px; color: #7d84a8; line-height: 1.7; margin-top: 10px; padding: 8px 10px; background: rgba(20,20,25,0.4); border-radius: 4px; border-left: 2px solid rgba(94, 234, 212, 0.4);">
+          <strong style="color: #5eead4;">"命中"我代不了</strong> · 你对某本书的<strong>真实感受</strong> · 拍板"这个设计对你有用没用"
         </div>
       </div>
 
@@ -8043,10 +8079,64 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         <div style="font-size: 11px; color: #d8dcec; line-height: 1.8;">
           <strong>作者</strong>:Alex Pattakos · 弗兰克尔学派<br>
           <strong>选它的理由</strong>:天蓝正在读 · 意义/心理长期主题 · 内容有厚度可分层<br>
-          <strong>试验目标</strong>:走 5 步草稿 · 观察哪步卡 · 哪步不合理<br>
-          <br>
-          <strong>试验状态</strong>:未启动<br>
-          <strong>反馈记录</strong>:空 · 走的时候填
+          <strong>试验目标</strong>:走 5 步草稿 · 观察哪步卡 · 哪步不合理
+        </div>
+      </div>
+
+      <!-- ========== 填写区 · 反馈卡 ========== -->
+      <div class="card" id="reading-feedback-form-card">
+        <div class="card-title" style="color: #5eead4;">▎新增反馈卡</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">阶段</div>
+            <div id="reading-stage-chips" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button class="reading-chip active" data-stage="读">读</button>
+              <button class="reading-chip" data-stage="批注">批注</button>
+              <button class="reading-chip" data-stage="散发">散发</button>
+              <button class="reading-chip" data-stage="收敛">收敛</button>
+              <button class="reading-chip" data-stage="输出">输出</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">卡在哪(可空)</div>
+            <textarea id="reading-blocker" placeholder="这步走的时候卡在哪 · 没卡就留空" class="reading-textarea" rows="2"></textarea>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">感受</div>
+            <textarea id="reading-feeling" placeholder="这步顺不顺 · 感觉怎样 · 想改哪" class="reading-textarea" rows="3"></textarea>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; color: #7d84a8; margin-bottom: 3px; letter-spacing: 0.5px;">状态</div>
+            <div id="reading-status-chips" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button class="reading-chip active" data-status="顺">顺</button>
+              <button class="reading-chip" data-status="卡">卡</button>
+              <button class="reading-chip" data-status="待验">待验</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button id="reading-feedback-save" class="reading-btn reading-btn-primary">💾 保存</button>
+            <button id="reading-feedback-clear" class="reading-btn">🧹 清空</button>
+            <button id="reading-feedback-cancel" class="reading-btn" style="display:none;">✕ 取消编辑</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========== 卡片列表容器 ========== -->
+      <div class="card" id="reading-feedback-list-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div class="card-title" style="color: #5eead4; margin: 0;">▎反馈记录 · <span id="reading-feedback-count">0</span> 条</div>
+        </div>
+        <div id="reading-feedback-list">
+          <div id="reading-feedback-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
+            🧪 空 · 走试验田时填第 1 条<br>
+            <span style="font-size: 10px;">▸ 本地存储 · 换设备/清缓存会丢 · 定期用顶部「导出给 AI」备份</span>
+          </div>
         </div>
       </div>
 
@@ -8062,23 +8152,48 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
         </div>
       </div>
 
+      <!-- ========== 待办 3 条 · 每条一个答案 textarea ========== -->
       <div class="card">
-        <div class="card-title" style="color: #5eead4;">▎待办 · 3 条</div>
-        <div style="font-size: 11px; color: #d8dcec; line-height: 1.8;">
-          · [ ] <strong>"散发"具体是啥?</strong><br>
-          <span style="color: #7d84a8; font-size: 10.5px;">　　候选:联想扩散(书里概念 → 连别的) / 传播扩散 / 别的?</span><br><br>
-          · [ ] <strong>"输出"去哪?</strong><br>
-          <span style="color: #7d84a8; font-size: 10.5px;">　　候选:卡片沉淀 → 自己的文档 / 荔枝页面 / 飞书文档 / 别的?</span><br><br>
-          · [ ] <strong>读书工作台"毕业标准"是啥?</strong><br>
-          <span style="color: #7d84a8; font-size: 10.5px;">　　什么条件下这套东西从孵化器独立成正式工作台</span>
+        <div class="card-title" style="color: #5eead4;">▎待办 · 3 条(拍板后本地存)</div>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+
+          <div>
+            <div style="font-size: 11px; color: #d8dcec; margin-bottom: 4px;">· <strong>"散发"具体是啥?</strong></div>
+            <div style="color: #7d84a8; font-size: 10.5px; margin-bottom: 4px;">候选:联想扩散(书里概念 → 连别的) / 传播扩散 / 别的?</div>
+            <textarea id="reading-answer-fasan" placeholder="拍板 · 一句话说清「散发」的含义" class="reading-textarea" rows="2"></textarea>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; color: #d8dcec; margin-bottom: 4px;">· <strong>"输出"去哪?</strong></div>
+            <div style="color: #7d84a8; font-size: 10.5px; margin-bottom: 4px;">候选:卡片沉淀 → 自己的文档 / 荔枝页面 / 飞书文档 / 别的?</div>
+            <textarea id="reading-answer-output" placeholder="拍板 · 输出物落在哪 / 什么形态" class="reading-textarea" rows="2"></textarea>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; color: #d8dcec; margin-bottom: 4px;">· <strong>读书工作台"毕业标准"是啥?</strong></div>
+            <div style="color: #7d84a8; font-size: 10.5px; margin-bottom: 4px;">什么条件下这套东西从孵化器独立成正式工作台</div>
+            <textarea id="reading-answer-graduate" placeholder="拍板 · 毕业条件" class="reading-textarea" rows="2"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button id="reading-answers-save" class="reading-btn reading-btn-primary">💾 保存答案</button>
+            <button id="reading-answers-clear" class="reading-btn">🧹 清空全部</button>
+          </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title" style="color: #7d84a8;">▎想法 · 空</div>
-        <div style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 20px 10px; line-height: 1.6;">
-          📌 空 · 遇到再加<br>
-          <span style="font-size: 10px;">▸ 一本书一张入口卡?未来多本时读书 tab 里怎么排 · 这条待收</span>
+      <!-- ========== 想法池 · 单行快速输入 ========== -->
+      <div class="card" id="reading-ideas-card">
+        <div class="card-title" style="color: #5eead4;">▎想法池 · <span id="reading-ideas-count">0</span> 条</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+          <input type="text" id="reading-idea-input" placeholder="遇到就加 · 回车或点保存" class="reading-input" style="flex: 1;">
+          <button id="reading-idea-save" class="reading-btn reading-btn-primary" style="padding: 7px 12px;">➕ 加</button>
+        </div>
+        <div id="reading-ideas-list">
+          <div id="reading-ideas-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 14px 10px; line-height: 1.6;">
+            📌 空 · 遇到再加<br>
+            <span style="font-size: 10px;">▸ 一本书一张入口卡?未来多本时读书 tab 里怎么排 · 这条待收</span>
+          </div>
         </div>
       </div>
 
