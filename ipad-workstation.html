@@ -1600,6 +1600,201 @@ footer strong { color: #7d84a8; }
   color: #d8dcec;
 }
 
+/* ==== 主题 04 · 回看观察 · 依据卡 chip & 弹窗 ==== */
+.review-src-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 152, 90, 0.15);
+  border: 1px solid rgba(255, 152, 90, 0.35);
+  color: #ffd0aa;
+  font-size: 11px;
+  padding: 3px 7px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.review-src-chip:hover { background: rgba(255, 152, 90, 0.25); color: #ff985a; }
+.review-src-chip.missing {
+  background: rgba(124, 130, 155, 0.1);
+  border-color: rgba(124, 130, 155, 0.3);
+  color: #7d84a8;
+  cursor: default;
+}
+.review-src-chip .remove-x {
+  color: #ff985a;
+  font-weight: 700;
+  padding-left: 2px;
+}
+
+.review-item {
+  background: rgba(30, 26, 22, 0.5);
+  border: 1px solid rgba(255, 152, 90, 0.18);
+  border-left: 3px solid rgba(255, 152, 90, 0.5);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.review-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 6px;
+}
+.review-item-date {
+  font-size: 10px;
+  color: #7d84a8;
+  font-family: 'SF Mono', monospace;
+}
+.review-item-summary {
+  font-size: 12.5px;
+  color: #ffd6b8;
+  line-height: 1.55;
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+  font-weight: 500;
+}
+.review-item-next {
+  font-size: 11px;
+  color: #d8dcec;
+  line-height: 1.55;
+  padding: 6px 10px;
+  background: rgba(20, 20, 25, 0.4);
+  border-left: 2px solid rgba(255, 152, 90, 0.35);
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+.review-item-next::before { content: "▸ 下一步 · "; color: #ff985a; font-weight: 600; }
+.review-item-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.review-item-sources-label {
+  font-size: 10px;
+  color: #7d84a8;
+  margin-right: 4px;
+  align-self: center;
+}
+
+/* 弹窗 */
+.review-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.review-modal-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(3px);
+}
+.review-modal-body {
+  position: relative;
+  width: 92%;
+  max-width: 640px;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  background: #1a1c24;
+  border: 1px solid rgba(255, 152, 90, 0.35);
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 30px rgba(255, 152, 90, 0.15);
+  overflow: hidden;
+}
+.review-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 152, 90, 0.2);
+  background: rgba(255, 152, 90, 0.05);
+}
+.review-modal-close {
+  background: transparent;
+  border: none;
+  color: #7d84a8;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: inherit;
+}
+.review-modal-close:hover { color: #ff985a; background: rgba(255, 152, 90, 0.1); }
+.review-modal-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+.review-modal-item {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 152, 90, 0.12);
+  border-radius: 5px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  align-items: flex-start;
+}
+.review-modal-item:hover { border-color: rgba(255, 152, 90, 0.35); background: rgba(255, 152, 90, 0.04); }
+.review-modal-item.selected {
+  border-color: rgba(255, 152, 90, 0.6);
+  background: rgba(255, 152, 90, 0.12);
+}
+.review-modal-item input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: #ff985a;
+}
+.review-modal-item-body { flex: 1; min-width: 0; }
+.review-modal-item-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 10px;
+  color: #7d84a8;
+  margin-bottom: 3px;
+  font-family: 'SF Mono', monospace;
+}
+.review-modal-item-mine {
+  font-size: 11.5px;
+  color: #d8dcec;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.review-modal-item-original {
+  font-size: 10.5px;
+  color: #7d84a8;
+  line-height: 1.5;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(124, 130, 155, 0.15);
+  white-space: pre-wrap;
+}
+.review-modal-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-top: 1px solid rgba(255, 152, 90, 0.2);
+  background: rgba(20, 20, 25, 0.5);
+}
+
+/* 高亮跳转到某张解法卡 */
+.factory-card-item.hl-pulse {
+  animation: hlPulse 1.6s ease-out;
+}
+@keyframes hlPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 152, 90, 0); }
+  30% { box-shadow: 0 0 0 6px rgba(255, 152, 90, 0.5); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 152, 90, 0); }
+}
+
 .topic-card[data-topic="H"] {
   background:
     radial-gradient(220px 100px at 50% 50%, rgba(94, 234, 212, 0.14) 0%, transparent 70%),
