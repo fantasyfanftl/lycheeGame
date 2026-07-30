@@ -2790,6 +2790,7 @@ footer strong { color: #7d84a8; }
 .ai-kimi { color: #d6b4ff; background: rgba(180, 120, 255, 0.12); border-color: rgba(180, 120, 255, 0.4); }
 .ai-lizhizhi { color: #f59e0b; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); }
 .ai-brain { color: #22d3ee; background: rgba(34, 211, 238, 0.12); border-color: rgba(34, 211, 238, 0.4); }
+.ai-paperhub { color: #94a3b8; background: rgba(148, 163, 184, 0.14); border-color: rgba(148, 163, 184, 0.4); }
 
 /* ==== 主题 03 · 决策树 ==== */
 .ai-tree {
@@ -7347,7 +7348,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
     <div class="tab-bar topic-f-tabs">
       <button class="tab-btn active" data-f-tab="tree" title="快速选型决策树">🌲 决策树<span class="tab-hint">选型</span></button>
       <button class="tab-btn" data-f-tab="swimlane" title="多工具协作泳道图">🏊 泳道图<span class="tab-hint">链路</span></button>
-      <button class="tab-btn" data-f-tab="cards" title="6 个工具详情卡片">📇 详情卡<span class="tab-hint">卡片</span></button>
+      <button class="tab-btn" data-f-tab="cards" title="7 个工具详情卡片">📇 详情卡<span class="tab-hint">卡片</span></button>
     </div>
 
     <div class="topic-f-panel active" data-f-panel="tree">
@@ -7736,6 +7737,42 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
           · 被 prompt 才做归档 · 不主动<br>
           · 用它拉数据 · 别指望它判断<br>
           · 复杂逻辑先在其他 AI 侧理清楚 · 再交给它执行
+        </div>
+      </div>
+    </div>
+
+    <!-- Paperhub 卡 -->
+    <div class="card ai-card">
+      <div class="ai-card-header">
+        <span class="ai-tag ai-paperhub">Paperhub</span>
+        <span class="ai-role">多模型中转平台</span>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label">一句话定位</div>
+        <div class="ai-content">按场景切 4 个后端 · 一个入口调不同模型</div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-good">✓ 4 后端定位</div>
+        <div class="ai-content">
+          · <strong>Paperhub_GPT</strong>(OpenAI 美)· 综合 / 编码 / 推理都稳 · 国际主流兜底<br>
+          · <strong>Paperhub_DeepSeek</strong>(深度求索 国)· 数学 / 代码 / 推理 · 性价比高<br>
+          · <strong>Paperhub_GLM</strong>(智谱 AI 国)· 通用均衡 · 中文场景舒服<br>
+          · <strong>Paperhub_Kimi</strong>(月之暗面 Moonshot)· 主打超长上下文 · 塞大文档不崩
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-bad">✗ 不擅长</div>
+        <div class="ai-content">
+          <span style="color: #7d84a8;">待补充 · 实际用过再写</span>
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label ai-tip">💡 怎么更好用</div>
+        <div class="ai-content">
+          · 编码 / 通用兜底 → GPT<br>
+          · 中文场景 · 性价比 → DeepSeek / GLM<br>
+          · 塞长文档 · 大上下文 → Kimi<br>
+          · <strong>不替代主链路 AI</strong> · 是"临时选型/对比"入口
         </div>
       </div>
     </div>
@@ -8247,7 +8284,7 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
 <footer>
   <strong>GitHub Claude</strong> · v0.2 · 2026-07-26<br>
-  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-26 · 主题 03 改 3 tab 结构 · 🌲 决策树 / 🏊 泳道图 / 📇 详情卡 · Brain 独立块保留在 tab 下方 · CDP 验证切换正常</span>
+  <span style="color: #6ee7b7; font-size: 10px;">✓ 最后 push:2026-07-30 · 主题 03 详情卡加第 7 张 Paperhub · 内展 4 后端(GPT/DeepSeek/GLM/Kimi)· CSS 加 .ai-paperhub 石板灰</span>
 </footer>
 
 <!-- ==== 批注浮层 ==== -->
