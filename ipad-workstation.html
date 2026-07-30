@@ -8340,6 +8340,27 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
 
   </div>
 
+  <!-- ===== 主题 04 · 依据卡多选弹窗 ===== -->
+  <div id="review-picker-modal" class="review-modal" style="display:none;">
+    <div class="review-modal-mask"></div>
+    <div class="review-modal-body">
+      <div class="review-modal-head">
+        <div style="font-weight: 600; color: #ff985a;">选依据卡(多选)</div>
+        <button class="review-modal-close" id="review-modal-close">✕</button>
+      </div>
+      <div class="review-modal-list" id="review-modal-list">
+        <div style="text-align: center; color: #7d84a8; padding: 40px 0; font-size: 11px;">暂无解法卡</div>
+      </div>
+      <div class="review-modal-foot">
+        <span style="font-size: 11px; color: #b4b8cc;">已选 <span id="review-modal-count">0</span> 张</span>
+        <div style="display: flex; gap: 8px;">
+          <button class="factory-btn" id="review-modal-cancel">取消</button>
+          <button class="factory-btn factory-btn-primary" id="review-modal-confirm">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== 全局想法池 ===== -->
   <div class="topic-content" data-topic-content="global" style="display:none;">
     <div class="topic-placeholder">
