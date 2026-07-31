@@ -8020,10 +8020,35 @@ https://fantasyfanftl.github.io/lycheeGame/{你的名字}-brain.html
   <!-- ===== 主题 04 · 出厂设置 · 2026-07-30 从主题 01 星座孵化器独立 =====-->
   <div class="topic-content" data-topic-content="G" style="display:none;">
 
+    <!-- ========== 主题 04 · 顶端常驻:出厂设置结论区 + 飞书多维表入口 ========== -->
+    <div class="card" style="background: rgba(255, 152, 90, 0.08); border: 1px solid rgba(255, 152, 90, 0.4); border-left: 4px solid #ff985a;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+        <div class="card-title" style="color: #ff985a; margin: 0;">▎📋 我的个人出厂设置 · <span id="factory-conclusion-version" style="color: #ffb884; font-weight: 500;">v0(未定稿)</span></div>
+        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+          <button id="factory-conclusion-edit" class="factory-btn" style="font-size: 10px; padding: 4px 8px;">✏️ 编辑结论</button>
+          <a href="https://my.feishu.cn/wiki/AQMhwhGTDiRapNk4ddYc7cWQnyb?table=tblr77xmPlucY7bO&view=vewjofd9CO" target="_blank" class="factory-btn" style="font-size: 10px; padding: 4px 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">📊 飞书明细表</a>
+        </div>
+      </div>
+      <div id="factory-conclusion-display" style="font-size: 12px; color: #d8dcec; line-height: 1.7; padding: 6px 2px; white-space: pre-wrap;"></div>
+      <div id="factory-conclusion-empty" style="font-size: 10.5px; color: #7d84a8; text-align: center; padding: 16px 10px; line-height: 1.6;">
+        📋 空 · 首次批量回看产出结论后 · 点「编辑结论」录入<br>
+        <span style="font-size: 10px;">▸ 一屏可读完 · 稳定行为/认知模式 · 服务止耗/决策前置/校准</span>
+      </div>
+      <div id="factory-conclusion-edit-area" style="display: none;">
+        <textarea id="factory-conclusion-text" placeholder="最新版个人出厂设置结论 · 一屏可读完" class="factory-textarea" rows="6"></textarea>
+        <div style="display: flex; gap: 6px; margin-top: 6px; align-items: center;">
+          <input type="text" id="factory-conclusion-ver" placeholder="版本号 · 如 v1.0" class="factory-input" style="max-width: 120px;">
+          <button id="factory-conclusion-save" class="factory-btn factory-btn-primary" style="font-size: 11px;">💾 保存</button>
+          <button id="factory-conclusion-cancel" class="factory-btn" style="font-size: 11px;">✕ 取消</button>
+          <span id="factory-conclusion-updated" style="font-size: 10px; color: #5a6180; margin-left: auto;"></span>
+        </div>
+      </div>
+    </div>
+
     <div class="tab-bar">
-      <button class="tab-btn active" data-tab="factory-cards" title="解法收集｜遇到共鸣解法就存一张卡">📥 解法收集</button>
-      <button class="tab-btn" data-tab="factory-sop" title="SOP｜你 vs AI 分工 + 下游 5 步">📖 SOP</button>
-      <button class="tab-btn" data-tab="factory-review" title="回看观察｜浓缩多张卡为一句关于自己的观察">🔍 回看</button>
+      <button class="tab-btn active" data-tab="factory-cards" title="待处理素材临时区｜原始素材粘贴 · 攒 3-5 条批量处理">📥 待处理素材</button>
+      <button class="tab-btn" data-tab="factory-sop" title="SOP｜5 阶段流程 · 双载体规则 · AI 纠偏机制">📖 SOP</button>
+      <button class="tab-btn" data-tab="factory-review" title="回看纪要｜每次批量回看后的手动纪要">🔍 回看纪要</button>
       <button class="tab-btn" data-tab="factory-todo" title="待办 & 想法｜围绕出厂设置的元事项">📌 待办 & 想法</button>
     </div>
 
