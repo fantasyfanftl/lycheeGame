@@ -10366,13 +10366,9 @@ document.addEventListener("DOMContentLoaded", function() {
 })();
 
 /* ================================================================
-   主题 04 · 出厂设置 · SOP tab 底部书写层(随便记)
+   主题 04 · 出厂设置 · 通用文本区(结论区 / 待处理素材 / 回看纪要)
    ================================================================ */
 (function () {
-  var KEY = "factory-notes-v1";
-  var TS_KEY = "factory-notes-updated-v1";
-  var textarea, statusEl, updatedEl, saveTimer;
-
   function fmt(ts) {
     if (!ts) return "";
     var d = new Date(ts);
@@ -10380,65 +10376,174 @@ document.addEventListener("DOMContentLoaded", function() {
     return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
   }
 
-  function loadNotes() {
-    return localStorage.getItem(KEY) || "";
-  }
-  function saveNotes(text) {
-    localStorage.setItem(KEY, text);
-    var ts = Date.now();
-    localStorage.setItem(TS_KEY, String(ts));
-    updateStatus("已保存", true);
-    if (updatedEl) updatedEl.textContent = "上次更新 · " + fmt(ts);
-  }
-  function updateStatus(msg, temp) {
-    if (!statusEl) return;
-    statusEl.textContent = msg;
-    if (temp) {
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(function () { statusEl.textContent = ""; }, 1500);
-    }
-  }
-
-  function init() {
-    textarea = document.getElementById("factory-notes");
+  // 通用 textarea 模块 · 加载 + 保存 + 清空 + Ctrl+S + beforeunload 兜底
+  function bindTextArea(opts) {
+    var textarea = document.getElementById(opts.textId);
     if (!textarea) return;
-    statusEl = document.getElementById("factory-notes-status");
-    updatedEl = document.getElementById("factory-notes-updated");
+    var saveBtn = document.getElementById(opts.saveBtnId);
+    var clearBtn = opts.clearBtnId ? document.getElementById(opts.clearBtnId) : null;
+    var statusEl = opts.statusId ? document.getElementById(opts.statusId) : null;
+    var updatedEl = opts.updatedId ? document.getElementById(opts.updatedId) : null;
+    var countEl = opts.countId ? document.getElementById(opts.countId) : null;
+    var copyBtn = opts.copyBtnId ? document.getElementById(opts.copyBtnId) : null;
 
-    textarea.value = loadNotes();
-    var ts = parseInt(localStorage.getItem(TS_KEY) || "0", 10);
+    var saveTimer;
+    function updateStatus(msg, temp) {
+      if (!statusEl) return;
+      statusEl.textContent = msg;
+      if (temp) {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(function () { statusEl.textContent = ""; }, 1500);
+      }
+    }
+    function updateCount() {
+      if (!countEl) return;
+      var v = textarea.value || "";
+      // 段数(按空行分割 · 非空段)
+      var segs = v.split(/\r?\n\s*\r?\n/).filter(function (s) { return s.trim(); });
+      countEl.textContent = segs.length + " 条";
+    }
+    function save(text) {
+      localStorage.setItem(opts.key, text);
+      var ts = Date.now();
+      localStorage.setItem(opts.tsKey, String(ts));
+      updateStatus("已保存", true);
+      if (updatedEl) updatedEl.textContent = "上次更新 · " + fmt(ts);
+    }
+
+    textarea.value = localStorage.getItem(opts.key) || "";
+    var ts = parseInt(localStorage.getItem(opts.tsKey) || "0", 10);
     if (ts && updatedEl) updatedEl.textContent = "上次更新 · " + fmt(ts);
+    updateCount();
 
     var dirty = false;
     textarea.addEventListener("input", function () {
       dirty = true;
       updateStatus("· 未保存", false);
+      updateCount();
     });
 
-    document.getElementById("factory-notes-save").addEventListener("click", function () {
-      saveNotes(textarea.value);
+    if (saveBtn) saveBtn.addEventListener("click", function () {
+      save(textarea.value);
       dirty = false;
     });
-
-    document.getElementById("factory-notes-clear").addEventListener("click", function () {
+    if (clearBtn) clearBtn.addEventListener("click", function () {
       if (!textarea.value) { alert("已经是空的"); return; }
-      if (!confirm("清空全部笔记 · 不可恢复 · 继续?")) return;
+      if (!confirm(opts.clearConfirm || "清空全部内容 · 不可恢复 · 继续?")) return;
       textarea.value = "";
-      saveNotes("");
+      save("");
+      updateCount();
     });
-
-    // Ctrl/Cmd + S 保存
-    textarea.addEventListener("keydown", function (e) {
-      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-        e.preventDefault();
-        saveNotes(textarea.value);
-        dirty = false;
+    if (copyBtn) copyBtn.addEventListener("click", function () {
+      if (!textarea.value.trim()) { alert("空的 · 无法复制"); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textarea.value).then(function () {
+          var old = copyBtn.textContent;
+          copyBtn.textContent = "✓ 已复制";
+          setTimeout(function () { copyBtn.textContent = old; }, 2000);
+        }, function () { alert("复制失败"); });
       }
     });
 
-    // 页面隐藏时自动保存(防丢)
+    textarea.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        save(textarea.value);
+        dirty = false;
+      }
+    });
     window.addEventListener("beforeunload", function () {
-      if (dirty) saveNotes(textarea.value);
+      if (dirty) save(textarea.value);
+    });
+  }
+
+  // 顶部结论区(结构不同 · 独立处理)
+  function initConclusion() {
+    var displayEl = document.getElementById("factory-conclusion-display");
+    var emptyEl = document.getElementById("factory-conclusion-empty");
+    var editArea = document.getElementById("factory-conclusion-edit-area");
+    var editBtn = document.getElementById("factory-conclusion-edit");
+    var saveBtn = document.getElementById("factory-conclusion-save");
+    var cancelBtn = document.getElementById("factory-conclusion-cancel");
+    var textEl = document.getElementById("factory-conclusion-text");
+    var verInput = document.getElementById("factory-conclusion-ver");
+    var verLabel = document.getElementById("factory-conclusion-version");
+    var updatedEl = document.getElementById("factory-conclusion-updated");
+    if (!displayEl || !editBtn) return;
+
+    var KEY_TEXT = "factory-conclusion-text-v1";
+    var KEY_VER = "factory-conclusion-ver-v1";
+    var KEY_TS = "factory-conclusion-ts-v1";
+
+    function refresh() {
+      var text = localStorage.getItem(KEY_TEXT) || "";
+      var ver = localStorage.getItem(KEY_VER) || "";
+      var ts = parseInt(localStorage.getItem(KEY_TS) || "0", 10);
+      if (text.trim()) {
+        displayEl.textContent = text;
+        displayEl.style.display = "";
+        emptyEl.style.display = "none";
+      } else {
+        displayEl.style.display = "none";
+        emptyEl.style.display = "";
+      }
+      if (verLabel) verLabel.textContent = ver ? ver + (ts ? " · " + fmt(ts) : "") : "v0(未定稿)";
+    }
+
+    editBtn.addEventListener("click", function () {
+      textEl.value = localStorage.getItem(KEY_TEXT) || "";
+      verInput.value = localStorage.getItem(KEY_VER) || "";
+      var ts = parseInt(localStorage.getItem(KEY_TS) || "0", 10);
+      if (updatedEl) updatedEl.textContent = ts ? "上次更新 · " + fmt(ts) : "";
+      displayEl.style.display = "none";
+      emptyEl.style.display = "none";
+      editArea.style.display = "";
+      editBtn.style.display = "none";
+    });
+    cancelBtn.addEventListener("click", function () {
+      editArea.style.display = "none";
+      editBtn.style.display = "";
+      refresh();
+    });
+    saveBtn.addEventListener("click", function () {
+      localStorage.setItem(KEY_TEXT, textEl.value);
+      localStorage.setItem(KEY_VER, verInput.value.trim());
+      localStorage.setItem(KEY_TS, String(Date.now()));
+      editArea.style.display = "none";
+      editBtn.style.display = "";
+      refresh();
+    });
+
+    refresh();
+  }
+
+  function init() {
+    initConclusion();
+
+    // 待处理素材临时区
+    bindTextArea({
+      textId: "factory-inbox",
+      saveBtnId: "factory-inbox-save",
+      clearBtnId: "factory-inbox-clear",
+      statusId: "factory-inbox-status",
+      updatedId: "factory-inbox-updated",
+      countId: "factory-inbox-count",
+      copyBtnId: "factory-inbox-copy",
+      key: "factory-inbox-v1",
+      tsKey: "factory-inbox-ts-v1",
+      clearConfirm: "清空待处理素材 · 建议先复制内容录入飞书表 · 继续?"
+    });
+
+    // 回看纪要
+    bindTextArea({
+      textId: "review-notes",
+      saveBtnId: "review-notes-save",
+      clearBtnId: "review-notes-clear",
+      statusId: "review-notes-status",
+      updatedId: "review-notes-updated",
+      key: "review-notes-v1",
+      tsKey: "review-notes-ts-v1",
+      clearConfirm: "清空回看纪要 · 不可恢复 · 继续?"
     });
   }
   if (document.readyState === "loading") {
