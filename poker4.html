@@ -16,7 +16,7 @@
     </section>
     <aside class="card editor">
       <div class="field"><input id="image" type="file" accept="image/*" aria-label="&#36873;&#25991;&#20214;"></div>
-      <div class="actions"><button id="saveWebpage" class="primary" type="button">&#20445;&#23384;</button><button id="clearImage" type="button">&#28165;&#38500;&#29031;&#29255;</button></div>
+      <div class="actions"><button id="saveWebpage" class="primary" type="button">&#20445;&#23384;</button><button id="exportImage" type="button">&#23548;&#20986;&#20840;&#37096;&#21345;&#38754;</button><button id="clearImage" type="button">&#28165;&#38500;&#29031;&#29255;</button></div>
       <nav class="pages" id="pages" aria-label="&#39029;&#30721;&#23548;&#33322;"></nav>
     </aside>
   </div>
@@ -93,6 +93,24 @@ async function saveWebpage(){
   }catch(e){if(e.name==='AbortError')return;console.warn('save picker failed',e)}
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=decodeURIComponent(location.pathname.split('/').pop()||'poker-editor.html');a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+function loadExportImage(src){return new Promise(resolve=>{if(!src)return resolve(null);const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src})}
+async function exportAllCards(){
+  const cards=allCards(),cols=9,rows=Math.ceil(cards.length/cols),cardW=300,cardH=420,gap=24,pad=36;
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  canvas.width=pad*2+cols*cardW+(cols-1)*gap;canvas.height=pad*2+rows*cardH+(rows-1)*gap;
+  ctx.fillStyle='#ebeef3';ctx.fillRect(0,0,canvas.width,canvas.height);
+  const images=await Promise.all(cards.map(c=>loadExportImage(c.image)));
+  cards.forEach((c,i)=>{
+    const col=i%cols,row=Math.floor(i/cols),x=pad+col*(cardW+gap),y=pad+row*(cardH+gap),img=images[i];
+    ctx.save();ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,cardW,cardH,12);else ctx.rect(x,y,cardW,cardH);ctx.clip();
+    ctx.fillStyle=img?'#fff':'#e9edf2';ctx.fillRect(x,y,cardW,cardH);
+    if(img){const scale=Math.min(cardW/img.naturalWidth,cardH/img.naturalHeight),w=img.naturalWidth*scale,h=img.naturalHeight*scale;ctx.drawImage(img,x+(cardW-w)/2,y+(cardH-h)/2,w,h)}
+    else{ctx.fillStyle='#68707d';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='20px Microsoft YaHei, sans-serif';ctx.fillText('???????',x+cardW/2,y+cardH/2)}
+    ctx.restore();ctx.strokeStyle='#2f66dc';ctx.lineWidth=4;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x+2,y+2,cardW-4,cardH-4,10);else ctx.rect(x+2,y+2,cardW-4,cardH-4);ctx.stroke();
+  });
+  canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='???????.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)},'image/png');
+}
+$('exportImage').onclick=exportAllCards;
 $('saveWebpage').onclick=saveWebpage;
 $('clearImage').onclick=()=>{project.cards[selectedId].image='';render();save()};
 load();
