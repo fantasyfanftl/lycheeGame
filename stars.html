@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>星消</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(120, 80, 200, 0.35), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(80, 60, 180, 0.30), transparent 55%),
+      linear-gradient(135deg, #0a0a1e 0%, #14142e 50%, #1a1a3a 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #e0e5f0;
+    padding: 14px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .app { max-width: 480px; margin: 0 auto; }
+
+  .top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .back {
+    color: rgba(255,255,255,0.55); text-decoration: none;
+    font-size: 12px; letter-spacing: 1px;
+  }
+  .brand { font-size: 15px; letter-spacing: 4px; color: #fff; font-weight: 600; }
+  .brand .ver { font-size: 10px; color: #888; margin-left: 6px; font-weight: 400; }
+
+  .hud {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .hud-item {
+    text-align: center;
+  }
+  .hud-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 2px;
+    margin-bottom: 3px;
+  }
+  .hud-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffd89b;
+    font-family: "SF Mono", monospace;
+    letter-spacing: -1px;
+  }
+  .hud-value.target { color: #a5b3ff; }
+  .hud-value.level { color: #ff8fb5; }
+
+  .board-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    gap: 2px;
+    width: 100%; height: 100%;
+    position: relative;
+  }
+  .cell {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s;
+    border-radius: 10%;
+    overflow: hidden;
+  }
+  .cell.empty { pointer-events: none; background: transparent !important; box-shadow: none !important; }
+
+  /* 每种颜色的方块底 · 加顶部高光 + 底部阴影模拟 3D */
+  .cell.bg0 { background: #e63946; box-shadow: inset 0 25% 0 -18% rgba(255,255,255,0.35), inset 0 -8% 0 -6% rgba(0,0,0,0.25); }
+  .cell.bg1 { background: #ffb700; box-shadow: inset 0 25% 0 -18% rgba(255,255,255,0.35), inset 0 -8% 0 -6% rgba(0,0,0,0.25); }
+  .cell.bg2 { background: #4dbe6d; box-shadow: inset 0 25% 0 -18% rgba(255,255,255,0.35), inset 0 -8% 0 -6% rgba(0,0,0,0.25); }
+  .cell.bg3 { background: #3e9adf; box-shadow: inset 0 25% 0 -18% rgba(255,255,255,0.35), inset 0 -8% 0 -6% rgba(0,0,0,0.25); }
+  .cell.bg4 { background: #a15ed6; box-shadow: inset 0 25% 0 -18% rgba(255,255,255,0.35), inset 0 -8% 0 -6% rgba(0,0,0,0.25); }
+
+  .star-wrap {
+    position: relative;
+    width: 62%;
+    height: 62%;
+    transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+  }
+  /* 白色底衬(描边) */
+  .star-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -6%;
+    background: rgba(255,255,255,0.85);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
+  /* 星星本体 */
+  .star {
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.1); }
+  }
+
+  .star.c0 { background: linear-gradient(180deg, #ffb2c0, #ff8a95); }
+  .star.c1 { background: linear-gradient(180deg, #fff094, #ffe873); }
+  .star.c2 { background: linear-gradient(180deg, #a8ecbc, #7fe6a0); }
+  .star.c3 { background: linear-gradient(180deg, #a8daff, #7bc7ff); }
+  .star.c4 { background: linear-gradient(180deg, #dfbcff, #cc9eff); }
+
+  .cell.selected {
+    transform: scale(1.08);
+    z-index: 3;
+  }
+  .cell.selected .star-wrap {
+    animation: selectPulse 0.6s ease-in-out infinite;
+  }
+  @keyframes selectPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px #fff); }
+    50% { transform: scale(1.12); filter: drop-shadow(0 0 12px #fff); }
+  }
+
+  .cell.removing .star-wrap {
+    animation: explode 0.4s ease-out forwards;
+  }
+  @keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.8; filter: brightness(2); }
+    100% { transform: scale(0); opacity: 0; }
+  }
+  .cell.removing {
+    animation: cellFade 0.4s ease-out forwards;
+  }
+  @keyframes cellFade {
+    to { opacity: 0; }
+  }
+
+  /* 落下动画通过 transform + transition */
+  .cell.falling {
+    transition: transform 0.35s cubic-bezier(0.5, 0, 0.4, 1);
+  }
+
+  .hint {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.85);
+    color: #ffd89b;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+    z-index: 5;
+  }
+  .hint.show { opacity: 1; }
+  .hint .h-num { color: #fff; font-weight: 700; font-size: 16px; margin: 0 4px; }
+
+  .action-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .btn {
+    padding: 8px 18px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { background: rgba(255,255,255,0.15); }
+  .btn.primary { background: #ffd89b; color: #1a1a3a; font-weight: 600; border-color: transparent; }
+
+  .footer-hint {
+    text-align: center;
+    color: rgba(255,255,255,0.35);
+    font-size: 11px;
+    letter-spacing: 1px;
+    line-height: 1.6;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 30px;
+  }
+  .modal.show { display: flex; }
+  .modal-box {
+    background: linear-gradient(135deg, #1a1a3a 0%, #2a1a4a 100%);
+    border: 1px solid rgba(255,216,155,0.3);
+    border-radius: 16px;
+    padding: 30px 26px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal-icon { font-size: 44px; margin-bottom: 10px; }
+  .modal-title {
+    font-size: 22px; letter-spacing: 4px; color: #ffd89b;
+    margin-bottom: 8px; font-weight: 700;
+  }
+  .modal-sub {
+    font-size: 13px; color: rgba(255,255,255,0.7);
+    letter-spacing: 1px; margin-bottom: 20px; line-height: 1.7;
+  }
+  .modal-stats {
+    display: flex; gap: 14px; justify-content: center;
+    margin-bottom: 22px;
+    padding: 12px 0;
+    border-top: 1px dashed rgba(255,255,255,0.15);
+    border-bottom: 1px dashed rgba(255,255,255,0.15);
+  }
+  .modal-stat { text-align: center; }
+  .modal-stat-label { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+  .modal-stat-value { font-size: 18px; font-weight: 700; color: #fff; font-family: "SF Mono", monospace; }
+  .modal-stat-value.good { color: #6bd88a; }
+  .modal-stat-value.bad { color: #ff6b7a; }
+
+  @media (max-width: 480px) {
+    body { padding: 10px; }
+    .brand { font-size: 14px; letter-spacing: 3px; }
+    .hud-value { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <a href="index.html" class="back">← 返回</a>
+    <div class="brand">星 消<span class="ver">v1.0</span></div>
+    <div style="width:40px;"></div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-item">
+      <div class="hud-label">关卡</div>
+      <div class="hud-value level" id="hud-level">1</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">得分</div>
+      <div class="hud-value" id="hud-score">0</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">目标</div>
+      <div class="hud-value target" id="hud-target">1000</div>
+    </div>
+  </div>
+
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn" id="restart-btn">重开本关</button>
+  </div>
+
+  <div class="footer-hint">
+    点星星选组 · 再点消除<br>
+    消得越多单星分数越高 · 5×n²
+  </div>
+</div>
+
+<!-- Modal · 关卡结算 -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">⭐</div>
+    <div class="modal-title" id="modal-title">过关</div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <div class="modal-stat-label">本关得分</div>
+        <div class="modal-stat-value" id="modal-score">0</div>
+      </div>
+      <div class="modal-stat">
+        <div class="modal-stat-label">剩余星星</div>
+        <div class="modal-stat-value" id="modal-remain">0</div>
+      </div>
+      <div class="modal-stat">
+        <div class="modal-stat-label">奖励</div>
+        <div class="modal-stat-value good" id="modal-bonus">+0</div>
+      </div>
+    </div>
+    <button class="btn primary" id="modal-btn">下一关</button>
+  </div>
+</div>
+
+<script>
+// ============ 配置 ============
+const ROWS = 10, COLS = 10;
+const COLORS = 5;
+const BASE_TARGET = 1000;
+const TARGET_INCREMENT = 500;
+const MAX_LEVELS = 20;  // 最大 20 关
+
+// ============ 状态 ============
+let grid = [];  // grid[r][c] = 0-4 or -1 for empty
+let level = 1;
+let score = 0;
+let target = BASE_TARGET;
+let selectedGroup = [];  // [{r,c}]
+let animating = false;
+
+const boardEl = document.getElementById('board');
+const hintEl = document.getElementById('hint');
+
+// ============ 初始化 ============
+function calcTarget(lv) {
+  // 关卡目标: 递增但不线性
+  return BASE_TARGET + (lv - 1) * TARGET_INCREMENT + Math.floor((lv - 1) * (lv - 1) * 30);
+}
+
+function initLevel() {
+  grid = [];
+  for (let r = 0; r < ROWS; r++) {
+    const row = [];
+    for (let c = 0; c < COLS; c++) {
+      row.push(Math.floor(Math.random() * COLORS));
+    }
+    grid.push(row);
+  }
+  selectedGroup = [];
+  target = calcTarget(level);
+  updateHud();
+  renderBoard();
+}
+
+function updateHud() {
+  document.getElementById('hud-level').textContent = level;
+  document.getElementById('hud-score').textContent = score;
+  document.getElementById('hud-target').textContent = target;
+}
+
+// ============ 渲染 ============
+function renderBoard() {
+  boardEl.innerHTML = '';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      const color = grid[r][c];
+      if (color < 0) {
+        cell.classList.add('empty');
+      } else {
+        cell.classList.add('bg' + color);
+        const wrap = document.createElement('div');
+        wrap.className = 'star-wrap';
+        const star = document.createElement('div');
+        star.className = `star c${color}`;
+        star.style.animationDelay = ((r + c) * 0.05) + 's';
+        wrap.appendChild(star);
+        cell.appendChild(wrap);
+        cell.addEventListener('click', () => handleCellClick(r, c));
+      }
+      boardEl.appendChild(cell);
+    }
+  }
+}
+
+function updateCellClasses() {
+  const selectedSet = new Set(selectedGroup.map(p => `${p.r},${p.c}`));
+  const cells = boardEl.children;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = cells[r * COLS + c];
+      cell.classList.toggle('selected', selectedSet.has(`${r},${c}`));
+    }
+  }
+}
+
+function cellAt(r, c) {
+  return boardEl.children[r * COLS + c];
+}
+
+// ============ 找组 · BFS 相邻同色 ============
+function findGroup(sr, sc) {
+  const color = grid[sr][sc];
+  if (color < 0) return [];
+  const visited = new Set();
+  const stack = [{r: sr, c: sc}];
+  const group = [];
+  while (stack.length) {
+    const {r, c} = stack.pop();
+    const key = `${r},${c}`;
+    if (visited.has(key)) continue;
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) continue;
+    if (grid[r][c] !== color) continue;
+    visited.add(key);
+    group.push({r, c});
+    stack.push({r: r+1, c}); stack.push({r: r-1, c});
+    stack.push({r, c: c+1}); stack.push({r, c: c-1});
+  }
+  return group;
+}
+
+// ============ 交互 ============
+function handleCellClick(r, c) {
+  if (animating) return;
+  if (grid[r][c] < 0) return;
+
+  const group = findGroup(r, c);
+  if (group.length < 2) {
+    // 单星不能消 · 若之前选中就取消
+    if (selectedGroup.length) {
+      selectedGroup = [];
+      updateCellClasses();
+      hideHint();
+    }
+    return;
+  }
+
+  // 判断点击的是否已选中的组内某星
+  const selectedSet = new Set(selectedGroup.map(p => `${p.r},${p.c}`));
+  const clickInSelected = selectedSet.has(`${r},${c}`);
+
+  if (clickInSelected && selectedGroup.length === group.length) {
+    // 确认消除
+    removeGroup(group);
+  } else {
+    // 选中新组
+    selectedGroup = group;
+    updateCellClasses();
+    showHint(group.length);
+  }
+}
+
+function showHint(n) {
+  const points = 5 * n * n;
+  hintEl.innerHTML = `选中 <span class="h-num">${n}</span> 颗 · 消除得 <span class="h-num">${points}</span> 分`;
+  hintEl.classList.add('show');
+}
+function hideHint() {
+  hintEl.classList.remove('show');
+}
+
+// ============ 消除 + 重力 ============
+function removeGroup(group) {
+  animating = true;
+  const points = 5 * group.length * group.length;
+
+  // 加消除动画类
+  group.forEach(({r, c}) => {
+    cellAt(r, c).classList.add('removing');
+  });
+
+  // 更新 grid
+  group.forEach(({r, c}) => { grid[r][c] = -1; });
+
+  // 加分
+  score += points;
+
+  setTimeout(() => {
+    applyGravity();
+    collapseColumns();
+    selectedGroup = [];
+    renderBoard();
+    updateHud();
+    hideHint();
+    animating = false;
+
+    // 检查是否本关结束
+    if (!hasAnyMove()) {
+      setTimeout(endLevel, 500);
+    }
+  }, 400);
+}
+
+function applyGravity() {
+  // 每列 · 星星下落 · 空格上浮
+  for (let c = 0; c < COLS; c++) {
+    let write = ROWS - 1;
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (grid[r][c] >= 0) {
+        if (write !== r) {
+          grid[write][c] = grid[r][c];
+          grid[r][c] = -1;
+        }
+        write--;
+      }
+    }
+  }
+}
+
+function collapseColumns() {
+  // 若整列都空 · 左侧列左移填充
+  let write = 0;
+  for (let c = 0; c < COLS; c++) {
+    // 判断列是否全空
+    let hasStar = false;
+    for (let r = 0; r < ROWS; r++) {
+      if (grid[r][c] >= 0) { hasStar = true; break; }
+    }
+    if (hasStar) {
+      if (write !== c) {
+        for (let r = 0; r < ROWS; r++) {
+          grid[r][write] = grid[r][c];
+          grid[r][c] = -1;
+        }
+      }
+      write++;
+    }
+  }
+}
+
+function hasAnyMove() {
+  const visited = new Set();
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const key = `${r},${c}`;
+      if (visited.has(key)) continue;
+      if (grid[r][c] < 0) continue;
+      const group = findGroup(r, c);
+      group.forEach(p => visited.add(`${p.r},${p.c}`));
+      if (group.length >= 2) return true;
+    }
+  }
+  return false;
+}
+
+// ============ 关卡结算 ============
+function countRemain() {
+  let n = 0;
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (grid[r][c] >= 0) n++;
+  return n;
+}
+
+function endLevel() {
+  const remain = countRemain();
+  let bonus = 0;
+  if (remain < 10) bonus = (10 - remain) * 200;
+  score += bonus;
+  updateHud();
+
+  const passed = score >= target;
+
+  document.getElementById('modal-score').textContent = score;
+  document.getElementById('modal-remain').textContent = remain;
+  document.getElementById('modal-bonus').textContent = '+' + bonus;
+
+  if (passed) {
+    if (level >= MAX_LEVELS) {
+      document.getElementById('modal-icon').textContent = '🌟';
+      document.getElementById('modal-title').textContent = '通 关';
+      document.getElementById('modal-sub').textContent = `${MAX_LEVELS} 关全部通关 · 眼力惊人`;
+      document.getElementById('modal-btn').textContent = '再来一轮';
+      document.getElementById('modal-btn').dataset.action = 'restart-game';
+    } else {
+      document.getElementById('modal-icon').textContent = '✨';
+      document.getElementById('modal-title').textContent = '过 关';
+      document.getElementById('modal-sub').textContent = `达标 · 进入第 ${level + 1} 关`;
+      document.getElementById('modal-btn').textContent = '下一关';
+      document.getElementById('modal-btn').dataset.action = 'next-level';
+    }
+  } else {
+    document.getElementById('modal-icon').textContent = '💫';
+    document.getElementById('modal-title').textContent = '未达标';
+    document.getElementById('modal-sub').textContent = `差 ${target - score} 分 · 再来一次`;
+    document.getElementById('modal-btn').textContent = '重开';
+    document.getElementById('modal-btn').dataset.action = 'restart-game';
+  }
+
+  document.getElementById('modal').classList.add('show');
+}
+
+document.getElementById('modal-btn').addEventListener('click', () => {
+  const action = document.getElementById('modal-btn').dataset.action;
+  document.getElementById('modal').classList.remove('show');
+  if (action === 'next-level') {
+    level++;
+    initLevel();
+  } else if (action === 'restart-game') {
+    level = 1;
+    score = 0;
+    initLevel();
+  }
+});
+
+// ============ 重开本关 ============
+document.getElementById('restart-btn').addEventListener('click', () => {
+  if (!confirm('重开本关?本关得分会清零。')) return;
+  // 回到本关开始的分数(简化: 无法精确回滚 · 直接清零本关得分 · 但保留累积逻辑改成从头)
+  // 实现简化: 整个游戏从第 1 关开始
+  level = 1;
+  score = 0;
+  initLevel();
+});
+
+// ============ Boot ============
+initLevel();
+</script>
+</body>
+</html>

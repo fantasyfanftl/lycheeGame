@@ -4,6 +4,10 @@ docs/
 # 临时脚本 / 语法检查文件 / 内容注入器（下划线前缀约定）
 _*
 
+# poker4.html 内联 base64 图片 · 170MB · 超 GitHub 100MB 上限 · 只在本地留
+poker4.html
+poker-editor.html
+
 # Common OS/editor cruft
 .DS_Store
 Thumbs.db

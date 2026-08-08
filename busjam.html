@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>巴士出站</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(180deg, #f0f2f5 0%, #d8dce3 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #333;
+    padding: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .app { max-width: 480px; margin: 0 auto; }
+
+  .top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .back {
+    color: rgba(0,0,0,0.5); text-decoration: none;
+    font-size: 12px; letter-spacing: 1px;
+  }
+  .level-badge {
+    background: #2a2a3a; color: #ffd89b;
+    padding: 4px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; letter-spacing: 3px;
+    font-family: "SF Mono", monospace;
+  }
+
+  /* 顶部队列区 · 弧形候车区 */
+  .queue-area {
+    background: #fff;
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .queue-label {
+    font-size: 10px; color: #999; letter-spacing: 2px;
+    font-family: "SF Mono", monospace;
+    background: #2a2a3a; color: #ffd89b;
+    padding: 4px 8px; border-radius: 6px;
+    min-width: 44px; text-align: center;
+    font-weight: 700;
+  }
+  .queue-list {
+    flex: 1;
+    display: flex; gap: 4px;
+    overflow-x: auto;
+    padding: 4px 0;
+    align-items: center;
+  }
+  .queue-list::-webkit-scrollbar { height: 3px; }
+  .queue-group {
+    display: flex;
+    gap: 1px;
+    padding: 3px 5px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.04);
+    border: 1.5px solid rgba(0,0,0,0.12);
+  }
+  .queue-item {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+
+  /* 停车位区 */
+  .parking-area {
+    background: linear-gradient(180deg, #b8bcc4 0%, #a0a4ac 100%);
+    border-radius: 12px;
+    padding: 12px 10px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    min-height: 80px;
+  }
+  .park-slot {
+    aspect-ratio: 1 / 1.4;
+    border: 2px dashed rgba(255,255,255,0.5);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .park-slot.has-bus {
+    border-style: solid;
+    border-color: transparent;
+    background: transparent;
+  }
+
+  /* 车 · 通用样式 */
+  .bus {
+    width: 74%;
+    height: 92%;
+    border-radius: 10px 10px 8px 8px;
+    box-shadow:
+      inset 0 25% 0 -18% rgba(255,255,255,0.4),
+      inset 0 -14% 0 -10% rgba(0,0,0,0.2),
+      0 3px 6px rgba(0,0,0,0.2);
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+  }
+  /* 车窗 · 上方一条 */
+  .bus::before {
+    content: '';
+    position: absolute;
+    top: 14%;
+    left: 12%;
+    right: 12%;
+    height: 22%;
+    background: rgba(255,255,255,0.75);
+    border-radius: 4px;
+  }
+  /* 车头灯 · 下方两小圆点 */
+  .bus::after {
+    content: '';
+    position: absolute;
+    bottom: 8%;
+    left: 20%;
+    right: 20%;
+    height: 6%;
+    background: rgba(255,255,255,0.55);
+    border-radius: 3px;
+    box-shadow:
+      0 -12% 0 rgba(0,0,0,0.1);
+  }
+  .bus.leaving {
+    transform: translateY(-200%) scale(0.6);
+    opacity: 0;
+  }
+  .bus-cap {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.95);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    font-family: "SF Mono", monospace;
+    z-index: 2;
+  }
+
+  /* 主网格 */
+  .board-wrap {
+    background: #d0d3d8;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    position: relative;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 5), 1fr);
+    grid-template-rows: repeat(var(--rows, 5), 1fr);
+    gap: 3px;
+    aspect-ratio: var(--cols, 5) / var(--rows, 5);
+  }
+  .grid-cell {
+    background: rgba(255,255,255,0.35);
+    border-radius: 6px;
+  }
+  .car-layer {
+    position: absolute;
+    inset: 8px;
+    pointer-events: none;
+  }
+  .car {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+    transition: left 0.5s cubic-bezier(0.5,0,0.4,1), top 0.5s cubic-bezier(0.5,0,0.4,1), opacity 0.3s, transform 0.15s;
+  }
+  .car-body {
+    width: 82%;
+    height: 82%;
+    border-radius: 8px;
+    box-shadow:
+      inset 0 30% 0 -22% rgba(255,255,255,0.45),
+      inset 0 -18% 0 -13% rgba(0,0,0,0.2),
+      0 2px 4px rgba(0,0,0,0.2);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .car-arrow {
+    color: #fff;
+    font-size: clamp(14px, 4vw, 22px);
+    font-weight: 900;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+    line-height: 1;
+  }
+  .car-cap {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+    background: rgba(0,0,0,0.35);
+    border-radius: 999px;
+    padding: 0 4px;
+    line-height: 1.3;
+    font-family: "SF Mono", monospace;
+  }
+  .car.blocked .car-body {
+    animation: shake 0.35s;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .car.moving { z-index: 5; }
+  .car.gone { opacity: 0; pointer-events: none; }
+
+  /* 颜色 */
+  .c-red    { background: #ff5a63; }
+  .c-yellow { background: #ffc933; }
+  .c-blue   { background: #4d9fff; }
+  .c-green  { background: #57c76d; }
+  .c-purple { background: #b47cff; }
+  .c-orange { background: #ff8c42; }
+  .c-pink   { background: #ff7ba9; }
+
+  .status-bar {
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 8px 0;
+  }
+  .status-bar b { color: #333; }
+
+  .action-bar {
+    display: flex; gap: 8px; justify-content: center;
+    margin-top: 12px;
+  }
+  .btn {
+    padding: 8px 20px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #d0d3d8;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  }
+  .btn.primary { background: #ffd89b; border-color: #ffd89b; color: #4a3d1a; font-weight: 700; }
+
+  /* Modal */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 30px;
+  }
+  .modal.show { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 24px;
+    max-width: 340px; width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-icon { font-size: 44px; margin-bottom: 10px; }
+  .modal-title {
+    font-size: 22px; letter-spacing: 4px; color: #333;
+    margin-bottom: 6px; font-weight: 700;
+  }
+  .modal-sub {
+    font-size: 13px; color: #888;
+    letter-spacing: 1px; margin-bottom: 18px; line-height: 1.7;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 8px; }
+    .car-arrow { font-size: 16px; }
+    .queue-item { width: 18px; height: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <a href="index.html" class="back">← 返回</a>
+    <div class="level-badge">LEVEL <span id="hud-level">1</span></div>
+    <div style="width:40px;"></div>
+  </div>
+
+  <div class="queue-area">
+    <div class="queue-label" id="hud-queue">--</div>
+    <div class="queue-list" id="queue-list"></div>
+  </div>
+
+  <div class="parking-area" id="parking-area">
+    <div class="park-slot" data-slot="0"></div>
+    <div class="park-slot" data-slot="1"></div>
+    <div class="park-slot" data-slot="2"></div>
+  </div>
+
+  <div class="status-bar" id="status">点箭头方向的车 · 让它开走</div>
+
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+    <div class="car-layer" id="car-layer"></div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn" id="restart-btn">重开本关</button>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">🚌</div>
+    <div class="modal-title" id="modal-title">过 关</div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <button class="btn primary" id="modal-btn">下一关</button>
+  </div>
+</div>
+
+<script>
+// ============ 关卡设计 ============
+// 每辆车 · [row, col, color, dir]
+// dir · 0=上 1=下 2=左 3=右
+// 队列 · 颜色数组 · 按顺序装载 · 停车位数量 3
+// 颜色: r=红 y=黄 b=蓝 g=绿 p=紫 o=橙 k=粉
+const LEVELS = [
+  // 关 1 · 入门 · 3 种车型都露面 · 但每伙人数 = 单车容量 · 一伙一车搞定
+  // 组结构: 1 人 / 2 人 / 3 人 · 直觉对应 cap 1/2/3
+  // 队列: r(1) yy(2) bbb(3) r(1) y(1) bb(2) r(1) yyy(3)  · 17 人
+  // 车: r × 3(cap 1,1,1)· y × 3(cap 2,1,3)· b × 2(cap 3,2)
+  {
+    rows: 4, cols: 5,
+    cars: [
+      [0, 0, 'r', 0, 1], [0, 2, 'y', 0, 2], [0, 4, 'b', 0, 3],
+      [1, 1, 'y', 2, 1], [1, 3, 'r', 3, 1],
+      [2, 0, 'b', 1, 2], [2, 2, 'r', 0, 1], [2, 4, 'y', 1, 3]
+    ],
+    queue: ['r','y','y','b','b','b','r','y','b','b','r','y','y','y']
+  },
+  // 关 2 · 中局 · 开始出现"组 ≠ 单车"· 一些伙必须两车拼
+  // 队列 16 人 · 混合散色 + 2/3/4 人小伙
+  // 一伙 3 人可能是 cap3 单车 · 也可能是 1+2 · 玩家要选
+  {
+    rows: 5, cols: 5,
+    cars: [
+      [0, 0, 'p', 0, 2], [0, 1, 'r', 0, 1], [0, 2, 'y', 0, 3], [0, 3, 'g', 0, 2], [0, 4, 'b', 0, 1],
+      [1, 0, 'r', 2, 2], [1, 2, 'y', 3, 1], [1, 4, 'b', 3, 3],
+      [2, 1, 'g', 3, 1], [2, 3, 'p', 2, 1],
+      [3, 0, 'y', 1, 2], [3, 2, 'r', 1, 1], [3, 4, 'g', 1, 2],
+      [4, 1, 'b', 2, 2], [4, 3, 'p', 3, 3]
+    ],
+    queue: ['r','y','b','g','p','r','r','r','y','y','y','y','b','b','g','p','p','p']
+  },
+  // 关 3 · 烧脑 · 大伙 4 人 + 型号错位 · 必须精算多车组合
+  // 每色总量必须 = 队列该色数
+  // r 队列 5: 车 cap 1+1+3 = 5 · y 队列 5: 1+2+2 = 5 · b 队列 4: 1+3 = 4 · g 队列 5: 1+1+3 = 5 · p 队列 5: 2+3 = 5
+  {
+    rows: 5, cols: 5,
+    cars: [
+      [0, 0, 'r', 0, 1], [0, 1, 'y', 0, 1], [0, 2, 'b', 0, 1], [0, 3, 'g', 0, 1], [0, 4, 'p', 0, 2],
+      [1, 0, 'y', 3, 2], [1, 1, 'g', 3, 1], [1, 2, 'b', 3, 3], [1, 3, 'p', 3, 3], [1, 4, 'r', 3, 1],
+      [2, 2, 'r', 1, 3],
+      [3, 0, 'g', 2, 3], [3, 2, 'y', 2, 2], [3, 3, 'p', 2, 2],
+      [4, 1, 'r', 1, 2], [4, 4, 'g', 1, 1]
+    ],
+    queue: ['r','y','b','g','p','r','r','y','y','b','g','g','p','p','r','y','b','g','p','r','y','b','g','p']
+  }
+];
+
+const COLOR_MAP = {
+  r: '#ff5a63', y: '#ffc933', b: '#4d9fff', g: '#57c76d',
+  p: '#b47cff', o: '#ff8c42', k: '#ff7ba9'
+};
+
+const ARROWS = ['↑', '↓', '←', '→'];
+const DIRS = [[-1,0], [1,0], [0,-1], [0,1]];  // 0=up 1=down 2=left 3=right
+
+// ============ 状态 ============
+let levelIdx = 0;
+let cars = [];  // {id, r, c, color, dir, el, gone}
+let queue = [];
+let parking = [null, null, null];  // 每个 slot 存 {car, color, filled}
+let animating = false;
+
+// ============ 元素 ============
+const boardEl = document.getElementById('board');
+const carLayerEl = document.getElementById('car-layer');
+const queueListEl = document.getElementById('queue-list');
+const parkingAreaEl = document.getElementById('parking-area');
+
+// ============ 初始化关卡 ============
+function initLevel() {
+  const lv = LEVELS[levelIdx];
+  const wrapEl = document.querySelector('.board-wrap');
+  wrapEl.style.setProperty('--rows', lv.rows);
+  wrapEl.style.setProperty('--cols', lv.cols);
+
+  // 画背景网格
+  boardEl.innerHTML = '';
+  for (let i = 0; i < lv.rows * lv.cols; i++) {
+    const c = document.createElement('div');
+    c.className = 'grid-cell';
+    boardEl.appendChild(c);
+  }
+
+  // 车
+  carLayerEl.innerHTML = '';
+  cars = lv.cars.map((data, idx) => {
+    const [r, c, color, dir, capIn] = data;
+    const cap = capIn || 2;  // 默认 SUV · 装 2 人
+    const el = document.createElement('div');
+    el.className = 'car';
+    const body = document.createElement('div');
+    body.className = 'car-body c-' + fullColorName(color);
+    const arrow = document.createElement('div');
+    arrow.className = 'car-arrow';
+    arrow.textContent = ARROWS[dir];
+    body.appendChild(arrow);
+    const capBadge = document.createElement('div');
+    capBadge.className = 'car-cap';
+    capBadge.textContent = cap;
+    body.appendChild(capBadge);
+    el.appendChild(body);
+    carLayerEl.appendChild(el);
+    const car = { id: idx, r, c, color, dir, cap, el, gone: false };
+    el.addEventListener('click', () => tryMoveCar(car));
+    return car;
+  });
+
+  // 队列
+  queue = [...lv.queue];
+  renderQueue();
+
+  // 停车位
+  parking = [null, null, null];
+  renderParking();
+
+  document.getElementById('hud-level').textContent = levelIdx + 1;
+  document.getElementById('status').textContent = '点箭头方向的车 · 让它开走';
+
+  // 布局车 · 等一帧 DOM 完成
+  requestAnimationFrame(() => layoutCars());
+}
+
+function layoutCars() {
+  const lv = LEVELS[levelIdx];
+  const rect = carLayerEl.getBoundingClientRect();
+  const gap = 3;
+  const cellW = (rect.width - (lv.cols - 1) * gap) / lv.cols;
+  const cellH = (rect.height - (lv.rows - 1) * gap) / lv.rows;
+  cars.forEach(car => {
+    if (car.gone) return;
+    car.el.style.width = cellW + 'px';
+    car.el.style.height = cellH + 'px';
+    car.el.style.left = (car.c * (cellW + gap)) + 'px';
+    car.el.style.top = (car.r * (cellH + gap)) + 'px';
+    car.el.style.transform = 'translate(0,0)';
+  });
+  // 缓存 cellW/H 给移动动画用
+  carLayerEl.dataset.cellW = cellW;
+  carLayerEl.dataset.cellH = cellH;
+  carLayerEl.dataset.gap = gap;
+}
+
+window.addEventListener('resize', () => {
+  if (cars.length) layoutCars();
+});
+
+function fullColorName(short) {
+  return { r:'red', y:'yellow', b:'blue', g:'green', p:'purple', o:'orange', k:'pink' }[short];
+}
+
+function renderQueue() {
+  document.getElementById('hud-queue').textContent = queue.length;
+  queueListEl.innerHTML = '';
+  // 按连续同色分组
+  let i = 0;
+  while (i < queue.length) {
+    const color = queue[i];
+    let j = i;
+    while (j < queue.length && queue[j] === color) j++;
+    const group = document.createElement('div');
+    group.className = 'queue-group';
+    group.style.borderColor = COLOR_MAP[color] + 'aa';
+    for (let k = i; k < j; k++) {
+      const dot = document.createElement('div');
+      dot.className = 'queue-item';
+      dot.style.background = COLOR_MAP[color];
+      group.appendChild(dot);
+    }
+    queueListEl.appendChild(group);
+    i = j;
+  }
+}
+
+function renderParking() {
+  const slots = parkingAreaEl.querySelectorAll('.park-slot');
+  slots.forEach((slot, i) => {
+    slot.innerHTML = '';
+    if (parking[i]) {
+      slot.classList.add('has-bus');
+      const bus = document.createElement('div');
+      bus.className = 'bus c-' + fullColorName(parking[i].color);
+      const capNum = document.createElement('div');
+      capNum.className = 'bus-cap';
+      capNum.textContent = parking[i].cap;
+      bus.appendChild(capNum);
+      slot.appendChild(bus);
+    } else {
+      slot.classList.remove('has-bus');
+    }
+  });
+}
+
+// ============ 移动逻辑 ============
+function tryMoveCar(car) {
+  if (animating || car.gone) return;
+  if (!isPathClear(car)) {
+    // 抖动提示
+    car.el.classList.add('blocked');
+    setTimeout(() => car.el.classList.remove('blocked'), 400);
+    return;
+  }
+  // 找一个空停车位
+  const slotIdx = parking.findIndex(p => p === null);
+  if (slotIdx < 0) {
+    document.getElementById('status').textContent = '停车位满了 · 等巴士开走';
+    return;
+  }
+
+  animating = true;
+  car.gone = true;
+
+  // 沿箭头方向飞出网格
+  const lv = LEVELS[levelIdx];
+  let exitR, exitC;
+  if (car.dir === 0) { exitR = -1; exitC = car.c; }
+  else if (car.dir === 1) { exitR = lv.rows; exitC = car.c; }
+  else if (car.dir === 2) { exitR = car.r; exitC = -1; }
+  else { exitR = car.r; exitC = lv.cols; }
+
+  const cellW = parseFloat(carLayerEl.dataset.cellW);
+  const cellH = parseFloat(carLayerEl.dataset.cellH);
+  const gap = parseFloat(carLayerEl.dataset.gap);
+
+  car.el.classList.add('moving');
+  const targetLeft = exitC * (cellW + gap);
+  const targetTop = exitR * (cellH + gap);
+  car.el.style.left = targetLeft + 'px';
+  car.el.style.top = targetTop + 'px';
+
+  setTimeout(() => {
+    car.el.classList.add('gone');
+    parking[slotIdx] = { car, color: car.color, cap: car.cap };
+    renderParking();
+    checkParkingLoad();
+  }, 500);
+}
+
+function isPathClear(car) {
+  const lv = LEVELS[levelIdx];
+  const [dr, dc] = DIRS[car.dir];
+  let r = car.r + dr, c = car.c + dc;
+  while (r >= 0 && r < lv.rows && c >= 0 && c < lv.cols) {
+    const blocking = cars.find(x => !x.gone && x.r === r && x.c === c);
+    if (blocking) return false;
+    r += dr; c += dc;
+  }
+  return true;
+}
+
+// ============ 装载 & 结算 · 同伙不拆分 ============
+function checkParkingLoad() {
+  animating = false;
+  if (queue.length === 0) {
+    setTimeout(endLevelWin, 400);
+    return;
+  }
+
+  // 队列首组(连续同色)
+  const headColor = queue[0];
+  let groupSize = 0;
+  while (groupSize < queue.length && queue[groupSize] === headColor) groupSize++;
+
+  // 停车位中的 headColor 车 · 总容量
+  const matchingSlots = [];
+  let totalCap = 0;
+  parking.forEach((slot, i) => {
+    if (slot && slot.color === headColor) {
+      matchingSlots.push(i);
+      totalCap += slot.cap;
+    }
+  });
+
+  if (totalCap >= groupSize && matchingSlots.length > 0) {
+    // 凑齐 · 装载 + 全部开走
+    queue.splice(0, groupSize);
+    matchingSlots.forEach(i => {
+      const slot = parking[i];
+      slot.car.el.style.transition = 'transform 0.5s ease-in, opacity 0.4s ease-in';
+      slot.car.el.style.transform = slot.car.el.style.transform + ' scale(0.6)';
+      slot.car.el.style.opacity = '0';
+      parking[i] = null;
+    });
+    renderQueue();
+    setTimeout(() => {
+      renderParking();
+      // 继续检查下一组 · 也许停车位还有可装的
+      checkParkingLoad();
+    }, 300);
+    return;
+  }
+
+  // 未凑齐 · 判断死局:
+  // 停车位全满 · 且现有 headColor 车总容量不足 · 且无更多 headColor 车能进来
+  if (parking.every(p => p !== null)) {
+    // 简化死局判断: 停车位满 · 且 headColor 车不足 · 但可能还有 headColor 车在网格里
+    const hasHeadInGrid = cars.some(x => !x.gone && x.color === headColor);
+    if (!hasHeadInGrid || totalCap === 0) {
+      // 无 headColor 车或存在但无法进车位
+      setTimeout(endLevelLose, 400);
+    }
+  }
+}
+
+function endLevelWin() {
+  document.getElementById('modal-icon').textContent = '🚌';
+  document.getElementById('modal-title').textContent = '过 关';
+  if (levelIdx + 1 >= LEVELS.length) {
+    document.getElementById('modal-sub').textContent = `${LEVELS.length} 关全通关 · 你解开了这局`;
+    document.getElementById('modal-btn').textContent = '再来一轮';
+    document.getElementById('modal-btn').dataset.action = 'restart-game';
+  } else {
+    document.getElementById('modal-sub').textContent = `队列清空 · 进入第 ${levelIdx + 2} 关`;
+    document.getElementById('modal-btn').textContent = '下一关';
+    document.getElementById('modal-btn').dataset.action = 'next-level';
+  }
+  document.getElementById('modal').classList.add('show');
+}
+
+function endLevelLose() {
+  document.getElementById('modal-icon').textContent = '🚧';
+  document.getElementById('modal-title').textContent = '堵 死 了';
+  document.getElementById('modal-sub').textContent = '停车位全满 · 队列头没有对应颜色巴士 · 重来一次';
+  document.getElementById('modal-btn').textContent = '重开本关';
+  document.getElementById('modal-btn').dataset.action = 'restart-level';
+  document.getElementById('modal').classList.add('show');
+}
+
+document.getElementById('modal-btn').addEventListener('click', () => {
+  const action = document.getElementById('modal-btn').dataset.action;
+  document.getElementById('modal').classList.remove('show');
+  if (action === 'next-level') { levelIdx++; initLevel(); }
+  else if (action === 'restart-level') { initLevel(); }
+  else if (action === 'restart-game') { levelIdx = 0; initLevel(); }
+});
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+  if (!confirm('重开本关?')) return;
+  initLevel();
+});
+
+// ============ Boot ============
+initLevel();
+</script>
+</body>
+</html>
