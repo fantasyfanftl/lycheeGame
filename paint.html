@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>颜料工坊</title>
+<link rel="icon" type="image/png" href="lychee-logo.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(120, 180, 220, 0.35), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(255, 200, 150, 0.25), transparent 55%),
+      linear-gradient(180deg, #a3d5f7 0%, #f7e5c2 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #4a4032;
+    padding: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .app { max-width: 460px; margin: 0 auto; }
+
+  .top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .back {
+    color: rgba(0,0,0,0.5); text-decoration: none;
+    font-size: 12px; letter-spacing: 1px;
+  }
+  .level-badge {
+    background: #4a3a2a; color: #ffd89b;
+    padding: 4px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; letter-spacing: 3px;
+    font-family: "SF Mono", monospace;
+  }
+
+  /* 像素画卡片 · 金色画框 */
+  .canvas-frame {
+    background: linear-gradient(135deg, #d9a45b 0%, #b47c33 100%);
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    position: relative;
+  }
+  .canvas-frame::before {
+    content: '';
+    position: absolute; inset: 4px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    pointer-events: none;
+  }
+  .canvas-inner {
+    background: linear-gradient(180deg, #8fd0f2 0%, #f9dfa8 100%);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .pixel-canvas {
+    display: grid;
+    gap: 1px;
+    width: 96%;
+    max-height: 96%;
+  }
+  .pixel {
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.15);
+    border-radius: 1px;
+    transition: background 0.35s cubic-bezier(0.4,0,0.2,1),
+                transform 0.4s cubic-bezier(0.5,1.5,0.5,1);
+  }
+  .pixel.empty {
+    background: transparent;
+    box-shadow: none;
+  }
+  .pixel.filled {
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -1px 1px rgba(0,0,0,0.15);
+  }
+  .pixel.just-filled {
+    animation: pop 0.5s cubic-bezier(0.4,1.8,0.5,1);
+  }
+  @keyframes pop {
+    0% { transform: scale(0.3); opacity: 0.5; }
+    60% { transform: scale(1.3); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* 储备桶排 · 每色一个 */
+  .tanks {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    justify-content: space-around;
+  }
+  .tank {
+    flex: 1;
+    aspect-ratio: 1 / 1.15;
+    background: rgba(255,255,255,0.85);
+    border-radius: 6px 6px 10px 10px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 3px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .tank-fill {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    background: currentColor;
+    transition: height 0.4s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: inset 0 3px 6px rgba(255,255,255,0.4);
+  }
+  .tank-num {
+    position: relative;
+    font-family: "SF Mono", monospace;
+    font-weight: 800;
+    font-size: 12px;
+    color: rgba(0,0,0,0.75);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.75);
+    z-index: 2;
+    line-height: 1;
+  }
+  .tank.pulse .tank-num {
+    animation: numPulse 0.4s;
+  }
+  @keyframes numPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.4); color: #d94a4a; }
+  }
+
+  /* 杯子网格 */
+  .cup-grid-wrap {
+    background: rgba(255,255,255,0.35);
+    border-radius: 14px;
+    padding: 10px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
+    margin-bottom: 10px;
+  }
+  .cup-grid {
+    display: grid;
+    gap: 5px;
+  }
+  .cup-slot {
+    aspect-ratio: 1 / 1.05;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+  }
+  .cup {
+    width: 92%;
+    height: 92%;
+    border-radius: 6px 6px 14px 14px;
+    position: relative;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    background: currentColor;
+    box-shadow:
+      inset 0 22% 0 -16% rgba(255,255,255,0.45),
+      inset 0 -18% 0 -12% rgba(0,0,0,0.2),
+      0 3px 5px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8%;
+    transition: transform 0.2s cubic-bezier(0.5,0,0.4,1), opacity 0.35s;
+  }
+  .cup::before {
+    content: '';
+    position: absolute;
+    top: 6%;
+    left: 8%; right: 8%;
+    height: 12%;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50%;
+  }
+  .cup-num {
+    color: #fff;
+    font-size: clamp(11px, 3vw, 15px);
+    font-weight: 800;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    font-family: "SF Mono", monospace;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+  }
+  .cup:hover { transform: translateY(-2px); }
+  .cup.selected {
+    transform: translateY(-4px) scale(1.05);
+    z-index: 3;
+    animation: cupPulse 0.6s ease-in-out infinite;
+  }
+  @keyframes cupPulse {
+    0%, 100% { filter: brightness(1) drop-shadow(0 0 4px rgba(255,255,255,0.4)); }
+    50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.7)); }
+  }
+  .cup.merging {
+    animation: mergeIn 0.4s ease-out forwards;
+  }
+  @keyframes mergeIn {
+    to { transform: scale(0.3); opacity: 0; }
+  }
+  .cup-slot.empty { pointer-events: none; }
+
+  /* 颜料色 */
+  .c-red    { color: #e63946; }
+  .c-yellow { color: #ffb700; }
+  .c-blue   { color: #3e9adf; }
+  .c-green  { color: #4dbe6d; }
+  .c-purple { color: #a15ed6; }
+  .c-orange { color: #ff8c42; }
+  .c-pink   { color: #ff7ba9; }
+  .c-brown  { color: #7a4a2b; }
+  .c-black  { color: #2a2a3a; }
+  .c-white  { color: #f0f0e8; }
+  .c-white .cup-num { color: #333; text-shadow: 0 1px 2px rgba(255,255,255,0.6); }
+
+  /* HUD */
+  .hud {
+    display: flex; justify-content: space-between;
+    padding: 4px 2px; font-size: 11px;
+    color: rgba(0,0,0,0.55);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .hud b { color: #4a3a2a; font-family: "SF Mono", monospace; font-size: 13px; }
+
+  .action-bar {
+    display: flex; gap: 8px; justify-content: center;
+    margin-top: 10px;
+  }
+  .btn {
+    padding: 8px 20px;
+    background: rgba(255,255,255,0.85);
+    color: #4a3a2a;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn.primary { background: #ffd89b; border-color: transparent; font-weight: 700; }
+
+  /* Modal */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 30px;
+  }
+  .modal.show { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 26px 22px;
+    max-width: 340px; width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-icon { font-size: 44px; margin-bottom: 8px; }
+  .modal-title {
+    font-size: 22px; letter-spacing: 4px; color: #4a3a2a;
+    margin-bottom: 6px; font-weight: 700;
+  }
+  .modal-sub {
+    font-size: 13px; color: #888;
+    letter-spacing: 1px; margin-bottom: 18px; line-height: 1.7;
+  }
+  .modal-stat {
+    display: flex; justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px dashed rgba(0,0,0,0.15);
+    border-bottom: 1px dashed rgba(0,0,0,0.15);
+    margin-bottom: 18px;
+  }
+  .modal-stat > div { font-size: 11px; color: #888; letter-spacing: 1px; }
+  .modal-stat b { display: block; font-size: 20px; color: #4a3a2a; font-family: "SF Mono", monospace; margin-top: 2px; }
+
+  @media (max-width: 480px) {
+    body { padding: 8px; }
+    .tank { font-size: 11px; }
+    .tank-num { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <a href="index.html" class="back">← 返回</a>
+    <div class="level-badge">LEVEL <span id="hud-level">1</span></div>
+    <div style="width:40px;"></div>
+  </div>
+
+  <div class="canvas-frame">
+    <div class="canvas-inner">
+      <div class="pixel-canvas" id="pixel-canvas"></div>
+    </div>
+  </div>
+
+  <div class="tanks" id="tanks"></div>
+
+  <div class="hud">
+    <span>剩余 <b id="hud-cups">0</b> 杯</span>
+    <span>已画 <b id="hud-pixels">0</b>/<b id="hud-pixels-total">0</b> 像素</span>
+  </div>
+
+  <div class="cup-grid-wrap">
+    <div class="cup-grid" id="cup-grid"></div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn" id="restart-btn">重开本关</button>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">🎨</div>
+    <div class="modal-title" id="modal-title">过 关</div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <div class="modal-stat">
+      <div>已画像素<b id="modal-pixels">0</b></div>
+      <div>完整度<b id="modal-completion">0%</b></div>
+    </div>
+    <button class="btn primary" id="modal-btn">下一关</button>
+  </div>
+</div>
+
+<script>
+// ============ 颜色映射 ============
+const COLOR_MAP = {
+  r: '#e63946', y: '#ffb700', b: '#3e9adf', g: '#4dbe6d',
+  p: '#a15ed6', o: '#ff8c42', k: '#ff7ba9',
+  n: '#7a4a2b', d: '#2a2a3a', w: '#f0f0e8'
+};
+const COLOR_NAME = {
+  r: 'red', y: 'yellow', b: 'blue', g: 'green',
+  p: 'purple', o: 'orange', k: 'pink',
+  n: 'brown', d: 'black', w: 'white'
+};
+
+// ============ 每像素消耗 ============
+const PER_PIXEL = 100;
+
+// ============ 关卡设计 ============
+// pixelArt: 字符串数组 · 每字符一像素 · 空格=空像素
+// cups: 二维数组 · 每格 [color, amount] · null=空
+const LEVELS = [
+  // 关 1 · 8×6 心形 · 3 色红/白/蓝 · 网格 5×5
+  {
+    art: [
+      '  RR RR ',
+      ' RWRRRWR',
+      ' RWRRRWR',
+      ' RBRRRBR',
+      '  RRRRR ',
+      '   RRR  ',
+      '    R   ',
+      '        '
+    ],
+    cups: [
+      ['r','r','w','b','r'],
+      ['w','r','r','r','w'],
+      ['r','b','w','r','b'],
+      ['b','r','w','b','r'],
+      ['r','w','r','b','w']
+    ],
+    // 每格数值 · 简单起见 · 全部 300
+    fill: 300
+  },
+  // 关 2 · 10×8 冰淇淋 · 5 色 · 网格 6×6
+  {
+    art: [
+      '    RR    ',
+      '   GGGG   ',
+      '  GGGGGG  ',
+      ' GGGGGGGG ',
+      '   NNNN   ',
+      '    NN    ',
+      '    NN    ',
+      '   YYYY   '
+    ],
+    cups: [
+      ['g','y','n','r','g','y'],
+      ['n','g','y','n','g','r'],
+      ['y','n','g','r','n','g'],
+      ['r','g','n','y','g','n'],
+      ['g','n','r','g','y','g'],
+      ['y','g','n','r','g','n']
+    ],
+    fill: 200
+  },
+  // 关 3 · 12×10 幽灵 · 6 色 · 网格 7×6
+  {
+    art: [
+      '   WWWW    ',
+      '  WWWWWWW  ',
+      ' WWDWWWDWW ',
+      ' WWDWWWDWW ',
+      ' WWWWWWWWW ',
+      ' WWWWWWWWW ',
+      ' WPWWWWWPW ',
+      '  W  W  W  ',
+      '           ',
+      '           '
+    ],
+    cups: [
+      ['w','d','w','p','w','d','w'],
+      ['d','w','p','w','d','w','p'],
+      ['w','p','w','d','w','p','w'],
+      ['p','w','d','w','p','w','d'],
+      ['w','d','w','p','w','d','w'],
+      ['d','w','p','w','d','w','p']
+    ],
+    fill: 150
+  }
+];
+
+// ============ 状态 ============
+let levelIdx = 0;
+let cups = [];      // 2D · {color, amount} 或 null
+let tanks = {};     // { colorKey: amount }
+let pixelArt = [];  // 2D · colorKey 或 null
+let pixelDone = []; // 2D · bool
+let selectedGroup = [];
+let animating = false;
+let rows = 0, cols = 0;
+let artRows = 0, artCols = 0;
+
+const canvasEl = document.getElementById('pixel-canvas');
+const tanksEl = document.getElementById('tanks');
+const cupGridEl = document.getElementById('cup-grid');
+
+// ============ 初始化 ============
+function initLevel() {
+  const lv = LEVELS[levelIdx];
+
+  // 像素画
+  artRows = lv.art.length;
+  artCols = lv.art[0].length;
+  pixelArt = [];
+  pixelDone = [];
+  for (let r = 0; r < artRows; r++) {
+    const row = [];
+    const doneRow = [];
+    for (let c = 0; c < artCols; c++) {
+      const ch = lv.art[r][c].toLowerCase();
+      row.push(ch === ' ' ? null : ch);
+      doneRow.push(false);
+    }
+    pixelArt.push(row);
+    pixelDone.push(doneRow);
+  }
+
+  // 杯子
+  rows = lv.cups.length;
+  cols = lv.cups[0].length;
+  cups = [];
+  for (let r = 0; r < rows; r++) {
+    const row = [];
+    for (let c = 0; c < cols; c++) {
+      row.push({ color: lv.cups[r][c], amount: lv.fill });
+    }
+    cups.push(row);
+  }
+
+  // 储备桶 · 收集画布用到的所有色
+  tanks = {};
+  const usedColors = new Set();
+  pixelArt.forEach(row => row.forEach(c => c && usedColors.add(c)));
+  usedColors.forEach(c => tanks[c] = 0);
+
+  selectedGroup = [];
+  document.getElementById('hud-level').textContent = levelIdx + 1;
+  document.getElementById('hud-pixels-total').textContent = countTotalPixels();
+
+  renderCanvas();
+  renderTanks();
+  renderCupGrid();
+  updateHud();
+}
+
+function countTotalPixels() {
+  let n = 0;
+  pixelArt.forEach(row => row.forEach(c => { if (c) n++; }));
+  return n;
+}
+function countDonePixels() {
+  let n = 0;
+  pixelDone.forEach(row => row.forEach(d => { if (d) n++; }));
+  return n;
+}
+function countCups() {
+  let n = 0;
+  cups.forEach(row => row.forEach(c => { if (c) n++; }));
+  return n;
+}
+
+// ============ 渲染 ============
+function renderCanvas() {
+  canvasEl.style.gridTemplateColumns = `repeat(${artCols}, 1fr)`;
+  canvasEl.style.gridTemplateRows = `repeat(${artRows}, 1fr)`;
+  canvasEl.innerHTML = '';
+  for (let r = 0; r < artRows; r++) {
+    for (let c = 0; c < artCols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'pixel';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      const color = pixelArt[r][c];
+      if (!color) cell.classList.add('empty');
+      else if (pixelDone[r][c]) {
+        cell.classList.add('filled');
+        cell.style.background = COLOR_MAP[color];
+      }
+      canvasEl.appendChild(cell);
+    }
+  }
+}
+
+function renderTanks() {
+  tanksEl.innerHTML = '';
+  Object.keys(tanks).forEach(color => {
+    const tank = document.createElement('div');
+    tank.className = 'tank';
+    tank.dataset.color = color;
+    tank.style.color = COLOR_MAP[color];
+    const fill = document.createElement('div');
+    fill.className = 'tank-fill';
+    fill.style.height = Math.min(100, (tanks[color] / (PER_PIXEL * 5)) * 100) + '%';
+    fill.style.opacity = '0.85';
+    fill.style.background = COLOR_MAP[color];
+    const num = document.createElement('div');
+    num.className = 'tank-num';
+    num.textContent = tanks[color];
+    tank.appendChild(fill);
+    tank.appendChild(num);
+    tanksEl.appendChild(tank);
+  });
+}
+
+function pulseTank(color) {
+  const tank = tanksEl.querySelector(`.tank[data-color="${color}"]`);
+  if (!tank) return;
+  tank.classList.add('pulse');
+  setTimeout(() => tank.classList.remove('pulse'), 400);
+}
+
+function renderCupGrid() {
+  cupGridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  cupGridEl.innerHTML = '';
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const slot = document.createElement('div');
+      slot.className = 'cup-slot';
+      slot.dataset.r = r;
+      slot.dataset.c = c;
+      const cell = cups[r][c];
+      if (!cell) {
+        slot.classList.add('empty');
+      } else {
+        const cup = document.createElement('div');
+        cup.className = 'cup c-' + COLOR_NAME[cell.color];
+        const num = document.createElement('div');
+        num.className = 'cup-num';
+        num.textContent = cell.amount;
+        cup.appendChild(num);
+        cup.addEventListener('click', () => onCupClick(r, c));
+        slot.appendChild(cup);
+      }
+      cupGridEl.appendChild(slot);
+    }
+  }
+}
+
+function updateSelectedClasses() {
+  const set = new Set(selectedGroup.map(p => `${p.r},${p.c}`));
+  cupGridEl.querySelectorAll('.cup-slot').forEach(slot => {
+    const r = +slot.dataset.r, c = +slot.dataset.c;
+    const cup = slot.querySelector('.cup');
+    if (cup) cup.classList.toggle('selected', set.has(`${r},${c}`));
+  });
+}
+
+function updateHud() {
+  document.getElementById('hud-cups').textContent = countCups();
+  document.getElementById('hud-pixels').textContent = countDonePixels();
+}
+
+// ============ 找组 · BFS 相邻同色 ============
+function findGroup(sr, sc) {
+  if (!cups[sr][sc]) return [];
+  const color = cups[sr][sc].color;
+  const visited = new Set();
+  const stack = [{r: sr, c: sc}];
+  const group = [];
+  while (stack.length) {
+    const {r, c} = stack.pop();
+    const key = `${r},${c}`;
+    if (visited.has(key)) continue;
+    if (r < 0 || r >= rows || c < 0 || c >= cols) continue;
+    if (!cups[r][c] || cups[r][c].color !== color) continue;
+    visited.add(key);
+    group.push({r, c});
+    stack.push({r: r+1, c}); stack.push({r: r-1, c});
+    stack.push({r, c: c+1}); stack.push({r, c: c-1});
+  }
+  return group;
+}
+
+// ============ 交互 ============
+function onCupClick(r, c) {
+  if (animating) return;
+  const group = findGroup(r, c);
+  if (group.length < 2) {
+    if (selectedGroup.length) {
+      selectedGroup = [];
+      updateSelectedClasses();
+    }
+    return;
+  }
+
+  const set = new Set(selectedGroup.map(p => `${p.r},${p.c}`));
+  const inSel = set.has(`${r},${c}`) && selectedGroup.length === group.length;
+  if (inSel) {
+    // 确认消除
+    doMerge(group);
+  } else {
+    selectedGroup = group;
+    updateSelectedClasses();
+  }
+}
+
+function doMerge(group) {
+  animating = true;
+  const color = cups[group[0].r][group[0].c].color;
+  const totalAmount = group.reduce((s, p) => s + cups[p.r][p.c].amount, 0);
+
+  // 动画:全部飞进桶
+  group.forEach(({r, c}) => {
+    const slot = cupGridEl.children[r * cols + c];
+    const cup = slot.querySelector('.cup');
+    if (cup) cup.classList.add('merging');
+    cups[r][c] = null;
+  });
+
+  setTimeout(() => {
+    tanks[color] = (tanks[color] || 0) + totalAmount;
+    pulseTank(color);
+    applyGravity();
+    tryPaintPixels(color);
+    renderTanks();
+    renderCupGrid();
+    updateHud();
+    selectedGroup = [];
+    animating = false;
+
+    // 通关 / 死局
+    if (countCups() === 0) {
+      setTimeout(endLevelWin, 500);
+    } else if (!hasAnyMove()) {
+      setTimeout(endLevelLose, 500);
+    }
+  }, 380);
+}
+
+function applyGravity() {
+  for (let c = 0; c < cols; c++) {
+    let write = rows - 1;
+    for (let r = rows - 1; r >= 0; r--) {
+      if (cups[r][c]) {
+        if (write !== r) {
+          cups[write][c] = cups[r][c];
+          cups[r][c] = null;
+        }
+        write--;
+      }
+    }
+  }
+}
+
+function hasAnyMove() {
+  const visited = new Set();
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const key = `${r},${c}`;
+      if (visited.has(key)) continue;
+      if (!cups[r][c]) continue;
+      const group = findGroup(r, c);
+      group.forEach(p => visited.add(`${p.r},${p.c}`));
+      if (group.length >= 2) return true;
+    }
+  }
+  return false;
+}
+
+// ============ 绘制像素 ============
+function tryPaintPixels(color) {
+  // 从桶里每 PER_PIXEL 毫升 · 点亮画布上一个该色未画像素
+  let painted = 0;
+  while (tanks[color] >= PER_PIXEL) {
+    const next = findNextUnfilled(color);
+    if (!next) break;
+    tanks[color] -= PER_PIXEL;
+    pixelDone[next.r][next.c] = true;
+    painted++;
+    // 视觉更新
+    setTimeout(() => {
+      const idx = next.r * artCols + next.c;
+      const cell = canvasEl.children[idx];
+      if (cell) {
+        cell.classList.add('filled', 'just-filled');
+        cell.style.background = COLOR_MAP[color];
+      }
+    }, painted * 60);
+  }
+}
+
+function findNextUnfilled(color) {
+  // 从上到下 · 左到右 · 第一个未画的该色像素
+  for (let r = 0; r < artRows; r++) {
+    for (let c = 0; c < artCols; c++) {
+      if (pixelArt[r][c] === color && !pixelDone[r][c]) return {r, c};
+    }
+  }
+  return null;
+}
+
+// ============ 结算 ============
+function endLevelWin() {
+  const done = countDonePixels();
+  const total = countTotalPixels();
+  const pct = Math.round(done / total * 100);
+  document.getElementById('modal-icon').textContent = pct === 100 ? '🌈' : (pct >= 70 ? '🎨' : '🖌️');
+  document.getElementById('modal-title').textContent = '通 关';
+  if (levelIdx + 1 >= LEVELS.length) {
+    document.getElementById('modal-sub').textContent = `${LEVELS.length} 关全通 · 颜料收干净了`;
+    document.getElementById('modal-btn').textContent = '再来一轮';
+    document.getElementById('modal-btn').dataset.action = 'restart-game';
+  } else {
+    document.getElementById('modal-sub').textContent = `颜料全部收进桶 · 进入第 ${levelIdx + 2} 关`;
+    document.getElementById('modal-btn').textContent = '下一关';
+    document.getElementById('modal-btn').dataset.action = 'next-level';
+  }
+  document.getElementById('modal-pixels').textContent = done + '/' + total;
+  document.getElementById('modal-completion').textContent = pct + '%';
+  document.getElementById('modal').classList.add('show');
+}
+
+function endLevelLose() {
+  document.getElementById('modal-icon').textContent = '💧';
+  document.getElementById('modal-title').textContent = '孤 单 了';
+  document.getElementById('modal-sub').textContent = '没有相邻同色可消 · 剩下的杯子成了孤岛 · 重开一次';
+  const done = countDonePixels(), total = countTotalPixels();
+  document.getElementById('modal-pixels').textContent = done + '/' + total;
+  document.getElementById('modal-completion').textContent = Math.round(done / total * 100) + '%';
+  document.getElementById('modal-btn').textContent = '重开本关';
+  document.getElementById('modal-btn').dataset.action = 'restart-level';
+  document.getElementById('modal').classList.add('show');
+}
+
+document.getElementById('modal-btn').addEventListener('click', () => {
+  const action = document.getElementById('modal-btn').dataset.action;
+  document.getElementById('modal').classList.remove('show');
+  if (action === 'next-level') { levelIdx++; initLevel(); }
+  else if (action === 'restart-level') { initLevel(); }
+  else if (action === 'restart-game') { levelIdx = 0; initLevel(); }
+});
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+  if (!confirm('重开本关?')) return;
+  initLevel();
+});
+
+// ============ Boot ============
+initLevel();
+</script>
+</body>
+</html>
