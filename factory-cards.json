@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "version": "0.1",
+    "created": "2026-08-11",
+    "last_updated": "2026-08-11",
+    "topic": "主题 04 · 出厂设置",
+    "long_docs": {
+      "Q10": {
+        "title": "Q10 · 如果只能保留一个特质",
+        "url": "https://mubu.com/app/edit/home/6cP1cqVzgjk"
+      }
+    },
+    "reconstruction_threshold": 50,
+    "reconstruction_hard_limit": 100,
+    "sop_rules": {
+      "max_tags_per_card": 3,
+      "primary_theme_fixed": "core_self",
+      "sub_theme_pool": ["stress_mechanism", "somatic", "early_loop"]
+    }
+  },
+  "themes": {
+    "core_self": {
+      "name": "核心自我",
+      "color": "#D97757",
+      "emoji": "💎",
+      "is_primary_pool": true,
+      "description": "顶层固定主题 · 所有卡默认归属"
+    },
+    "stress_mechanism": {
+      "name": "应激机制",
+      "color": "#7dd3fc",
+      "emoji": "⚡",
+      "is_primary_pool": false,
+      "description": "应激系统 · 生存本能反应模式"
+    },
+    "somatic": {
+      "name": "躯体感受",
+      "color": "#a4b3ff",
+      "emoji": "🫀",
+      "is_primary_pool": false,
+      "description": "身体信号 · 生理反馈"
+    },
+    "early_loop": {
+      "name": "早期回路",
+      "color": "#c084fc",
+      "emoji": "🌱",
+      "is_primary_pool": false,
+      "description": "童年经历形成的固化心智回路"
+    }
+  },
+  "states": {
+    "pending": {"name": "待处理", "color": "#ffb457"},
+    "resonance_reviewable": {"name": "共鸣·可回看", "color": "#6ee7b7"},
+    "uncertain_pending_verification": {"name": "存疑·待验证", "color": "#a4b3ff"},
+    "archived": {"name": "已归档", "color": "#7d84a8"},
+    "history_observation": {"name": "历史观察", "color": "#94a3b8"}
+  },
+  "connection_types": {
+    "origin": {"name": "源头", "color": "#c084fc"},
+    "trigger": {"name": "触发", "color": "#D97757"},
+    "deepen": {"name": "深化", "color": "#6ee7b7"},
+    "refute": {"name": "推翻", "color": "#ef4444"},
+    "support": {"name": "支持", "color": "#7dd3fc"},
+    "related": {"name": "相关", "color": "#94a3b8"}
+  },
+  "cards": [
+    {
+      "id": "card-0029",
+      "display_name": "Q10-01 · 两套系统并行",
+      "type": "integration",
+      "source_question": "Q10",
+      "created_at": "2026-08-10",
+      "primary_theme": "core_self",
+      "sub_themes": ["stress_mechanism"],
+      "state": "resonance_reviewable",
+      "mubu_url": "https://mubu.com/app/edit/home/QII7Ie1Ugk",
+      "solution_summary": "两套系统并行 · 应激-生存系统现场自动跑 · 价值内核系统事后离线启动 · 用同一套内核标尺审判两个不同任务是痛苦来源",
+      "initial_position": {"x": 220, "y": 220}
+    },
+    {
+      "id": "card-0030",
+      "display_name": "Q10-02 · 自我完整两层",
+      "type": "integration",
+      "source_question": "Q10",
+      "created_at": "2026-08-10",
+      "primary_theme": "core_self",
+      "sub_themes": [],
+      "state": "resonance_reviewable",
+      "mubu_url": "https://mubu.com/app/edit/home/2AMd_5hw6gk",
+      "solution_summary": "自我完整 = 内在认知不动摇 + 条件允许时向外表达 · 两层缺一即痛 · 大多数人只要第一层就够 · 我需要两层",
+      "initial_position": {"x": 560, "y": 460}
+    },
+    {
+      "id": "card-0031",
+      "display_name": "Q10-03 · 躯体报警信号",
+      "type": "integration",
+      "source_question": "Q10",
+      "created_at": "2026-08-10",
+      "primary_theme": "core_self",
+      "sub_themes": ["somatic"],
+      "state": "resonance_reviewable",
+      "mubu_url": "https://mubu.com/app/edit/home/684DeWexTgk",
+      "solution_summary": "躯体报警信号 · 被迫违心开口 = 冷汗 + 脑袋发空 + 内心空洞 + 情感剥离 · 有发言权却压抑 = 撇嘴 + 抬眉毛 + 升起「我没保护好我自己」的评判",
+      "initial_position": {"x": 560, "y": 220}
+    },
+    {
+      "id": "card-0032",
+      "display_name": "Q10-04 · 童年内部惩罚回路",
+      "type": "integration",
+      "source_question": "Q10",
+      "created_at": "2026-08-10",
+      "primary_theme": "core_self",
+      "sub_themes": ["early_loop"],
+      "state": "resonance_reviewable",
+      "mubu_url": "https://mubu.com/app/edit/home/7wceg74Oogk",
+      "solution_summary": "童年零食事件 · 撒谎/隐瞒/心口不一 · 内部惩罚回路权重高于外部 · 最大压力来自对自己的交代 · 不是外部追责",
+      "initial_position": {"x": 220, "y": 460}
+    },
+    {
+      "id": "card-0033",
+      "display_name": "Q10-05 · 真正内核 + 接纳孤独",
+      "type": "integration",
+      "source_question": "Q10",
+      "created_at": "2026-08-10",
+      "primary_theme": "core_self",
+      "sub_themes": [],
+      "state": "resonance_reviewable",
+      "mubu_url": "https://mubu.com/app/edit/home/6xWRceLvsgk",
+      "solution_summary": "真正内核 = 守住内在不被篡改 · 代价 = 孤独 · 相比丢失内在自我 · 孤独可以承受",
+      "initial_position": {"x": 390, "y": 660}
+    }
+  ],
+  "connections": [
+    {
+      "from": "card-0032",
+      "to": "card-0030",
+      "label": "源头 · 早期回路形成两层需求",
+      "type": "origin"
+    },
+    {
+      "from": "card-0032",
+      "to": "card-0029",
+      "label": "源头 · 早期形成应激/价值分裂",
+      "type": "origin"
+    },
+    {
+      "from": "card-0031",
+      "to": "card-0029",
+      "label": "触发 · 躯体报警反映系统切换",
+      "type": "trigger"
+    },
+    {
+      "from": "card-0030",
+      "to": "card-0033",
+      "label": "深化 · 从两层需求到守住内核",
+      "type": "deepen"
+    }
+  ]
+}
