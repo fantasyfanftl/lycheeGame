@@ -783,8 +783,48 @@ function darken(hex) {
 }
 
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeDrawer();
+  if (e.key === 'Escape') {
+    if (document.getElementById('settings-overlay').classList.contains('open')) {
+      closeSettings();
+    } else {
+      closeDrawer();
+    }
+  }
 });
+
+// 设置面板骨架
+function openSettings() {
+  document.getElementById('settings-overlay').classList.add('open');
+  updateSettingsData();
+}
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('open');
+}
+document.getElementById('open-settings').onclick = openSettings;
+document.getElementById('settings-close').onclick = closeSettings;
+document.getElementById('settings-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'settings-overlay') closeSettings();
+});
+document.querySelectorAll('.settings-tab').forEach(btn => {
+  btn.onclick = () => {
+    const tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('.settings-tab').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.toggle('active', c.getAttribute('data-tab') === tab));
+  };
+});
+function updateSettingsData() {
+  if (!data) return;
+  const rules = data.meta.sop_rules || {};
+  const primary = data.themes[rules.primary_theme_fixed];
+  document.getElementById('sett-primary-theme').textContent = primary ? `${primary.emoji} ${primary.name}` : '(未定)';
+  const subs = (rules.sub_theme_pool || []).map(id => {
+    const t = data.themes[id];
+    return t ? `${t.emoji} ${t.name}` : id;
+  }).join(' / ');
+  document.getElementById('sett-sub-pool').textContent = subs || '(空)';
+  document.getElementById('sett-max-tags').textContent = (rules.max_tags_per_card || 3) + ' 个(1 主 + 至多 2 副)';
+  document.getElementById('sett-threshold').textContent = `${data.meta.reconstruction_threshold} 张(触发检查) / ${data.meta.reconstruction_hard_limit} 张(必须重构)`;
+}
 
 load();
 </script>
