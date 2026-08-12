@@ -224,10 +224,7 @@ function render() {
   document.getElementById('card-count').textContent = `${data.cards.length} 卡 · 阈值 ${data.meta.reconstruction_threshold}`;
   document.getElementById('long-doc-link').href = data.meta.long_docs.Q10.url;
 
-  const svg = document.getElementById('canvas');
-  const rect = svg.getBoundingClientRect();
-  svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
-
+  // 不设 viewBox · SVG 使用 CSS 像素坐标(避免响应式调试模式下 viewBox 计算异常)
   renderFilterOptions();
   renderEdges();
   renderNodes();
