@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>出厂设置 · 关系图 v0.1</title>
+<title>出厂设置 · 神经元图 v0.2</title>
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
@@ -16,7 +16,7 @@ body {
 a { color: #C15F3C; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* ==== 顶部工具栏 ==== */
+/* 顶部 */
 #toolbar {
   position: fixed; top: 0; left: 0; right: 0; height: 48px; z-index: 20;
   display: flex; align-items: center; gap: 12px; padding: 0 16px;
@@ -32,7 +32,7 @@ a:hover { text-decoration: underline; }
 #toolbar .spacer { flex: 1; }
 #toolbar .count { font-size: 11px; color: #7d6b5a; }
 
-/* ==== SVG canvas ==== */
+/* SVG */
 #canvas {
   position: fixed; top: 48px; left: 0; right: 0; bottom: 100px;
   width: 100%; cursor: default;
@@ -41,22 +41,52 @@ a:hover { text-decoration: underline; }
     radial-gradient(circle at 80% 70%, rgba(125,211,252,0.05) 0, transparent 40%),
     #FAF9F5;
 }
-.node { cursor: grab; user-select: none; }
-.node.dragging { cursor: grabbing; }
-.node rect { transition: filter 0.15s, stroke-width 0.15s; }
-.node:hover rect { filter: drop-shadow(0 4px 10px rgba(58,42,32,0.15)); }
-.node.dim rect { opacity: 0.3; }
-.node.dim text { opacity: 0.5; }
-.node text { pointer-events: none; }
-.node .card-title { font-size: 12px; font-weight: 600; fill: #FAF9F5; }
-.node .card-emoji { font-size: 18px; }
-.node .sub-badge { font-size: 10px; fill: #FAF9F5; opacity: 0.85; }
-.edge { fill: none; stroke-width: 2; opacity: 0.6; }
-.edge.dim { opacity: 0.15; }
-.edge-label { font-size: 10px; fill: #7d6b5a; pointer-events: none; }
-.edge-label.dim { opacity: 0.3; }
 
-/* ==== 抽屉 ==== */
+/* 主题节点(圆·神经元) */
+.theme-node { cursor: grab; user-select: none; }
+.theme-node.dragging { cursor: grabbing; }
+.theme-node circle { transition: filter 0.15s; }
+.theme-node:hover circle { filter: drop-shadow(0 4px 14px rgba(58,42,32,0.22)); }
+.theme-node.dim circle { opacity: 0.3; }
+.theme-node.dim text { opacity: 0.4; }
+.theme-node text { pointer-events: none; user-select: none; }
+.theme-node .theme-emoji { font-size: 28px; }
+.theme-node .theme-name { font-size: 13px; font-weight: 600; fill: #FAF9F5; }
+.theme-node .center-badge { font-size: 9px; letter-spacing: 0.1em; fill: rgba(255,255,255,0.75); }
+
+/* 卡片连线(双标签) */
+.card-edge {
+  fill: none; stroke-width: 3; opacity: 0.75; cursor: pointer;
+  transition: opacity 0.15s, stroke-width 0.15s;
+}
+.card-edge:hover { opacity: 1; stroke-width: 4.5; }
+.card-edge.dim { opacity: 0.12; }
+.card-edge-hitbox { fill: none; stroke: transparent; stroke-width: 26; cursor: pointer; }
+.card-edge-label {
+  font-size: 11px; font-weight: 500; fill: #3a2a20;
+  pointer-events: none; user-select: none;
+}
+.card-edge-label.dim { opacity: 0.3; }
+.card-edge-label-bg {
+  fill: #FAF9F5; opacity: 0.92; pointer-events: none;
+  stroke: rgba(58,42,32,0.08); stroke-width: 1;
+}
+.card-edge-label-bg.dim { opacity: 0.2; }
+
+/* 挂载卡(单标签) */
+.mount-card { cursor: grab; user-select: none; }
+.mount-card.dragging { cursor: grabbing; }
+.mount-card rect { transition: filter 0.15s; }
+.mount-card:hover rect { filter: drop-shadow(0 4px 10px rgba(58,42,32,0.2)); }
+.mount-card.dim rect { opacity: 0.35; }
+.mount-card.dim text { opacity: 0.5; }
+.mount-card text { pointer-events: none; user-select: none; }
+.mount-card .mount-id { font-size: 11px; font-weight: 700; fill: #C15F3C; }
+.mount-card .mount-subtitle { font-size: 10px; fill: #7d6b5a; }
+.mount-tether { stroke-dasharray: 4, 4; stroke-width: 1.2; fill: none; opacity: 0.45; }
+.mount-tether.dim { opacity: 0.15; }
+
+/* 抽屉 */
 #drawer {
   position: fixed; right: -460px; top: 48px; bottom: 0; width: 440px; z-index: 30;
   background: #FAF9F5; border-left: 1px solid #E0D4BE;
@@ -65,40 +95,21 @@ a:hover { text-decoration: underline; }
   overflow-y: auto; padding: 20px 22px;
 }
 #drawer.open { right: 0; }
-#drawer .close {
-  position: absolute; top: 12px; right: 14px; width: 28px; height: 28px;
-  background: transparent; border: 0; font-size: 20px; color: #7d6b5a; cursor: pointer;
-}
+#drawer .close { position: absolute; top: 12px; right: 14px; width: 28px; height: 28px; background: transparent; border: 0; font-size: 20px; color: #7d6b5a; cursor: pointer; }
 #drawer .close:hover { color: #C15F3C; }
 #drawer h2 { margin: 0 0 4px; font-size: 15px; color: #C15F3C; padding-right: 30px; }
 #drawer .type-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 3px; background: rgba(217,119,87,0.12); color: #C15F3C; margin-bottom: 12px; }
 #drawer .field { margin-bottom: 14px; }
-#drawer .field .label {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
-  color: #a08872; margin-bottom: 4px; font-weight: 600;
-}
+#drawer .field .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #a08872; margin-bottom: 4px; font-weight: 600; }
 #drawer .field .content { font-size: 12.5px; line-height: 1.65; color: #3a2a20; }
 #drawer .field .content.solution { font-size: 13px; padding: 8px 10px; background: rgba(217,119,87,0.05); border-left: 3px solid #D97757; border-radius: 3px; }
-#drawer .tag {
-  display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px;
-  margin: 0 4px 4px 0;
-}
+#drawer .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin: 0 4px 4px 0; }
 #drawer .state-badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 3px; font-weight: 500; }
-#drawer .connection-item {
-  font-size: 11.5px; padding: 6px 8px; margin: 4px 0;
-  background: #F4EEE0; border-radius: 3px; border-left: 2px solid;
-}
-#drawer .connection-item .direction { font-weight: 600; color: #7d6b5a; margin-right: 4px; }
-#drawer .mubu-btn {
-  display: block; width: 100%; margin-top: 16px; padding: 10px;
-  background: #D97757; color: #FAF9F5; text-align: center; border: 0;
-  border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;
-  text-decoration: none;
-}
+#drawer .mubu-btn { display: block; width: 100%; margin-top: 16px; padding: 10px; background: #D97757; color: #FAF9F5; text-align: center; border: 0; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; text-decoration: none; }
 #drawer .mubu-btn:hover { background: #C15F3C; text-decoration: none; }
 #drawer .mubu-btn:visited { color: #FAF9F5; }
 
-/* ==== 图例 ==== */
+/* 图例 */
 #legend {
   position: fixed; bottom: 0; left: 0; right: 0; height: 100px; z-index: 15;
   background: #F4EEE0; border-top: 1px solid #E0D4BE;
@@ -110,9 +121,10 @@ a:hover { text-decoration: underline; }
 #legend .item { display: inline-flex; align-items: center; gap: 5px; margin-right: 12px; margin-bottom: 3px; }
 #legend .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
 #legend .swatch.line { height: 3px; width: 20px; border-radius: 0; }
+#legend .swatch.circle { border-radius: 50%; }
 #legend .hint { font-size: 10px; color: #7d6b5a; margin-top: 6px; }
 
-/* ==== 空状态 ==== */
+/* 空状态 */
 #empty-state {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   text-align: center; color: #a08872;
@@ -124,8 +136,8 @@ a:hover { text-decoration: underline; }
 <body>
 
 <div id="toolbar">
-  <span class="title">💎 出厂设置 · 关系图</span>
-  <span class="badge" id="version-badge">v0.1</span>
+  <span class="title">💎 出厂设置 · 神经元图</span>
+  <span class="badge" id="version-badge">v0.2</span>
   <select id="filter-theme">
     <option value="all">全部主题</option>
   </select>
@@ -136,28 +148,10 @@ a:hover { text-decoration: underline; }
 </div>
 
 <svg id="canvas" width="100%" height="100%" style="display:block">
-  <defs>
-    <marker id="arrow-origin" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#c084fc" />
-    </marker>
-    <marker id="arrow-trigger" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#D97757" />
-    </marker>
-    <marker id="arrow-deepen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#6ee7b7" />
-    </marker>
-    <marker id="arrow-refute" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
-    </marker>
-    <marker id="arrow-support" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#7dd3fc" />
-    </marker>
-    <marker id="arrow-related" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8" />
-    </marker>
-  </defs>
-  <g id="edges-layer"></g>
-  <g id="nodes-layer"></g>
+  <g id="mount-tethers-layer"></g>
+  <g id="card-edges-layer"></g>
+  <g id="theme-nodes-layer"></g>
+  <g id="mount-cards-layer"></g>
 </svg>
 
 <div id="empty-state">正在加载 factory-cards.json...</div>
@@ -169,65 +163,93 @@ a:hover { text-decoration: underline; }
 
 <div id="legend">
   <div class="col">
-    <div class="col-title">主题</div>
+    <div class="col-title">主题节点(标签·神经元)</div>
     <div id="legend-themes"></div>
   </div>
   <div class="col">
-    <div class="col-title">连线类型</div>
-    <div id="legend-connections"></div>
+    <div class="col-title">卡片形态</div>
+    <div>
+      <span class="item"><span class="swatch line" style="background:#D97757"></span>连线卡 · 双标签</span>
+      <span class="item"><span class="swatch" style="background:#FAF9F5;border:1.5px solid #C15F3C"></span>挂载卡 · 单标签</span>
+    </div>
+    <div class="hint" style="margin-top:8px">💡 点连线/挂载卡 → 抽屉<br>拖节点 · 卡片跟随</div>
   </div>
   <div class="col">
     <div class="col-title">状态</div>
     <div id="legend-states"></div>
-    <div class="hint">💡 拖拽卡片可自由摆位 · 位置本地保存 · 点卡看抽屉</div>
   </div>
 </div>
 
 <script>
-const NODE_W = 200, NODE_H = 68;
-const STORAGE_KEY = 'factory-canvas-positions-v1';
+const THEME_R = 55;
+const THEME_CENTER_R = 65;
+const MOUNT_W = 130, MOUNT_H = 44;
+const STORAGE_KEY = 'factory-canvas-v02-positions';
 const svgNS = 'http://www.w3.org/2000/svg';
 
 let data = null;
-let positions = {};
+let themePositions = {};
+let mountPositions = {};
 let currentFilter = 'all';
-let selectedCardId = null;
 
-// ==== 加载 ====
 async function load() {
   try {
     const res = await fetch('./factory-cards.json?t=' + Date.now());
     data = await res.json();
-    positions = loadPositionsFromStorage();
-    for (const c of data.cards) {
-      if (!positions[c.id]) positions[c.id] = { ...c.initial_position };
-    }
+    const stored = loadStored();
+    themePositions = stored.themes || {};
+    mountPositions = stored.mounts || {};
+    Object.entries(data.themes).forEach(([id, t]) => {
+      if (!themePositions[id] && t.initial_position) themePositions[id] = { ...t.initial_position };
+    });
+    computeDefaultMountPositions();
     render();
     document.getElementById('empty-state').classList.remove('show');
   } catch (e) {
+    console.error('[canvas v0.2] load error', e);
     document.getElementById('empty-state').textContent = '加载失败:' + e.message;
     document.getElementById('empty-state').classList.add('show');
   }
 }
 
-function loadPositionsFromStorage() {
+function computeDefaultMountPositions() {
+  data.cards.forEach(card => {
+    if (!card.sub_themes || card.sub_themes.length !== 0) return;
+    if (mountPositions[card.id]) return;
+    const themePos = themePositions[card.primary_theme];
+    if (!themePos) return;
+    const siblings = data.cards.filter(x => x.sub_themes.length === 0 && x.primary_theme === card.primary_theme);
+    const mountOrder = siblings.indexOf(card);
+    const isCenter = data.themes[card.primary_theme].is_center;
+    const r = isCenter ? THEME_CENTER_R : THEME_R;
+    const angle = (mountOrder * 70 - 45) * Math.PI / 180;
+    const dist = r + 55;
+    mountPositions[card.id] = {
+      x: themePos.x + Math.cos(angle) * dist - MOUNT_W / 2,
+      y: themePos.y + Math.sin(angle) * dist - MOUNT_H / 2
+    };
+  });
+}
+
+function loadStored() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
   catch { return {}; }
 }
-function savePositions() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+function saveStored() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ themes: themePositions, mounts: mountPositions }));
 }
 
-// ==== 渲染 ====
 function render() {
-  document.getElementById('version-badge').textContent = 'v' + data.meta.version;
-  document.getElementById('card-count').textContent = `${data.cards.length} 卡 · 阈值 ${data.meta.reconstruction_threshold}`;
+  document.getElementById('version-badge').textContent = 'v' + data.meta.version + ' 神经元';
+  const edgeCards = data.cards.filter(c => c.sub_themes.length >= 1).length;
+  const mountCards = data.cards.filter(c => c.sub_themes.length === 0).length;
+  document.getElementById('card-count').textContent = `${data.cards.length} 卡(${edgeCards} 连线 · ${mountCards} 挂载) · ${Object.keys(data.themes).length} 主题`;
   document.getElementById('long-doc-link').href = data.meta.long_docs.Q10.url;
-
-  // 不设 viewBox · SVG 使用 CSS 像素坐标(避免响应式调试模式下 viewBox 计算异常)
   renderFilterOptions();
-  renderEdges();
-  renderNodes();
+  renderCardEdges();
+  renderMountTethers();
+  renderThemeNodes();
+  renderMountCards();
   renderLegend();
 }
 
@@ -244,115 +266,178 @@ function renderFilterOptions() {
   sel.onchange = () => { currentFilter = sel.value; applyFilter(); };
 }
 
-function renderNodes() {
-  const layer = document.getElementById('nodes-layer');
+function renderThemeNodes() {
+  const layer = document.getElementById('theme-nodes-layer');
   while (layer.firstChild) layer.removeChild(layer.firstChild);
-  console.log('[canvas] renderNodes · cards=', data.cards.length);
-  data.cards.forEach(card => {
-    const theme = data.themes[card.primary_theme];
-    const pos = positions[card.id];
+  console.log('[canvas v0.2] renderThemeNodes ·', Object.keys(data.themes).length);
+  Object.entries(data.themes).forEach(([id, theme]) => {
+    const pos = themePositions[id];
+    if (!pos) return;
     const g = document.createElementNS(svgNS, 'g');
-    g.setAttribute('class', 'node');
-    g.setAttribute('data-id', card.id);
+    g.setAttribute('class', 'theme-node');
+    g.setAttribute('data-id', id);
     g.setAttribute('transform', `translate(${pos.x},${pos.y})`);
-
-    const bg = document.createElementNS(svgNS, 'rect');
-    bg.setAttribute('width', NODE_W);
-    bg.setAttribute('height', NODE_H);
-    bg.setAttribute('rx', 10);
-    bg.setAttribute('ry', 10);
-    bg.setAttribute('fill', theme.color);
-    bg.setAttribute('stroke', darken(theme.color));
-    bg.setAttribute('stroke-width', 1.5);
-    g.appendChild(bg);
-
-    // emoji
+    const r = theme.is_center ? THEME_CENTER_R : THEME_R;
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', 0);
+    circle.setAttribute('cy', 0);
+    circle.setAttribute('r', r);
+    circle.setAttribute('fill', theme.color);
+    circle.setAttribute('stroke', darken(theme.color));
+    circle.setAttribute('stroke-width', theme.is_center ? 3 : 2);
+    g.appendChild(circle);
     const emoji = document.createElementNS(svgNS, 'text');
-    emoji.setAttribute('class', 'card-emoji');
-    emoji.setAttribute('x', 14);
-    emoji.setAttribute('y', 28);
+    emoji.setAttribute('class', 'theme-emoji');
+    emoji.setAttribute('text-anchor', 'middle');
+    emoji.setAttribute('x', 0);
+    emoji.setAttribute('y', -6);
     emoji.textContent = theme.emoji;
     g.appendChild(emoji);
-
-    // title
-    const title = document.createElementNS(svgNS, 'text');
-    title.setAttribute('class', 'card-title');
-    title.setAttribute('x', 40);
-    title.setAttribute('y', 28);
-    title.textContent = card.display_name;
-    g.appendChild(title);
-
-    // sub tags row
-    if (card.sub_themes && card.sub_themes.length) {
-      let x = 14;
-      card.sub_themes.forEach(subId => {
-        const sub = data.themes[subId];
-        if (!sub) return;
-        const t = document.createElementNS(svgNS, 'text');
-        t.setAttribute('class', 'sub-badge');
-        t.setAttribute('x', x);
-        t.setAttribute('y', 52);
-        t.textContent = `${sub.emoji} ${sub.name}`;
-        g.appendChild(t);
-        x += 90;
-      });
-    } else {
-      const t = document.createElementNS(svgNS, 'text');
-      t.setAttribute('class', 'sub-badge');
-      t.setAttribute('x', 14);
-      t.setAttribute('y', 52);
-      t.setAttribute('opacity', '0.6');
-      t.textContent = '· 无副标签';
-      g.appendChild(t);
+    const name = document.createElementNS(svgNS, 'text');
+    name.setAttribute('class', 'theme-name');
+    name.setAttribute('text-anchor', 'middle');
+    name.setAttribute('x', 0);
+    name.setAttribute('y', 16);
+    name.textContent = theme.name;
+    g.appendChild(name);
+    if (theme.is_center) {
+      const badge = document.createElementNS(svgNS, 'text');
+      badge.setAttribute('class', 'center-badge');
+      badge.setAttribute('text-anchor', 'middle');
+      badge.setAttribute('x', 0);
+      badge.setAttribute('y', 36);
+      badge.textContent = '· 主 ·';
+      g.appendChild(badge);
     }
-
     layer.appendChild(g);
-    attachDragAndClick(g, card);
+    attachThemeDrag(g, id);
   });
 }
 
-function renderEdges() {
-  const layer = document.getElementById('edges-layer');
+function renderCardEdges() {
+  const layer = document.getElementById('card-edges-layer');
   while (layer.firstChild) layer.removeChild(layer.firstChild);
-  console.log('[canvas] renderEdges · connections=', data.connections.length);
-  data.connections.forEach(conn => {
-    const from = positions[conn.from];
-    const to = positions[conn.to];
-    if (!from || !to) return;
-    const type = data.connection_types[conn.type] || data.connection_types.related;
+  const edgeCards = data.cards.filter(c => c.sub_themes.length >= 1);
+  console.log('[canvas v0.2] renderCardEdges ·', edgeCards.length);
+  edgeCards.forEach(card => {
+    const fromPos = themePositions[card.primary_theme];
+    const toPos = themePositions[card.sub_themes[0]];
+    if (!fromPos || !toPos) return;
+    const path = createEdgePath(card, fromPos, toPos);
+    layer.appendChild(path.hitbox);
+    layer.appendChild(path.line);
+    layer.appendChild(path.labelBg);
+    layer.appendChild(path.label);
+    const openThis = (e) => { e.stopPropagation(); openDrawer(card.id); };
+    path.hitbox.addEventListener('pointerdown', openThis);
+    path.line.addEventListener('pointerdown', openThis);
+  });
+}
 
-    const x1 = from.x + NODE_W / 2, y1 = from.y + NODE_H / 2;
-    const x2 = to.x + NODE_W / 2, y2 = to.y + NODE_H / 2;
-    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+function createEdgePath(card, fromPos, toPos) {
+  const fromTheme = data.themes[card.primary_theme];
+  const toTheme = data.themes[card.sub_themes[0]];
+  const rFrom = fromTheme.is_center ? THEME_CENTER_R : THEME_R;
+  const rTo = toTheme.is_center ? THEME_CENTER_R : THEME_R;
+  const dx = toPos.x - fromPos.x, dy = toPos.y - fromPos.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const fx = fromPos.x + (dx / len) * rFrom;
+  const fy = fromPos.y + (dy / len) * rFrom;
+  const tx = toPos.x - (dx / len) * rTo;
+  const ty = toPos.y - (dy / len) * rTo;
+  const mx = (fx + tx) / 2, my = (fy + ty) / 2;
+  const bend = 22;
+  const cx = mx - dy / len * bend, cy = my + dx / len * bend;
+  const d = `M ${fx} ${fy} Q ${cx} ${cy} ${tx} ${ty}`;
+  const color = fromTheme.color;
+  const hitbox = document.createElementNS(svgNS, 'path');
+  hitbox.setAttribute('class', 'card-edge-hitbox');
+  hitbox.setAttribute('data-card-id', card.id);
+  hitbox.setAttribute('d', d);
+  const line = document.createElementNS(svgNS, 'path');
+  line.setAttribute('class', 'card-edge');
+  line.setAttribute('data-card-id', card.id);
+  line.setAttribute('d', d);
+  line.setAttribute('stroke', color);
+  const approxW = card.display_name.length * 8 + 14;
+  const labelBg = document.createElementNS(svgNS, 'rect');
+  labelBg.setAttribute('class', 'card-edge-label-bg');
+  labelBg.setAttribute('data-card-id', card.id);
+  labelBg.setAttribute('x', cx - approxW / 2);
+  labelBg.setAttribute('y', cy - 9);
+  labelBg.setAttribute('width', approxW);
+  labelBg.setAttribute('height', 18);
+  labelBg.setAttribute('rx', 3);
+  const label = document.createElementNS(svgNS, 'text');
+  label.setAttribute('class', 'card-edge-label');
+  label.setAttribute('data-card-id', card.id);
+  label.setAttribute('x', cx);
+  label.setAttribute('y', cy);
+  label.setAttribute('text-anchor', 'middle');
+  label.setAttribute('dominant-baseline', 'middle');
+  label.textContent = card.display_name;
+  return { hitbox, line, label, labelBg };
+}
 
-    // shorten near target so arrow doesn't go inside
-    const dx = x2 - x1, dy = y2 - y1;
-    const len = Math.hypot(dx, dy) || 1;
-    const shortenTo = NODE_H * 0.55;
-    const tx = x2 - (dx / len) * shortenTo;
-    const ty = y2 - (dy / len) * shortenTo;
-    const shortenFrom = NODE_H * 0.55;
-    const fx = x1 + (dx / len) * shortenFrom;
-    const fy = y1 + (dy / len) * shortenFrom;
+function renderMountTethers() {
+  const layer = document.getElementById('mount-tethers-layer');
+  while (layer.firstChild) layer.removeChild(layer.firstChild);
+  data.cards.forEach(card => {
+    if (card.sub_themes.length !== 0) return;
+    const themePos = themePositions[card.primary_theme];
+    const mountPos = mountPositions[card.id];
+    if (!themePos || !mountPos) return;
+    const theme = data.themes[card.primary_theme];
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('class', 'mount-tether');
+    line.setAttribute('data-card-id', card.id);
+    line.setAttribute('x1', themePos.x);
+    line.setAttribute('y1', themePos.y);
+    line.setAttribute('x2', mountPos.x + MOUNT_W / 2);
+    line.setAttribute('y2', mountPos.y + MOUNT_H / 2);
+    line.setAttribute('stroke', theme.color);
+    layer.appendChild(line);
+  });
+}
 
-    const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('class', 'edge');
-    path.setAttribute('data-from', conn.from);
-    path.setAttribute('data-to', conn.to);
-    path.setAttribute('d', `M ${fx} ${fy} Q ${mx} ${my - 20} ${tx} ${ty}`);
-    path.setAttribute('stroke', type.color);
-    path.setAttribute('marker-end', `url(#arrow-${conn.type})`);
-    layer.appendChild(path);
-
-    const label = document.createElementNS(svgNS, 'text');
-    label.setAttribute('class', 'edge-label');
-    label.setAttribute('data-from', conn.from);
-    label.setAttribute('data-to', conn.to);
-    label.setAttribute('x', mx);
-    label.setAttribute('y', my - 24);
-    label.setAttribute('text-anchor', 'middle');
-    label.textContent = conn.label;
-    layer.appendChild(label);
+function renderMountCards() {
+  const layer = document.getElementById('mount-cards-layer');
+  while (layer.firstChild) layer.removeChild(layer.firstChild);
+  const mounts = data.cards.filter(c => c.sub_themes.length === 0);
+  console.log('[canvas v0.2] renderMountCards ·', mounts.length);
+  mounts.forEach(card => {
+    const pos = mountPositions[card.id];
+    if (!pos) return;
+    const theme = data.themes[card.primary_theme];
+    const g = document.createElementNS(svgNS, 'g');
+    g.setAttribute('class', 'mount-card');
+    g.setAttribute('data-id', card.id);
+    g.setAttribute('transform', `translate(${pos.x},${pos.y})`);
+    const rect = document.createElementNS(svgNS, 'rect');
+    rect.setAttribute('width', MOUNT_W);
+    rect.setAttribute('height', MOUNT_H);
+    rect.setAttribute('rx', 6);
+    rect.setAttribute('ry', 6);
+    rect.setAttribute('fill', '#FAF9F5');
+    rect.setAttribute('stroke', theme.color);
+    rect.setAttribute('stroke-width', 2);
+    g.appendChild(rect);
+    const parts = card.display_name.split(' · ');
+    const idText = document.createElementNS(svgNS, 'text');
+    idText.setAttribute('class', 'mount-id');
+    idText.setAttribute('x', 10);
+    idText.setAttribute('y', 18);
+    idText.textContent = parts[0];
+    g.appendChild(idText);
+    const subtitle = document.createElementNS(svgNS, 'text');
+    subtitle.setAttribute('class', 'mount-subtitle');
+    subtitle.setAttribute('x', 10);
+    subtitle.setAttribute('y', 34);
+    const shortSub = (parts[1] || '').length > 12 ? (parts[1].slice(0, 12) + '…') : parts[1];
+    subtitle.textContent = shortSub || '(单标签卡)';
+    g.appendChild(subtitle);
+    layer.appendChild(g);
+    attachMountDragAndClick(g, card);
   });
 }
 
@@ -360,12 +445,7 @@ function renderLegend() {
   const themesDiv = document.getElementById('legend-themes');
   themesDiv.innerHTML = '';
   Object.values(data.themes).forEach(t => {
-    themesDiv.innerHTML += `<span class="item"><span class="swatch" style="background:${t.color}"></span>${t.emoji} ${t.name}</span>`;
-  });
-  const connsDiv = document.getElementById('legend-connections');
-  connsDiv.innerHTML = '';
-  Object.values(data.connection_types).forEach(c => {
-    connsDiv.innerHTML += `<span class="item"><span class="swatch line" style="background:${c.color}"></span>${c.name}</span>`;
+    themesDiv.innerHTML += `<span class="item"><span class="swatch circle" style="background:${t.color}"></span>${t.emoji} ${t.name}${t.is_center ? '(中心·主)' : ''}</span>`;
   });
   const statesDiv = document.getElementById('legend-states');
   statesDiv.innerHTML = '';
@@ -374,15 +454,52 @@ function renderLegend() {
   });
 }
 
-// ==== 拖拽 + 点击 ====
-function attachDragAndClick(g, card) {
-  let startX, startY, origX, origY, dragging = false, moved = false;
-
+// 拖拽 · 主题节点
+function attachThemeDrag(g, themeId) {
+  let startX, startY, origX, origY, dragging = false;
   const onDown = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const pt = pointerFromEvent(e);
     startX = pt.x; startY = pt.y;
-    origX = positions[card.id].x; origY = positions[card.id].y;
+    origX = themePositions[themeId].x;
+    origY = themePositions[themeId].y;
+    dragging = true;
+    g.classList.add('dragging');
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  };
+  const onMove = (e) => {
+    if (!dragging) return;
+    const pt = pointerFromEvent(e);
+    const dx = pt.x - startX, dy = pt.y - startY;
+    themePositions[themeId].x = origX + dx;
+    themePositions[themeId].y = origY + dy;
+    g.setAttribute('transform', `translate(${themePositions[themeId].x},${themePositions[themeId].y})`);
+    updateEdgesForTheme(themeId);
+    updateTethersForTheme(themeId);
+  };
+  const onUp = () => {
+    if (!dragging) return;
+    dragging = false;
+    g.classList.remove('dragging');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    saveStored();
+  };
+  g.addEventListener('pointerdown', onDown);
+}
+
+// 拖拽 + 点击 · 挂载卡
+function attachMountDragAndClick(g, card) {
+  let startX, startY, origX, origY, dragging = false, moved = false;
+  const onDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const pt = pointerFromEvent(e);
+    startX = pt.x; startY = pt.y;
+    origX = mountPositions[card.id].x;
+    origY = mountPositions[card.id].y;
     dragging = true; moved = false;
     g.classList.add('dragging');
     window.addEventListener('pointermove', onMove);
@@ -393,10 +510,14 @@ function attachDragAndClick(g, card) {
     const pt = pointerFromEvent(e);
     const dx = pt.x - startX, dy = pt.y - startY;
     if (!moved && Math.hypot(dx, dy) > 4) moved = true;
-    positions[card.id].x = origX + dx;
-    positions[card.id].y = origY + dy;
-    g.setAttribute('transform', `translate(${positions[card.id].x},${positions[card.id].y})`);
-    updateEdgesFor(card.id);
+    mountPositions[card.id].x = origX + dx;
+    mountPositions[card.id].y = origY + dy;
+    g.setAttribute('transform', `translate(${mountPositions[card.id].x},${mountPositions[card.id].y})`);
+    const tether = document.querySelector(`.mount-tether[data-card-id="${card.id}"]`);
+    if (tether) {
+      tether.setAttribute('x2', mountPositions[card.id].x + MOUNT_W / 2);
+      tether.setAttribute('y2', mountPositions[card.id].y + MOUNT_H / 2);
+    }
   };
   const onUp = () => {
     if (!dragging) return;
@@ -404,13 +525,57 @@ function attachDragAndClick(g, card) {
     g.classList.remove('dragging');
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onUp);
-    if (moved) {
-      savePositions();
-    } else {
-      openDrawer(card.id);
-    }
+    if (moved) saveStored();
+    else openDrawer(card.id);
   };
   g.addEventListener('pointerdown', onDown);
+}
+
+function updateEdgesForTheme(themeId) {
+  data.cards.forEach(card => {
+    if (card.sub_themes.length < 1) return;
+    if (card.primary_theme !== themeId && card.sub_themes[0] !== themeId) return;
+    const fromPos = themePositions[card.primary_theme];
+    const toPos = themePositions[card.sub_themes[0]];
+    const fromTheme = data.themes[card.primary_theme];
+    const toTheme = data.themes[card.sub_themes[0]];
+    const rFrom = fromTheme.is_center ? THEME_CENTER_R : THEME_R;
+    const rTo = toTheme.is_center ? THEME_CENTER_R : THEME_R;
+    const dx = toPos.x - fromPos.x, dy = toPos.y - fromPos.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const fx = fromPos.x + (dx / len) * rFrom;
+    const fy = fromPos.y + (dy / len) * rFrom;
+    const tx = toPos.x - (dx / len) * rTo;
+    const ty = toPos.y - (dy / len) * rTo;
+    const mx = (fx + tx) / 2, my = (fy + ty) / 2;
+    const bend = 22;
+    const cx = mx - dy / len * bend, cy = my + dx / len * bend;
+    const d = `M ${fx} ${fy} Q ${cx} ${cy} ${tx} ${ty}`;
+    document.querySelectorAll(`[data-card-id="${card.id}"]`).forEach(el => {
+      if (el.classList.contains('card-edge') || el.classList.contains('card-edge-hitbox')) {
+        el.setAttribute('d', d);
+      } else if (el.classList.contains('card-edge-label')) {
+        el.setAttribute('x', cx); el.setAttribute('y', cy);
+      } else if (el.classList.contains('card-edge-label-bg')) {
+        const approxW = card.display_name.length * 8 + 14;
+        el.setAttribute('x', cx - approxW / 2);
+        el.setAttribute('y', cy - 9);
+      }
+    });
+  });
+}
+
+function updateTethersForTheme(themeId) {
+  data.cards.forEach(card => {
+    if (card.sub_themes.length !== 0) return;
+    if (card.primary_theme !== themeId) return;
+    const themePos = themePositions[themeId];
+    const tether = document.querySelector(`.mount-tether[data-card-id="${card.id}"]`);
+    if (tether) {
+      tether.setAttribute('x1', themePos.x);
+      tether.setAttribute('y1', themePos.y);
+    }
+  });
 }
 
 function pointerFromEvent(e) {
@@ -419,149 +584,86 @@ function pointerFromEvent(e) {
   return { x: e.clientX - rect.left, y: e.clientY - rect.top };
 }
 
-function updateEdgesFor(cardId) {
-  data.connections.forEach(conn => {
-    if (conn.from !== cardId && conn.to !== cardId) return;
-    const from = positions[conn.from];
-    const to = positions[conn.to];
-    const x1 = from.x + NODE_W / 2, y1 = from.y + NODE_H / 2;
-    const x2 = to.x + NODE_W / 2, y2 = to.y + NODE_H / 2;
-    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-    const dx = x2 - x1, dy = y2 - y1;
-    const len = Math.hypot(dx, dy) || 1;
-    const shortenTo = NODE_H * 0.55, shortenFrom = NODE_H * 0.55;
-    const tx = x2 - (dx / len) * shortenTo, ty = y2 - (dy / len) * shortenTo;
-    const fx = x1 + (dx / len) * shortenFrom, fy = y1 + (dy / len) * shortenFrom;
-    const path = document.querySelector(`path.edge[data-from="${conn.from}"][data-to="${conn.to}"]`);
-    if (path) path.setAttribute('d', `M ${fx} ${fy} Q ${mx} ${my - 20} ${tx} ${ty}`);
-    const label = document.querySelector(`text.edge-label[data-from="${conn.from}"][data-to="${conn.to}"]`);
-    if (label) { label.setAttribute('x', mx); label.setAttribute('y', my - 24); }
-  });
-}
-
-// ==== 抽屉 ====
 function openDrawer(cardId) {
-  selectedCardId = cardId;
   const card = data.cards.find(c => c.id === cardId);
   if (!card) return;
-  const theme = data.themes[card.primary_theme];
+  const primary = data.themes[card.primary_theme];
   const state = data.states[card.state] || { name: card.state, color: '#94a3b8' };
-
   const subs = (card.sub_themes || []).map(sid => {
     const t = data.themes[sid];
     return t ? `<span class="tag" style="background:${t.color};color:#fff">${t.emoji} ${t.name}</span>` : '';
   }).join('');
-
-  const inbound = data.connections.filter(c => c.to === cardId);
-  const outbound = data.connections.filter(c => c.from === cardId);
-  const connsHtml = [
-    ...outbound.map(c => {
-      const target = data.cards.find(x => x.id === c.to);
-      const type = data.connection_types[c.type];
-      return `<div class="connection-item" style="border-left-color:${type.color}"><span class="direction">→</span>${c.label} <span style="color:#a08872">· to ${target ? target.display_name : c.to}</span></div>`;
-    }),
-    ...inbound.map(c => {
-      const src = data.cards.find(x => x.id === c.from);
-      const type = data.connection_types[c.type];
-      return `<div class="connection-item" style="border-left-color:${type.color}"><span class="direction">←</span>${c.label} <span style="color:#a08872">· from ${src ? src.display_name : c.from}</span></div>`;
-    })
-  ].join('');
-
+  const cardType = card.sub_themes.length === 0 ? '挂载卡·单标签' : '连线卡·双标签';
   document.getElementById('drawer-content').innerHTML = `
     <h2>${card.display_name}</h2>
-    <span class="type-badge">${card.type === 'integration' ? '整合卡' : '原子卡'} · ${card.id}</span>
-
-    <div class="field">
-      <div class="label">体系 / 出处</div>
-      <div class="content">陪跑 ${card.source_question} 深挖 · 豆包会员 · ${card.created_at}</div>
-    </div>
-
-    <div class="field">
-      <div class="label">解法原文</div>
-      <div class="content solution">${card.solution_summary}</div>
-    </div>
-
-    <div class="field">
-      <div class="label">我的体感</div>
-      <div class="content" style="color:#a08872;font-style:italic">→ 完整体感 + 潜在拆点 在幕布卡片文档内(点下方按钮打开)</div>
-    </div>
-
-    <div class="field">
-      <div class="label">状态</div>
-      <span class="state-badge" style="background:${state.color};color:#3a2a20">${state.name}</span>
-    </div>
-
+    <span class="type-badge">${cardType} · ${card.id}</span>
+    <div class="field"><div class="label">体系 / 出处</div><div class="content">陪跑 ${card.source_question} 深挖 · 豆包会员 · ${card.created_at}</div></div>
+    <div class="field"><div class="label">解法原文</div><div class="content solution">${card.solution_summary}</div></div>
+    <div class="field"><div class="label">我的体感</div><div class="content" style="color:#a08872;font-style:italic">→ 完整体感 + 潜在拆点 在幕布卡片内(点下方按钮打开)</div></div>
+    <div class="field"><div class="label">状态</div><span class="state-badge" style="background:${state.color};color:#3a2a20">${state.name}</span></div>
     <div class="field">
       <div class="label">标签(${1 + (card.sub_themes || []).length} / 3)</div>
-      <span class="tag" style="background:${theme.color};color:#fff">${theme.emoji} ${theme.name}(主)</span>
+      <span class="tag" style="background:${primary.color};color:#fff">${primary.emoji} ${primary.name}(主)</span>
       ${subs}
     </div>
-
-    ${connsHtml ? `<div class="field">
-      <div class="label">关系连接(${inbound.length + outbound.length})</div>
-      ${connsHtml}
-    </div>` : ''}
-
     <a class="mubu-btn" href="${card.mubu_url}" target="_blank">📄 打开幕布卡片文档</a>
-    <a class="mubu-btn" href="${data.meta.long_docs.Q10.url}" target="_blank" style="background:#7d6b5a;margin-top:8px">📖 打开 Q10 长文档</a>
+    <a class="mubu-btn" href="${data.meta.long_docs.Q10.url}" target="_blank" style="background:#7d6b5a;margin-top:8px">📖 打开 Q10 长文档(出处)</a>
   `;
   document.getElementById('drawer').classList.add('open');
 }
 function closeDrawer() {
   document.getElementById('drawer').classList.remove('open');
-  selectedCardId = null;
 }
 document.getElementById('drawer-close').onclick = closeDrawer;
 
-// ==== 筛选 ====
 function applyFilter() {
-  document.querySelectorAll('.node').forEach(g => {
+  document.querySelectorAll('.theme-node').forEach(g => {
     const id = g.getAttribute('data-id');
-    const card = data.cards.find(c => c.id === id);
-    if (!card) return;
-    const themes = [card.primary_theme, ...(card.sub_themes || [])];
-    const show = currentFilter === 'all' || themes.includes(currentFilter);
+    const show = currentFilter === 'all' || currentFilter === id;
     g.classList.toggle('dim', !show);
   });
-  document.querySelectorAll('.edge, .edge-label').forEach(el => {
-    const from = el.getAttribute('data-from');
-    const to = el.getAttribute('data-to');
-    const fromCard = data.cards.find(c => c.id === from);
-    const toCard = data.cards.find(c => c.id === to);
-    if (!fromCard || !toCard) return;
-    const fromMatch = currentFilter === 'all' || [fromCard.primary_theme, ...(fromCard.sub_themes || [])].includes(currentFilter);
-    const toMatch = currentFilter === 'all' || [toCard.primary_theme, ...(toCard.sub_themes || [])].includes(currentFilter);
-    el.classList.toggle('dim', !(fromMatch && toMatch));
-  });
+  const applyToEls = (selector) => {
+    document.querySelectorAll(selector).forEach(el => {
+      const cardId = el.getAttribute('data-card-id') || el.getAttribute('data-id');
+      if (!cardId) return;
+      const card = data.cards.find(c => c.id === cardId);
+      if (!card) return;
+      const themes = [card.primary_theme, ...(card.sub_themes || [])];
+      const show = currentFilter === 'all' || themes.includes(currentFilter);
+      el.classList.toggle('dim', !show);
+    });
+  };
+  applyToEls('.card-edge');
+  applyToEls('.card-edge-label');
+  applyToEls('.card-edge-label-bg');
+  applyToEls('.mount-card');
+  applyToEls('.mount-tether');
 }
 
-// ==== 重置位置 ====
 document.getElementById('reset-positions').onclick = () => {
-  if (!confirm('重置所有卡片到初始位置?')) return;
-  positions = {};
-  data.cards.forEach(c => { positions[c.id] = { ...c.initial_position }; });
-  savePositions();
+  if (!confirm('重置所有主题节点和挂载卡到初始位置?')) return;
+  themePositions = {};
+  mountPositions = {};
+  Object.entries(data.themes).forEach(([id, t]) => {
+    if (t.initial_position) themePositions[id] = { ...t.initial_position };
+  });
+  computeDefaultMountPositions();
+  saveStored();
   render();
 };
 
-// ==== 工具 ====
 function darken(hex) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  const darken = (v) => Math.max(0, Math.floor(v * 0.7));
-  return `#${darken(r).toString(16).padStart(2, '0')}${darken(g).toString(16).padStart(2, '0')}${darken(b).toString(16).padStart(2, '0')}`;
+  const d = (v) => Math.max(0, Math.floor(v * 0.7));
+  return `#${d(r).toString(16).padStart(2, '0')}${d(g).toString(16).padStart(2, '0')}${d(b).toString(16).padStart(2, '0')}`;
 }
 
-// ==== ESC 关抽屉 ====
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeDrawer();
 });
 
-// ==== 窗口缩放 ====
-// SVG 用 CSS 像素坐标 · 不需要 resize handler 重设 viewBox
-
-// ==== 启动 ====
 load();
 </script>
 </body>
