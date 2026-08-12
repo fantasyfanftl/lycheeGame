@@ -215,6 +215,69 @@ a:hover { text-decoration: underline; }
 
 <div id="empty-state">正在加载 factory-cards.json...</div>
 
+<div id="settings-overlay">
+  <div id="settings-panel">
+    <div class="settings-header">
+      <h2>⚙ 设置骨架 · v0.2(占位 · 未来做)</h2>
+      <button class="close" id="settings-close">✕</button>
+    </div>
+    <div class="settings-body">
+      <nav class="settings-nav">
+        <button class="settings-tab active" data-tab="basic">👤 主题与规则</button>
+        <button class="settings-tab" data-tab="skill">🪄 Skill · 蒸馏方法</button>
+        <button class="settings-tab" data-tab="perspective">🎨 分析视角</button>
+        <button class="settings-tab" data-tab="history">📋 深挖任务历史</button>
+        <button class="settings-tab" data-tab="cleanup">🧹 孤儿卡片清理</button>
+      </nav>
+      <div class="settings-content">
+
+        <div class="settings-tab-content active" data-tab="basic">
+          <h3>👤 主题与规则</h3>
+          <div class="wip-note">🚧 骨架占位 · 只读展示当前 factory-cards.json 的 SOP 规则 · 未来做:允许在这里编辑主题池 / 阈值 / 4 字段模板</div>
+          <div class="field-group"><div class="fg-label">主题池 · 主标签(固定)</div><div class="fg-value" id="sett-primary-theme">加载中...</div></div>
+          <div class="field-group"><div class="fg-label">主题池 · 副标签池</div><div class="fg-value" id="sett-sub-pool">加载中...</div></div>
+          <div class="field-group"><div class="fg-label">每卡标签上限</div><div class="fg-value" id="sett-max-tags">加载中...</div></div>
+          <div class="field-group"><div class="fg-label">重构启动阈值</div><div class="fg-value" id="sett-threshold">加载中...</div></div>
+          <div class="field-group"><div class="fg-label">4 字段模板(SOP · 严格不新增)</div><div class="fg-value">体系/出处 · 解法原文 · 我的体感 · 状态</div></div>
+        </div>
+
+        <div class="settings-tab-content" data-tab="skill">
+          <h3>🪄 Skill · 蒸馏方法</h3>
+          <div class="wip-note">🚧 骨架占位 · 未来做:每个 Skill 是一段 Markdown 执行要求 · 网页 AI 按此执行 · 不用每次对话重新教 · 参考自由画布 Skill tab</div>
+          <div class="skill-item"><b>Skill 1 · 从长文提炼整合卡</b><span>输入长文(如 Q10 3000 字) → 输出 5 张 4 字段草稿</span></div>
+          <div class="skill-item"><b>Skill 2 · 批量素材卡片化</b><span>输入 3-5 条零散素材 → 输出标准化 4 字段卡片(SOP 阶段 2)</span></div>
+          <div class="skill-item"><b>Skill 3 · 批量回看提炼结论</b><span>输入 5+ 张"共鸣可回看" → 输出 3-5 条稳定结论(SOP 阶段 3)</span></div>
+          <div class="skill-item"><b>Skill 4 · AI 前置查重</b><span>输入新素材 → 对照已沉淀主题关键词清单 → 输出是否重复</span></div>
+          <div class="skill-item"><b>Skill 5 · 深挖某洞察问题</b><span>输入 Q1-Q10 中某一个 → 动态陪跑对话 → 输出深挖长文</span></div>
+        </div>
+
+        <div class="settings-tab-content" data-tab="perspective">
+          <h3>🎨 分析视角</h3>
+          <div class="wip-note">🚧 骨架占位 · 未来做:AI 陪跑时切换的视角 · 类比自由画布"风格预设" · 每个视角是一段 prompt 前缀</div>
+          <div class="skill-item perspective-item"><b>视角 · 客观解构</b><span>豆包默认 · 纯拆解不评判 · 不给行动建议</span></div>
+          <div class="skill-item perspective-item"><b>视角 · 温和陪跑</b><span>低压力 · 允许反悔 · 不深挖 · 适合状态不好时</span></div>
+          <div class="skill-item perspective-item"><b>视角 · 躯体感受深挖</b><span>聚焦身体信号 · 拒绝概念化 · 追问"体感是什么"</span></div>
+          <div class="skill-item perspective-item"><b>视角 · 早期回路溯源</b><span>指向童年/原生家庭 · 找模式源头</span></div>
+        </div>
+
+        <div class="settings-tab-content" data-tab="history">
+          <h3>📋 深挖任务历史</h3>
+          <div class="wip-note">🚧 骨架占位 · 未来做:每次陪跑输出的历史记录 · 状态(running/success) · 结果指向哪张卡</div>
+          <div class="task-item"><span class="task-status task-success">success</span><b>Q10 深挖</b><span style="color:#7d6b5a">· 产出 5 张卡 · 2026-08-10</span></div>
+          <div class="empty-note" style="margin-top:12px">仅 1 次深挖 · Q1-Q9 待做</div>
+        </div>
+
+        <div class="settings-tab-content" data-tab="cleanup">
+          <h3>🧹 孤儿卡片清理</h3>
+          <div class="wip-note">🚧 骨架占位 · 未来做:扫描资产池中未被任何主题引用/连接的孤儿卡片 · 一键归档到"历史观察"状态</div>
+          <div class="empty-note">当前无孤儿卡 · 5 张卡都在主题网络中</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <aside id="drawer">
   <button class="close" id="drawer-close">✕</button>
   <div id="drawer-content"></div>
