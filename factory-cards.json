@@ -24,28 +24,33 @@
       "color": "#D97757",
       "emoji": "💎",
       "is_primary_pool": true,
-      "description": "顶层固定主题 · 所有卡默认归属"
+      "description": "顶层固定主题 · 所有卡默认归属",
+      "initial_position": {"x": 430, "y": 280},
+      "is_center": true
     },
     "stress_mechanism": {
       "name": "应激机制",
       "color": "#7dd3fc",
       "emoji": "⚡",
       "is_primary_pool": false,
-      "description": "应激系统 · 生存本能反应模式"
+      "description": "应激系统 · 生存本能反应模式",
+      "initial_position": {"x": 170, "y": 150}
     },
     "somatic": {
       "name": "躯体感受",
       "color": "#a4b3ff",
       "emoji": "🫀",
       "is_primary_pool": false,
-      "description": "身体信号 · 生理反馈"
+      "description": "身体信号 · 生理反馈",
+      "initial_position": {"x": 690, "y": 150}
     },
     "early_loop": {
       "name": "早期回路",
       "color": "#c084fc",
       "emoji": "🌱",
       "is_primary_pool": false,
-      "description": "童年经历形成的固化心智回路"
+      "description": "童年经历形成的固化心智回路",
+      "initial_position": {"x": 430, "y": 470}
     }
   },
   "states": {
