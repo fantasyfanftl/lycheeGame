@@ -557,11 +557,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 // ==== 窗口缩放 ====
-window.addEventListener('resize', () => {
-  const svg = document.getElementById('canvas');
-  const rect = svg.getBoundingClientRect();
-  svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
-});
+// SVG 用 CSS 像素坐标 · 不需要 resize handler 重设 viewBox
 
 // ==== 启动 ====
 load();
