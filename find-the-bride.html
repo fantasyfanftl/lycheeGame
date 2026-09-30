@@ -169,7 +169,7 @@
       <div style="font-size:47px;line-height:1.6;color:#333;margin-bottom:52px" id="qText"></div>
       <div style="font-size:21px;color:#999;line-height:1.8;margin-bottom:52px">
         新郎口头回答，新娘当场判<br>
-        不满意1题=1个红包 · 满意次数=免费抽卡机会
+        不满意1题=1个红包 · 1个满意=1积分
       </div>
       <div style="display:flex;gap:20px;justify-content:center">
         <button onclick="judgeQ(true)" style="padding:21px 62px;font-size:29px;border:none;border-radius:16px;cursor:pointer;color:#fff;font-weight:bold;background:#2e7d32">满意</button>
@@ -316,7 +316,7 @@ function judgeQ(pass){
         `<div style="background:#fff;border-radius:24px;box-shadow:0 8px 40px rgba(139,0,0,0.15);max-width:800px;width:100%;padding:60px;text-align:center">` +
           `<div style="font-size:28px;color:#b71c1c;font-weight:bold;margin-bottom:20px">答题结束</div>` +
           `<div style="font-size:20px;color:#666;margin-bottom:12px">不满意 ${qWrong} 个，罚${qWrong}个红包</div>` +
-          `<div style="font-size:20px;color:#666;margin-bottom:40px">攒了 <b style="color:#2e7d32;font-size:32px">${free}</b> 次免费抽卡机会</div>` +
+          `<div style="font-size:20px;color:#666;margin-bottom:40px">攒了 <b style="color:#2e7d32;font-size:32px">${free}</b> 个积分</div>` +
           `<button onclick="startBlind(${free})" style="padding:20px 60px;font-size:26px;border:none;border-radius:16px;cursor:pointer;color:#fff;font-weight:bold;background:#b71c1c">找新娘 →</button>` +
         `</div>` +
       `</div>`;
