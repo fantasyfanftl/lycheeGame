@@ -153,7 +153,20 @@
   }
 </style>
 </head>
-<body>
+<body><!-- 答题覆盖层 -->
+<div id="quizOverlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:#f5ebd8;flex-direction:column;align-items:center;justify-content:center;padding:40px">
+  <div style="background:#fff;border-radius:24px;box-shadow:0 8px 40px rgba(139,0,0,0.15);max-width:800px;width:100%;padding:60px;position:relative">
+    <div style="position:absolute;top:24px;right:32px;font-size:18px;color:#999" id="qProg">第 1 / 7 题</div>
+    <div style="position:absolute;top:24px;left:32px;font-size:18px;color:#c62828" id="qWrong">不满意 0 个</div>
+    <div style="font-size:20px;color:#b71c1c;font-weight:bold;margin-bottom:16px" id="qNum">Q1</div>
+    <div style="font-size:32px;line-height:1.6;color:#333;margin-bottom:40px" id="qText"></div>
+    <div style="font-size:18px;color:#999;margin-bottom:40px">新郎口头回答，新娘当场判</div>
+    <div style="display:flex;gap:20px;justify-content:center">
+      <button onclick="judgeQ(true)" style="padding:16px 48px;font-size:22px;border:none;border-radius:12px;cursor:pointer;color:#fff;font-weight:bold;background:#2e7d32">满意</button>
+      <button onclick="judgeQ(false)" style="padding:16px 48px;font-size:22px;border:none;border-radius:12px;cursor:pointer;color:#fff;font-weight:bold;background:#c62828">不满意</button>
+    </div>
+  </div>
+</div>
 
 <!-- 首页 -->
 <div class="home" id="home">
@@ -265,5 +278,34 @@ function showToast(msg){
   setTimeout(()=>toast.classList.remove('show'),1300);
 }
 </script>
-</body>
+<script>
+var questions = [
+  "她睡觉时最常做的一个动作是？",
+  "她生气时最常说的一句话是？",
+  "她上一次哭是因为什么？",
+  "她洗澡要洗多久？",
+  "她最不能接受你做的一件事是？",
+  "她逛街时看到什么会走不动路？",
+  "你们在一起这么久，她最想让你记住的一件事是什么？"
+];
+var qIdx = 0, qWrong = 0;
+function loadQ(){
+  document.getElementById('qProg').textContent = '第 '+(qIdx+1)+' / '+questions.length+' 题';
+  document.getElementById('qWrong').textContent = '不满意 '+qWrong+' 个';
+  document.getElementById('qNum').textContent = 'Q'+(qIdx+1);
+  document.getElementById('qText').textContent = questions[qIdx];
+}
+function judgeQ(pass){
+  if(!pass) qWrong++;
+  qIdx++;
+  if(qIdx>=questions.length){
+    var free = qIdx - qWrong;
+    document.getElementById('quizOverlay').style.display = 'none';
+    if(typeof freeChances !== 'undefined'){ freeChances = free; document.getElementById('freeLeft').textContent = free; }
+  } else {
+    loadQ();
+  }
+}
+loadQ();
+</script></body>
 </html>
