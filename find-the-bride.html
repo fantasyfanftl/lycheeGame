@@ -163,14 +163,15 @@
     <div class="rule-label">规则说明：</div>
     <div class="rule-line">9格藏4张新娘照</div>
     <div class="rule-line">认错1张红包1个</div>
-    <div class="rule-line">找到4张即挑战成功</div>
+    <div class="rule-line">找到新娘即挑战成功</div>
+    <div class="rule-line" id="freeLine">免费抽卡：<span id="freeLeft">0</span>次</div>
   </div>
   <div class="board">
     <div class="grid" id="grid"></div>
   </div>
 </div>
 
-<div class="score-bar">已找到：<span class="found-count" id="foundCount">0</span> / 4</div>
+<div class="score-bar">已找到：<span class="found-count" id="foundCount">0</span> / 1</div>
 
 <!-- 看图模式 -->
 <div class="full-view" id="fullView">
@@ -207,6 +208,9 @@ const fullImg=document.getElementById('fullImg');
 const fullNum=document.getElementById('fullNum');
 const toast=document.getElementById('toast');
 const foundCount=document.getElementById('foundCount');
+var freeChances = parseInt(localStorage.getItem('freeChances')) || 0;
+var usedFree = 0;
+document.getElementById('freeLeft').textContent = freeChances;
 
 cards.forEach((c,i)=>{
   const cell=document.createElement('div');
@@ -245,7 +249,7 @@ function brideReveal(brideSaysCorrect){
 
   fullView.classList.remove('show');
   showToast(msg);
-  if(found===4){
+  if(found===1){
     setTimeout(()=>showToast('🎉 全部找对！过关！'),1400);
   }
 }
