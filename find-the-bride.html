@@ -322,7 +322,7 @@ function judgeQ(pass){
 }
 function startBlind(free){
   document.getElementById("quizOverlay").style.display = "none";
-  if(typeof freeChances !== "undefined"){ freeChances = free; document.getElementById("freeLeft").textContent = free; }
+  if(typeof freeChances !== "undefined"){ freeChances = free; document.getElementById("freeLeft").textContent = free; document.getElementById("chanceLeft").textContent = free; }
 }
 loadQ();
 </script></body>
