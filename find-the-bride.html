@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>找新娘盲盒 · 接亲游戏</title>
+<title>谁是我的新娘</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
     font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
-    background:#ede9fe;
+    background:#e8d5b8;
     height:100vh;overflow:hidden;
     display:flex;
   }
@@ -19,7 +19,7 @@
   /* 左侧红色栏 */
   .side{
     width:320px;min-width:320px;
-    background:linear-gradient(160deg,#667eea,#764ba2);
+    background:linear-gradient(160deg,#b8292f,#8b1a1f);
     color:#fff;
     padding:40px 32px;
     display:flex;flex-direction:column;justify-content:center;
@@ -34,7 +34,7 @@
 
   /* 右侧9宫格 */
   .board{
-    flex:1;background:#f5f3ff;
+    flex:1;background:#f0e2c8;
     padding:30px;
     display:flex;align-items:center;justify-content:center;
   }
@@ -49,9 +49,9 @@
     border-radius:16px;
     cursor:pointer;
     display:flex;align-items:center;justify-content:center;
-    font-size:72px;font-weight:bold;color:#e9d5ff;line-height:1;
-    background:linear-gradient(145deg,#667eea,#764ba2);
-    border:2.5px solid #c4b5fd;
+    font-size:72px;font-weight:bold;color:#f5d98a;line-height:1;
+    background:linear-gradient(145deg,#c62828,#8b1a1f);
+    border:2.5px solid #d4a853;
     box-shadow:0 4px 12px rgba(0,0,0,0.15);
     transition:transform 0.15s,opacity 0.3s;
     position:relative;
@@ -67,7 +67,7 @@
   /* ===== 看图模式：左右分栏 ===== */
   .full-view{
     position:fixed;inset:0;
-    background:#f5f3ff;
+    background:#f0e2c8;
     display:none;z-index:10;
   }
   .full-view.show{display:flex;}
@@ -82,20 +82,20 @@
   }
   .full-side{
     width:340px;min-width:340px;
-    background:#f5f3ff;
+    background:#f0e2c8;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:40px 30px;gap:28px;
   }
   .full-side .num{font-size:18px;color:#999;}
-  .full-side .ask{font-size:26px;font-weight:700;color:#5b21b6;letter-spacing:2px;}
+  .full-side .ask{font-size:26px;font-weight:700;color:#8b1a1f;letter-spacing:2px;}
   .reveal-btns{display:flex;flex-direction:column;gap:14px;width:100%;max-width:180px;}
   .reveal-btns button{
     padding:18px;border:none;border-radius:12px;
     font-size:20px;font-weight:700;cursor:pointer;
     box-shadow:0 4px 12px rgba(0,0,0,0.15);
   }
-  .btn-correct{background:#22c55e;color:#fff;}
-  .btn-wrong{background:#764ba2;color:#fff;}
+  .btn-correct{background:#2e7d32;color:#fff;}
+  .btn-wrong{background:#c62828;color:#fff;}
 
   /* toast */
   .toast{
@@ -111,7 +111,7 @@
   /* 底部计数 */
   .score-bar{
     position:fixed;bottom:16px;right:30px;
-    font-size:14px;color:#5b21b6;
+    font-size:14px;color:#8b1a1f;
     background:rgba(255,255,255,0.8);
     padding:6px 14px;border-radius:20px;
   }
@@ -154,7 +154,7 @@
 </style>
 </head>
 <body>
-<div style="padding:10px 16px;background:#fff;font-size:14px;"><a href="index.html" style="color:#667eea;text-decoration:none;">← 返回荔枝首页</a></div>
+<div style="padding:10px 16px;background:#fff;font-size:14px;"><a href="index.html" style="color:#8b1a1f;text-decoration:none;">← 返回荔枝首页</a></div>
 
 <!-- 首页 -->
 <div class="home" id="home">
@@ -229,24 +229,24 @@ function brideReveal(brideSaysCorrect){
   let msg='';
 
   if(brideSaysCorrect && c.isBride){
-    msg="✅ 对！这就是我";
+    msg='✅ 对！这就是我';
     found++;foundCount.textContent=found;
     markCell(cell,'✓','#2e7d32');
   } else if(brideSaysCorrect && !c.isBride){
-    msg="✅ 对，这不是";
+    msg='✅ 对，这不是';
     markCell(cell,'✓','#2e7d32');
   } else if(!brideSaysCorrect && c.isBride){
-    msg="❌ 这是我你都不认？红包！";
-    markCell(cell,'✗','#764ba2');
+    msg='❌ 这是我你都不认？红包！';
+    markCell(cell,'✗','#c62828');
   } else {
-    msg="❌ 这都认错？红包！";
-    markCell(cell,'✗','#764ba2');
+    msg='❌ 这都认错？红包！';
+    markCell(cell,'✗','#c62828');
   }
 
   fullView.classList.remove('show');
   showToast(msg);
   if(found===4){
-    setTimeout(()=>showToast("🎉 全部找对！过关！"),1400);
+    setTimeout(()=>showToast('🎉 全部找对！过关！'),1400);
   }
 }
 
