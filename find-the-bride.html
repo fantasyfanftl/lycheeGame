@@ -297,7 +297,6 @@ var questions = [
 var qIdx = 0, qWrong = 0;
 function loadQ(){
   document.getElementById('qProg').textContent = '第 '+(qIdx+1)+' / '+questions.length+' 题';
-  document.getElementById('qWrong').textContent = '不满意 '+qWrong+' 个';
   document.getElementById('qNum').textContent = 'Q'+(qIdx+1);
   document.getElementById('qText').textContent = questions[qIdx];
 }
