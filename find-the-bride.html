@@ -154,17 +154,27 @@
 </style>
 </head>
 <body><!-- 答题覆盖层 -->
-<div id="quizOverlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:#f5ebd8;flex-direction:column;align-items:center;justify-content:center;padding:40px">
-  <div style="background:#fff;border-radius:24px;box-shadow:0 8px 40px rgba(139,0,0,0.15);max-width:800px;width:100%;padding:60px;position:relative">
-    <div style="position:absolute;top:24px;right:32px;font-size:18px;color:#999" id="qProg">第 1 / 7 题</div>
-    <div style="position:absolute;top:24px;left:32px;font-size:18px;color:#c62828" id="qWrong">不满意 0 个</div>
-    <div style="font-size:20px;color:#b71c1c;font-weight:bold;margin-bottom:16px" id="qNum">Q1</div>
-    <div style="font-size:32px;line-height:1.6;color:#333;margin-bottom:40px" id="qText"></div>
-    <div style="font-size:18px;color:#999;margin-bottom:16px">新娘知多少 · 7题</div>
-    <div style="font-size:16px;color:#bbb;margin-bottom:40px">新郎口头答，新娘当场判 · 不满意1题=1个红包 · 满意次数=免费抽卡机会</div>
-    <div style="display:flex;gap:20px;justify-content:center">
-      <button onclick="judgeQ(true)" style="padding:16px 48px;font-size:22px;border:none;border-radius:12px;cursor:pointer;color:#fff;font-weight:bold;background:#2e7d32">满意</button>
-      <button onclick="judgeQ(false)" style="padding:16px 48px;font-size:22px;border:none;border-radius:12px;cursor:pointer;color:#fff;font-weight:bold;background:#c62828">不满意</button>
+<div id="quizOverlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:#f5ebd8;flex-direction:column">
+  <div style="background:linear-gradient(180deg,#b71c1c,#8e0000);padding:20px 40px;display:flex;align-items:center;justify-content:space-between">
+    <div style="color:#fff;font-size:28px;font-weight:bold;letter-spacing:4px">新娘知多少</div>
+    <div style="color:#f9d97a;font-size:16px;background:rgba(0,0,0,0.3);padding:6px 16px;border-radius:20px">不满意1题=1个红包</div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px">
+    <div style="background:#fff;border-radius:24px;box-shadow:0 8px 40px rgba(139,0,0,0.15);max-width:800px;width:100%;padding:60px;position:relative">
+      <div style="display:flex;justify-content:space-between;margin-bottom:20px">
+        <div style="font-size:18px;color:#c62828" id="qWrong">不满意 0 个</div>
+        <div style="font-size:18px;color:#999" id="qProg">第 1 / 7 题</div>
+      </div>
+      <div style="font-size:20px;color:#b71c1c;font-weight:bold;margin-bottom:16px" id="qNum">Q1</div>
+      <div style="font-size:36px;line-height:1.6;color:#333;margin-bottom:40px" id="qText"></div>
+      <div style="font-size:16px;color:#999;line-height:1.8;margin-bottom:40px">
+        新郎口头回答，新娘当场判<br>
+        不满意1题=1个红包 · 满意次数=免费抽卡机会
+      </div>
+      <div style="display:flex;gap:20px;justify-content:center">
+        <button onclick="judgeQ(true)" style="padding:16px 48px;font-size:22px;border:none;border-radius:12px;cursor:pointer;color:#fff;font-weight:bold;background:#2e7d32">满意</button>
+        <button onclick="judgeQ(false)" style="padding:16px 48px;font-size:22px;border:none;border-radius:12px;cursor:pointer;color:#fff;font-weight:bold;background:#c62828">不满意</button>
+      </div>
     </div>
   </div>
 </div>
