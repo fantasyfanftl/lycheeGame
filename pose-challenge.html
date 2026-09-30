@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>出片大作战</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>囍</text></svg>">
+<style>
+/* ===== 基础 ===== */
+:root{
+  --bg:#e8d5b8;
+  --red:#b8292f;
+  --red-2:#c62828;
+  --red-deep:#8b1a1f;
+  --gold:#d4a853;
+  --gold-soft:#f5d98a;
+  --gold-deep:#b8860b;
+  --ink:#2b2b2b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);overflow:hidden;
+  height:100vh;height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+/* ===== 首页 ===== */
+.home{display:flex;height:100vh;height:100dvh}
+.side{
+  width:380px;min-width:380px;
+  background:linear-gradient(160deg,#b8292f,#8b1a1f);
+  color:#fff;padding:110px 28px 56px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+a.back{
+  position:absolute;top:24px;left:28px;
+  color:rgba(255,255,255,0.75);text-decoration:none;font-size:16px;
+  transition:opacity .2s;
+}
+a.back:hover{opacity:1}
+.side h1{font-size:36px;letter-spacing:4px;margin-bottom:26px;white-space:nowrap}
+.rule-label{font-size:20px;opacity:.75;margin-bottom:12px;letter-spacing:2px}
+.rule-line{
+  font-size:20px;line-height:1.8;padding-left:14px;
+  border-left:3px solid rgba(245,217,138,.5);margin-bottom:10px;
+}
+.rule-sub{font-size:17px;opacity:.8;line-height:1.7;padding-left:14px}
+.counter{
+  position:absolute;bottom:22px;right:22px;
+  display:flex;gap:8px;
+}
+.counter .chip{
+  background:rgba(0,0,0,.55);color:#fff;
+  padding:8px 14px;border-radius:20px;font-size:15px;
+  border:1px solid rgba(245,217,138,.35);
+  white-space:nowrap;
+}
+.counter .chip b{color:var(--gold-soft)}
+
+/* ===== 翻牌区 ===== */
+.grid{
+  flex:1;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;
+  gap:14px;padding:30px;
+}
+.card{
+  position:relative;border-radius:16px;cursor:pointer;
+  width:calc((100% - 42px)/4);height:calc((100% - 28px)/3);
+  background:linear-gradient(145deg,var(--red-2),var(--red-deep));
+  border:2px solid #f2e3c0;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  transition:transform .18s,box-shadow .18s;
+  touch-action:manipulation;
+}
+.card:hover{transform:scale(1.03)}
+.card:active{transform:scale(.96)}
+.card.popping{transform:scale(1.06);box-shadow:0 8px 26px rgba(0,0,0,.3)}
+.card .wm{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:rgba(120,8,12,.38);font-weight:900;
+  font-size:clamp(56px,8vw,104px);
+  transform:rotate(-8deg);pointer-events:none;
+}
+.card .num{
+  position:relative;z-index:2;
+  font-size:clamp(36px,5.2vw,66px);font-weight:900;
+  color:var(--gold-soft);
+  text-shadow:0 2px 6px rgba(0,0,0,.3);
+  line-height:1;
+}
+.card .mark{
+  position:absolute;top:10px;right:10px;z-index:3;
+  min-width:28px;height:28px;padding:0 6px;border-radius:50%;
+  background:rgba(0,0,0,.4);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:bold;line-height:1;
+  opacity:0;transform:scale(.5);
+  transition:opacity .25s,transform .25s;
+}
+.card.done{background:linear-gradient(145deg,#d6a54f,#b0802a);border-color:var(--gold-deep);cursor:default}
+.card.done .num{color:#3a2a08}
+.card.done .mark{opacity:1;transform:scale(1);background:rgba(255,255,255,.28)}
+.card.fail{background:linear-gradient(145deg,#7a7a7a,#545454);border-color:#666;cursor:default}
+.card.fail .num{color:#e8e8e8}
+.card.fail .mark{opacity:1;transform:scale(1)}
+.card.skip{background:linear-gradient(145deg,#6a6a6a,#4a4a4a);border-color:#5a5a5a;cursor:default}
+.card.skip .num{color:#cfcfcf}
+.card.skip .mark{opacity:1;transform:scale(1)}
+.card.done:hover,.card.fail:hover,.card.skip:hover{transform:none}
+
+/* ===== 出片判定（大图页） ===== */
+.full{display:none;position:relative;padding:36px;gap:24px;height:100vh;height:100dvh;overflow:hidden}
+.full.show{display:flex}
+.full-img{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  background:#fff;border-radius:16px;overflow:hidden;
+  box-shadow:0 6px 24px rgba(0,0,0,.12);position:relative;
+  min-width:0;
+}
+.full-img img{max-width:100%;max-height:100%;object-fit:contain}
+.full-tag{
+  position:absolute;top:16px;left:16px;
+  background:rgba(139,26,31,.88);color:#fff;
+  font-size:14px;padding:6px 14px;border-radius:20px;letter-spacing:1px;
+}
+.full-side{
+  width:400px;min-width:400px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;padding:0 30px;
+}
+.full-side .q{font-size:26px;font-weight:bold;color:var(--red-deep);white-space:nowrap;letter-spacing:2px}
+.full-side .pose-tip{font-size:15px;color:#8a6d3b;letter-spacing:1px}
+.full-side .pose-rule{
+  width:100%;font-size:18px;font-weight:bold;color:var(--red-deep);text-align:center;line-height:1.6;
+  background:rgba(245,217,138,.22);border:2px dashed var(--gold);border-radius:12px;
+  padding:10px 14px;box-sizing:border-box;
+}
+.btn{
+  width:220px;padding:14px;font-size:20px;border:none;border-radius:12px;
+  cursor:pointer;color:#fff;font-weight:bold;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  transition:transform .12s,box-shadow .2s;
+  touch-action:manipulation;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.btn:active{transform:scale(.97)}
+.btn-yes{background:linear-gradient(180deg,#e2b45e,#c9962e);color:#3a2a08}
+.btn-no{background:var(--red)}
+.btn-small{background:linear-gradient(180deg,#d64545,var(--red));color:#fff;font-size:17px;padding:12px}
+
+/* ===== 弹层 ===== */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.overlay-box{
+  background:#fff;border-radius:20px;padding:40px;max-width:440px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.overlay-box img{
+  display:none;max-width:100%;max-height:170px;border-radius:10px;
+  margin-bottom:16px;object-fit:contain;
+}
+.overlay-box h3{font-size:24px;margin-bottom:20px;color:var(--ink)}
+.overlay-box p{font-size:16px;color:#666;margin-bottom:24px;line-height:1.6}
+.overlay-box .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.overlay-box .btn{width:auto;min-width:150px;padding:12px 20px;font-size:17px}
+/* 大号弹窗：占页面85%（用于需要看清姿势图的新娘题） */
+.overlay.large .overlay-box{
+  width:85vw;height:85vh;max-width:none;max-height:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:28px;border-radius:24px;
+}
+.overlay.large .overlay-box img{
+  display:block;flex:1;min-height:0;width:100%;max-width:100%;max-height:none;
+  margin-bottom:0;border-radius:12px;object-fit:contain;
+}
+.overlay.large .overlay-box h3{font-size:30px;margin-bottom:0}
+.overlay.large .overlay-box p{font-size:18px;margin-bottom:0}
+.overlay.large .overlay-box .row{flex:none}
+.overlay.large .overlay-box .btn{padding:14px 26px;font-size:18px}
+/* 出片规则轻弹窗：只留文字+两个选择，不挡背景姿势图 */
+.overlay.light{background:rgba(0,0,0,.3);align-items:flex-end;padding:0 12px 8vh}
+.overlay.light .overlay-box{width:min(94vw,620px);max-width:none;padding:22px 24px 20px;border-radius:18px;text-align:center}
+.overlay.light .overlay-box img{display:none}
+.overlay.light .overlay-box h3{font-size:26px;margin-bottom:10px}
+.overlay.light .overlay-box p{font-size:18px;margin-bottom:18px}
+.overlay.light .overlay-box .btn{min-width:150px;padding:13px 22px;font-size:17px}
+.overlay-box p .hot{color:var(--red);font-weight:900;font-size:1.4em;letter-spacing:1px;margin-left:2px}
+
+/* ===== 结果 ===== */
+.result{
+  display:none;position:fixed;inset:0;
+  background:rgba(52,8,8,.92);z-index:100;
+  align-items:center;justify-content:center;flex-direction:column;gap:12px;
+}
+.result.show{display:flex}
+.result .xi{font-size:70px;color:var(--gold-soft);line-height:1;margin-bottom:4px}
+.result .text{color:#fff;font-size:44px;font-weight:bold;letter-spacing:3px}
+.result .sub{color:rgba(255,255,255,.75);font-size:18px}
+.result .row{display:flex;gap:14px;align-items:center;margin-top:12px}
+.result button{
+  padding:14px 44px;font-size:20px;border:none;border-radius:12px;
+  background:var(--gold-soft);color:var(--red-deep);cursor:pointer;
+  font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,.3);
+}
+.result button:active{transform:scale(.96)}
+.result a{
+  color:rgba(255,255,255,.7);text-decoration:none;font-size:15px;
+  padding:6px 12px;border:1px solid rgba(255,255,255,.3);border-radius:20px;
+}
+.result a:hover{color:#fff;border-color:rgba(255,255,255,.6)}
+
+/* 彩带 */
+.confetti{
+  position:fixed;top:-24px;z-index:120;
+  pointer-events:none;
+  animation:fall linear forwards;
+}
+@keyframes fall{
+  to{transform:translateY(115vh) rotate(720deg);opacity:.9}
+}
+
+/* ===== 竖屏适配 ===== */
+@media (orientation:portrait){
+  .home{flex-direction:column}
+  .side{
+    width:100%;min-width:0;padding:30px 16px 10px;
+    flex-direction:row;flex-wrap:wrap;
+    align-items:center;justify-content:center;
+    gap:6px 20px;
+  }
+  a.back{
+    position:fixed;top:8px;left:14px;z-index:9;
+    font-size:13px;color:rgba(255,255,255,.65);
+  }
+  .side h1{font-size:26px;margin-bottom:0;letter-spacing:3px}
+  .rule-label{font-size:13px;margin-bottom:0;letter-spacing:1px}
+  .rule-line{
+    font-size:14px;line-height:1.6;margin-bottom:0;
+    padding:2px 0 2px 10px;border-left:2px solid rgba(245,217,138,.5);
+    white-space:nowrap;
+  }
+  .rule-sub{display:none}
+  .counter{position:static;gap:6px}
+  .counter .chip{font-size:13px;padding:5px 10px}
+  .grid{
+    gap:10px;padding:16px;
+  }
+  .grid .card{
+    width:calc((100% - 20px)/3);
+    height:calc((100% - 30px)/4);
+  }
+  .card .wm{font-size:54px}
+  .card .num{font-size:34px}
+  .card .mark{min-width:22px;height:22px;font-size:12px;top:6px;right:6px}
+  .full{flex-direction:column;padding:16px;gap:12px}
+  .full-img{flex:1.5}
+  .full-tag{top:12px;left:12px;font-size:12px}
+  .full-side{
+    width:100%;min-width:0;
+    flex-direction:row;flex-wrap:wrap;justify-content:center;
+    padding:6px 0;gap:10px;
+  }
+  .full-side .q{font-size:20px}
+  .full-side .pose-tip{width:100%;text-align:center;font-size:13px}
+  .full-side .pose-rule{font-size:14px;padding:6px 10px}
+  .btn{width:auto;min-width:130px;padding:12px 18px;font-size:18px}
+  .btn-small{min-width:150px;font-size:15px;padding:10px}
+  .result .text{font-size:34px}
+  .result .xi{font-size:56px}
+  .overlay-box{padding:28px 22px}
+  .overlay-box img{max-height:130px}
+  .overlay-box h3{font-size:20px}
+  .overlay-box p{font-size:15px}
+  .overlay.large .overlay-box{padding:20px;gap:10px}
+  .overlay.large .overlay-box img{min-height:0}
+  .overlay.large .overlay-box h3{font-size:24px}
+  .overlay.large .overlay-box p{font-size:16px}
+  .overlay.large .overlay-box .btn{padding:12px 20px;font-size:16px}
+}
+</style>
+</head>
+<body>
+<!-- ===== 首页 ===== -->
+<div class="home" id="home">
+  <div class="side">
+    <a class="back" id="backLink" href="index.html">← 返回荔枝首页</a>
+    <h1>出片大作战</h1>
+    <div class="rule-label">规则说明：</div>
+    <div class="rule-line">翻牌得姿势 → 新郎伴郎照摆</div>
+    <div class="rule-line">新娘判「出片/不出片」</div>
+    <div class="rule-line">凑3张出片即过关</div>
+    <div class="counter">
+      <span class="chip">已出片 <b id="cGot">0</b>/3</span>
+      <span class="chip">已翻 <b id="cFlip">0</b>/6</span>
+    </div>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- ===== 出片判定 ===== -->
+<div class="full" id="full">
+  <div class="full-img">
+    <span class="full-tag" id="poseTag"></span>
+    <img id="fullImg" src="">
+  </div>
+  <div class="full-side">
+    <div class="q">请新娘揭晓</div>
+    <div class="pose-tip">兄弟们照着摆，新娘来评判</div>
+    <div class="pose-rule" id="poseRule"></div>
+    <button class="btn btn-yes" onclick="judge(true)">出片！</button>
+    <button class="btn btn-no" id="btnNo" onclick="judge(false)">不出片</button>
+  </div>
+</div>
+
+<!-- ===== 通用弹层 ===== -->
+<div class="overlay" id="overlay">
+  <div class="overlay-box">
+    <img id="oImg" alt="">
+    <h3 id="oTitle"></h3>
+    <p id="oDesc"></p>
+    <div class="row" id="oBtns"></div>
+  </div>
+</div>
+
+<!-- ===== 结果 ===== -->
+<div class="result" id="result">
+  <div class="xi" id="rXi"></div>
+  <div class="text" id="rText"></div>
+  <div class="sub" id="rSub"></div>
+  <div class="row">
+    <button onclick="newGame()">下一关</button>
+    <a id="homeLink" href="index.html">返回首页</a>
+  </div>
+</div>
+
+<script>
+/* ===== 状态 ===== */
+var POOL = 14;        // 姿势图总数
+var DECK_SIZE = 11;   // 卡牌数
+var WIN = 3;          // 过关所需出片数
+var MAX = 6;          // 最多翻牌数
+
+var deck = [];        // 每张卡对应的姿势序号
+var used = [];        // 已翻的卡下标
+var got = 0;          // 已出片数
+var total = 0;        // 已翻张数
+var busy = false;     // 翻牌动画期间的防连点锁
+var preloads = [];
+var BRIDE_POSES = {13:1, 14:1}; // 姿势编号：请人题（13=伴娘团牵手，14=六人草坪婚礼队形）
+var POSE_MSGS = {1:'坚持3S就出片!!', 2:'坚持3S就出片!!', 3:'够帅就出片!!', 4:'脸在心里就出片!!', 6:'笑得明媚就出片!!', 7:'坚持3S就出片!!', 8:'坚持3S就出片!!', 9:'定格瞬间表情都不一样就出片'}; // 姿势编号：翻开后先弹的特殊出片规则
+
+/* ===== 工具 ===== */
+function shuffle(arr){
+  for(var i=arr.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
+function buildDeck(){
+  deck = [1,13,2,14,3,7,4,8,6,9,10]; /* 固定顺序（一次打乱定版）：同规则姿势尽量不相邻——坚持3S组1/2/7/8/10隔开，请人题13/14隔开 */
+}
+
+function preload(){
+  for(var i=0;i<deck.length;i++){
+    var im = new Image();
+    im.src = 'assets/pose'+deck[i]+'.jpg';
+    preloads.push(im);
+  }
+}
+
+function updateCounters(){
+  document.getElementById('cGot').textContent = got;
+  document.getElementById('cFlip').textContent = total;
+}
+
+/* ===== 翻牌 ===== */
+function renderGrid(){
+  var g = document.getElementById('grid');
+  g.innerHTML = '';
+  for(var i=0;i<DECK_SIZE;i++){
+    (function(idx){
+      var c = document.createElement('div');
+      c.className = 'card';
+      c.id = 'card'+idx;
+      c.innerHTML =
+        '<div class="wm">囍</div>'+
+        '<div class="num">'+(idx+1)+'</div>'+
+        '<div class="mark" id="mark'+idx+'"></div>';
+      c.onclick = function(){ openCard(idx); };
+      g.appendChild(c);
+    })(i);
+  }
+}
+
+function openCard(idx){
+  if(used.indexOf(idx)>=0 || busy) return;
+  used.push(idx);
+  total++;
+  updateCounters();
+  var card = document.getElementById('card'+idx);
+  card.classList.add('popping');
+  busy = true;
+  setTimeout(function(){
+    busy = false;
+    card.classList.remove('popping');
+    var p = deck[idx];
+    window._cur = idx;
+    document.getElementById('fullImg').src = 'assets/pose'+p+'.jpg';
+    document.getElementById('poseTag').textContent = '姿势 '+('0'+(idx+1)).slice(-2)+' / '+DECK_SIZE;
+    var ruleTxt = '';
+    if(p===10){ ruleTxt = '脱鞋完成，给红包可以不脱，或挑战坚持3S'; }
+    else if(POSE_MSGS[p]){ ruleTxt = POSE_MSGS[p]; }
+    else if(p===13){ ruleTxt = '此题需请全部伴娘团配合，包出片的！'; }
+    else if(p===14){ ruleTxt = '此题只需请新娘配合，包出片的！'; }
+    document.getElementById('poseRule').textContent = ruleTxt;
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('full').classList.add('show');
+    if(BRIDE_POSES[p]){
+      /* 请人题：先展示姿势大图，再弹请人轻弹窗（求助 → 协商红包 → 帮/不帮） */
+      brideAsk(p, idx);
+      return;
+    }
+    if(p===10){
+      /* 脱鞋题：给红包可不脱，选挑战再弹坚持3S */
+      showOverlay('出片规则', '脱鞋完成，给红包可以不脱', [
+        {text:'给红包不脱鞋', cls:'btn-yes', fn:function(){
+          markDone(document.getElementById('card'+idx), '💰');
+          closeOverlay(); backHome(); checkWin();
+        }},
+        {text:'挑战', cls:'btn-no', fn:function(){
+          showOverlay('出片规则', '坚持3S就出片!!', [
+            {text:'开摆！', cls:'btn-yes', fn:function(){ closeOverlay(); }},
+            {text:'太难不想做', cls:'btn-small', fn:function(){ askSkip(); }}
+          ], null, false, true);
+        }},
+        {text:'太难不想做', cls:'btn-small', fn:function(){ askSkip(); }}
+      ], null, false, true);
+    } else if(POSE_MSGS[p]){
+      /* 特殊规则题：先弹规则，确认后再由新娘判定 */
+      showOverlay('出片规则', POSE_MSGS[p], [
+        {text:'开摆！', cls:'btn-yes', fn:function(){ closeOverlay(); }},
+        {text:'太难不想做', cls:'btn-small', fn:function(){ askSkip(); }}
+      ], null, false, true);
+    }
+  }, 480);
+}
+
+/* ===== 新娘题 ===== */
+function brideAsk(p, idx){
+  /* 请人题：13=请全部伴娘团，11/14=请新娘；救助 / 2红包换一个 */
+  var who = (p===13) ? '伴娘团' : '新娘';
+  var askDesc = (p===13) ? '此题需请全部伴娘团配合<span class="hot">，包出片的！</span>' : '此题只需请新娘配合<span class="hot">，包出片的！</span>';
+  showOverlay('请'+who, askDesc, [
+    {text:'用红包向'+who+'救助', cls:'btn-yes', fn:function(){
+      closeOverlay();
+      /* 协商红包数：帮 / 不帮 */
+      showOverlay('协商红包', '与'+who+'协商红包数，'+who+'愿意帮吗？', [
+        {text:who+'帮', cls:'btn-yes', fn:function(){
+          closeOverlay();
+          brideHelp(idx, p, who);
+        }},
+        {text:'不帮', cls:'btn-no', fn:function(){
+          closeOverlay();
+          brideAsk(p, idx); /* 不帮：回到请人选项 */
+        }}
+      ], null, false, true);
+    }},
+    {text:'2个红包换一个', cls:'btn-small', fn:function(){
+      closeOverlay();
+      var card = document.getElementById('card'+idx);
+      card.classList.add('skip');
+      card.querySelector('.mark').textContent = '→';
+      backHome(); checkLose();
+    }}
+  ], null, false, true);
+}
+function brideHelp(idx, p, who){
+  /* 帮：进入大图只显示「出片」，图片保持可见供摆造型 */
+  document.getElementById('fullImg').src = 'assets/pose'+p+'.jpg';
+  document.getElementById('poseTag').textContent = '姿势 '+('0'+(idx+1)).slice(-2)+' / '+DECK_SIZE;
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('full').classList.add('show');
+  document.getElementById('btnNo').style.display = 'none';
+  var q = document.querySelector('.full-side .q');
+  if(q) q.textContent = who+'已同意，照着摆！';
+}
+
+/* ===== 判定 ===== */
+function judge(pass){
+  var idx = window._cur;
+  var card = document.getElementById('card'+idx);
+  if(pass){
+    markDone(card, '✓');
+    backHome();
+    checkWin();
+  } else {
+    showOverlay('不出片', '这张怎么处理？', [
+      {text:'1个红包换个挑战',cls:'btn-small',fn:function(){
+        closeOverlay();
+        card.classList.add('fail');
+        card.querySelector('.mark').textContent = '✗';
+        backHome();
+        checkLose();
+      }},
+      {text:'红包买通新娘',cls:'btn-yes',fn:function(){
+        closeOverlay();
+        negotiate(card, true);
+      }}
+    ]);
+  }
+}
+
+function askSkip(){
+  showOverlay('太难不想做', '怎么跳过这张？', [
+    {text:'2个红包换一张',cls:'btn-small',fn:function(){
+      var card = document.getElementById('card'+window._cur);
+      card.classList.add('skip');
+      card.querySelector('.mark').textContent = '→';
+      closeOverlay();backHome();checkLose();
+    }},
+    {text:'红包买通新娘',cls:'btn-yes',fn:function(){
+      closeOverlay();
+      negotiate(document.getElementById('card'+window._cur), true);
+    }}
+  ]);
+}
+
+function markDone(card, mark){
+  card.classList.add('done');
+  card.querySelector('.mark').textContent = mark;
+  got++;
+  updateCounters();
+}
+
+function negotiate(card, isPass){
+  showOverlay('谈判中...', '新娘收了红包吗？', [
+    {text:'买通成功',cls:'btn-yes',fn:function(){
+      markDone(card, '💰');
+      closeOverlay();backHome();checkWin();
+    }},
+    {text:'返回挑战',cls:'btn-no',fn:function(){
+      closeOverlay();
+    }}
+  ]);
+}
+
+/* ===== 视图切换 ===== */
+function showOverlay(title, desc, btns, img, large, light){
+  var im = document.getElementById('oImg');
+  if(img){ im.src = img; im.style.display = 'block'; } else { im.style.display = 'none'; }
+  document.getElementById('oTitle').textContent = title;
+  document.getElementById('oDesc').innerHTML = desc;
+  var box = document.getElementById('oBtns');
+  box.innerHTML = '';
+  btns.forEach(function(b){
+    var btn = document.createElement('button');
+    btn.className = 'btn '+b.cls;
+    btn.textContent = b.text;
+    btn.onclick = b.fn;
+    box.appendChild(btn);
+  });
+  var ov = document.getElementById('overlay');
+  ov.classList.toggle('large', !!large);
+  ov.classList.toggle('light', !!light);
+  ov.classList.add('show');
+}
+function closeOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+function backHome(){
+  document.getElementById('full').classList.remove('show');
+  document.getElementById('poseRule').textContent = '';
+  document.getElementById('home').style.display = 'flex';
+  document.getElementById('btnNo').style.display = '';
+  var q = document.querySelector('.full-side .q');
+  if(q) q.textContent = '请新娘揭晓';
+}
+
+/* ===== 胜负 ===== */
+function checkWin(){
+  if(got>=WIN) showResult('囍','出片成功！','兄弟们拍得不错，新娘很满意', true);
+}
+function checkLose(){
+  if(total>=MAX && got<WIN) showResult('罚','红包交出来！','翻满'+MAX+'张还没凑够'+WIN+'张，罚10个红包', false);
+}
+function showResult(xi, t, s, win){
+  document.getElementById('rXi').textContent = xi;
+  document.getElementById('rText').textContent = t;
+  document.getElementById('rSub').textContent = s;
+  document.getElementById('result').classList.add('show');
+  if(win) confetti();
+}
+
+function confetti(){
+  var colors = ['#f5d98a','#e8b84b','#d4a853','#ffffff','#e57373'];
+  for(var i=0;i<70;i++){
+    var d = document.createElement('div');
+    d.className = 'confetti';
+    d.style.left = Math.random()*100+'vw';
+    d.style.background = colors[i%colors.length];
+    d.style.width = (6+Math.random()*8)+'px';
+    d.style.height = (10+Math.random()*10)+'px';
+    d.style.borderRadius = Math.random()>0.5?'50%':'2px';
+    d.style.animationDuration = (2.4+Math.random()*1.6)+'s';
+    d.style.animationDelay = (Math.random()*0.8)+'s';
+    document.body.appendChild(d);
+    (function(el){ setTimeout(function(){ el.remove(); }, 5600); })(d);
+  }
+}
+
+/* ===== 新一局 ===== */
+function newGame(){
+  used = []; got = 0; total = 0; busy = false;
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('full').classList.remove('show');
+  document.getElementById('home').style.display = 'flex';
+  updateCounters();
+  buildDeck();
+  renderGrid();
+}
+
+/* ===== 返回链接：本地直开回落方案首页，服务器环境优先 index.html ===== */
+(function(){
+  var back = document.getElementById('backLink');
+  var home = document.getElementById('homeLink');
+  var fallback = '接亲游戏方案.html';
+  function use(target){ back.href = target; home.href = target; }
+  if(location.protocol === 'file:'){
+    use(fallback); /* 目录里没有 index.html */
+    return;
+  }
+  fetch('index.html').then(function(r){
+    use(r.ok ? 'index.html' : fallback);
+  }).catch(function(){ use(fallback); });
+})();
+
+/* ===== 启动 ===== */
+buildDeck();
+renderGrid();
+preload();
+updateCounters();
+</script>
+</body>
+</html>
