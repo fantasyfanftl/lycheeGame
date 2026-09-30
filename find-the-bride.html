@@ -207,6 +207,13 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="winModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);align-items:center;justify-content:center">
+  <div style="width:85%;height:85%;background:#fff;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 40px rgba(0,0,0,0.3)">
+    <div style="font-size:48px;margin-bottom:20px">🎉</div>
+    <div style="font-size:42px;color:#b71c1c;font-weight:bold;margin-bottom:20px">恭喜通关！</div>
+    <div style="font-size:24px;color:#666">找到真新娘，第一关完成</div>
+  </div>
+</div>
 
 <script>
 const cards = [
@@ -270,7 +277,7 @@ function brideReveal(brideSaysCorrect){
   fullView.classList.remove('show');
   showToast(msg);
   if(found===1){
-    setTimeout(()=>showToast('🎉 全部找对！过关！'),1400);
+    setTimeout(()=>{ document.getElementById('winModal').style.display='flex'; },1400);
   }
 }
 
