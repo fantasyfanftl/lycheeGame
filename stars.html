@@ -65,22 +65,25 @@
 
   .board-wrap {
     position: relative;
-    aspect-ratio: 1;
+    width: 100%;
+    /* 用 padding-bottom:100% 撑成正方形(高=宽)，兼容不支持 aspect-ratio 的浏览器。
+       否则旧内核会让棋盘高度塌陷，最底部星星被 overflow:hidden 裁掉。 */
+    height: 0;
+    padding-bottom: 100%;
     background: rgba(0,0,0,0.35);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
-    padding: 8px;
     box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
     overflow: hidden;
     margin-bottom: 14px;
   }
   .board {
+    position: absolute;
+    inset: 8px;   /* 替代原 board-wrap 的 padding:8px */
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
     gap: 2px;
-    width: 100%; height: 100%;
-    position: relative;
   }
   .cell {
     position: relative;
