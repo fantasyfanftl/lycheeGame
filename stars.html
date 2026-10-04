@@ -117,15 +117,12 @@
     clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
   }
   /* 星星本体 */
+  /* 注意：不要用 filter 做无限脉动动画。100 颗星星同时跑 filter:brightness
+     会持续触发整层重绘，是 iPad/低端设备上"反应慢"的主因。这里只保留静态渐变。 */
   .star {
     position: absolute;
     inset: 0;
     clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-    animation: pulse 4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.1); }
   }
 
   .star.c0 { background: linear-gradient(180deg, #ffb2c0, #ff8a95); }
@@ -141,10 +138,12 @@
   .cell.selected .star-wrap {
     animation: selectPulse 0.6s ease-in-out infinite;
   }
+  /* 选中发光：用 box-shadow（走合成层，开销小）替代 filter:drop-shadow */
   @keyframes selectPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px #fff); }
-    50% { transform: scale(1.12); filter: drop-shadow(0 0 12px #fff); }
+    0%, 100% { transform: scale(1); box-shadow: 0 0 6px rgba(255,255,255,0.55); }
+    50% { transform: scale(1.1); box-shadow: 0 0 14px rgba(255,255,255,0.9); }
   }
+  .cell.selected .star-wrap { border-radius: 40%; }
 
   .cell.removing .star-wrap {
     animation: explode 0.4s ease-out forwards;
@@ -390,7 +389,6 @@ function renderBoard() {
         wrap.className = 'star-wrap';
         const star = document.createElement('div');
         star.className = `star c${color}`;
-        star.style.animationDelay = ((r + c) * 0.05) + 's';
         wrap.appendChild(star);
         cell.appendChild(wrap);
         cell.addEventListener('click', () => handleCellClick(r, c));
