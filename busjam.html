@@ -366,22 +366,21 @@ const LEVELS = [
     queue: ['r','y','y','b','b','b','r','y','b','b','r','y','y','y']
   },
   // 关 2 · 中局 · 开始出现"组 ≠ 单车"· 一些伙必须两车拼
-  // 队列 16 人 · 混合散色 + 2/3/4 人小伙
-  // 一伙 3 人可能是 cap3 单车 · 也可能是 1+2 · 玩家要选
+  // 队列 17 人 · 每组都由"恰好装满"的巴士服务 · 含两处两车拼一伙（b4、p4）
+  // 巴士按容量装人 · 装满才走 · 不浪费座位
   {
     rows: 5, cols: 5,
     cars: [
-      [0, 0, 'p', 0, 2], [0, 1, 'r', 0, 1], [0, 2, 'y', 0, 3], [0, 3, 'g', 0, 2], [0, 4, 'b', 0, 1],
-      [1, 0, 'r', 2, 2], [1, 2, 'y', 3, 1], [1, 4, 'b', 3, 3],
-      [2, 1, 'g', 3, 1], [2, 3, 'p', 2, 1],
-      [3, 0, 'y', 1, 2], [3, 2, 'r', 1, 1], [3, 4, 'g', 1, 2],
-      [4, 1, 'b', 2, 2], [4, 3, 'p', 3, 3]
+      [0, 0, 'r', 0, 1], [0, 1, 'y', 0, 2], [0, 2, 'b', 0, 3], [0, 3, 'g', 0, 1], [0, 4, 'p', 0, 2],
+      [1, 1, 'y', 2, 1], [1, 3, 'r', 3, 2],
+      [2, 0, 'b', 1, 1], [2, 2, 'p', 2, 2], [2, 4, 'g', 1, 2]
     ],
-    queue: ['r','y','b','g','p','r','r','r','y','y','y','y','b','b','g','p','p','p']
+    queue: ['r','y','y','b','b','b','b','g','p','p','p','p','r','r','y','g','g']
   },
   // 关 3 · 烧脑 · 大伙 4 人 + 型号错位 · 必须精算多车组合
-  // 每色总量必须 = 队列该色数
-  // r 队列 5: 车 cap 1+1+3 = 5 · y 队列 5: 1+2+2 = 5 · b 队列 4: 1+3 = 4 · g 队列 5: 1+1+3 = 5 · p 队列 5: 2+3 = 5
+  // 巴士按剩余座位装人 · 装满才走 · 各色容量都 >= 队列人数 → 可解
+  // r 容量 7(1+1+3+2) / 队列 5 · y 容量 5(1+2+2) / 队列 5 · b 容量 4(1+3) / 队列 4
+  // g 容量 6(1+1+3+1) / 队列 5 · p 容量 7(2+3+2) / 队列 5
   {
     rows: 5, cols: 5,
     cars: [
@@ -531,7 +530,7 @@ function renderParking() {
       bus.className = 'bus c-' + fullColorName(parking[i].color);
       const capNum = document.createElement('div');
       capNum.className = 'bus-cap';
-      capNum.textContent = parking[i].cap;
+      capNum.textContent = parking[i].left;  // 剩余可坐人数 · 装满即开走
       bus.appendChild(capNum);
       slot.appendChild(bus);
     } else {
@@ -579,7 +578,7 @@ function tryMoveCar(car) {
 
   setTimeout(() => {
     car.el.classList.add('gone');
-    parking[slotIdx] = { car, color: car.color, cap: car.cap };
+    parking[slotIdx] = { car, color: car.color, cap: car.cap, left: car.cap };
     renderParking();
     checkParkingLoad();
   }, 500);
@@ -598,6 +597,8 @@ function isPathClear(car) {
 }
 
 // ============ 装载 & 结算 · 同伙不拆分 ============
+// 巴士按"剩余座位"装人: 能坐几人就最多装几人 · 装不满留在停车位等下一波 · 装满才开走
+// 绝不浪费座位 —— 一辆 cap 2 的巴士装 1 人后还剩 1 座, 不会被清掉
 function checkParkingLoad() {
   animating = false;
   if (queue.length === 0) {
@@ -610,29 +611,32 @@ function checkParkingLoad() {
   let groupSize = 0;
   while (groupSize < queue.length && queue[groupSize] === headColor) groupSize++;
 
-  // 停车位中的 headColor 车 · 总容量
-  const matchingSlots = [];
-  let totalCap = 0;
-  parking.forEach((slot, i) => {
-    if (slot && slot.color === headColor) {
-      matchingSlots.push(i);
-      totalCap += slot.cap;
-    }
-  });
+  // 停车位中的 headColor 车 · 剩余可坐人数
+  const matching = parking.filter(s => s && s.color === headColor && s.left > 0);
+  const totalLeft = matching.reduce((sum, s) => sum + s.left, 0);
 
-  if (totalCap >= groupSize && matchingSlots.length > 0) {
-    // 凑齐 · 装载 + 全部开走
+  if (totalLeft >= groupSize) {
+    // 凑齐 · 按需装人: 装满的开走 · 没装满的留下等下一波
+    let need = groupSize;
+    matching.forEach(s => {
+      if (need <= 0) return;
+      const take = Math.min(s.left, need);
+      s.left -= take;
+      need -= take;
+    });
     queue.splice(0, groupSize);
-    matchingSlots.forEach(i => {
-      const slot = parking[i];
-      slot.car.el.style.transition = 'transform 0.5s ease-in, opacity 0.4s ease-in';
-      slot.car.el.style.transform = slot.car.el.style.transform + ' scale(0.6)';
-      slot.car.el.style.opacity = '0';
+
+    const toLeave = matching.filter(s => s.left <= 0);
+    toLeave.forEach(s => {
+      const i = parking.indexOf(s);
+      s.car.el.style.transition = 'transform 0.5s ease-in, opacity 0.4s ease-in';
+      s.car.el.style.transform = s.car.el.style.transform + ' scale(0.6)';
+      s.car.el.style.opacity = '0';
       parking[i] = null;
     });
     renderQueue();
     setTimeout(() => {
-      renderParking();
+      renderParking();  // 更新剩余座位 · 移除开走的车
       // 继续检查下一组 · 也许停车位还有可装的
       checkParkingLoad();
     }, 300);
@@ -640,14 +644,9 @@ function checkParkingLoad() {
   }
 
   // 未凑齐 · 判断死局:
-  // 停车位全满 · 且现有 headColor 车总容量不足 · 且无更多 headColor 车能进来
+  // 停车位全满(无空位停新车) 且 现有该色剩余座位凑不够队首组 -> 卡死
   if (parking.every(p => p !== null)) {
-    // 简化死局判断: 停车位满 · 且 headColor 车不足 · 但可能还有 headColor 车在网格里
-    const hasHeadInGrid = cars.some(x => !x.gone && x.color === headColor);
-    if (!hasHeadInGrid || totalCap === 0) {
-      // 无 headColor 车或存在但无法进车位
-      setTimeout(endLevelLose, 400);
-    }
+    setTimeout(endLevelLose, 400);
   }
 }
 
