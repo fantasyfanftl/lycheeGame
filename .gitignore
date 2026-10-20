@@ -13,3 +13,4 @@ poker-editor.html
 Thumbs.db
 *.swp
 *~
+# 存档同步：本地存档数据与服务器设施不进仓库.sync-data/sync-server.js

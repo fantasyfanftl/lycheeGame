@@ -2,26 +2,22 @@
 // 单账号 · 自托管 · Tailscale · 零账号/零费用
 // 用法：游戏页面在 <script> 前引入 <script src="save.js"></script>，然后：
 //   SyncSave.load('merge')            → Promise<存档对象|null>，云端优先，本地缓存兜底
-//   SyncSave.store('merge', data)     → 先写本地(立即生效)，再异步同步到这台电脑
+//   SyncSave.store('merge', data)     → 先写本地(立即生效)，再异步同步到服务器
 //   SyncSave.clear('merge')           → 清空本地缓存与云端
 // 规则：单账号，云端存档默认最新（每次 store 都推送），load 时云端有就用云端。
+// 地址：API 用「同源相对路径」解析——页面在哪，API 就在哪。服务器部署：
+//       https://域名/lychee/merge.html → API = https://域名/lychee/api/save
+//       GitHub Pages 打开时无 API → 自动回退本地缓存，不影响单机玩。
 (function () {
   'use strict';
 
-  var SERVER_PORT = 8900;
-  var PC_HOSTS = ['100.64.232.48', '127.0.0.1', 'localhost', '::1'];
   var LS_PREFIX = 'syncSaveCache:';
 
-  function serverBase() {
-    var host = String(window.location.hostname).toLowerCase();
-    // 本页直接跑在这台电脑（自托管 / 本机调试）→ 同源，走相对路径
-    if (PC_HOSTS.indexOf(host) !== -1) return window.location.origin;
-    // 否则（如 GitHub Pages 打开）→ 指向这台电脑的 Tailscale 地址
-    return 'http://100.64.232.48:' + SERVER_PORT;
-  }
-
+  // 相对当前页面解析 API 地址（同源，无跨域 / 无混合内容问题）
   function apiUrl(game) {
-    return serverBase() + '/api/save?game=' + encodeURIComponent(game);
+    var base = new URL('api/save', window.location.href).href;
+    var sep = base.indexOf('?') >= 0 ? '&' : '?';
+    return base + sep + 'game=' + encodeURIComponent(game);
   }
 
   function fetchJSON(url, opts) {
