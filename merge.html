@@ -467,6 +467,7 @@
   </div>
 </div>
 
+<script src="save.js"></script>
 <script>
 const TUTORIAL_SIZE = 4;
 const INITIAL_SIZE = 5;
@@ -1298,8 +1299,11 @@ function saveGame() {
     score, nextId, won, wonEver, size: SIZE, inTutorial,
     // Keep the most recent undo point so users don't lose it across reloads
     lastUndo: history.length ? history[history.length - 1] : null,
+    ts: Date.now(),
   };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(snap)); } catch (e) {}
+  // 跨设备同步：推到这台电脑的同步服务器（本机已即时生效，云端异步推送）
+  if (window.SyncSave) { try { SyncSave.store('merge', snap); } catch (e) {} }
 }
 function saveGameDebounced() {
   if (saveTimer) clearTimeout(saveTimer);
@@ -1312,7 +1316,13 @@ function loadSavedGame() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return false;
-    const s = JSON.parse(raw);
+    return applySavedGame(JSON.parse(raw));
+  } catch (e) { return false; }
+}
+
+// 把一份存档快照应用到棋盘（本地 / 云端共用）
+function applySavedGame(s) {
+  try {
     if (!s || !s.tiles || !s.tiles.length) return false;
     SIZE = s.size;
     setBoardSize();
@@ -1396,6 +1406,16 @@ if (!renderMode) {
   showModePicker();
 } else if (!loadSavedGame()) {
   newGame();
+}
+
+// 跨设备同步：异步拉这台电脑上的云端存档，比本地新就覆盖（单账号，云端通常最新）
+if (window.SyncSave) {
+  const localTs = (function () {
+    try { const r = localStorage.getItem(SAVE_KEY); return r ? (JSON.parse(r).ts || 0) : 0; } catch (e) { return 0; }
+  })();
+  SyncSave.load('merge').then(s => {
+    if (s && s.tiles && s.tiles.length && (s.ts || 0) >= localTs) applySavedGame(s);
+  });
 }
 </script>
 </body>
